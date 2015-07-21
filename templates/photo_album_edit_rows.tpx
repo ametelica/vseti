@@ -1,0 +1,28 @@
+<?php
+global $user;
+
+foreach($var['photos'] as $photo) {
+$edithash = hash_get('photo' . $photo->uid . $user->id, 18, 'lk');
+//dmp($photo);
+?><div id="photo_edit_row<?=$photo->uid?>" class="photo_edit_row"><div>
+  <div class="fl_l photo_edit_thumb">
+    <a href="/photo<?=$photo->uid?>" onclick="return showPhoto('<?=$photo->uid?>', '<?=$var['from']?>', {&quot;temp&quot;:{&quot;base&quot;:&quot;http://vs.by/u16/&quot;,&quot;x_&quot;:[&quot;94228302/x_a76c8aa7&quot;],&quot;y_&quot;:[&quot;94228302/y_fdde893f&quot;]}}, event)"><img class="photo_edit_img" src="<?=$photo->view('m')?>" /></a>
+  </div>
+  <div class="fl_l photo_edit_data">
+    <div class="photo_edit_header">
+      <div class="fl_l" id="photo_save_result<?=$photo->uid?>">Описание</div>
+      <div class="fl_l photo_save_progress progress" id="photo_save_progress<?=$photo->uid?>"></div>
+    </div>
+    <textarea class="photo_edit_caption" id="photo_caption<?=$photo->uid?>" onfocus="photos.backupDesc('<?=$photo->uid?>')" onblur="photos.saveDesc('<?=$photo->uid?>', '<?=$edithash?>')"><?=$photo->desc?></textarea>
+    <div class="photos_move_block">
+      <div class="fl_r progress" id="photo_edit_progress<?=$photo->uid?>"></div>
+      <a class="photo_delete_link" id="photo_delete_link<?=$photo->uid?>" onclick="photos.deletePhoto('<?=$photo->uid?>', '<?=$edithash?>')">Удалить</a>
+      <div onclick="return cancelEvent(event)" onmousedown="event.cancelBubble = true" style="cursor: auto">
+        <a id="photos_move_link<?=$photo->uid?>" onclick="photos.showMove('<?=$photo->uid?>', '<?=$edithash?>', event)">Поместить в альбом</a>
+      </div>
+    </div>
+  </div>
+  <br class="clear" />
+</div></div><?
+}
+?>

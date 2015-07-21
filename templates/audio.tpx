@@ -1,0 +1,211 @@
+<?php
+global $musiclist, $default_track, $on_page, $user, $owner, $albums, $act, $album_id, $new_design;
+
+$edit = ((isset($owner->user_rank) and $owner->user_rank > 0) or $user->is_me($owner));
+
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content"><div id="audio" class="new">
+				<div id="ac" class="">
+					<div class="ac_wrap clear_fix"><div id="ac_controls" class="fl_l">
+							<div id="ac_play" class="fl_l"></div>
+							<div class="next_prev fl_l">
+								<div id="ac_prev" class="ctrl_wrap">
+									<div class="prev ctrl"></div>
+								</div>
+								<div id="ac_next" class="ctrl_wrap">
+									<div class="next ctrl"></div>
+								</div>
+							</div>
+						</div>
+						<div class="info fl_l">
+							<div class="title_wrap clear_fix">
+								<div id="ac_name" class="ac_name fl_l">
+									<span id="ac_performer" class="performer"><?= $default_track[5] ?></span> &ndash;
+									<span id="ac_title" class="title"><?= $default_track[6] ?></span>
+								</div>
+								<span id="ac_duration" class="duration fl_r"><?= $default_track[4] ?></span>
+							</div>
+							<div class="player_wrap">
+								<div id="ac_line"><div></div></div>
+								<div id="ac_player" class="ac_player" ondragstart="return false;" onselectstart="return false;">
+									<table cellspacing="0" cellpadding="0" border="0" width="100%">
+										<tbody><tr>
+												<td style="width: 100%;">
+													<div id="ac_pr">
+														<div id="ac_white_line" class="ac_white_line"></div>
+														<div id="ac,back_line" class="ac_back_line"><!-- --></div>
+														<div id="ac_load_line" class="ac_load_line"><!-- --></div>
+														<div id="ac_pr_line" class="ac_progress_line">
+															<div id="ac_pr_slider" class="ac_slider"><!-- --></div>
+														</div>
+													</div>
+												</td>
+												<td>
+													<div id="ac_vol">
+														<div id="ac_vol_white_line" class="ac_vol_white_line"><!-- --></div>
+														<div id="ac_vol_back_line" class="ac_load_line"><!-- --></div>
+														<div id="ac_vol_line" class="ac_progress_line">
+															<div id="ac_vol_slider" class="ac_slider"><!-- --></div>
+														</div>
+													</div>
+												</td>
+											</tr>
+										</tbody></table>
+								</div>
+							</div>
+						</div>
+						<div class="extra_ctrls fl_r">
+							<div id="ac_add" class="ctrl_wrap clear_fix fl_l">
+								<div class="add ctrl"></div>
+							</div>
+							<div id="ac_repeat" class="ctrl_wrap clear_fix fl_l">
+								<div class="repeat ctrl"></div>
+							</div>
+							<div id="ac_shuffle" class="ctrl_wrap clear_fix fl_l">
+								<div class="shuffle ctrl"></div>
+							</div>
+							<div id="ac_rec" class="ctrl_wrap clear_fix fl_l" <? if ($user->id != 16) { ?>style="display: none;"<? } ?>>
+								<div class="rec ctrl"></div>
+							</div>
+							<div id="ac_status" class="ctrl_wrap clear_fix fl_l" style="display: none;">
+								<div class="status ctrl"></div>
+							</div>
+						</div></div>
+					<div class="shadow">
+						<div class="sh1"></div>
+						<div class="sh2"></div>
+						<div class="sh3"></div>
+						<div class="sh4"></div>
+					</div>
+				</div>
+				<div id="audio_wrap" class="audio_wrap ">
+					<table class="audio_table" cellspacing="0" cellpadding="0">
+						<tr>
+							<td id="main_panel" class="main_panel">
+								<div id="audio_search" class="audio_search top_search_wrap clear_fix">
+									<div class="fl_l">
+										<input placeholder="Поиск" onpaste="Audio.updateList(event, this);" onkeyup="Audio.updateList(event, this);" id="s_search" type="text" class="s_search top_search_inp text" value="" />
+									</div>
+									<div class="search_progress fl_l"></div>
+									<div id="audio_query_reset" class="search_reset fl_l" onmouseover="if (isVisible(this)) animate(this, {opacity: 1}, 100)" onmouseout="if (isVisible(this)) animate(this, {opacity: .6}, 100)" onclick="Audio.clearSearch(this, event)"></div>
+									<div class="abutton_wrap fl_l">
+										<div class="button_green"><button>по композициям<span class="arrow"></span></button></div>
+									</div>
+								</div>
+								<div id="audios_list" class="audio_list clear_fix">
+									<div id="initial_list"><?
+echo tpx('audio_rows');
+?></div>
+									<a id="more_link" onclick="Audio.showRows()" class="more fl_l" style="<?= (count($musiclist) >= $on_page) ? '' : 'display:none;' ?>">
+										<div id="show_more_progress" class="progress"></div>
+										<div id="show_more" class="show_more">
+											Показать больше аудиозаписей
+										</div>
+									</a>
+									<div class="audio_search_results">
+										<div id="audio_search_wrap" class="summary_wrap">
+											<div id="audio_search_summary" class="summary"></div>
+										</div>
+										<div id="search_list" class="search_list"></div>
+									</div>
+									<div id="search_preload" class="audio_preload"></div>
+									<a id="s_more_link" onclick="Audio.loadRows()" class="search more fl_l" style="">
+										<div id="s_show_more_progress" class="progress"></div>
+										<div id="s_show_more" class="show_more">
+											Показать больше аудиозаписей
+										</div>
+									</a>
+								</div>
+								<div id="page_end"></div>
+							</td>
+							<td id="side_panel" class="side_panel dgray" style="">
+								<div id="side_filters">
+									<div id="album_filters">
+										<? if ($user->is_me($owner)) { ?>
+											<div id="album0" class="audio_filter <? if ($act == '') { ?>selected<? } ?>" onmouseover="if (Audio.listOver) Audio.listOver(this)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onclick="Audio.loadAlbum(0)">
+												<div class="label">Мои аудиозаписи</div>
+												<div class="icon_wrap shown" onclick="return Audio.addAudio({}, event);" onmouseover="addClass(this, 'over'); showTooltip(this, {text: 'Добавить аудиозапись', black: 1, shift: [7, 2, 0]})" onmouseout="removeClass(this, 'over')">
+													<div class="icon add"></div>
+												</div>
+											</div>
+											<div id="audios_albums" class="audio_filter <? if ($act == 'albums') { ?>selected<? } ?>" onmouseover="if (Audio.listOver) Audio.listOver(this)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onclick="Audio.loadAlbum(0, undefined, true)">
+												<div class="label">Мои альбомы</div>
+												<div class="icon_wrap shown" onclick="Audio.createAlbum(); return cancelEvent(event)" onmouseover="addClass(this, 'over'); showTooltip(this, {text: 'Добавить альбом', black: 1, shift: [7, 2, 0]})" onmouseout="removeClass(this, 'over')">
+													<div class="icon add"></div>
+												</div>
+											</div>
+											<? if($user->id == 16) { ?><div id="recommendations" class="audio_filter <? if ($act == 'recommendations') { ?>selected<? } ?>" onclick="Audio.loadRecommendations({from_pad: '', update: true})" onmouseout="if (Audio.listOut) Audio.listOut(this)" onmouseover="if (Audio.listOver) Audio.listOver(this)">
+<div class="label">Рекомендации</div><? } ?>
+</div>
+											<div id="top_audios" class="audio_filter <? if ($act == 'popular') { ?>selected<? } ?>" onclick="Audio.loadPopular({from_pad: '', update: true, genre: 0})" onmouseout="if (Audio.listOut) Audio.listOut(this)" onmouseover="if (Audio.listOver) Audio.listOver(this)">
+<div class="label">Популярное</div>
+</div>
+										<? } elseif (isset($owner->user_rank) and ($owner->user_rank > 0 or $owner->group_info['show_audio'] == 1)) { ?>
+											<div id="album0" class="audio_filter <? if ($act == '') { ?>selected<? } ?>" onmouseover="if (Audio.listOver) Audio.listOver(this)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onclick="Audio.loadAlbum(0)">
+												<div class="label">Все аудиозаписи</div>
+												<div class="icon_wrap shown" onclick="return Audio.addAudio({}, event);" onmouseover="addClass(this, 'over'); showTooltip(this, {text: 'Добавить аудиозапись', black: 1, shift: [7, 2, 0]})" onmouseout="removeClass(this, 'over')">
+													<div class="icon add"></div>
+												</div>
+											</div>
+											<? if($owner->user_rank > 0) { ?>
+											<div id="audios_albums" class="audio_filter" onmouseover="if (Audio.listOver) Audio.listOver(this)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onclick="Audio.createAlbum();">
+												<div class="label">Создать альбом</div>
+											</div>
+											<? } ?>
+										<? } else { ?>
+											<div id="album0" class="audio_filter selected" onclick="Audio.loadAlbum(0)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onmouseover="if (Audio.listOver) Audio.listOver(this)">
+												<div class="label">Все аудиозаписи</div>
+											</div>
+										<? } ?>
+										<!--<div id="feed_filter" class="audio_filter edit" onmouseover="if (Audio.listOver) Audio.listOver(this)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onclick="Audio.loadFeed({update: true})"><div class="label">Обновления друзей</div><div class="icon_wrap " onclick="Audio.editHidden(); return cancelEvent(event)" onmouseover="addClass(this, 'over'); showTooltip(this, {text: 'Редактировать список друзей', black: 1, shift: [7, 2, 0]})" onmouseout="removeClass(this, 'over')">
+						<div class="icon edit"></div>
+					</div></div><div id="recommendations" class="audio_filter" onmouseover="if (Audio.listOver) Audio.listOver(this)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onclick="Audio.loadRecommendations({update: true})"><div class="label">Рекомендации</div></div><div id="top_audios" class="audio_filter" onmouseover="if (Audio.listOver) Audio.listOver(this)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onclick="Audio.loadPopular(true, 0)"><div class="label">Популярное</div></div>--><div id="audio_albums" <? if ($act != 'albums' and 0) { ?>style="display: none;"<? } ?>>
+											<div class="audio_filter_sep"></div>
+
+											<div id="audio_albums_wrap"><?= tpx('audio_album_rows', array('albums' => $albums, 'aid' => $album_id, 'edit' => $edit)) ?><div id="album_unsorted" class="audio_filter" stopsort="1">
+													<div class="label">Неотсортированные</div>
+													<div class="icon_wrap">
+														<div class="icon"></div>
+													</div>
+												</div></div>
+										</div><div id="album_filtered" class="audio_search_album audio_filter" onmouseover="if (Audio.listOver) Audio.listOver(this)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onclick="Audio.backToSearch();"><div class="label">Результаты поиска</div></div>
+									
+									<div id="audio_friends" style="display: none;">
+										<div class="audio_friends_separator">
+											<div class="audio_filter_sep"></div>
+										</div><div id="audio_friends_list_wrap">
+											<div id="audio_friends_list"></div>
+										</div><div class="audio_friends_more_separator">
+											<div class="audio_filter_sep"></div>
+											<!--<a id="audio_more_friends" onclick="var el=this.firstChild;Audio.showMoreFriends(function(){show(el.nextSibling);hide(el);},function(){show(el);hide(el.nextSibling);});"><span>Показать следующие</span><span class="progress_inline" style="display: none"></span></a>-->
+										</div>
+									</div>
+									<div class="audio_search_filters" id="audio_search_filters" style="">
+										<div class="audio_search_filter">
+											<input type="hidden" id="audio_sort_filter" value="2"/>
+										</div>
+										<div class="audio_search_filter">
+											<input type="hidden" id="audio_lyrics_filter" value="0" />
+										</div>
+									</div><div class="audio_popular_owners" id="audio_popular_owners" style="display: none;">
+										<div class="audio_filter_sep"></div>
+										<div id="audio_popular_owners_rows"></div>
+									</div><div class="audio_popular_filters" id="audio_popular_filters" style="display: none;">
+										<div id="audio_genres">
+
+										</div>
+										<div class="audio_filter_sep"></div>
+										<input type="hidden" id="audio_top_type" value="0" />
+									</div>
+									<div id="audio_search_info" style="display: none;"></div>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div></div>
+  </div>
+</div>

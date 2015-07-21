@@ -1,0 +1,678 @@
+<?php
+global $setting, $ref_user, $activation_mode, $first_name, $last_name, $redir;
+?>
+<script src="/js/common.js"></script>
+<link rel="stylesheet" href="/skin/def/css/ui_vcontrols.css" type="text/css" />
+	
+<div id="trees">
+	<a href="/" id="logo"></a>
+	<div id="register_wrap">
+		<h2>Регистрация</h2>
+			<div id="reg_process" class="mtx" style="display: none";></div>
+            
+            <div class="white_page1 reg_data" id="reg_data">
+			<div class="mtx" style="margin-bottom: 20px;" >
+			<? if($ref_user->user_exists==1) { ?>
+<input type="hidden" id="ref_user" value="<?=$ref_user->id?>">
+            Вас пригласил<? if($ref_user->user_info['user_sex'] == 1) { echo 'a'; } ?> <a target="_blank" href="<?=$ref_user->lnk?>"><?=$ref_user->title?></a><br /><br />
+			<? } ?>
+            <input type="hidden" id="ref_user" value="0">
+            <input type="hidden" name="oauth_token" id="oauth_token" value=""/>
+			<input type="hidden" name="app_id" id="app_id" value=""/>
+			<input type="hidden" name="redir" id="redir" value="<?=$redir?>"/>
+			</div>
+			<div>
+			<div class="regRow clear_fix">
+				<div class="inputField">
+		      <input class="login_input" onchange="firstnameChanged()" onkeyup="firstnameChanged()" id="first_name" name="first_name" value="<?=$first_name?>" type="text" placeholder="Ваше имя">
+				</div>
+				<div class="detailsField" id="firstname_details">У нас ценят настоящие имена</div>
+			</div>
+			
+		    <div class="regRow clear_fix">
+		    <div class="inputField">
+		      <input type="text" class="login_input" onchange="lastnameChanged()" onkeyup="lastnameChanged()" id="last_name" name="last_name" value="<?=$last_name?>" placeholder="Ваша фамилия"/>
+		    </div>
+		    <div class="detailsField" id="lastname_details">Но если стесняетесь - можно и псевдоним</div>
+		  </div>
+		  
+		  <div class="regRow clear_fix">
+		    <!--<div class="labelField" id="emailLabel">E-mail:</div> -->
+		    <div class="inputField">
+		      <input type="text" class="login_input" onchange="emailChanged()" onkeyup="emailChanged()" onblur="checkLogin()" id="regemail" name="regemail" value="" placeholder="E-mail"/>
+		    </div>
+		    <div class="detailsField" id="email_details">адрес или <a href="#" onclick="if(confirm('Точно без е-мейла? <? if($activation_mode=='auto') { ?>Тогда для подтверждения можно будет использовать мобильный телефон<? } else { ?>Тогда придётся отправлять СМСку с мобильного телефона!<? } ?>')){return noEmailReg();} else {return false;}" title="c подтверждением через СМС">без электронной почты</a></div>
+		  </div>
+			<div class="regRow clear_fix">
+		    <div class="inputField">
+		      <input type="password" class="login_input" onchange="passwordChanged()" onkeyup="passwordChanged()" id="regpass" name="reg_pass" value="" placeholder="Пароль"/>
+		    </div>
+		    <div class="detailsField" id="password_details">Старайтесь не забывать, ладно?</div>
+		  </div>
+		  
+		  <div class="regRow clear_fix">
+		    <div class="inputField">
+		      <input type="password" class="login_input" onchange="password2Changed()" onkeyup="password2Changed()" onblur="checkPassword2()" id="regpass2" name="regpass2" value="" placeholder="Пароль ещё раз"/>
+		    </div>
+		    <div class="detailsField" id="password2_details">Ещё раз пароль, чтобы наверняка</div>
+		  </div>
+			
+			<div class="regRow clear_fix">
+		    <div class="selectField">
+		      <input type="text" class="inputText ph" id="sex" name="sex" />
+		    </div>
+		    <div class="detailsField">Шашка и верный конь или серьги и бусы?</div>
+		  </div>
+		  
+		  <div class="regRow clear_fix" id="country_row">
+		    <div class="selectField">
+		      <input type="text" class="inputText ph" id="country" name="country" />
+		    </div>
+		    <div class="detailsField">Лучшая страна на свете</div>
+		  </div>
+		  
+		  <div class="regRow clear_fix" id="city_row">
+		    <div class="selectField">
+		      <input type="text" id="city" class="inputText ph" name="city" />
+		    </div>
+		    <div class="detailsField">Ваш город</div>
+		  </div>
+		  
+		  <div class="regRow clear_fix" id="city_row" style="">
+		   <div class="selectField">
+		    <textarea id="reason" style="width: 278px; height: 80px; border: #ccc 1px solid; color: gray;" onclick="if(this.value == '' || this.value.substr(0,6) == 'Как Вы' || this.value.substr(0,6) == 'Ну а в'){this.style.color = '#000'; this.value = ''}" onblur="if(this.value == ''){this.style.color = 'gray';this.value = 'Ну а всё таки? Ваше мнение важно для нас, не стесняйтесь ;)'}">Как Вы нашли наш сайт?
+И почему выбрали именно ВСети?
+Расскажите в двух словах, пожалуйста, нам же интересно =)</textarea>
+           </div>
+    	   <div class="detailsField">Нам важно Ваше мнение</div>
+    		<br class="clear">
+		  </div>
+	
+            
+            
+            
+		  <script type="text/javascript" src="/js/lib/selects.js"></script>
+		  <script type="text/javascript" src="/js/lib/ui_controls.js"></script>
+<script type="text/javascript">
+    
+    function reg_process_fail(){
+        hide(ge('reg_process'));
+        show(ge('reg_data'));
+    }
+    
+    function tx2rp(text,add){
+        if(add) {
+            ge('reg_process').innerHTML = ge('reg_process').innerHTML + text;
+        } else {
+            ge('reg_process').innerHTML = text;
+        }
+    }
+    
+    function reg_process(n){
+        var msg = ['Проверка данных пользователя',
+            'Выделение личного пространства памяти',
+            'Калибровка социальной матрицы',
+            'Анализ дружеских симпатий',
+            'Синхронизация с ноосферой',
+            'Формирование профиля пользователя',
+            'Ещё один момент, сейчас Вы будете перенаправлены...'];
+        if(n==0) {
+            hide(ge('reg_data'));
+            show(ge('reg_process'));
+            tx2rp(msg[n],0);
+        } else {
+            tx2rp('&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green;">Есть</span><br />' + msg[n],1);
+        }
+        
+        if(n==6) return;
+        else reg_timer = setTimeout('reg_process('+(n+1)+')',700);  
+        
+    }
+
+
+	function try_to_login(obj, text) {
+	  if (text.substr(0, 4) == 'good') {
+	    window.location.href = 'http://<?=$setting['host']?>/';
+	  } else if (text.substr(0, 6) == 'invite') {
+	    window.location.href = 'http://<?=$setting['host']?>/help.php?page=welcome&hash=' + text.substr(6);
+	  } else {
+	    window.location.href = 'http://<?=$setting['host']?>/login.php?m=1';
+	  }
+	}
+	
+	function quick_login() {
+	  var options = {onSuccess: try_to_login};
+	  <?=$js_captcha?>;
+	  Ajax.postWithCaptcha('http://<?=$setting['host']?>/login.php', {'op': 'a_login_attempt', 'email': ge('email').value, 'jsc': jsc, 'pass': ge('pass').value, 'persistent': (ge('persistent').checked ? 1 : 0)}, options);
+	}
+
+	var selData = {"countries":[[1,"Россия"],[2,"Украина"],[3,"Беларусь"],[4,"Казахстан"],[5,"Азербайджан"],[6,"Армения"],[7,"Грузия"],[8,"Израиль"],[9,"США"],[65,"Германия"],[11,"Кыргызстан"],[12,"Латвия"],[13,"Литва"],[14,"Эстония"],[15,"Молдова"],[16,"Таджикистан"],[17,"Туркмения"],[18,"Узбекистан"]],"country":[3,"Беларусь"],"country_info":{"country":3,"cities":[[282,"<b>Минск<\/b>"],[538,"Барановичи"],[281,"Брест"],[244,"Витебск"],[392,"Гомель"],[2179,"Горки"],[649,"Гродно"],[467,"Могилев"],[375,"Мозырь"],[1299,"Новополоцк"],[610,"Пинск"]]},"city":"","city_info":{"city":0,"completed_streets":1,"completed_schools":1,"completed_universities":1,"schools":[],"universities":[]},"sex_data":[[0,"- Не выбран -"],[1,"женский"],[2,"мужской"]]};
+	
+	selectsData.setCountries(selData.countries);
+	selectsData.setCountryInfo(selData.country[0], selData.country_info);
+	selectsData.setCityInfo(selData.city[0], selData.city_info);
+
+	function isOnlyNumbers(pass) {
+	  return (pass.search(/[^0-9]/) == -1);
+	}
+
+	var bad_firstname = false, bad_lastname = false, bad_email = false, bad_email2 = false, bad_password = false, bad_password2 = false;
+
+	var error_box = null;
+	var hash = '';
+			
+	var uiCity, uiCountry, uiSex;
+	onDomReady(function() {
+	  uiSex = new Dropdown(ge('sex'), selData.sex_data, {
+	    width: 288,
+	    onChange: function(value) {
+	      value = (intval(value) == 1) ? 1 : 0;
+	    }
+	  });
+	  
+	  uiCity = new CitySelect(ge('city'), ge('city_row'), {
+	    width: 288,
+	    progressBar: ge('progress'),
+	    city: selData.city,
+	    country: selData.country[0]
+	  });
+	  
+	  uiCountry = new CountrySelect(ge('country'), ge('country_row'), {
+	    width: 288,
+	    progressBar: ge('progress'),
+	    country: selData.country,
+	    citySelect: uiCity
+	  });
+	  
+	});
+
+	var terms_box = null;
+		function show_terms() {
+		  if (!terms_box) {
+		    var window_height = window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.offsetHeight);
+		    terms_box = new MessageBox({
+		      title: 'Пользовательское соглашение',
+		      width: 600,
+		      onLoad: function() {
+		        terms_box.setOptions({
+		          height: (window_height - 200),
+		          bodyStyle: 'overflow: auto; padding: 0; height: ' + (window_height - 270) + 'px'
+		        });
+		      }
+		    });
+		    terms_box.addButton({label: 'Закрыть', onClick: function() {
+		      terms_box.hide();
+		    }});
+		    terms_box.loadContent('help.php?page=terms&ajax=1');
+		  }
+		  terms_box.show();
+		}
+	
+		function showErrorBox(body, for_focus, close_caption, close_style, reg_button) {
+		  if (!close_caption) {
+		    close_caption = 'Закрыть';
+		  }
+		  if (!close_style) {
+		    close_style = 'button_gray';
+		  } 
+		  if (!error_box) {
+		    error_box = new MessageBox({title: 'Некорректные данные'});
+		    
+		  }
+		  error_box.removeButtons();
+		  if (reg_button) {
+		    error_box.addButton({label: 'Продолжить регистрацию', style: 'button_gray', onClick: function(){
+		      error_box.hide();
+		      register(true);
+		    }});
+		  } else {
+		  	//captcha_rand();
+		  }
+		  error_box.addButton({label: close_caption, style: close_style, onClick: function(){
+		    error_box.hide();
+		    if (ge(for_focus)) {
+		      ge(for_focus).focus();
+		    }
+		  }});
+		  error_box.content(body);
+		  error_box.show();
+		}
+
+		function showError(container, text) {
+		  var old_text = ge(container + '_old') ? ge(container + '_old').innerHTML : ge(container).innerHTML;
+		  ge(container).innerHTML = '<span class="error">' + text + '</span><div id="' + container + '_old" style="display: none">' + old_text + '</div>';
+		  ge(container).style.position = 'relative';
+		  if (ge(container).offsetHeight > 20) {
+		    ge(container).style.top = '0px';
+		  } else {
+		    ge(container).style.top = '5px';
+		  }
+		}
+
+		function hideError(container) {
+		  if (ge(container + '_old')) {
+		    ge(container).innerHTML = ge(container + '_old').innerHTML;
+		    ge(container).style.top = '0px';
+		  }
+		}
+
+		function checkFirstname() {
+		  var fname = trim(ge('first_name').value);
+		  bad_firstname = true;
+		  if (fname.length < 2) {
+		    showError('firstname_details', 'Пожалуйста, введите Ваше имя.');
+		  } else if (/[^A-Za-z\-\'А-яЁёўіІіЇїґҐЄє]/.test(fname)) {
+		    bad_firstname = false;
+		//    showError('firstname_details', 'Указанное имя содержит пробелы или недопустимые символы. Пожалуйста, введите правильное имя.');
+		  } else {
+		    bad_firstname = false;
+		  }
+		}
+
+		function firstnameChanged() {
+		  if (!bad_firstname) {
+		    return;
+		  }
+		  hideError('firstname_details');
+		  bad_firstname = false;
+		}
+
+		function checkLastname() {
+		  var lname = trim(ge('last_name').value);
+		  bad_lastname = true;
+		  if (lname.length < 2) {
+		    showError('lastname_details', 'Пожалуйста, введите Вашу фамилию.');
+		  } else if (/[^A-Za-z\-\'А-яЁёўіІіЇїґҐЄє]/.test(lname)) {
+		    bad_lastname = false;
+		//    showError('lastname_details', 'Указанная фамилия содержит пробелы или недопустимые символы. Пожалуйста, введите правильную фамилию.');
+		  } else {
+		    bad_lastname = false;
+		  }
+		}
+
+		function lastnameChanged() {
+		  if (!bad_lastname) {
+		    return;
+		  }
+		  hideError('lastname_details');
+		  bad_lastname = false;
+		}
+
+		var no_email_reg = false, reg_login = '', reg_pass = '', own_password = false;
+		
+		function emailChanged() {
+		  if (!bad_email) {
+		    return;
+		  }
+		  hideError('email_details');
+		  bad_email = false;
+		}
+
+		function checkEmail() {
+		  var theMail = ge('regemail').value;
+		  var lenMail = theMail.length;
+		  bad_email = true;
+		  if (no_email_reg) {
+		    if (lenMail < 6) {
+		      showError('email_details', 'Логин должен быть не меньше 6 символов.');
+		    } else if (lenMail > 32) {
+		      showError('email_details', 'Логин должен быть не больше 32 символов.');
+		    } else if (theMail.match(/[^a-zA-Z_0-9]/)) {
+		      showError('email_details', 'Имя из латинских букв и цифр.');
+		    } else {
+		      bad_email = false;
+		    }
+		  } else {
+		    var mailDot = theMail.lastIndexOf('.');
+		    var mailAt = theMail.indexOf('@');
+		    if (lenMail < 8) {
+		      showError('email_details', 'Введите E-mail.');
+		    } else if (mailDot < 0 || mailAt <= 0 || mailDot <= mailAt + 1) {
+		      showError('email_details', 'Некорректный E-mail.');
+		    } else {
+		      bad_email = false;
+		    }
+		  }
+		}
+
+		function checkLogin() {
+		  if (!no_email_reg) {
+		    return true;
+		  }
+		  var theMail = ge('regemail').value;
+		  var lenMail = theMail.length;
+		  if (lenMail < 6 || lenMail > 32) {
+		    return true;
+		  }
+		  var callback = function(obj, text) {
+		    if (text.length) {
+		      bad_email = true;
+		      //showError('email_details', 'Этот логин уже занят другим пользователем.');
+		      showError('email_details', text);
+		      ge('regemail').focus();
+		    } else {
+		      hideError('email_details')
+		      return true;
+		    }
+		  }
+		  Ajax.postWithCaptcha('reg.php', {act: 'a_check_login', login: theMail}, {onSuccess: callback});
+		}
+
+		function noEmailReg() {
+		  no_email_reg = true;
+		  ge('email_details').innerHTML = 'Имя из латинских букв и цифр.';
+		  ge('regemail').value = '';
+		  $('#regemail').attr('placeholder', 'Логин');
+		  
+		  //ge('emailLabel').innerHTML = 'Логин:';
+		  ge('regemail').focus();
+		  return false;
+		}
+		/*
+		function checkEmail2() {
+			var theEmail = ge('regemail').value;
+			var theEmail2 = ge('regemail2').value;
+			if (theEmail != theEmail2) {
+				bad_email2 = true;
+				showError('email2_details', 'Адреса не совпадают.'); 
+			} else {
+				hideError('email2_details');
+				bad_email2 = false;
+			}
+		}
+		*/
+		
+		function checkPassword2() {
+			var thePass = ge('regpass').value;
+			var thePass2 = ge('regpass2').value;
+			bad_password2 = true;
+			if (thePass != thePass2) {
+				showError('password2_details', 'Пароли не совпадают.'); 
+			} else {
+				hideError('password2_details');
+				bad_password2 = false;
+			}
+		}
+
+		function checkPassword(ignore_silly_password) {
+		  var thePass = ge('regpass').value;
+		  var lenPass = thePass.length;
+		  bad_password = true;
+		  if (lenPass < 6) {
+		    showError('password_details', 'Пароль слишком короткий.');
+		  } else if (!ignore_silly_password && isOnlyNumbers(thePass)) {
+		    hideError('password_details');
+		    showErrorBox('Ваш пароль состоит только из цифр.<br />Аккаунты с подобными паролями небезопасны.', 'regpass', 'Изменить пароль', 'button_green', true);
+		  } else {
+		    bad_password = false;
+		  }
+		}
+        
+        function check_pass_quality (pass) {
+		    var pass_q_a = get_pass_quality (pass);
+		    var l = pass_q_a[0];
+		    var num_unic_chars = pass_q_a[1];
+		    var num_unic_classes = pass_q_a[2];
+		    var is_good_enougth = 0;
+		
+		    if (l < 1)
+		        set_el_inner ("pass_quality", '<span>&nbsp;</span>');
+		    else if (l < 5)
+		        set_el_inner ("pass_quality", '<span class="red">короткий</span>&nbsp;('+l+accus125 (l, "&nbsp;символ)", "&nbsp;символа)", "&nbsp;символов)"));
+		    else if ((l > 10 && num_unic_classes > 2 && num_unic_chars > 5) || (l > 18 && num_unic_classes > 1 && num_unic_chars > 8)) {
+		        set_el_inner ("pass_quality", '<span class="green">надежный</span>&nbsp;('+l+accus125 (l, "&nbsp;символ)", "&nbsp;символа)", "&nbsp;символов)"));
+		        is_good_enougth = 1;
+		    }
+		    else if ((l > 7 && num_unic_classes > 1 && num_unic_chars > 2) || (l > 8 && num_unic_chars >= 3)) {
+		        set_el_inner ("pass_quality", '<span class="orange">простой</span>&nbsp;('+l+accus125 (l, "&nbsp;символ)", "&nbsp;символа)", "&nbsp;символов)"));
+		        is_good_enougth = 1;
+		    }
+		    else
+		        set_el_inner ("pass_quality", '<span class="red">слишком простой</span>&nbsp;('+l+accus125 (l, "&nbsp;символ)", "&nbsp;символа)", "&nbsp;символов)"));
+		
+		    get_el ("new_acc_button").disabled = (is_good_enougth == 0);
+		}
+		
+		function get_pass_quality (pass) {
+		    if (!pass || pass.length < 1) {
+		        var pass_quality_a = new Array (0, 0, 0);
+		        return pass_quality_a;
+		    }
+		
+		
+		    var pass_length = pass.length;
+		    var chars = new Array ();
+		    var classes = new Array (0,0,0,0,0,0,0);
+		
+		
+		    for (var i=0; i < pass_length; i++) {
+		        var char = pass.charAt(i);
+		        char_class = get_char_class (char);
+		        classes[char_class]=1;
+		
+		        var is_present = 0;
+		        for (var t=0; t < chars.length; t++) {
+		            if (char == chars[t]) {
+		                is_present = 1;
+		                break;
+		            }
+		        }
+		        if (is_present == 0)
+		            chars.push (char);
+		    }
+		    // count num classes
+		    var num_classes = 0;
+		    for (var t=0; t < classes.length; t++)
+		        num_classes += classes[t];
+		
+		    var pass_quality_a = new Array (pass_length, chars.length, num_classes);
+		    return pass_quality_a;
+		}
+		
+		
+		function get_char_class (char) {
+		    var rx_digit = /[0-9]/;
+		    var rx_alpha_l = /[a-z]/;
+		    var rx_alpha_u = /[A-Z]/;
+		    var rx_alpha_cyr_l = /[a-я]/;
+		    var rx_alpha_cyr_u = /[А-Я]/;
+		    var rx_punct = /[_\-\!\@\#\$\%\^\&\*\(\)\+\=\{\}\[\]\;\:\.\>\<\,\\\/\`\~\|]/;
+		
+		    if (!char.search (rx_digit))
+		        return "1";
+		    else if (!char.search (rx_alpha_u))
+		        return "2";
+		    else if (!char.search (rx_alpha_l))
+		        return "3";
+		    else if (!char.search (rx_punct))
+		        return "4";
+		    else if (!char.search (rx_alpha_cyr_u))
+		        return "5";
+		    else if (!char.search (rx_alpha_cyr_l))
+		        return "6";
+		    else {
+		        return "0";
+		    }
+		}
+		
+		function check_pass_quality () {
+		    var pass = ge('regpass').value;
+		    var pass_q_a = get_pass_quality (pass);
+		    var l = pass_q_a[0];
+		    var num_unic_chars = pass_q_a[1];
+		    var num_unic_classes = pass_q_a[2];
+		    var is_good_enougth = 0;
+		    var strText = '';
+		      
+		    var score = (l+(num_unic_chars*2))*num_unic_classes;
+		      
+		    if (l < 6)
+		        var strText = '<span style="color: red">Пароль слишком короткий</span>';
+		    else if ((l > 10 && num_unic_classes > 2 && num_unic_chars > 5) || (l > 18 && num_unic_classes > 1 && num_unic_chars > 8)) {
+		        var strText = '<span style="color: #4A8101">Отличный пароль!</span>';
+		    }
+		    else if ((l > 7 && num_unic_classes > 1 && num_unic_chars > 3) || (l > 8 && num_unic_chars >= 4)) {
+		        var strText = '<span style="color: #4A8101">Хороший пароль</span>';
+		    }
+		    else
+		        var strText = '<span style="color: orange">Пароль очень простой</span>';
+		    
+		    ge('password_details').innerHTML = "" + strText;
+		}
+
+		function passwordChanged() {
+		  check_pass_quality();		
+		  if (!bad_password) {
+		    return;
+		  }
+		  hideError('password_details');
+		  bad_password = false;
+		}
+		
+		function password2Changed() {
+		  if (!bad_password2) {
+		    return;
+		  }
+		  hideError('password_details2');
+		  bad_password2 = false;
+		}
+
+		function validate(ignore_silly_password) {
+		  checkFirstname();
+		  checkLastname();
+		  if (!hash) {
+		    checkEmail();
+		  }
+		  
+		  if (!hash || own_password) {	    
+		    checkPassword2();
+		    checkPassword(ignore_silly_password);
+		  }
+		  
+		  if (bad_firstname) {
+		    ge('first_name').focus();
+		  } else if (bad_lastname) {
+		    ge('last_name').focus();
+		  } else if (bad_email) {
+		    ge('regemail').focus();
+		  } else if (bad_password) {
+		    ge('regpass').focus();
+			} else if (bad_password2) {
+		    ge('regpass2').focus();
+		  } else {
+		    return true;
+		  }
+		  return false;
+		}
+		
+		function prepareParams() {
+		  var result = {act: 'register'};
+		  result.ref = ge('ref_user').value;
+		  result.first_name = ge('first_name').value;
+		  result.last_name = ge('last_name').value;
+		  //result.login = ge('login').value;
+		  result.oauth_token = ge('oauth_token').value;
+		  result.app_id = ge('app_id').value;
+		  result.reason = ge('reason').value;
+		  result.redir = ge('redir').value;
+		  if (hash) {
+		    result.hash = hash;
+		    if (own_password) {
+		      result.regpass = ge('regpass').value;
+		    }
+		  } else {
+		    result.regemail = ge('regemail').value;
+		    result.reg_pass = ge('regpass').value;
+		    //result.reg_code = ge('reg_code').value;
+		  }
+		  result = addFields(result, 'country', 'city', 'sex');
+		  //result = addTextFields(result, 'school_custom', 'university_custom','faculty_custom', 'chair_custom');
+		  timezone_offset = new Date().getTimezoneOffset();
+		  if (Math.abs(timezone_offset) > 20) {
+		    result.timezone = - timezone_offset;
+		  } else {
+		    result.timezone = -Math.round(timezone_offset / 60);
+		  }
+		  //result.timezone = -Math.round((new Date().getTimezoneOffset()) / 60);
+		  result.by_login = no_email_reg ? 1 : 0;
+		  return result;
+		}
+
+		var registering = false;
+		function register(ignore_silly_password) {
+		  if (!registering && validate(ignore_silly_password)) {
+		    registering = true;
+		    show('reg_progress');
+		    reg_login = ge('regemail').value;
+		    reg_pass = ge('regpass').value;
+
+		    var params = prepareParams();
+		    var failHandler = function(show_error) {
+		      return function() {
+		        registering = false;
+		        hide('reg_progress');
+		        if (show_error) {
+		          showErrorBox('Failed to register.');
+		        }
+		      }
+		    }
+		    var options = {onSuccess: function(obj, text) {
+		      registering = false;
+		      hide('reg_progress');
+		      var response = eval('(' + text + ')');
+		      
+		      if (response.error) {
+		        reg_process_fail();
+		        showErrorBox(response.error);
+		      } else if (response.redir) {
+		        location.replace(response.redir);
+		      } else if (response.do_login) {
+		        ge('email_after_reg').value = reg_login;
+		        ge('pass_after_reg').value = reg_pass;
+		        ge('login_after_reg').submit();
+		      } else if (response.not_avail && no_email_reg) {
+		        reg_process_fail();
+		        bad_email = true;
+		        showError('email_details', 'Этот логин уже занят другим пользователем.');
+		        ge('regemail').focus();
+		      }
+		      
+		    }, onFail: failHandler(true), onCaptchaShow: failHandler(false)};
+		    reg_process(0);
+		    Ajax.postWithCaptcha('reg.php', params, options);
+		  }
+		  return false;
+		}
+		
+		function addFields() {
+		  var result = arguments[0];
+		  for (var i = 1; i < arguments.length; i++) {
+		    var name = arguments[i];
+		    var value = ge(name).value;
+		    if (intval(value)) {
+		      result[name] = value;
+		    }
+		  }
+		  return result;
+		}
+  </script>
+
+		
+		<div class="regRow" id="city_row" style="margin-top: 20px;">
+			Фактом регистрации Вы соглашаетесь с <a href="javascript: show_terms()" title="Правила, по которым живёт ВСети">пользовательским соглашением</a><br />
+	    	<button onclick="return register();" onmouseover="this.className='green_over login_button'" onmouseout="this.className='login_button'" class="login_button">Зарегистрироваться</button>
+			
+	    
+		</div><!-- End rightCol -->
+		
+		<div class="clearfix"></div>
+		
+		
+		
+		
+	
+	</div>
+	<!-- End pageHeader -->
+</div>
+
+<script type="text/javascript" src="/js/lib/title.js"></script>

@@ -1,0 +1,30 @@
+<?php
+global $group, $langpack, $new_design;
+$albums_total = $group->group_info['html_albums_cnt'];
+if ($group->group_info['show_photos'] > 0 and ($albums_total>0 or $group->user_rank>0)) { ?>
+<div class="module clear album_module" id="group_albums">
+<a href="/albums-<?=$group->id?>" class="module_header" onclick="return nav.go(this, event)">
+<div class="header_top clear_fix">
+    <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/albums-<?=$group->id?>'"><? if($new_design) echo nf($albums_total); ?></span>
+    Фотоальбомы
+</div>
+</a>
+<? 
+if($is_group_private==0) {
+    if($albums_total==0) { ?>
+            <div class="fallback"><a onclick="return !showBox('al_photos.php', {act: 'new_album_box', oid: -<?=$group->id?>});" href="/photos.php?act=new&oid=-<?=$group->id?>">Добавить альбом</a></div>
+<?  } else { ?>
+    <div class="p_header_bottom">
+        <span class="fl_r"></span>
+        <?=$albums_total?> альбом<?=$langpack->dln($albums_total,'file')?>
+    </div>
+    <div class="module_body clear_fix">
+        <? if($albums_total > 0) echo $group->group_info['html_albums']; ?>
+    </div>
+<?
+    }
+} else { ?>
+    <div class="fallback">Нет доступа к альбомам.</div>
+<? } ?>
+</div>
+<? } ?> 

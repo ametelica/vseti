@@ -1,0 +1,32 @@
+<?php
+global $user;
+$photo = $var['photo'];
+$album = $photo->album();
+//dmp($photo);
+
+$edit_hash = hash_get('photo' . $photo->uid . $user->id, 18, 'lk');
+?>
+<table class="photos_add_upl_table">
+  <tr><td class="photos_add_s_thumb">
+    <div id="photos_add_thumb<?=$photo->uid?>" class="photos_add_thumb" onmouseover="PhotosAdd.thumbOver(this, '<?=$photo->uid?>');" onmouseout="PhotosAdd.thumbOut(this);"><a class="photos_add_a_thumb" href="/photo<?=$photo->uid?>" onclick="return showPhoto('<?=$photo->uid?>', 'album<?=$album->uid?>', {temp: {base:&quot;&quot;,x_:[&quot;http://cs9311.vk.me/v9311497/2628/7w5ADoGsVpE&quot;,604,403],y_:[&quot;http://cs9311.vk.me/v9311497/2629/kopjUpur1XU&quot;,800,534],o_:[&quot;http://cs9311.vk.me/v9311497/262a/ldfw64sOv-A&quot;,130,87],p_:[&quot;http://cs9311.vk.me/v9311497/262b/FBF1BXsBVPk&quot;,200,134],q_:[&quot;http://cs9311.vk.me/v9311497/262c/bBv6WxZrABs&quot;,320,214],r_:[&quot;http://cs9311.vk.me/v9311497/262d/b6novk4FahI&quot;,510,340]}, dark: 1}, event);"><img id="photos_add_img<?=$photo->uid?>" class="photos_add_img" src="<?=$photo->view('m')?>" onload="PhotosAdd.updateSorterRow('<?=$photo->uid?>');" align="center">
+      </a>
+    </div>
+  </td>
+  <td class="photos_add_s_info">
+    <div class="photos_add_s_header">
+      <div class="fl_l" id="photo_save_result<?=$photo->uid?>">Описание</div>
+      <div class="fl_l photo_save_progress progress" id="photo_save_progress<?=$photo->uid?>"></div>
+    </div>
+    <textarea class="photos_add_s_caption" id="photo_caption<?=$photo->uid?>" onfocus="photos.backupDesc('<?=$photo->uid?>')" onblur="photos.saveDesc('<?=$photo->uid?>', '<?=$edit_hash?>')" style="overflow-x: hidden; overflow-y: hidden; "></textarea>
+    <div class="photos_add_s_move">
+      <div class="fl_r progress" id="photo_edit_progress<?=$photo->uid?>"></div>
+      <a id="photo_delete_link<?=$photo->uid?>" class="photo_delete_link" onclick="photos.deletePhoto('<?=$photo->uid?>', '<?=$edit_hash?>')">Удалить</a>
+      <div onclick="return cancelEvent(event)" onmousedown="event.cancelBubble = true" style="z-index: 1000;">
+        <a id="photos_move_link<?=$photo->uid?>" onclick="photos.showMove('<?=$photo->uid?>', '<?=$edit_hash?>', event)">Поместить в альбом</a>
+      </div>
+    </div>
+    <form id="photo_rotate_form<?=$photo->uid?>" method="POST" target="photo_rotate_ifr<?=$photo->uid?>">
+    </form>
+    <iframe id="photo_rotate_ifr<?=$photo->uid?>" name="photo_rotate_ifr<?=$photo->uid?>" class="photo_rotate_ifr"></iframe>
+  </td></tr>
+</table>

@@ -1,0 +1,28 @@
+<?php
+global $new_design, $group, $langpack, $black_list;
+	
+$cnt = count($black_list);
+
+if ($new_design) {
+	echo tpx('header_design');
+}
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><?=tpx('group_edit_menu')?>
+	<div id="group_bl_bar">
+  <input type="text" class="fl_l text" id="group_bl_search" onkeypress="if (event.keyCode == 10 || event.keyCode == 13) GroupsEdit.doSearchBlacklist()" placeholder="Введите имя пользователя или ссылку на его страницу" />
+  <div class="button_green fl_r">
+    <button id="group_bl_submit" onclick="GroupsEdit.doSearchBlacklist()">Заблокировать</button>
+  </div>
+  <br class="clear" />
+</div>
+<div class="summary_wrap">
+  <div class="summary">
+    <b id="group_bl_summary">В сообществе <?=$cnt?> <?=$langpack->dln($cnt, array('заблокированный пользователь', 'заблокированных пользователя', 'заблокированных пользователей'))?></b><span class="divide">|</span><span><a href="/gsearch.php?from=people&q=&gedit=<?=$group->id?>">Поиск по участникам</a></span>
+  </div>
+</div>
+<div id="group_bl_msg" class="msg" style=""></div>
+<div id="group_bl_rows"><?=tpx('group_edit_blacklist_rows', array('black_list' => $black_list))?></div>
+    </div>
+  </div>
+</div>

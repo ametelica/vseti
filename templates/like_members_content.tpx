@@ -1,0 +1,24 @@
+<table cellpadding="0" cellspacing="0" style="margin-left: 5px;"><tr>
+	<?
+	$columns = 0;
+	foreach ($var['likers'] as $liker) {
+	?>
+		<td>
+			<div class="liked_box_row">
+				<div class="liked_box_thumb">
+					<a href="<?= $liker->lnk;?>" onclick="return nav.go(this, event)">
+						<div style="width: 50px; height: 50px; background: url(<?=$liker->user_photo('','c')?>) no-repeat;"></div>
+					</a>
+				</div>
+				<div>
+					<a href="<?= $liker->lnk;?>" onclick="return nav.go(this, event)"><?=$liker->user_info['name']?></a>
+				</div>
+			</div>
+		</td>
+	  <? 
+	  $columns++;
+	  if ($columns % 8 == 0 and $columns > 0) { echo '</tr><tr>'; }
+	  
+	} ?>
+	</tr>
+</table>

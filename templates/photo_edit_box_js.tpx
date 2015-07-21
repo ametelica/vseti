@@ -1,0 +1,80 @@
+<?php
+global $vs_photo, $vs_albums, $uplink, $user;
+
+$edit1 = array(
+	'src' => $vs_photo->view('x'),
+	'src_big' => $vs_photo->view('o'),
+);
+
+$upload_vars = array(
+	'act' => 'album_photo',
+	'edit' => array('id' => $vs_photo->uid, 'photo' => $vs_photo->name),
+	'aid' => $vs_photo->album_id,
+	'oid' => $user->id,
+	'mid' => $uplink['mid']->id,
+	'server' => $uplink['server'],
+	'hash' => $uplink['hash'],
+	'rhash' => $uplink['rhash'],
+);
+
+$edit2 = array(
+	'upload_url' => $uplink['link'] . '?_query=' . urlencode(base64_encode(jenc($upload_vars))),
+	'post_data' => '',
+	'lang' => array(),
+);
+
+$all_albums = $vs_albums->get_list();
+foreach($all_albums['data'] as $a) {
+	$albums[] = array(intval($a->id), $a->title);
+}
+
+$sizes = $vs_photo->sizes();
+$last_sizes = empty($sizes['x']) ? $sizes['m'] : $sizes['x'];
+
+?>extend(cur.lang, {
+ 'photos_hide_change_setting': 'Скрыть дополнительные настройки',
+ 'photos_change_setting': 'Показать дополнительные настройки',
+ 'photos_too_small': 'Фотография слишком мала'
+})
+
+Filters.init({
+  url: '/swf/filters.swf?30',
+  id: 'pv_filter_embed',
+  width: 816, //<?=$last_sizes[1]?>,
+  height: 500, //<?=$last_sizes[2]?>,
+  version: 10
+}, <?=jenc($edit1)?>, <?=jenc($edit2)?>, {"settings":""}, [], '<?=$vs_photo->uid?>', '<?=hash_get('photo' . $vs_photo->uid . $user->id, 18, 'lk')?>');
+
+addClass(boxLayerBG, 'bg_dark');
+hide(layerBG);
+hide(layerWrap);
+cur._inLayer = true;
+box.setOptions({hideButtons: true, title: false, width: 864, bodyStyle: 'padding: 0px;', onClean: function() {
+  removeClass(boxLayerBG, 'bg_dark');
+  removeEvent(boxLayerWrap, 'scroll', cur.onPlaceScroll);
+  if (cur.pvShown) {
+    show(layerBG);
+    show(layerWrap);
+    cur._inLayer = false;
+  }
+}});
+
+
+var t = ge('pv_sett_desc');
+addEvent(t, 'keypress', function(ev) {
+  onCtrlEnter(ev, Filters.save);
+});
+autosizeSetup(t, {minHeight: 50});
+
+var albums = <?=jenc($albums)?>;
+
+cur.pvMoveToAlbum = new Dropdown(ge('pv_move_to_album'), albums, {
+  width: 250,
+  selectedItems: [-7],
+  autocomplete: (albums.length > 7),
+  onChange: function(val) {
+    if (!intval(val)) {
+      cur.pvMoveToAlbum.val(-7);
+    }
+  }
+});

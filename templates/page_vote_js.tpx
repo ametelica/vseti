@@ -1,0 +1,12 @@
+<?php
+global $poll, $user;
+if(!empty($var['message'])) {
+    echo 'ge(\'group_voting_msg\').style.backgroundColor = \'#F4EBBD\'; animate(ge(\'group_voting_msg\'), {backgroundColor: \'#F9F6E7\'}, 2000);';
+}
+echo 'cur.privacy = extend(cur.privacy || {}, {
+  voting_action: [0, 0, []],
+  voting_action_types: {'.($poll->poll_info['poll_closed']?'"101":"Открыть опрос"':'"102":"Закрыть опрос"').',"103":"Убрать с главной"},
+  voting_action_lists: []
+});
+extend(cur, {_voting: {oid: '.$var['oid'].', vid: '.$var['vid'].', hash: \''.hash_get($var['oid'].$var['vid'].$user->id,16,'vot').'\'}}); cur.lang = extend(cur.lang || {}, {voting_settings: \'Настройки опроса\'});';
+?>

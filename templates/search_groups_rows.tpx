@@ -1,0 +1,24 @@
+<?
+global $offset;
+if(!empty($var['groups'])) {
+foreach($var['groups'] as $g) {
+	//dmp($g);
+?>
+<div class="groups_row three_col_row clear_fix">
+  <div class="img search_bigph_wrap fl_l">
+    <a href="<?=$g->lnk?>" onclick="return nav.go(this, event)"><img class="search_item_img" src="<?=$g->photo('b')?>" /></a>
+  </div>
+  <div class="info fl_l">
+    <div class="labeled title"><a href="<?=$g->lnk?>" onclick="return nav.go(this, event)"><?=strcut($g->title, 55)?></a><? if($g->group_info['group_quality'] > 0) { ?><a href="/verify" class="search_quality <? if($g->group_info['group_quality'] > 1) { ?>green<? } ?>" onmouseover="pageVerifiedTip(this, {gid: <?=$g->id?>, s: 1, t: <?=$g->group_info['group_quality']?>})"><? } ?><? if($g->group_info['group_officially']) { ?><a href="/verify" class="search_verified" onmouseover="pageVerifiedTip(this, {gid: <?=$g->id?>, s: 1, t: 0})"><? } ?></a></div><div class="labeled "><?=$g->group_info['group_groupcat_name']?></div><div class="labeled "><?=nf($g->group_info['num_members'])?> подписчиков</div>
+  </div>
+</div><? }
+
+if($offset == 0) { ?>
+	<a id="show_more_link" onclick="return searcher.showMore();" class="clear" style="<? if(!$var['more']) { ?>display: none;<? } ?>">
+  <div id="show_more_progress" class="progress"></div>
+  <div id="show_more">Показать ещё</div>
+</a><?
+}
+} else {
+	echo '<div id="no_results" class="">Ваш запрос не дал результатов</div>';
+}?>

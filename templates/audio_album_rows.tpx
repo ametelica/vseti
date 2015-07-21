@@ -1,0 +1,8 @@
+<?php
+foreach($var['albums'] as $album){ 
+?><div id="album<?=$album['album_id']?>" class="audio_filter edit <?=(!empty($var['aid']) and $album['album_id']==$var['aid'])?'selected':''?>" onmouseover="if (Audio.listOver) Audio.listOver(this)" onmouseout="if (Audio.listOut) Audio.listOut(this)" onclick="Audio.loadAlbum(<?=$album['album_id']?>)">
+  <div class="label"><?=$album['album_name']?></div>
+  <? if ($var['edit']) { ?><div class="icon_wrap " onclick="Audio.editAlbum(<?=$album['album_id']?>); return cancelEvent(event)" onmouseover="addClass(this, 'over'); showTooltip(this, {text: 'Редактировать альбом', black: 1, shift: [7, 2, 0]})" onmouseout="removeClass(this, 'over')">
+  <div class="icon edit"></div>
+</div><? } ?>
+</div><? } ?>

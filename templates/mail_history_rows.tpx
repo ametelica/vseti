@@ -1,0 +1,17 @@
+<?php
+global $offset, $new_design;
+$i = 0;
+foreach($var['pm'] as $m) {
+
+  echo '<tr id="mess'.$m['pm_id'].'" class="mail_'.($m['pm_out']==1?'outgoing':'incoming').($m['pm_status']==0?' mail_history_unread':'').'" onmouseover="mail.histMessState(1, '.$m['pm_id'].')" onmouseout="mail.histMessState(0, '.$m['pm_id'].')">
+  <td class="mail_history_author"><a href="'.$m['pm_user']->lnk.'">'.$m['pm_user']->user_info['name'].'</a></td>
+  <td class="mail_history_body"><div '.($new_design ? '' : 'style="width: 335px;"' ).' class="wrapped">'.nl2br($m['pm_body']).'</div>' . tpx('mail_media_block', array('pm' => $m)) . '</td>
+  <td class="mail_history_date">'.date('d.m.y',$m['pm_date']).'</td>
+  <td class="mail_history_act" onmouseover="mail.histMessState(2, '.$m['pm_id'].'); event.cancelBubble = true;">
+    <div id="ma'.$m['pm_id'].'"><a class="mail_history_link" id="mess_del'.$m['pm_id'].'" href="#" onclick="mail.deleteHistMsg('.$m['pm_id'].'); return false;">удалить</a></div>
+  </td>
+</tr>'; 
+	
+	if($offset == 0 and ($i++ == 20)) echo '</table><table id="mail_history_t_next" cellpadding="0" cellspacing="0">';
+}
+?>

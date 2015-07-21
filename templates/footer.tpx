@@ -1,0 +1,120 @@
+<?php
+global $al_page,$demogr,$langpack,$profile_init,$is_fan,$znav,$user,$page_js,$page;
+echo tpx('footer_al');
+?>
+</div><!--/page_wrap-->
+<noindex>
+<center>
+<br />
+<?=$banner_footer?>
+<br />
+
+<!-- 
+<A HREF="http://www.all.by/">
+<IMG SRC="http://www.all.by/cgi-bin/rating.cgi?id=10073208&amp;ni=1" BORDER="0" WIDTH="88" HEIGHT="31" ALT="Rating All.BY"></A>
+-->
+<? /*
+<!-- Akavita counter code -->
+<a target=_top href="http://www.akavita.by/"><script language=javascript><!--
+d=document;w=window;n=navigator;d.cookie="cc=1";
+r=''+escape(d.referrer);js=10;c=(d.cookie)?1:0;j=0;
+x=Math.random();u=''+escape(w.location.href);lt=0;
+h=history.length;t=new Date;f=(self!=top)?1:0;cd=0;
+tz=t.getTimezoneOffset();cpu=n.cpuClass;ww=wh=ss=0;
+//--></script><script language="javascript1.1"><!--
+js=11;j=(n.javaEnabled()?1:0);
+//--></script><script language="javascript1.2"><!--
+js=12;lt=1;s=screen;ss=s.width;
+cd=(s.colorDepth?s.colorDepth:s.pixelDepth);
+//--></script><script language="javascript1.3"><!--
+js=13;wh=w.innerHeight;ww=w.innerWidth;
+wh=(wh?wh:d.documentElement.offsetHeight);
+ww=(ww?ww:d.documentElement.offsetWidth);
+//--></script><script language=javascript><!--
+q='lik?id=30802<?=$demogr?>&d='+u+'&r='+r+'&h='+h+'&f='+f;
+q+='&c='+c+'&tz='+tz+'&cpu='+cpu+'&js='+js+'&wh='+wh;
+q+='&ww='+ww+'&ss='+ss+'&cd='+cd+'&j='+j+'&x='+x;
+d.write('<img src="http://adlik.akavita.com/bin/'+
+q+'" alt="Akavita: каталог, рейтинг, счетчик для сайтов Беларуси" '+
+'border=0 width=88 height=31>');
+if(lt){d.write('<'+'!-- ');}//--></script><noscript>
+<img src="http://adlik.akavita.com/bin/lik?id=30802<?=$demogr?>" border=0 height=31 width=88 alt="Akavita: каталог, рейтинг, счетчик для сайтов Беларуси">
+</noscript><script language="JavaScript"><!--
+if(lt){d.write('--'+'>');}//--></script></a>
+<!-- Akavita counter code --> 
+*/ ?>
+</center>
+</noindex>
+<? if($al_page) { ?>
+	
+	
+<? 
+//if($page=='profile' and ($user->user_info['user_id']==16 or $user->user_info['user_id']==68720 or $user->user_info['user_id']==1)){
+	/*
+	echo '<script type="text/javascript" src="'.$path_js.'/al/notifier.js"></script>
+	<script type="text/javascript">var ntfs_personal_channel = \'test\'; </script>
+	<link rel="stylesheet" href="'.$path_css.'/al/notifier.css" type="text/css" />';
+	*/
+	echo tpx('im');
+//}
+
+?>
+<script type="text/javascript">
+if (parent && parent != window && (browser.msie || browser.opera || browser.mozilla || browser.chrome || browser.safari || browser.iphone)) {
+   document.getElementsByTagName('body')[0].innerHTML = '';
+} else {
+      domReady();
+      <? if($user->user_exists == 1 and $user->credits > 0) { ?>
+      updateMoney(<?=$user->credits?>);
+      <? } ?>
+gSearch.init();
+cur.lang = extend(cur.lang || {}, {
+  show_full: 'показать подробную информацию',
+  hide_full: 'скрыть подробную информацию',
+  sure_delete_photo: 'Вы уверены, что хотите удалить фотографию?',
+  change_current_info: 'изменить статус',
+  share_current_info: 'Рассказать друзьям',
+  create_poll: 'Опрос',
+  dont_attach: 'Не прикреплять'
+});
+
+<? if($is_fan) { ?>
+	cur.toggleFanAct=0;
+<? } ?>
+}
+<?=$page_js?>;
+zNav({<?=$znav?>}, {});
+</script>
+<? } else { ?>
+<div class="progress" id="global_prg"></div>
+<script type="text/javascript">
+(function(){
+    var loadFn = function(){
+        Nifty("ul.tabs a", "small top");
+        Nifty("ul.buttonRow a", "small");
+        Nifty("div.leftAd","small transparent");
+        Nifty("div.selPad","small transparent");
+        Nifty("div.myPad", "small transparent");
+    };
+    onDomReady(loadFn);
+})();
+</script>
+<script type="text/javascript">
+window.init_dec_hash = function() {
+  window.decoded_hashes = {};
+  var dec_hash = function(hash) {
+  (function(_){window.decoded_hashes[_]=(function(__){var ___=ge?'':'___';for(____=0;____<__.length;++____)___+=__.charAt(__.length-____-1);return geByClass?___:'___';})(_.substr(_.length-5)+_.substr(4,_.length-12));})
+  (hash);
+  }
+  window.decodehash = function(hash) {
+    dec_hash(hash);
+    return window.decoded_hashes[hash];
+  }
+}
+onDomReady(function() {
+  window.init_dec_hash();
+});
+<? } ?>
+</script>
+</body>
+</html>

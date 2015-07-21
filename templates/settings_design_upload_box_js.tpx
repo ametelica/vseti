@@ -1,0 +1,90 @@
+<?php
+global $uplink, $setting;
+?>Upload.init('settings_bg_upload', '<?=$uplink['link']?>', {"act":"<?=$uplink['act']?>","mid":<?=$uplink['mid']?>,"hash":"<?=$uplink['hash']?>","rhash":"<?=$uplink['rhash']?>","vs":"","upldr":1}, {
+  file_name: 'bg',
+  file_size_limit: 1024*1024*4, // 4Mb
+  file_types_description: 'Image files (*.jpg)',
+  file_types: '*.jpg;*.JPG',
+  
+  lang: {"button_browse":"Выбрать файл","cannot_upload_title":"Ошибка","cannot_upload_text":"Загрузка изображений в данный момент недоступна. Попробуйте повторить операцию позже."},
+
+  onUploadStart: function(i, res) {
+    if (Upload.types[i] == 'form') {
+      show(box.progress);
+    }
+    hide('profile_new_photo_error');
+  },
+
+  onUploadComplete: function(i, res) {
+    var obj;
+    try {
+      obj = eval('(' + res + ')');
+    } catch(e) {
+      obj = q2ajx(res);
+    }
+    if (obj.code) {
+      Upload.onUploadError(i, obj.code);
+      return;
+    }
+    box.hide();
+    
+    console.log('http://cs<?=$uplink['server']?>.<?=$setting['host']?>/u<?=$uplink['mid']?>/j' + obj['bg']);
+    $('html').css('background-image', 'url(http://cs<?=$uplink['server']?>.<?=$setting['host']?>/u<?=$uplink['mid']?>/h' + obj['bg'] + ')');
+    //setTimeout(Profile.editPhoto.pbind(obj), 0);
+  },
+
+  onUploadProgress: function(i, bytesLoaded, bytesTotal) {
+    if (!ge('form'+i+'_progress')) {
+      var obj = Upload.obj[i], objHeight = getSize(obj)[1], tm = objHeight / 2 + 10;
+      var node = obj.firstChild;
+      while (node) {
+        if (node.nodeType == 1) {
+          if (node.id == 'uploader'+i && browser.msie) {
+            setStyle(node, {position: 'relative', left: '-5000px'});
+          } else {
+            setStyle(node, {visibility: 'hidden'});
+          }
+        }
+        node = node.nextSibling;
+      }
+      obj.appendChild(ce('div', {innerHTML: '<div class="profile_upload_progress_wrap">\
+        <div id="form' + i + '_progress" class="profile_upload_progress" style="width: 0%;"></div>\
+      </div></div>'}, {height: tm + 'px', marginTop: -tm + 'px'}));
+    }
+    var percent = intval(bytesLoaded / bytesTotal * 100);
+    setStyle(ge('form' + i + '_progress'), {width: percent + '%'});
+  }, 
+
+  onUploadError: function(i, error) {
+    hide(box.progress);
+    var err = ge('profile_new_photo_error');
+    error = error.split('|');
+    var code = error[0], error_info = error[1];
+    if (code >= 300 && code < 400) {
+      var limit = error_info.split(',');
+      switch (code) {
+        case '300': err.innerHTML = 'Слишком маленькая фотография (минимальный размер – {limit} пикселей)'.replace('{limit}', limit[0]+'x'+limit[1]); break;
+        case '301': err.innerHTML = 'Слишком большая фотография.'; break;
+        case '302': err.innerHTML = 'Фотография в неподходящем формате.'; break;
+        default: err.innerHTML = 'Возникла ошибка, код ошибки: {code}'.replace('{code}', intval(code));
+      }
+    } else {
+      err.innerHTML = 'Возникла ошибка, код ошибки: {code}'.replace('{code}', intval(code));
+    }
+    show(err);
+    Upload.embed(i);
+  },
+
+  clear: 1,
+  type: 'photo',
+  noFlash: 1,
+  max_attempts: 3,
+  server: <?=$uplink['server']?>,
+  error: 1,
+  error_hash: '9173c463e09a646fbb4872ba8da4aa9b',
+  custom_hash: 'profile_photo',
+  check_hash: '9a646fbb4872ba8da4a',
+  check_rhash: '9a646fbb4872ba8da4aa',
+  check_shash: '9a646fbb4872ba8da4aa',
+  dropbox: 'profile_dropbox'
+});

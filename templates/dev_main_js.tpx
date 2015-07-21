@@ -1,0 +1,5 @@
+<?php
+global $act;
+if($act=='w_auth'){
+?>
+<? } ?>

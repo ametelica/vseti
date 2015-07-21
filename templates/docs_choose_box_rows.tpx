@@ -1,0 +1,31 @@
+<?php
+global $docs, $datetime;
+if($docs['total'] > 0) {
+foreach($docs['data'] as $doc) { 
+	$info = array(
+		'ext' => $doc->mimetype,
+		'size' => $doc->size,
+		'href' => '',
+		'thumb' =>  '',
+		'thumb_s' => '',
+		'title' => '<span class="fl_l">' . strcut($doc->title, 60) . '<span>&nbsp;<span class="fl_r">' . $doc->text_size() . '</span>'
+	);
+
+
+?><div class="docs_choose_row clear" onclick="return cur.selectDoc(<?=$doc->owner_id?>, <?=$doc->id?>, <?=str_replace('"','&quot;',jenc($info))?>, event);" onmouseover="addClass(this, 'docs_choose_over_row');" onmouseout="removeClass(this, 'docs_choose_over_row');">
+<div class="docs_choose_icon fl_l">
+  <a class="docs_item_icon" title="<?=$doc->mimetype?>" ext="<?=$doc->mimetype?>" href="/doc<?=$doc->owner_id?>_<?=$doc->id?>" onmouseover="cur.showFileTT(this)" onmouseout="this.docLoading = false;" target="_blank"></a>
+</div>
+<div class="docs_choose_info fl_l">
+  <span class="docs_choose_attach fl_r">Прикрепить</span>
+  <a class="docs_choose_link" href="/doc<?=$doc->owner_id?>_<?=$doc->id?>" target="_blank"><?=strcut($doc->title, 60)?></a><br/>
+  <span class="docs_choose_date">Добавлено <?=$datetime->sdate($doc->time)?></span>
+</div>
+</div>
+<? } 
+	
+} else {
+	echo '<div class="docs_choose_empty"> Не загружено ни одного документа </div>';
+}
+	
+?>

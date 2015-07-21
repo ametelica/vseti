@@ -1,0 +1,28 @@
+<div class="people_row">
+<?
+$i = 0;
+$max = isset($var['max'])?$var['max']:6;
+$lnk_add = isset($var['lnk'])?$var['lnk']:'';
+
+foreach($var['users'] as $u) { 
+    $u = pdata($u);
+    if(!$u->user_exists) continue;
+?>
+<div class="fl_l people_cell">
+    <a class="ava" href="<?=$u->lnk.$lnk_add?>" onclick="return nav.go(this, event)">
+        <img width="50" height="50" src="<?=$u->user_photo('', 'b')?>" />
+    </a>
+    <div class="name_field">
+        <a href="<?=$u->lnk.$lnk_add?>" onclick="return nav.go(this, event)">
+            <?=$u->user_info['name']?><br>
+            <small><?=$u->user_info['lastname']?></small>
+        </a>
+    </div>
+</div>
+<? 
+    $i++;
+    if($i%3==0 and $i<$max) echo '</div><div class="people_row">';
+    if($i>=$max) break;
+}
+?>
+</div>

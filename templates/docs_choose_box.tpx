@@ -1,0 +1,48 @@
+<?php
+	global $docs;
+?>
+<div class="fl_r choose_close">
+  <span id="audio_choose_right_link">
+    <a href="" class="docs_choose_act" onclick="cur.docsChooseSwitch(this); return false;">К документам сообщества</a>
+    <span class="divider">|</span>
+  </span>
+  <a class="choose_close_link" onclick="curBox().hide();">Закрыть</a>
+</div>
+<div class="docs_choose_header">
+  <span class="docs_choose_header_title inl_bl">
+    Прикрепление документа
+  </span>
+  <a onclick="cur.toggleDocUpload(this);" class="docs_title_search inl_bl">Поиск по документам</a>
+</div>
+
+<div id="docs_choose_upload_area_wrap">
+  <div id="docs_choose_upload_area_cont">
+    <div id="docs_choose_upl">
+      <a id="docs_choose_upload_area" title="Отпустите, чтобы начать загрузку." onclick="return cur.uploadDocs(this, event);">
+        <div class="docs_choose_upload_area_upload">
+          <span id="docs_choose_upload_area_label">
+            Загрузить новый файл
+          </span>
+        </div>
+        <div class="docs_choose_upload_area_drop">
+          Отпустите, чтобы начать загрузку.
+        </div>
+      </a>
+      <input id="choose_photo_upload" class="file" type="file" size="28" onchange="Upload.onFileApiSend(cur.uplId, this.files);" multiple="true" name="photo" style="visibility: hidden; position: absolute;"/>
+    </div>
+    <div id="docs_attach_search_cont" class="choose_search_cont" style="display: none;">
+      <div id="docs_attach_search" class="search_bar clear_fix">
+        <div class="fl_l">
+          <input onpaste="cur.updateChooseList(event, this)" onkeydown="if (event.keyCode == KEY.ESC && this.value) {cur.chooseClearSearch();return cancelEvent(event)}" onkeyup="cur.updateChooseList(event, this)" id="choose_docs_query" type="text" class="s_search text" value="" placeholder="Поиск по документам">
+        </div>
+        <div class="progress docs_choose_progress"></div>
+        <div id="choose_query_reset" class="docs_reset fl_l" onmouseover="if (isVisible(this)) animate(this, {opacity: 1}, 100)" onmouseout="if (isVisible(this)) animate(this, {opacity: 0.6}, 100)" onclick="cur.chooseClearSearch(this, event)"></div>
+      </div>
+    </div>
+    <div class="top_shadow"></div>
+  </div>
+</div>
+<div id="docs_choose_rows" class="docs_choose_rows"><?=tpx('docs_choose_box_rows')?></div>
+<a onclick="cur.docsChooseMore();" id="docs_choose_more" style="<? if($docs['total'] < 20) { ?>display: none;<? } ?>">
+Показать все <?=$docs['total']?> документов
+</a>

@@ -1,0 +1,117 @@
+<?php
+	global $path_css, $spage; 
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+<script type="text/javascript">
+<!--
+
+//window.checkbrowser = true;
+if (window.checkbrowser) {
+  try {
+    if (new XMLHttpRequest()) {
+      location.replace('/');
+    }
+  } catch(e) {
+    try {
+      if (new ActiveXObject('Msxml2.XMLHTTP')) {
+        location.replace('/');
+      }
+    } catch(e) {}
+    try {
+      if (new ActiveXObject('Microsoft.XMLHTTP')) {
+        location.replace('/');
+      }
+    } catch(e) {}
+  }
+}
+-->
+</script>
+
+<meta http-equiv="content-type" content="text/html; charset=windows-1251" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+<title><?=$spage->title?></title>
+
+<link rel="stylesheet" type="text/css" href="<?=$path_css?>/al/common.css" />
+
+<style>
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #F7F7F7;
+  padding: 0px;
+  margin: 0px;
+}
+#bad_browser {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  text-align: center;
+  width: 530px;
+  margin: -200px 0px 0px -250px;
+  background: #FFF;
+  line-height: 250%;
+  border-bottom: 1px solid #E4E4E4;
+}
+#content {
+  border: solid #67AE08;
+  border-width: 0px 1px 1px;
+  padding: 20px;
+}
+#head {
+  width: 100%;
+}
+#head tr, .head td {
+  padding: 0px;
+  margin: 0px;
+}
+#head1 {
+  width: 145px;
+  height: 40px;
+  background: #67AE08 url(/images/badhead.gif) no-repeat 0px 0px;
+}
+#head2 {
+  width: 100%;
+  height: 40px;
+  background: #67AE08 url(/images/badhead.gif) repeat-x 0px -40px;
+}
+#head3 {
+  width: 5px;
+  height: 40px;
+  background: #67AE08 url(/images/badhead.gif) no-repeat -145px 0px;
+}
+#browsers {
+  width: 400px;
+  height: 115px;
+  margin: 10px auto 0px;
+}
+#browsers a {
+  float: left;
+  width: 100px;
+  height: 20px;
+  padding: 80px 0px 7px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="bad_browser">
+  <table cellspacing="0" cellpadding="0" id="head"><tr><td><div id="head1"></div></td><td id="head2"></td><td><div id="head3"></div></td></tr></table>
+  <div id="content">
+    Для работы с сайтом необходима поддержка Javascript и Cookies.
+    <div>
+      Чтобы использовать все возможности сайта, загрузите и установите один из этих браузеров:<br>
+
+      <div id="browsers"><a href="http://www.mozilla-europe.org/" target="_blank" style="background: url(/images/firefox.gif) no-repeat 50% 7px;">Mozilla Firefox</a><a href="http://www.opera.com/" target="_blank" style="background: url(/images/opera.gif) no-repeat 50% 7px;">Opera</a><a href="http://www.google.com/chrome/" target="_blank" style="background: url(/images/chrome.gif) no-repeat 50% 6px;">Google Chrome</a><a href="http://www.apple.com/safari/" target="_blank" style="background: url(/images/safari.gif) no-repeat 50% 0px;">Safari</a></div>
+    </div>
+    
+  </div>
+</div>
+</body>

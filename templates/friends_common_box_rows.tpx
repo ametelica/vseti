@@ -1,0 +1,12 @@
+<?
+foreach($var['friends'] as $fid) {
+	$friend = pdata($fid);
+?>
+<div class="common_row">
+<a href="<?=$friend->lnk?>" class="photo"><img width="50" height="50" src="<?=$friend->photo()?>" /></a>
+<div class="common_info">
+  <a href="<?=$friend->lnk?>"><?=$friend->title?></a><br />
+  <!--<b>МГУЛ</b>-->
+</div>
+<br class="clear"/>
+</div><? } ?>

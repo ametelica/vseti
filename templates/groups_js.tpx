@@ -1,0 +1,254 @@
+<?php
+global $user, $invite_array, $admin_array, $group_array, $langpack;
+?>showBackLink('<?=$user->lnk?>', '<?=$user->title?>');
+cur.lang = extend(cur.lang, {
+  groups_back_to_list          : 'Список групп',
+  groups_group_found           :  ["","Найдено %s сообщество","Найдены %s сообщества","Найдены %s сообществ"],
+  groups_numberN               :  ["","Вы состоите в %s сообществе","Вы состоите в %s сообществах","Вы состоите в %s сообществах"],
+  groups_N_people_like_it      :  ["","%s подписчик","%s подписчика","%s подписчиков"],
+  groups_num_particip          :  ["","%s участник","%s участника","%s участников"],
+  groups_friend_cnt_in_group   :  ["","В сообществе {link}%s Ваш друг{\/link}.","В сообществе {link}%s Ваших друга{\/link}.","В сообществе {link}%s Ваших друзей{\/link}."],
+  groups_group_enter_message   : 'Приглашение принято.',
+  groups_group_deny_message    : 'Приглашение отклонено.',
+  groups_ajax_inv_declined_spam: 'Приглашение отклонено и помечено как спам.',
+  groups_group_left            : 'Вы отклонили приглашение',
+  groups_sure_reject_all       : 'Вы уверены, что хотите отклонить все приглашения?<br>Это действие нельзя будет отменить.',
+  groups_members_application_decline: 'Отклонить заявку',
+  groups_event_go_btn          : 'Точно пойду',
+  groups_event_maybe_btn       : 'Возможно пойду',
+  groups_event_cant_btn        : 'Не могу пойти',
+  groups_unsure_event          : 'Вы не уверены, что пойдете.',
+  groups_event_left            : 'Вы не собираетесь приходить.',
+  groups_you_in_event          : 'Вы пойдете.',
+  groups_event_change          : 'Изменить решение',
+  groups_was_on_event          : 'Вы посетили встречу.',
+  groups_remove_event          : 'Убрать из списка',
+  groups_return_event          : 'Вернуть в список',
+  groups_old_events            : 'Архивные встречи',
+  public_you_unsubscribed      : 'Вы отписались от новостей.',
+  groups_block_clubinv         : 'Запретить приглашения из сообщества {club}'
+});
+
+GroupsList.init({
+  tab: 'groups',
+  mid: <?=$user->id?>,
+  summaries: {"groups":"Вы состоите в <?=$group_array['total']?> <?=$langpack->dln($group_array['total'], array('сообществе', 'сообществах', 'сообществах'))?>","admin":"Вы управляете <?=$admin_array['total']?> <?=$langpack->dln($admin_array['total'], array('сообществом', 'сообществами', 'сообществами'))?><!--<span class=\"divider\">|<\/span><span><a href=\"\/feed?section=groups\" onclick=\"return nav.go(this, event)\">Обновления<\/a>--><\/span>","inv":["","Вас приглашают в %s сообщество","Вас приглашают в %s сообщества","Вас приглашают в %s сообществ"],"invEmpty":"Вы не приглашены ни в одну группу."},
+  invShown: <?=intval($invite_array['total'] > 4 ? 4 : $invite_array['total'])?>,
+  invCount: <?=$invite_array['total']?>,
+
+  genEmpty: function(q) {
+    var result = '';
+    if (q) {
+      var lnk = '<a href="/search?c[section]=groups&c[q]=' + encodeURIComponent(q) + '" onclick="return nav.go(this, event)">';
+      result = 'Среди Ваших сообществ совпадений не найдено.<br><br>';
+      result += 'Вы можете попробовать найти {term} в {link}поиске{/link}'.replace('{link}', lnk).replace('{/link}', '</a>').replace('{term}', lnk + clean(q) + '</a>');
+    } else if (cur.scrollList.tab == 'groups') {
+      result = 'Вы пока не состоите ни в одной группе.<br><br>';
+      result += 'Вы можете {link_add}создать группу{/link_add} или воспользоваться {link_search}поиском по группам{/link_search}.'.replace('{link_add}', '<a onclick="GroupsList.createGroup()">').replace('{/link_add}', '</a>').replace('{link_search}', '<a href="/search?c[section]=groups" onclick="return nav.go(this, event)">').replace('{/link_search}', '</a>');
+    } else if (cur.scrollList.tab == 'admin') {
+      result = 'Вы пока не состоите ни в одной группе.';
+    } else { // inv
+      result = 'Вас пока не пригласили ни в одну группу.';
+    }
+    return '<div class="groups_no_list">' + result + '</div>';
+  },
+  genEvent: function(row) {
+    var name = row[0], status = row[1], gid = row[2], href = row[3], thumb = row[4], count = row[5], type = row[6], hash = row[7], friendsCount = row[8], friends = row[9], typeText = row[10], placeText = (row[11] || '').split('<*>')[1];
+    return [
+'<div class="fl_l gle_block" id="gle_block_', gid, '">',
+  '<table cellspacing="0" cellpadding="0" class="gle_table"><tr>',
+    '<td class="gle_td">',
+      '<a href="', href, '" class="gle_thumb"><img src="', thumb, '" class="gle_img" /></a>',
+    '</td>',
+    '<td class="gle_td">',
+      '<div class="gle_rows">',
+        '<div class="gle_row"><a class="gle_name" href="', href, '">', name, '</a></div>',
+        '<div class="gle_row"><span class="gle_date">', typeText, '</span></div>',
+        '<div class="gle_row"><span class="gle_place">', placeText, '</span></div>',
+      '</div>',
+    '</td>',
+  '</tr></table>',
+'</div>'].join('');
+  },
+  genRow: function(row, name) { // [name, gid, href, thumb, count, type, hash, fr_count, friends, dateText, place]
+    var tab = cur.scrollList.tab, gr = (tab == 'groups'), adm = (tab == 'admin');
+    var status = row[1], gid = row[2], href = row[3], thumb = row[4], count = row[5], type = row[6], hash = row[7], friendsCount = row[8], friends = row[9], typeText = row[10];
+    var isEvent = (type >= 10), typeLabel = isEvent ? 'Когда:' : 'Тип:';
+
+    count = getLang((type == 3 || type == -2) ? 'groups_N_people_like_it' : 'groups_num_particip', count, true);
+
+    var text = actions = '';
+    if (<?=$user->id?> == vs.id) {
+      if (!gr && !adm && (status == 0 || status == 4)) {
+        if (intval(friendsCount)) {
+          text = getLang('groups_friend_cnt_in_group', friendsCount) + ' ';
+          text = text.replace('{link}', '<a onclick="showBox(\'al_page.php\', {act: \'a_friends_in_group\', gid: ' + gid + '}, {stat: [\'page.css\'], params: {bodyStyle: \'padding: 0px\'}})">').replace('{/link}', '</a>');
+        }
+        text += friends;
+      }
+      if (isEvent && !adm) {
+        if (status == -3) {
+          text = 'Вы посетили встречу.';
+          actions = '<a onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'join\', true)">Вернуть в список</a>';
+        } else if (status == -2) {
+          text = 'Приглашение отклонено и помечено как спам.';
+        } else if (status < 0) {
+          text = 'Вы не собираетесь приходить.';
+          actions = '<a onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'undecided\')">Изменить решение</a>';
+        } else if (status == 3) {
+          text = 'Вы не уверены, что пойдете.';
+          actions = '<a onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'undecided\')">Изменить решение</a>';
+        } else if (gr && status == 0 || status == 1) {
+          text = 'Вы пойдете.';
+          actions = '<a onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'undecided\')">Изменить решение</a>';
+        } else if (!gr && status == 0 || status == 4) {
+          text += '\
+<div class="group_row_buttons">\
+  <div class="group_row_button button_green fl_l">\
+    <button onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'join\')">Точно пойду</button>\
+  </div>\
+  <div class="group_row_button button_green fl_l">\
+    <button onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'unsure\')">Возможно пойду</button>\
+  </div>\
+  <div class="group_row_button button_cancel fl_l">\
+    <div class="button" onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'decline\')">Не могу пойти</div>\
+  </div>\
+</div>';
+        } else if (gr && status == 5) {
+          text = 'Вы посетили встречу.';
+          actions = '<a onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'decline\', true)">Убрать из списка</a>';
+        }
+      } else if (gr) {
+        if (type == 3) {
+          if (status < 0) {
+            text = 'Вы отписались от новостей.';
+            /* actions = '<a onclick="GroupsList.cancel(this, ' + gid + ', \'' + hash + '\')">Отмена</a>'; */
+						actions = '';
+          } else {
+            text = 'Вы подписаны на новости.';
+            actions = '<a onclick="GroupsList.leave(this, ' + gid + ', \'' + hash + '\', true)">Отписаться</a>';
+          }
+        } else if (status < 0) {
+          text = 'Вы отклонили приглашение';
+          /* actions = '<a onclick="GroupsList.cancel(this, ' + gid + ', \'' + hash + '\')">Отмена</a>'; */
+					actions = '';
+        } else {
+          text = 'Вы состоите в группе.';
+          actions = '<a onclick="GroupsList.leave(this, ' + gid + ', \'' + hash + '\')">Выйти из группы</a>';
+        }
+      } else if (!adm) {
+        if (status == -2) {
+          text = 'Приглашение отклонено и помечено как спам.';
+        } else if (status < 0) {
+          text = 'Приглашение отклонено.';
+          /* actions = '<a onclick="GroupsList.cancel(this, ' + gid + ', \'' + hash + '\')">Отмена</a>'; */
+					actions = '';
+        } else if (status > 0) {
+          text = 'Приглашение принято.';
+          /* actions = '<a onclick="GroupsList.cancel(this, ' + gid + ', \'' + hash + '\')">Отмена</a>'; */ 
+					actions = '';
+        } else {
+          text += '\
+<div class="group_row_buttons">\
+  <div class="group_row_button button_green fl_l">\
+    <button onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\')">Вступить в группу</button>\
+  </div>\
+  <div class="group_row_button button_cancel fl_l">\
+    <div class="button" onclick="GroupsList.leave(this, ' + gid + ', \'' + hash + '\')">Отклонить приглашение</div>\
+  </div>\
+</div>';
+        }
+      }
+    }
+    var feed_act = (row[12]) ? '<a onclick="GroupsList.feedbanGroup(this, ' + gid + ', \'' + hash + '\');">Не скрывать из новостей</a>' : '';
+    return '\
+<div id="gl_' + tab + gid + '" class="group_list_row">\
+  <div class="fl_l group_row_photo">\
+    <a href="' + href + '" onclick="return nav.go(this, event)">\
+      <img class="groups_row_img" src="' + thumb + '" />\
+    </a>\
+  </div>\
+  <div class="group_row_info fl_l">\
+    <div class="group_row_labeled"><a href="' + href + '"><b>' + name + '</b></a></div>\
+    <div class="group_row_labeled">' + (typeText || '') + '</div>\
+    <div class="group_row_labeled">' + count + '</div>\
+    '+feed_act+'\
+  </div>\
+  <br class="clear" />\
+</div>';
+  },
+
+  genInvRow: function(row, name) { // [name, gid, href, thumb, count, type, hash, fr_count, friends, dateText]
+    var tab = cur.scrollList.tab;
+    var status = row[1], gid = row[2], href = row[3], thumb = row[4], count = row[5], type = row[6], hash = row[7], friendsCount = intval(row[8]), friends = row[9], dateText = row[10];
+    var userHref = row[11], userPhoto = row[12], userName = row[13];
+    var isEvent = (type >= 10), typeLabel = isEvent ? 'Когда:' : 'Тип:';
+
+    count = getLang((type == 3 || type == -2) ? 'groups_N_people_like_it' : 'groups_num_particip', count, true);
+
+    var text = actions = '';
+    if (status == 0 || status == 4 || true) {
+      text += friends;
+    }
+    if (isEvent) {
+        actions = '\
+<div class="group_row_buttons">\
+<div class="group_row_button button_green fl_l">\
+  <button onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'join\')">Точно пойду</button>\
+</div>\
+<div class="group_row_button button_green fl_l">\
+  <button onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'unsure\')">Возможно пойду</button>\
+</div>\
+<div class="group_row_button button_cancel fl_l">\
+  <div class="button" onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\', \'decline\')">Не могу пойти</div>\
+</div>\
+</div>';
+    } else {
+        actions = '\
+<div class="group_row_buttons">\
+<div class="group_row_button button_green fl_l">\
+  <button onclick="GroupsList.enter(this, ' + gid + ', \'' + hash + '\')">Вступить в группу</button>\
+</div>\
+<div class="group_row_button button_cancel fl_l">\
+  <div class="button" onclick="GroupsList.leave(this, ' + gid + ', \'' + hash + '\')">Отклонить приглашение</div>\
+</div>\
+</div>';
+    }
+    return '\
+<div id="gl_' + tab + gid + '" class="group_list_row">\
+  <div class="fl_l group_inv_user">\
+    <a href="' + userHref + '"><img width="50" height="50" src="' + userPhoto + '"/></a>\
+  </div>\
+  <div class="groups_inv_info fl_l">\
+    <b>' + userName + '</b><span class="groups_inv_info_l">приглашает Вас вступить в сообщество</span>\
+    <div class="groups_inv_cont">\
+      <div class="fl_l group_row_photo">\
+        <a href="' + href + '"><img width="100" class="groups_row_img" src="' + thumb + '"/></a>\
+      </div>\
+      <div class="fl_l groups_row_inv_info">\
+        <a href="' + href + '"><b>' + name + '</b></a>\
+        <div class="group_row_status group_inv_status">' + text + '</div><div class="group_row_actions group_inv_actions">' + actions + '</div>\
+      </div>\
+      <br class="clear" />\
+    </div>\
+  </div>\
+  <br class="clear" />\
+</div>';
+  },
+  genGroupsSummary: function(count) {
+    if (!count) return 'Вы не состоите ни в одной группе.';
+    return getLang('groups_numberN', count);
+  },
+  genSummary: function(count) {
+    if (!count) return 'Ни одной группы не найдено.';
+    return getLang('groups_group_found', count);
+  }
+});
+
+var listParams = {
+  filter: function(search, row) {
+    if (!search[0]) return true;
+    if (!row[3]) row[3] = indexer.prepare(row[1]);
+    return row[3].indexOf("	"+search[0]) != -1;
+  }
+};

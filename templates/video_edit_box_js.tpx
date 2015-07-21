@@ -1,0 +1,98 @@
+<?php 
+global $video, $user, $owner, $video_albums;
+
+$albums = array(array(0, "Без альбома"));
+
+if($video_albums['total'] > 0) {
+	foreach($video_albums['data'] as $v) {
+		$albums[] = array($v[0], $v[1]);
+	}
+}
+
+$albums[] = array(-1,"Создать новый альбом");
+
+if($owner->oid > 0) {
+	$privacy = $owner->privacy4js();
+	$privacy['video' . $video->id] = privacy4js($video->privacy);
+	$privacy['videocomm' . $video->id] = privacy4js($video->privacy_comm);
+} else {
+	$privacy = false;
+}
+?>var moveToAlbum = false;
+var doSave = function() {
+  var albumId = cur.mvMoveToAlbum ? cur.mvMoveToAlbum.val() : '';
+  var params = {
+    act: 'do_edit_box',
+    title: ge('mv_title_text').value,
+    desc: ge('mv_desc_text').value,
+    vid: <?=$video->id?>,
+    oid: <?=$video->oid?>,
+    hash: '<?=hash_get($video->id . $user->id, 12, 'editv')?>',
+    album_id: albumId
+  };
+  if (albumId == -1) {
+    params['album_title'] = val('mv_create_album');
+    if (!params['album_title']) {
+      return notaBene('mv_create_album');
+    }
+  }
+  if (params.oid > 0) {
+    params['privacy_video'] = Privacy.getValue('video<?=$video->id?>');
+    params['privacy_videocomm'] = Privacy.getValue('videocomm<?=$video->id?>');
+  } else {
+    params['privacy_video'] = isChecked('video_edit_privacy');
+  }
+  if (ge('video_edit_repeat')) {
+    params['repeat'] = isChecked('video_edit_repeat');
+    var showParams = {act: 'show', autoplay: 1, list: '', module: 'video', video: '<?=$video->uid?>'},
+        q = '/al_video.php#' + ajx2q(showParams);
+    delete window.ajaxCache[q];
+  }
+  ajax.post('al_video.php', params, {
+    onDone: function(title, desc, sDesc, newAlbums) {
+      var videoRow = ge('video_row<?=$video->uid?>');
+      if (videoRow) {
+        if (params['privacy_video'] != '0' && params['privacy_video']) {
+          title += '<span class="video_is_private" onmouseover="return Video.privateTooltip(this);" onclick="return Video.privateClick(this, event);"></span>';
+        }
+        (geByClass('video_raw_info_name', videoRow)[0] || {}).innerHTML = title;
+      }
+      box.hide();
+
+      if (newAlbums) {
+        Video.updateAlbums(newAlbums);
+      }
+      Video.updateVideoAlbum(<?=$video->id?>, albumId);
+    },
+    showProgress: box.showProgress,
+    hideProgress: box.hideProgress
+  })
+}
+
+cur.privacy = <?=jenc($privacy)?>;
+
+if (ge('mv_edit_album')) {
+  var albums = <?=jenc($albums)?>;
+  cur.mvMoveToAlbum = new Dropdown(ge('mv_edit_album'), albums, {
+    width: 250,
+    selectedItems: [<?=$video->album_id?>],
+    autocomplete: (albums.length > 7),
+    big: 1,
+    onChange: function(val) {
+      if (val == -1) {
+        slideDown('mv_edit_create_album', 200, function() {
+          placeholderSetup('mv_create_album', {back: true});
+          ge('mv_create_album').focus();
+        });
+      } else {
+        slideUp('mv_edit_create_album', 200);
+      }
+    }
+  });
+} else {
+  cur.mvMoveToAlbum = false;
+}
+
+box.setOptions({bodyStyle: 'padding: 20px;', width: 422});
+box.removeButtons();
+box.addButton('Сохранить изменения', doSave);

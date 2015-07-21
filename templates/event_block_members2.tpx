@@ -1,0 +1,20 @@
+<?php
+global $group, $members2, $langpack, $total_members2, $new_design;
+if($total_members2>0){
+?>
+<div class="module clear people_module" id="group_followers">
+    <a href="/gsearch.php?from=people&basic=1&c[group]=<?=$group->id?>&c[member_status]=2" class="module_header">
+    <div class="header_top clear_fix">
+        <span class="right_link fl_r"><? if($new_design) echo nf($total_members2); ?></span>
+        Возможные участники
+    </div>
+    <div class="p_header_bottom">
+        <span class="fl_r"></span>
+        <?=$total_members2?> <?=$langpack->humans($total_members2)?>
+    </div>
+    </a>
+    <div class="module_body clear_fix">
+        <?=tpx('people_rows',array('users'=>$members2))?>
+    </div>
+</div>
+<? } ?>

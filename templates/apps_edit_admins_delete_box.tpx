@@ -1,0 +1,3 @@
+<?php
+global $new_admin,$app,$hash,$user;
+?>Удаление администратора<!>Вы уверены, что хотите удалить <a class="mem_link" href="<?=$new_admin->lnk?>"><?=$new_admin->user_info['user_name_gen']?></a> из списка администраторов приложения <a href="<?=$app->lnk?>"><?=$app->app_info['app_title']?></a>?<!>box.removeButtons().addButton('Закрыть', box.hide, 'no').addButton('Удалить', function() {AppsEdit.saveAdmin('delete_admin', <?=$app->app_info['app_id']?>, <?=$new_admin->user_info['user_id']?>, '<?=$hash->get_hash($user->user_info['user_id'].$new_admin->user_info['user_id'].$app->app_info['app_id'],16,'apa')?>', box);});

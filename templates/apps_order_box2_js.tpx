@@ -1,0 +1,46 @@
+<?php
+	global $order_response, $langpack, $user;
+?>
+extend(cur, {
+  isPaymentAttemted: true,
+  paymentsShowBoxError: function(msg) {
+    if (msg) {
+      ge('payments_box_error').innerHTML = msg;
+      show('payments_box_error');
+    }
+    hide('payments_box_progress');
+    show('payments_getvotes_wrap');
+    unlockButton('payments_getvotes_submit');
+  },
+  paymentsShowProgress: function() {
+    ge('payments_box_progress_msg_wrap').innerHTML = '<span id="payments_box_progress_msg">Ожидаем завершения платежа..</span>';
+    hide('payments_box_error', 'payments_getvotes_wrap', 'payments_getvotes_buttons');
+    show('payments_box_progress');
+  },
+});
+
+addClass(boxLayerBG, 'bg_medium');
+box.setOptions({title: false, width: 520, bodyStyle: 'padding: 0;', hideButtons: true, onClean: function() {
+  removeClass(boxLayerBG, 'bg_medium');
+  if (cur.onAppOrderCancel && !cur.paymentsCheckOrderCnt) {
+    cur.onAppOrderCancel();
+  }
+}});
+box.changed = true;
+hide('payments_about_votes');
+
+<? if($user->credits >= $order_response['price']) { ?>
+
+var btn = ge('payments_getvotes_submit');
+btn.innerHTML = 'Оплатить <b><?=$order_response['price']?> зайчик<?=$langpack->dln($order_response['price'],'file')?></b>';
+btn.onclick = function() { cur.paymentsProcessOrder(); }
+btn.parentNode.style.marginLeft = '0px';
+show(ge('payments_getvotes_submit').parentNode);
+
+var btnNo = ge('payments_getvotes_back');
+btnNo.innerHTML = '';
+btnNo.appendChild(ce('div', {className: 'button', innerHTML: 'Вернуться в приложение', onclick: box.hide}));
+<? } ?>
+show('payments_getvotes_buttons');
+
+<?=tpx('apps_order_common_js')?>

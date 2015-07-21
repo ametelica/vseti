@@ -1,0 +1,99 @@
+<?php
+global $videolist,$datetime,$langpack,$diary_list,$smenu,$xhost,$act, $new_design;
+
+if($new_design) {
+echo tpx('header_design');
+?>	
+<div id="wrap2">
+  <div id="wrap1">
+   <div id="content">
+    <div id="main">
+    
+    <div class="col_left dgray">
+    <h2>Дневник героя</h2>
+       
+    Социальный проект для целеустремлённых людей на базе видеоблогов<br />
+    в процессе наполнения... 
+    </div>
+   <div class="col_right clear_fix">
+	<div class="section">    
+	
+<h2>Видеоблоги</h2>
+
+<? 
+	echo tpx('list_video',array('video'=>$videolist, 'width' => 175));
+?>
+</div>
+	</div>
+   
+
+   </div>
+  </div>
+ </div>
+</div>
+
+
+
+
+<?
+} else {
+?>
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content" style="background: #bad8f2 url(<?=$xhost?>images/start_bg.jpg) no-repeat;">
+    <div id="main">
+    
+    <div id="start_menu"><?=start_menu($smenu, $act)?></div> 
+    <div class="rightColumn2">
+    <div class="pb bc3">
+       
+       <div class="pbt">
+         <div><h2>Дневник героя</h2></div>
+       </div>
+
+       <div class="c">
+       <div class="bp5">
+       
+       Социальный проект для целеустремлённых людей на базе видеоблогов<br />
+       <a href="/start.php?act=diary" onclick="return nav.go(this, event)">Перейти к дневникам &raquo;</a>
+       <br />
+       <br />
+       
+       <? 
+	echo tpx('list_video',array('video'=>$diary_list));
+?>       
+       <!-- <br /><a href="/gsearch.php?section=video&c[distinct]=1">Полный список &raquo;</a> -->
+       
+       <br class="clear">
+     </div>
+    </div>
+    </div>
+
+
+   </div><!-- /rightColumn2 -->
+   
+   
+   <div class="leftColumn2">
+    <div class="pb bc6">
+	        <div class="pbt">
+	         <div><h2>Видеоблоги</h2></div>
+	       </div>
+	       <div class="c">
+	       <div class="whenOpen">
+	   
+	   <div class="flexBox clearFix aPad">
+<? 
+	echo tpx('list_videoblog',array('video'=>$videolist));
+?>
+	   </div>  
+	  </div><!-- whenOpen -->
+    </div>
+    </div>
+   
+   </div><!-- /leftColumn2 -->
+   <br style="clear: both">
+   </div>
+  </div>
+ </div>
+</div>
+<? } ?>

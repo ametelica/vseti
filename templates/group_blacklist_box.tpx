@@ -1,0 +1,43 @@
+<?php
+global $block_user, $block_info;
+
+//dmp($block_info);
+
+?><div class="dark_box_cont">
+  <div class="group_blb_user clear_fix">
+    <a class="group_blb_user_thumb fl_l" href="<?=$block_user->lnk?>">
+      <img class="group_blb_user_img" src="<?=$block_user->photo('b')?>" />
+    </a>
+    <div class="group_blb_user_info fl_l">
+      <div class="group_blb_user_row"><a class="group_blb_user_name" href="<?=$block_user->lnk?>"><?=$block_user->title?></a></div>
+      <!--<div class="group_blb_user_row">Не состоит в сообществе</div>-->
+    </div>
+  </div>
+  <div class="group_blb_block group_blb_block_type fl_l">
+    <div class="group_blb_header">Срок блокировки</div>
+    <div class="group_blb_dd"><input type="hidden" id="group_blb_type" name="group_blb_type" /></div>
+  </div>
+  <div class="group_blb_block fl_l">
+    <div class="group_blb_header">Причина</div>
+    <div class="group_blb_dd"><input type="hidden" id="group_blb_reason" name="group_blb_reason" /></div>
+  </div>
+  <div class="group_blb_wideblock clear">
+    <div class="group_blb_header">Комментарий</div>
+    <input type="text" class="text" id="group_blb_comment" placeholder="Здесь вы можете указать короткий комментарий" value="<?=$block_info['bl_comment']?>" onkeydown="if (event.keyCode == 10 || event.keyCode == 13) cur.blbSave();" onkeyup="checkTextLength(230, this, 'group_blb_warn', 1)" />
+    <div id="group_blb_warn"></div>
+    <div class="checkbox <? if($block_info['bl_show_comment']) { ?>on<? } ?>" id="group_blb_comment_vis" onclick="checkbox(this)">
+      <div></div>Показывать этот комментарий заблокированному пользователю
+    </div>
+  </div>
+  <div class="group_blb_buttons">
+    <div class="button_green fl_l">
+      <button id="group_blb_save" onclick="cur.blbSave()"><? if(empty($block_info['bl_time'])) { ?>Добавить в черный список<? } else { ?>Сохранить<? } ?></button>
+    </div>
+    <div class="button_cancel fl_l" id="group_blb_cancel">
+      <div class="button" onclick="curBox().hide()">Отмена</div>
+    </div>
+    <div class="button_cancel fl_r" <? if(empty($block_info['bl_time'])) { ?>style="display: none"<? } ?>>
+      <div class="button" onclick="cur.blbRemove(this)">Разблокировать</div>
+    </div>
+  </div>
+</div>

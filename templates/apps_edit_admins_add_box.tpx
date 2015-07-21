@@ -1,0 +1,11 @@
+<?php
+global $new_admin,$app,$hash,$user;
+?>
+Добавление администратора<!><div class="clear_fix">
+  <div class="app_admin_image fl_l">
+    <a href="<?=$new_admin->lnk?>" onclick="return nav.go(this);"><img src="<?=$new_admin->user_photo('','b')?>"/></a>
+  </div>
+  <div class="app_add_admin_text fl_l">
+    Вы действительно хотите назначить <a class="mem_link" href="<?=$new_admin->lnk?>"><?=$new_admin->user_info['user_name_gen']?></a> администратором приложения <a href="<?=$app->lnk?>"><?=$app->app_info['app_title']?></a>?
+  </div>
+</div><!>box.removeButtons().addButton('Закрыть', box.hide, 'no').addButton('Назначить', function() {AppsEdit.saveAdmin('add_admin', <?=$app->app_info['app_id']?>, <?=$new_admin->user_info['user_id']?>, '<?=$hash->get_hash($user->user_info['user_id'].$new_admin->user_info['user_id'].$app->app_info['app_id'],16,'apa')?>', box);});

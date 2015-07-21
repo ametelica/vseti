@@ -1,0 +1,10 @@
+<?php
+	//dmp($var);
+	$img = 'http://maps.googleapis.com/maps/api/staticmap?center='.$var['lat'].','.$var['lng'].'&zoom=11&size=320x270&sensor=false&language=ru';
+?>
+<div class="media_desc">
+	<a onclick="return showBox('al_places.php', {act: 'geo_box', lat: <?=$var['lat']?>, long: <?=$var['lng']?>, provider: <?=$var['provider']?>}, {dark: 1});" class="page_media_fullmap_wrap">
+	<div class="page_media_map_point"></div>
+	<img src="<?=$img?>" width="320" height="270" />
+	</a>
+</div>

@@ -1,0 +1,84 @@
+<?php
+global $act, $datetime, $user, $setting, $now, $bgimg;
+
+echo tpx('header_design');
+
+$settings_menu = array(
+		'' => 'Общее',
+		'privacy' => 'Приватность',
+		'add' => 'VIP',
+		'design' => 'Обложка',
+		'mobile' => 'Мобильный',
+		'notify' => 'Оповещения',
+		'blacklist' => 'Чёрный список',
+);
+
+$current_bg = empty($user->usersetting_info['usersetting_bgimg']) ? 0 : (is_numeric($user->usersetting_info['usersetting_bgimg']) ? 1 : 2);
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+      <div class="user_settings">
+        <div class="t_bar tabs clear_fix">
+					<ul id="settings_filters" class="t0">
+						<?
+						foreach ($settings_menu as $k => $v) {
+							echo '<li' . ($act == $k ? ' class="active_link"' : '') . '><a href="settings.php' . (empty($k) ? '' : '?act=' . $k) . '">' . $v . "</a></li>\n";
+						}
+						?>
+					</ul>
+				</div>
+				<div class="settings_content">
+					<h2>Уровень 1</h2>
+					Первый уровень позволяет бесплатно выбирать фоновую картинку из нашей библиотеки. Картинка будет видна на всех страницах сайта, кроме страниц пользователей у которых тоже установлена фоновая картинка.
+					<br /><br />
+
+					<div class="button_green">
+						<button onclick="return Settings.showBgBox();">Выбрать фоновую картинку</button>
+					</div>
+					<? if($current_bg == 1) {?> 
+						<div class="button_gray resetbg" style="margin-left: 10px;">
+						<button onclick="return Settings.resetBg('<?=hash_get($user->id, 18, 'chbgd')?>');">Картинка по умолчанию</button>
+					</div>
+					<? } ?>
+
+					<h2>Уровень 2</h2>
+					Второй уровень позволяет выбирать и закачивать картинку самостоятельно, это открывает широкие возможности для самовыражения. Грамотно подобранный фон отражает вашу индивидуальность и многое говорит о вас посетителям страницы с первых секунд её посещения. Подписка на дизайн второго уровня стоит <a href="/payments.php">2 зайчика</a> в месяц.
+
+					<?
+					$design_text = $design_button = '';
+
+					if ($user->usersetting_info['usersetting_design_to'] < 0) {
+						$design_text = 'Настройки дизайна действуют постоянно';
+					} else {
+						if ($user->usersetting_info['usersetting_design_to'] > $now) {
+							$design_text = 'Настройки будут действовать до ' . $datetime->cdate($setting['setting_dateformat'], $user->usersetting_info['usersetting_design_to']);
+							$design_button = 'Продлить подписку на месяц';
+						} else {
+							$design_button = 'Включить настройки дизайна';
+						}
+					}
+
+					if ($design_text != '') {
+						echo '<br /><br /><strong>' . $design_text . '</strong>';
+					}
+
+					if ($design_button != '') {
+						echo '<br /><br /><div class="button_green" style="margin-left: 140px;"><button onclick="' . ($user->credits < 2 ? "if(confirm('У Вас нет 2 зайчика на балансе. Хотите приобрести?')) window.location = '/payments.php';" : "window.location = '/settings.php?act=design_on&hash=" . hash_get($user->id, 18, 'setd') . "';") . ' return false;">' . $design_button . '</button></div>';
+					}
+					
+					if($user->usersetting_info['usersetting_design_to'] > $now or $user->usersetting_info['usersetting_design_to'] < 0) {
+					?>
+					<div class="button_green" style="margin-left: 10px;"><button onclick="Settings.newBackground(); return false;">Закачать фоновое изображение</button></div>
+					<? 
+						if($current_bg == 2) { ?>
+							<div class="button_gray resetbg" style="margin-left: 10px;">
+						<button onclick="return Settings.resetBg('<?=hash_get($user->id, 18, 'chbgd')?>');">Картинка по умолчанию</button>
+					</div>
+						<?}
+					} ?>
+				</div>
+      </div>
+    </div>
+  </div>
+</div>

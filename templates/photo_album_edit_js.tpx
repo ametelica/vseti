@@ -1,0 +1,125 @@
+<?php
+global $owner, $vs_album, $vs_albums, $photos_on_page, $photos_list, $user;
+
+if($owner->oid > 0) {
+	$privacy = $owner->privacy4js();
+	$privacy['album' . $vs_album->id] = privacy4js($vs_album->privacy);
+	$privacy['albumcomm' . $vs_album->id] = privacy4js($vs_album->privacy_comm);
+} else {
+	$privacy = false;
+}
+
+$extend = array(
+	'privacy' => $privacy,
+	'album' => $vs_album->uid,
+	'albumhash' => hash_get($user->id . $vs_album->id, 16, 'aedit')
+);
+
+$albums = array(
+		array(0, " - Альбом фотографии - ")
+);
+
+$all_albums = $vs_albums->get_list();
+foreach($all_albums['data'] as $a) {
+	if($a->id == $vs_album->id) continue;
+	$albums[] = array(intval($a->id), $a->title);
+}
+
+$photos_asign = array(
+		'photos' => $photos_list['total'] > $photos_on_page ? array_slice($photos_list['data'], $photos_on_page) : array(),
+		'from' => 'album' . $vs_album->uid
+);
+
+?>
+showBackLink('<?=$owner->lnk?>', '<?=$owner->title?>');
+extend(cur, <?=jenc($extend)?>);
+cur.lang = extend(cur.lang || {}, {
+  photos_deleting_album: 'Удаление альбома',
+  photos_sure_del_album: 'Вы уверены, что хотите удалить альбом?'
+});
+autosizeSetup('album_description', {minHeight: 70});
+
+
+<? if($photos_list['total'] > 0) { ?>
+extend(cur, {
+  album: '<?=$vs_album->uid?>',
+  offset: <?=$photos_on_page?>,
+  count: <?=$photos_list['total']?>,
+  moreFrom: 'album<?=$vs_album->uid?>',
+  onPrivacyChanged: photos.privacy,
+  moreOpts: {act: 'edit'}
+});
+var albums = <?=jenc($albums)?>;
+if (albums && albums.length > 1) {
+  cur.movedd = new Dropdown(ge('photos_move_dd'), albums, {
+    width: 200,
+    multiselect: false,
+    autocomplete: (albums.length > 7),
+    onChange: photos.movePhoto
+  });
+  cur.moveddc = ge('photos_movedd_container').firstChild;
+
+  if (albums.length < 15) {
+    stManager.add(['privacy.css', 'privacy.js']);
+    cur.privacyPhotoMove = true;
+    var albumsArr = {};
+    for (var i in albums) {
+      if (albums[i][0]) {
+        albumsArr[albums[i][0]] = albums[i][1];
+      }
+    }
+    cur.privacy = extend(cur.privacy || {}, {
+      'photos_move': [cur.album.split('_')[1], 1],
+      'photos_move_types': albumsArr
+    });
+  }
+}
+
+cur.lang = extend(cur.lang || {}, {
+  photos_privacy_description: 'Описание'
+});
+
+if (vs.version) {
+  addEvent(window, 'load', photos.initScroll);
+} else {
+  photos.initScroll();
+}
+var preload = <?=jenc(array($photos_on_page * 2, tpx('photo_album_edit_rows', $photos_asign)))?>;
+each(geByTag('textarea', ge('photos_container')), function() {
+  var txt = this;
+  autosizeSetup(txt, {minHeight: 40, maxHeight: 150, onResize: function() {
+    if (ge('photos_container').sorter) {
+      sorter.update(txt.parentNode.parentNode.parentNode);
+    }
+  }});
+});
+
+ajax.preload('album<?=$vs_album->uid?>', {act: 'edit', offset: cur.offset, part: 1}, preload);
+cur.destroy.push(photos.hideMove);
+cur.loadedImages = 0;
+cur.deleteAllToggle = cur.cancelDeleteAllToggle = function(el) {
+  if (ge('photos_container').sorter) {
+    sorter.update(el.parentNode);
+  }
+};
+cur.checkImageLoaded = function(img) {
+  if (!img.complete) return false;
+  if (typeof img.naturalWidth != "undefined" && img.naturalWidth == 0) {
+    return false;
+  }
+  return true;
+};
+cur.imageLoaded = function() {
+  cur.loadedImages = (cur.loadedImages || 0) + 1;
+  if (cur.loadedImages >= cur.count || cur.loadedImages >= cur.offset) {
+    sorter.init('photos_container', {onReorder: photos.reorderPhotos, dh: 0});
+  }
+}
+each(geByClass('photo_edit_img', ge('photos_container')), function() {
+  if (cur.checkImageLoaded(this)) {
+    cur.imageLoaded();
+  } else {
+    this.onload = cur.imageLoaded;
+  }
+});
+<? } ?>

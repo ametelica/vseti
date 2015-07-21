@@ -1,0 +1,13 @@
+<?php
+global $html, $new_design;
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+	<div id="wrap1">
+		<div id="content" class="white_page">
+			<div id="main_vlada">
+				<?= $html ?>
+			</div>
+		</div>
+	</div>
+</div>

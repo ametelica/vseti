@@ -1,0 +1,40 @@
+<?php
+global $owner, $elka_h, $new_design;
+?><div class="module clear" id="elka">
+ <a href="/elka.php?id=<?=$owner->id?>" class="module_header" onclick="return nav.go(this, event)">
+    <div class="header_top clear_fix">
+        <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/elka.php?id=<?=$owner->id?>'"><? if($new_design) { echo $elka_h . ' см.'; } ?></span>
+        Ёлочка 2014
+    </div>
+    </a>
+    <style>
+    .elka_zoom:hover {
+    	text-decoration: none;
+    }
+    .elka_zoom {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		top: 0;
+		right: 0;
+		text-align: center;
+		background: rgba(24, 24, 24, 0.7);
+		color: white;
+		font-size: 31px;
+		padding-top: 90px;
+		cursor: pointer;
+		display: none;
+	}
+	.module_elka {
+		position: relative;
+		text-align: center;
+	}
+	.module_elka:hover .elka_zoom {
+		display: block;
+	}
+    </style>
+    <div class="module_body clear_fix module_elka">
+	<a class="elka_zoom" href="/elka.php?id=<?=$owner->id?>" onclick="return nav.go(this, event)">Посмотреть</a>
+        <img src="/images/elka/thumb_0.png" width="150" height="233" />
+    </div>
+</div>

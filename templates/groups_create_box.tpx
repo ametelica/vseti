@@ -1,0 +1,22 @@
+<?php
+global $group_create;
+?><div class="groups_create_box">
+ <? if($group_create == 0) { ?>
+  <div class="groups_create_header">Название</div>
+  <input type="text" class="text" id="group_create_title" onchange="curBox().changed=true;" />
+  <div style="display: none">
+  <div class="groups_create_header">Вид сообщества</div>
+  <div class="groups_create_section clear_fix">
+    <div class="radiobtn on" id="groups_create_group" onclick="radiobtn(this, 0, 'club_type')"><div></div>Группа</div>
+    <div class="groups_create_about">Подходит для дискуссий и обмена мнениями</div>
+  </div>
+  <div class="groups_create_section clear_fix">
+    <div class="radiobtn" id="groups_create_public" onclick="radiobtn(this, 1, 'club_type')"><div></div>Публичная страница</div>
+    <div class="groups_create_about">Идеально для распространения новостей и информации</div>
+  </div>
+  <div class="groups_create_section clear_fix">
+    <div class="radiobtn" id="groups_create_event" onclick="radiobtn(this, 2, 'club_type')"><div></div>Мероприятие</div>
+    <div class="groups_create_about">Удобно для организации концертов и вечеринок</div>
+  </div>
+</div><? } elseif($group_create == 1) {?>Одна или несколько групп, созданных Вами, были удалены администраций. В связи с этим, создание групп для Вашего профиля недоступно.<? } else {?>Вы уже недавно создавали группу, создать ещё одну группу можно только через 1 час.<?} ?>
+</div>

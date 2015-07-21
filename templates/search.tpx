@@ -1,0 +1,58 @@
+<?php
+global $new_design, $section, $summary, $search;
+
+if($new_design) {
+	echo tpx('header_design');
+}
+
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><div id="search_content">
+  <div id="search_query_wrap" class="wide clear_fix">
+  <div class="clear_fix">
+    <div class="search_isearch fl_l" onclick="event.cancelBubble = true;">
+      <div class="search_input_cont">
+        <input type="text" class="text" id="search_query" placeholder="Начните вводить любое имя, название или слово" autocomplete="off" value="<?=$search?>" />
+      </div>
+    </div>
+    <div id="search_query_reset" class="fl_l" ></div>
+    <div id="search_query_progress" class="fl_l" ></div>
+    <div class="fl_r search_submit">
+      <div class="button_green button_wide"><button id="search_submit" onclick="window.searcher.updResults(true);"/>Поиск</button></div>
+    </div>
+  </div>
+  <div id="search_section_tabs" style="">
+  <div id="search_people_tab" class="search_subtab1 fl_l <? if($section == 'people') { ?>active<? } ?>" onmousedown="return searcher.switchSection('people', {updateStats: cur.section === 'auto', tab: 1}, event);">
+  <div class="search_subtab2">
+    Люди
+  </div>
+</div><div id="search_communities_tab" class="search_subtab1 fl_l <? if($section == 'communities') { ?>active<? } ?>" onmousedown="return searcher.switchSection('communities', {updateStats: cur.section === 'auto', tab: 1}, event);">
+  <div class="search_subtab2">
+    Сообщества
+  </div>
+</div><div id="search_audio_tab" class="search_subtab1 fl_l <? if($section == 'audio') { ?>active<? } ?>" onmousedown="return searcher.switchSection('audio', {updateStats: cur.section === 'auto', tab: 1}, event);">
+  <div class="search_subtab2">
+    Аудиозаписи
+  </div>
+</div><div id="search_video_tab" class="search_subtab1 fl_l <? if($section == 'video') { ?>active<? } ?>" onmousedown="return searcher.switchSection('video', {updateStats: cur.section === 'auto', tab: 1}, event);">
+  <div class="search_subtab2">
+    Видеозаписи
+  </div>
+</div>
+</div>
+  <div id="filters"></div>
+</div>
+<div id="search_auto_rows">
+  
+</div>
+<div class="summary_wrap clear_fix">
+  <div id="summary" class="summary">
+    <?=$summary?>
+  </div>
+</div>
+<div id="results_wrap" class="<? if(empty($search) and 0) { ?>no_query<? } ?>">
+  <?=tpx($var['frame'], $var)?>
+</div>
+</div></div>
+  </div>
+</div>

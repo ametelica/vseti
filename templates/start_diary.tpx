@@ -1,0 +1,91 @@
+<?php
+global $v_hero,$datetime,$langpack,$smenu,$xhost,$act,$header1,$header2,$hero,$videolist,$hero_info;
+?>
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content" style="background: #bad8f2 url(<?=$xhost?>images/start_bg.jpg) no-repeat;">
+    <div id="main">
+  
+    <div id="start_menu"><?=start_menu($smenu, $act)?></div> 
+      
+   <div class="rightColumn2">
+
+    <div class="pb bc3">
+    	<div class="pbt">
+				<div><h2><?=$header2?></h2></div>
+       </div>
+    
+       <div class="c">
+       <div class="bp5">
+<? if(empty($hero)){ ?>       
+       <b>Дневник героя</b> - это социальный проект, который помогает людям добиваться поставленных перед собой целей. Вы можете быть просто зрителем или объявить, чего Вам хочется от жизни и показать всем как этого нужно добиваться. Практика показывает, что для этого нужно быть немножко героем... ;)
+<?
+} else {
+	echo '<img src="'.$hero->user_photo('','b').'" /><br /><br />
+	<a href="'.$hero->lnk.'">'.$hero->user_info['fio'].'</a><br /><br />
+	'.$hero_info['dr_desc'].'<br /><br />
+	Начало: '.$datetime->sdate2($hero_info['dr_begin']).'<br /><br />
+	Обновлено: '.$datetime->sdate2($hero_info['dr_update']).'<br /><br />';
+	
+}
+	echo tpx('list_video',array('video'=>$freshvideo));
+?>       
+       <!-- <br /><a href="/gsearch.php?section=video&c[distinct]=1">Полный список &raquo;</a> -->
+       
+     </div>
+    </div>
+    </div>
+
+
+   </div><!-- /rightColumn2 -->
+   
+   
+   <div class="leftColumn2">
+    <div class="pb bc6">
+	        <div class="pbt">
+	         <div><h2><?=$header1?></h2></div>
+	       </div>
+	       <div class="c">
+	       <div class="whenOpen">
+	   
+	   <div class="bp5">
+<?php
+
+//echo tpx('list_videoblog',array('video'=>$videolist));
+
+if(empty($hero)){
+	foreach($v_hero as $h){
+?>
+<div style="width: 284px; float: left; border: silver 1px solid; margin-right: 10px; border-radius: 5px; background: rgba(255,255,255,0.5)">
+	<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td valign="top" class="bp5" style="width:100px;" rowspan="2">
+				<a href="<?=$h['author']->lnk?>" onclick="return nav.go(this, event)"><img src="<?=$h['author']->user_photo('','b')?>" style="border-radius: 5px;"/></a>
+			</td>
+			<td valign="top" class="bp5">
+				<a href="<?=$h['author']->lnk?>" onclick="return nav.go(this, event)"><?=$h['author']->user_info['fio']?></a><br />
+				<?=strcut($h['dr_desc'],180)?><br />
+				<a href="/start.php?act=diary&id=<?=$h['dr_user_id']?>">Смотреть дневник &raquo;</a>
+			</td>
+		</tr>
+		<tr><td valign="bottom" class="bp5">Обновлено: <a href="/start.php?act=diary&id=<?=$h['dr_user_id']?>"><?=$datetime->sdate2($h['dr_update'])?></a></td></tr>
+	</table> 
+</div>
+<? 
+	}
+} else {
+	echo tpx('list_videoblog',array('video'=>$videolist));
+}
+?>
+<br class="clear">
+	   </div>  
+	  </div><!-- whenOpen -->
+    </div>
+    </div>
+ 
+   </div><!-- /leftColumn2 -->
+   <br style="clear: both">
+   </div>
+  </div>
+ </div>
+</div>

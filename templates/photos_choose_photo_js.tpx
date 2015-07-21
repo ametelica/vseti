@@ -1,0 +1,366 @@
+<?php
+global $tab;
+?>
+var offset = 20;
+var toId = <?=$var['to_id']?>;
+var chooseBack = false;
+var autoload = false;
+var objMore = ge('photos_choose_more');
+var loading = false;
+cur.photosChooseMore = function() {
+  if (!chooseBack) {
+    chooseBack = objMore.innerHTML;
+  }
+  if (loading) {
+    return false;
+  }
+  loading = true;
+  autoload = true;
+  ajax.post('al_photos.php', {act: 'choose_photo', offset: offset, to_id: toId, tab: tab, al_wiki_editor: 0}, {
+    onDone: function(rows, newOffset, showMore) {
+      ge('photos_choose_rows').insertBefore(cf(rows), ge('photos_choose_clear'));
+      offset = newOffset;
+      if (showMore) {
+        hide(objMore);
+      }
+      loading = false;
+    },
+    onFail: function() {
+      loading = false;
+    },
+    showProgress: function() {
+      objMore.innerHTML = '<img src="/images/upload.gif">';
+    },
+    hideProgress: function() {
+      objMore.innerHTML = chooseBack;
+    }
+  })
+}
+var tab = '<?=$tab?>';
+var switchBack = false;
+cur.photosChooseSwitch = function(obj) {
+  if (tab == 'user_photos') {
+    tab = 'group_photos';
+  } else {
+    tab = 'user_photos';
+  }
+  if (switchBack) {
+    return false;
+  }
+  switchBack = obj.innerHTML;
+  ajax.post('al_photos.php', {act: 'choose_photo', offset: 0, to_id: toId, tab: tab, switch_tab: 1}, {
+    onDone: function(rows, newOffset, showMore, moreStr) {
+      ge('photos_choose_rows').innerHTML = rows;
+      ge('photos_choose_more').innerHTML = moreStr;
+      offset = newOffset;
+      if (showMore) {
+        hide(objMore);
+      } else {
+        show(objMore);
+      }
+      switchBack = false;
+      autoload = false;
+    },
+    onFail: function() {
+      switchBack = false;
+    },
+    showProgress: function() {
+      obj.innerHTML = '<img src="/images/upload.gif">';
+    },
+    hideProgress: function() {
+      obj.innerHTML = switchBack;
+    }
+  })
+}
+cur.choosePhotoScroll = function() {
+  if (!autoload) {
+    return false;
+  }
+  var bt = lastWindowHeight;
+
+  if (isVisible(objMore) && (bt > getXY(objMore, true)[1] - (browser.msie6 ? 0 : scrollGetY()) - bt)) {
+    objMore.click();
+  }
+}
+box.setOptions({hideButtons: true, title: false, width: 644, bodyStyle: 'padding: 0px;', onClean: function() {
+  removeClass(boxLayerBG, 'bg_medium');
+  removeEvent(boxLayerWrap, 'scroll', cur.choosePhotoScroll);
+}});
+addClass(boxLayerBG, 'bg_medium');
+addEvent(boxLayerWrap, 'scroll', cur.choosePhotoScroll);
+
+cur.uploadPhotos = function(obj, ev) {
+  if (cur.uplId !== undefined && window.Upload && Upload.checked && Upload.checked[cur.uplId] && photos.checkHtml5Uploader()) {
+    ge('choose_photo_upload').click();
+    return false;
+  }
+  return true;
+}
+
+cur.choosePhotoUploaded = function(info, params) {
+  var i = info.ind !== undefined ? info.ind : info;
+  var fileName = info.fileName ? info.fileName : info.filename || info;
+
+  var fname = info.fileName || info.filename;
+  var ind = fname ? i+'_'+fname : info;
+  if (ge('upload'+ind+'_progress_wrap')) {
+    var x = geByClass1('progress_x', ge('upload'+ind+'_progress_wrap'));
+    if (x) hide(x);
+  }
+  ajax.post('al_photos.php', extend({act: 'choose_uploaded'}, params), {
+    onDone: function(media, data) {
+      cur.chooseMedia('photo', media, extend(data, {upload_ind: i + '_' + fileName}));
+    },
+    onFail: cur.choosePhotoUploadFailed.pbind(info),
+    progress: (Upload.types[i] == 'form') ? box.progress : null
+  });
+}
+cur.alWysiwygChoosePhotoUploaded = function(info, params) {
+  var i = info.ind !== undefined ? info.ind : info;
+  ajax.post('al_photos.php', extend({act: 'choose_uploaded', al_wiki_editor: true}, params), {
+    onDone: editorChoosePhoto,
+    onFail: cur.choosePhotoUploadFailed.pbind(info),
+    progress: box.progress
+  });
+}
+cur.choosePhotoUploadFailed = function(info, code) {
+  var i = info.ind !== undefined ? info.ind : info, fileName = info.fileName ? info.fileName : info.filename || info;
+  if (Upload.types[i] == 'fileApi' && !Upload.options[i].wiki_editor) {
+    var fname = info.fileName || info.filename;
+    var lnkId, ind = fname ? i+'_'+fname : info;
+    if (cur.imMedia) {
+      re('upload'+ind+'_progress_wrap');
+      lnkId = cur.imMedia.lnkId;
+      cur.addMedia[lnkId].unchooseMedia();
+    } else if (cur.addMedia) {
+      re('upload'+ind+'_progress_wrap');
+      lnkId = (cur.attachMediaIndexes || {})[fileName];
+      if (lnkId) cur.addMedia[lnkId].unchooseMedia();
+    }
+  }
+  hide(box.progress);
+  topError('Upload failed', {dt: -1, type: 102, url: (ge('file_uploader_form'+i) || {}).action});
+  Upload.embed(i);
+}
+
+
+var files = {};
+var uploadFlash = false;
+var uploadKey = false;
+function uploadStart(info, res) {
+  var i = info.ind !== undefined ? info.ind : info, options = Upload.options[i];
+  var type = Upload.types[i];
+  files[i] = res || info;
+  if (type == 'form') {
+    show(box.progress);
+    box.changed = true;
+    geByClass1('file', ge('choose_photo_upload')).disabled = true;
+  }
+  if (type == 'flash') {
+    boxLayerWrap.visibilityHide = true;
+    uploadFlash = true;
+  }
+
+  if (!options.wiki_editor) {
+    if (cur.notStarted) {
+      boxQueue.hideLast();
+      delete cur.notStarted;
+    }
+    uploadProgress(info, 0, 0);
+  }
+}
+
+function uploadProgress(info, bytesLoaded, bytesTotal) {
+  var i = info.ind !== undefined ? info.ind : info;
+  if (!info.ind) {
+    info = files[i];
+  }
+  if (Upload.options[i].wiki_editor) {
+    ge('photos_choose_upload_area').innerHTML = '<img src="/images/upload.gif"/>';
+  } else {
+    var lnkId = (cur.attachMediaIndexes || {})[i];
+    if (lnkId === undefined || lnkId && cur.addMedia[lnkId].chosenMedia || cur.imMedia) {
+      var data = {loaded: bytesLoaded, total: bytesTotal};
+      if (info.fileName || info.filename) {
+        data.fileName = info.fileName || info.filename;
+      }
+      cur.showMediaProgress('photo', i, data);
+    }
+  }
+}
+
+function uploadComplete(info, res) {
+  var params, i = info.ind !== undefined ? info.ind : info, fileName = info.fileName ? info.fileName : info;
+  try {
+    params = eval('(' + res + ')');
+  } catch(e) {
+    params = q2ajx(res);
+  }
+  if (!params.photos) {
+    Upload.onUploadError(info);
+    return;
+  }
+  var options = Upload.options[i];
+  if (options.wiki_editor) {
+    cur.alWysiwygChoosePhotoUploaded(info, params);
+  } else {
+    cur.choosePhotoUploaded(info, params);
+  }
+}
+
+function hideFlashUploader() {
+  if (hasClass(boxLayerWrap,  'box_layer_hidden')) {
+    removeClass(boxLayerWrap, 'box_layer_hidden');
+    hide(boxLayerWrap);
+  }
+  boxLayerWrap.visibilityHide = false;
+  re(uploadKey);
+}
+
+
+cur.maxFiles = 10;
+cur.uploaderLang = {"max_files_warning":"Вы можете прикрепить к сообщению не более 10 файлов."};
+if (Upload.checkFileApi()) {
+  cur.initHTML5Lite = function() {
+    var max_files = cur.maxFiles - (cur.savedPhotos || []).length;
+    cur.html5LiteUrl = 'http://cs306810.vk.com/upload.php';
+    cur.html5LiteVars = {"act":"do_add","aid":-14,"gid":0,"mid":4803497,"hash":"b98c925576a8675e6562166f7f5865c0","rhash":"b2aa1b9d0a50d895438671f065ff65ca","vk":1,"from_host":"vk.com"};
+    cur.html5LiteVars.jpeg_quality = 89;
+    cur.html5LiteOptions = {
+      file_name: 'photo',
+
+      file_size_limit: 1024*1024*25, // 5Mb
+      file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
+      file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF;*.bmp;*.BMP',
+
+      lang: cur.uploaderLang,
+      wiki_editor: 0,
+
+      onUploadStart: uploadStart,
+      onUploadProgress: uploadProgress,
+      onUploadComplete: uploadComplete,
+      onUploadCompleteAll: hideFlashUploader,
+      onUploadError: cur.choosePhotoUploadFailed,
+
+      clear: 1,
+      noFlash: 1,
+      type: 'photo',
+      max_attempts: 3,
+      server: 306810,
+      error: 1,
+      error_hash: '51f5b24d229d1bb5eb08c589443bb93c',
+      dropbox: boxLayerWrap,
+      dragEl: boxLayerWrap,
+      visibleDropbox: true,
+      multiple: true,
+      multi_progress: true,
+      force_max_files: true,
+      max_files: max_files,
+      accept: 'image/jpeg,image/png,image/gif',
+      file_match: "\\.(gif|jpg|jpeg|png)$",
+      noEmbed: true
+    }
+    cur.uplId = Upload.init('choose_photo_upload', cur.html5LiteUrl, cur.html5LiteVars, cur.html5LiteOptions);
+  }
+  cur.initHTML5Lite();
+} else {
+  /* if (browser.flash > 9 && !(browser.msie && intval(browser.version) < 8) && !browser.chrome && !(browser.opera && intval(browser.version) > 10) && !(browser.firefox && intval(browser.version) > 4) && !browser.safari)*/
+  uploadKey = 'lite_photo_uploader_'+((window.uploadInterface || 0) + 1);
+  re(uploadKey);
+  var area = ge('box_layer');
+  var areaWrap = ge('photos_choose_upload_area_wrap');
+  var s = getSize(areaWrap);
+  var p = getXY(areaWrap, true);
+  var el = ce('div', {
+    innerHTML: '<div id="'+uploadKey+'" style="position: absolute; height: '+s[1]+'px; width: '+s[0]+'px; cursor: pointer; z-index: 1000; margin-top: '+p[1]+'px; margin-left: '+p[0]+'px;"></div>'
+  }).firstChild;
+  area.parentNode.insertBefore(el, area);
+  cur.initFlashLite = function() {
+    var max_files = cur.maxFiles - (cur.savedPhotos || []).length;
+    cur.flashLiteUrl = 'http://cs306810.vk.com/upload.php';
+    cur.flashLiteVars = {"act":"do_add","aid":-14,"gid":0,"mid":4803497,"hash":"b98c925576a8675e6562166f7f5865c0","rhash":"b2aa1b9d0a50d895438671f065ff65ca","vk":1,"from_host":"vk.com"};
+    cur.flashLiteVars.jpeg_quality = 89;
+    cur.flashLiteVars.max_files = max_files;
+    cur.flashLiteOptions = {
+      file_name: 'photo',
+
+      file_size_limit: 1024*1024*25, // 5Mb
+      file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
+      file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF;*.bmp;*.BMP',
+
+      lang: cur.uploaderLang,
+      wiki_editor: 0,
+
+      onUploadStart: uploadStart,
+      onUploadProgress: uploadProgress,
+      onUploadComplete: uploadComplete,
+      onUploadCompleteAll: hideFlashUploader,
+      onUploadError: cur.choosePhotoUploadFailed,
+
+      flashPath: '/swf/photo_uploader_lite.swf',
+      clear: 1,
+      type: 'photo',
+      max_attempts: 3,
+      server: 306810,
+      error: 1,
+      error_hash: '51f5b24d229d1bb5eb08c589443bb93c',
+      dropbox: boxLayerWrap,
+      dragEl: boxLayerWrap,
+      visibleDropbox: true,
+      //photoBox: ge('photos_add_box'),
+      multiple: true,
+      multi_progress: true,
+      flash_lite: 1
+    }
+
+    cur.uplId = Upload.init(uploadKey, cur.flashLiteUrl, cur.flashLiteVars, cur.flashLiteOptions);
+  };
+
+  cur.flash_lite = true;
+  cur.initFlashLite();
+}
+
+cur.uploadDroped = false;
+
+function onBoxDragEnter(ev) {
+  if (cur.uploadDroped) {
+    return;
+  }
+  if (cur.dragTimeout) {
+    clearTimeout(cur.dragTimeout);
+    delete cur.dragTimeout;
+  }
+  addClass(ge('photos_choose_upload_area_wrap'), 'photos_choose_upload_area_enter');
+  return cancelEvent(ev);
+}
+function onBoxDragLeave(ev) {
+  if (cur.dragTimeout) {
+    clearTimeout(cur.dragTimeout);
+    delete cur.dragTimeout;
+  }
+  cur.dragTimeout = setTimeout(function() {
+    removeClass(ge('photos_choose_upload_area_wrap'), 'photos_choose_upload_area_enter');
+  }, 100);
+  return cancelEvent(ev);
+}
+function onBoxDragDrop(ev) {
+  removeClass(ge('photos_choose_upload_area_wrap'), 'photos_choose_upload_area_enter');
+  cur.uploadDroped = true;
+  if (cur.uplId !== undefined && window.Upload && Upload.checked && Upload.checked[cur.uplId]) {
+    Upload.onFileApiSend(cur.uplId, ev.dataTransfer.files);
+  } else {
+    photos.onUploadSelect(ev.dataTransfer.files);
+  }
+  return cancelEvent(ev);
+}
+addEvent(boxLayerWrap, "dragenter dragover", onBoxDragEnter);
+addEvent(boxLayerWrap, "dragleave", onBoxDragLeave);
+addEvent(boxLayerWrap, "drop", onBoxDragDrop);
+box.setOptions({onHide: function() {
+  removeEvent(boxLayerWrap, "dragenter dragover", onBoxDragEnter);
+  removeEvent(boxLayerWrap, "dragleave", onBoxDragLeave);
+  removeEvent(boxLayerWrap, "drop", onBoxDragDrop);
+  if (!uploadFlash) {
+    hideFlashUploader();
+  }
+}});

@@ -1,0 +1,175 @@
+<?php
+global $app,$hash,$spans,$user;
+?>
+<div id="app_edit_cont">
+<div id="apps_options_saved" class="apps_edit_success">
+</div>
+<div class="apps_edit_top"></div>
+<table class="apps_edit_table">
+<tr style="<?php if($app->app_info['app_type']>=0) {?>display: none;<?php }?>"><td class="label ta_r">Название:</td>
+<td><input class="text" type="text" id="app_name" value="<?php echo $app->app_info['app_title'];?>"/></td></tr>
+<tr style="<?php if($app->app_info['app_type']>=0) {?>display: none;<?php }?>"><td class="label ta_r">Описание:</td><td><textarea class="text" id="app_desc"><?php echo $app->app_info['app_desc'];?></textarea></td></tr>
+
+<tr style="display: none;">
+  <td class="label ta_r">Категория:</td>
+  <td><input class="text" type="hidden" id="app_subcategory"/></td>
+</tr>
+<tr style="<?php if($app->app_info['app_type']>=0) {?>display: none;<?php }?>"><td class="label ta_r">Группа приложения:</td><td><input class="text" type="hidden" id="app_group"/></td></tr>
+<tr style="display: none;"><td class="label ta_r">Иконка 16x16:</td><td id="app_icon_cont" class="apps_edit_i" style="background-image: url('/images/icons/app_icon.gif');"><a  onclick="AppsEdit.uploadIcon();">Выбрать файл</a></td></tr>
+</table>
+
+<table class="apps_edit_table">
+  <tr><td class="label ta_r">ID приложения:</td><td class="apps_edit_t">
+    <b><?=$app->app_info['app_id']?></b>
+    <input type="hidden" id="app_id" value="<?=$app->app_info['app_id']?>">
+    <input type="hidden" id="app_hash" value="<?=$hash->get_hash($app->app_info['app_id'].$user->user_info['user_id'],16,'ape')?>">
+  </td></tr>
+
+  <tr><td class="label ta_r">Защищенный ключ:</td><td class="apps_edit">
+  <input type="text" class="text" id="app_secret2" value="<?=$app->app_info['app_secret']?>">
+  </td></tr>
+</table>
+
+<div style="<?php if($app->app_info['app_type']<0) {?>display: none;<?php }?>">
+<table class="apps_edit_table">
+<tr><td class="label ta_r">Состояние:</td><td><input class="text" type="hidden" id="app_enabled"/></td></tr>
+
+<!--<tr><td class="label ta_r">Первый запрос к API:</td><td><textarea class="text" id="app_first_request"></textarea></td></tr>-->
+<tr><td class="label ta_r">Установка приложения:</td><td class="apps_edit_t"><a id="privacy_edit_install" onclick="Privacy.show(this, event, 'install')"><?=$app->app_info['app_settings']==0?'Не требуется':'Требуется'?></a></td></tr>
+</table>
+
+<table id="apps_edit_install_require" class="apps_edit_table" style="<?=$app->app_info['app_settings']==0?'display: none;':''?>">
+<tr><td class="label ta_r">Права доступа:</td><td class="apps_edit_t"><a id="privacy_edit_require" onclick="Privacy.show(this, event, 'require')"><?=$app->app_info['app_settings']==0?'Не запрашивать доступ</a><span></span>':'Запрашивать доступ к</a><span>: '.join(', ',$spans).'</span>'?></td></tr>
+</table>
+
+<table class="apps_edit_table" style="display: none;">
+<tr><td class="label ta_r">Open API:</td><td class="apps_edit_t"><a id="privacy_edit_openapi" onclick="Privacy.show(this, event, 'openapi')">Выключен</a></td></tr>
+</table>
+</div>
+
+<table class="apps_edit_table" style="display: none;">
+<tr><td class="label ta_r">Push-уведомления:</td><td class="apps_edit_t">
+<a id="privacy_edit_push" onclick="Privacy.show(this, event, 'push')"></a>
+</td></tr>
+</table>
+
+<div id="apps_edit_push_cert" style="display: none;">
+  <table class="apps_edit_table">
+    <tr><td class="label ta_r">Сертификат:</td><td class="apps_edit_t" id="apps_cert_label">
+      
+    </td></tr>
+    <tr><td class="label ta_r">Тестирование APNS:</td><td class="apps_edit_t" id="apps_cert_label">
+      <div id="apps_push_sandbox" class="checkbox" onclick="return checkbox(this);"><div></div>Использовать sandbox сервер</div>
+    </td></tr>
+  </table>
+</div>
+
+<div id="apps_edit_push_login" style="display: none;">
+  <table class="apps_edit_table">
+    <tr><td class="label ta_r">Логин:</td><td class="apps_edit_desc">
+      <input id="apps_push_login" type="text" class="text" value="" />
+    </td></tr>
+    <tr><td class="label ta_r">Пароль:</td><td class="apps_edit_desc">
+      <input id="apps_push_pass" type="password" class="text" value=""/>
+    </td></tr>
+  </table>
+</div>
+
+
+<!--div id="apps_edit_widget" style="">
+<div class="apps_edit_header">Настройки виджета</div>
+<table class="apps_edit_table">
+<tr><td class="label ta_r">Название:</td><td><input type="text" class="text" value="" id="app_widget_title" /></td></tr>
+<tr><td class="label ta_r">Адрес IFrame:</td><td><input type="text" class="text" value="" placeholder="http://yoursite.com" id="app_widget_url" /></td></tr>
+</table>
+</div-->
+
+
+<div id="apps_edit_openapi" style="<?php if($app->app_info['app_type']!=-1) {?>display: none;<?php }?>">
+<div class="apps_edit_header">Open API</div>
+<table class="apps_edit_table">
+<tr><td class="label ta_r">Адрес сайта:</td><td class="apps_edit_desc">
+<input id="app_site_url" type="text" class="text" value="<?=$app->app_info['app_site']?>" placeholder="http://yoursite.com" />
+</td></tr>
+<tr><td class="label ta_r">Базовый домен:</td><td class="apps_edit_desc">
+<input id="app_base_domain" type="text" class="text" value="<?=$app->app_info['app_domain']?>" placeholder="yoursite.com" />
+</td></tr>
+</table>
+</div>
+
+<div id="apps_edit_container_opts" style="<?php if($app->app_info['app_type']<0) {?>display: none;<?php }?>">
+  <div class="apps_edit_header">Настройки контейнера</div>
+
+  <table id="app_type" class="apps_edit_table">
+  <tr><td class="label ta_r">Тип приложения:</td><td class="apps_edit_r">
+  <div id="app_type_1" class="radiobtn" onclick="cur.checkAppType(1);"><div></div>IFrame</div>
+  <div class="apps_edit_desc_abs">Позволяет запускать приложение через IFrame с указанного Вами адреса.</div>
+  </td></tr>
+  <tr><td class="label ta_r"></td><td class="apps_edit_r">
+  <div id="app_type_0" class="radiobtn" onclick="cur.checkAppType(0);"><div></div>Flash</div>
+  <div class="apps_edit_desc_abs">Позволяет запускать SWF-файлы со страницы приложения.</div>
+  </td></tr>
+  </table>
+
+  <table id="apps_edit_iframe_options" class="apps_edit_table" style="display:none">
+  <tr><td class="label ta_r">Адрес IFrame:</td><td><input class="text" type="text" id="app_iframe_url" value="<?=$app->app_info['app_addr']?>" /></td></tr>
+  <tr><td class="label ta_r">Размер IFrame:</td><td>
+    <input class="text text_small" type="text" id="app_iframe_width" value="<?=$app->app_info['app_width']?>" />
+    <span class="apps_edit_iframe_res">x</span>
+    <input class="text text_small" type="text" id="app_iframe_height" value="<?=$app->app_info['app_height']?>" /></td></tr>
+  </table>
+
+  <table id="apps_edit_flash_options" class="apps_edit_table" style="">
+  <tr><td class="label ta_r">Flash-контейнер:</td><td><div id="app_wrapper_hint" class="apps_edit_hint" onmouseover="AppsEdit.showHint(this);" onmouseout="AppsEdit.hideHint(this);"><input type="hidden" id="app_wrapper" /></div></td></tr>
+  <tr><td class="label ta_r">Flash-параметр wmode:</td><td><div id="apps_wmode_hint" class="apps_edit_hint" onmouseover="AppsEdit.showHint(this);" onmouseout="AppsEdit.hideHint(this);"><input type="hidden" id="app_wmode" /></div></td></tr>
+  </table>
+</div>
+
+<table id="apps_edit_save" class="apps_edit_table">
+<tr><td class="label ta_r"></td><td>
+<div class="button_green fl_l"><button id="app_save_btn" onclick="AppsEdit.saveOptions();">Сохранить изменения</button></div>
+</td></tr>
+</table>
+</div>
+<div class="apps_edit_other">
+
+<div id="apps_edit_flash_other_options" style="<?php if($app->app_info['app_type']<0) {?>display: none;<?php }?>">
+  <div class="apps_edit_header">Загрузка SWF-приложения</div>
+  <table class="apps_edit_table">
+  <tr><td class="label ta_r"></td><td><a onclick="AppsEdit.updateSWF();">Загрузить приложение</a></div></td></tr>
+  </table>
+
+  <div class="apps_edit_header">Дополнительные SWF-файлы</div>
+  <table class="apps_edit_table">
+  <tr><td class="label ta_r"></td><td><a onclick="AppsEdit.addSWF();">Добавить SWF-файл</a></td></trРґ>
+  </table>
+  <div id="apps_edit_swf_rows">
+<?php
+	if(!empty($app->app_info['app_swf_add'])){
+		echo '<table id="apps_edit_swf_header" class="apps_edit_swf_row"><tbody><tr>
+<td class="apps_edit_name"><b>Имя файла</b></td>
+<td class="apps_edit_size"><b>Алиас</b></td>
+<td class="apps_edit_size"><b>Размер</b></td>
+<td class="apps_edit_delete"/>
+</tr></tbody></table>';
+			
+		foreach($app->app_info['app_swf_add'] as $s){
+			echo '<table id="apps_edit_swf_'.$s['swf_id'].'" onmouseout="AppsEdit.deactivateRow(this);" onmouseover="AppsEdit.activateRow(this);" class="apps_edit_swf_row"><tbody><tr>
+<td class="apps_edit_name"><a onclick="return cur.showSWFFileInfo(this, event);" href="'.$s['url'].'">'.$s['swf_name_orig'].'</a></td>
+<td class="apps_edit_size"></td>
+<td class="apps_edit_size">'.ceil($s['swf_size']/1024).' КБ</td>
+<td class="apps_edit_delete"><div onclick="AppsEdit.deleteSWF('.$s['swf_id'].', \''.$hash->get_hash($s['swf_id'].$user->user_info['user_id'],16,'apd').'\', this);" onmouseout="AppsEdit.deactivateDelete(this);" onmouseover="AppsEdit.activateDelete(this);" class="apps_edit_delete_row" style="background-color: rgb(255, 255, 255);"/></td>
+</tr></tbody></table>';
+		}
+	}
+?>  
+  </div>
+</div>
+
+<div class="apps_edit_header">Удаление приложения</div>
+<table class="apps_edit_table">
+<tr><td class="label ta_r"></td><td>Если Вы удалите это приложение, Вы уже не сможете его восстановить.</td></tr>
+<tr><td class="label ta_r"></td><td><div class="button_green"><button onclick="AppsEdit.deleteApp();">Удалить приложение</button></div></td></tr>
+</table>
+
+</div>

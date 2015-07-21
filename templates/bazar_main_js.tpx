@@ -1,0 +1,26 @@
+<?
+	global $item_list, $items_on_page, $act, $cat, $preload;
+?>extend(cur, {
+  offset: <?=$items_on_page?>,
+  count: <?=$item_list['total']?>,
+  moreFrom: '<?= 'bazar' . ($act == '' ? $cat : '?act=' . $act)?>' ,
+  moreOpts: undefined
+});
+
+cur.bazarSort = function(srt) {
+	ajax.post('al_bazar.php', {
+	  	act: 'sort',
+	    srt: srt,
+	  }, {onDone: function(text) {
+	    nav.reload();
+	  }, onFail: function(text) {}});
+}
+
+if (vs.version) {
+  addEvent(window, 'load', bazar.initScroll);
+} else {
+  bazar.initScroll();
+}
+var preload = <?=jenc(array($items_on_page * 2, tpx('bazar_rows', array('items' => $preload))))?>;
+
+ajax.preload(cur.moreFrom, extend({offset: cur.offset, part: 1}, cur.moreOpts || {}), preload);

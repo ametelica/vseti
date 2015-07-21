@@ -1,0 +1,25 @@
+<?php
+global $naviny_total,$naviny_html,$datetime, $owner;
+if($naviny_total > 0) {
+?>
+<div class="module clear news_module" id="profile_news">
+ <a class="module_header" href="/start.php?act=news">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r">все</span>
+   Новости
+  </div>
+ </a>
+<? 
+if(!empty($owner->profile_info['html_news'])) { ?>
+	<div class="p_header_bottom">
+   <a href="/settings.php?act=block"><span class="fl_r">настроить</span></a>
+   <?=$datetime->sdate($naviny_total,2)?>
+  </div>
+  <div class="module_body clear_fix">
+ 	<?=tpx('profile_block_news_body',array('news'=>$naviny_html))?>
+  </div>
+<? } else { ?>	
+	<div class="fallback">Нет подходящих новостей<br /><br />Попробуйте подключить больше категорий <a href="/settings.php?act=block">в настройках</a></div>	
+<? }?>
+</div>
+<? } ?>

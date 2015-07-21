@@ -1,0 +1,105 @@
+<?php
+	global $user, $album_id, $malbum;
+	$tabs = array(
+			array('label' => "Все<span id=\"olist_all\"></span>", "func" => "cur.onOListTabChange(0);"),
+			array('label' => "Без альбома<span id=\"olist_unsorted\"></span>", "func" => "cur.onOListTabChange(100);"),
+			array('label' => "Выбранные<span id=\"olist_selected\" style=\"display: none;\">0</span>", "func" => "cur.onOListTabChange(1);"),
+	);
+	
+	$box = array(
+			'Новый альбом',
+			'<div id="audio_album_edit_cont" class="olist_scroll_wrap"><div class="olist audio_album"><a class="olist_more" href="">Показать больше аудиозаписей</a></div></div>',
+			tpx('audio_album_edit_box_js2')
+	);
+?>
+setUpTabbedBox(box, 525, <?=jenc($tabs)?>, '<?=$album_id>0?2:0?>', <?=jenc($box)?>, arguments[0], arguments[1]);
+cur.selectAlbumName = function() {
+  ge('album_label_val').innerHTML = clean(val('album_name'));
+};
+var initBox = function() {
+  re('album_name_wrap');
+  var albumId = <?=$album_id?>;
+  var selected = {}, album = albumId ? cur.audiosList.album<?=$album_id?> || [] : [], js_options = {
+  selection_menu: [],
+  actions_menu: [],
+  idIndex: 1,
+  tpl: "<div class=\"olist_item_wrap%classname%\" id=\"olist_item_wrap%id%\">\n  <div class=\"olist_item clear_fix\">\n    <span class=\"olist_checkbox fl_r\"><\/span>\n    <span class=\"olist_item_label_wrap\">\n      <span class=\"olist_item_performer fl_l\">%performer%<\/span>\n      <span class=\"olist_item_separator fl_l\">&ndash;<\/span>\n      <span class=\"olist_item_title fl_l\">%title%<\/span>\n    <\/span>\n  <\/div>\n<\/div>",
+  getName: function(obj) {
+    return obj[5] + ' ' + obj[6];
+  },
+  ret: {hash: '96af71df1b0c0d62621'},
+  sel: <?=$album_id>0?1:0?>,
+  getUnsorted: function(arr) {
+    if (window.Audio && Audio.filterByAlbum) {
+      arr = Audio.filterByAlbum(arr, 0);
+    }
+    return arr;
+  },
+  unsortedIndex: 100,
+  noSelMsg: 'Вы не выбрали ни одной аудиозаписи.',
+  onTabUpdate: function() {
+    var _t = cur.editOList, ids = [], time = 0;
+    each (_t.owners, function () {
+      if (!_t.invertedSelection && _t.selected[this[_t.idIndex]] || _t.invertedSelection && !_t.selected[this[_t.idIndex]]) {
+        ids.push(this[_t.idIndex]);
+      }
+    });
+    each(ids, function() {
+      if (cur.audios[this]) {
+        time += intval(cur.audios[this][3]);
+      }
+    });
+    if (window.audioPlayer) {
+      ge('audio_total_duration').innerHTML = audioPlayer.formatTime(time);
+      toggle(ge('audio_total_duration').parentNode, time);
+    }
+  },
+  rsTpl: function(obj, pattern, invertedSelection, selected, regexp) {
+    var checked = !invertedSelection && selected[obj[1]] || invertedSelection && !selected[obj[1]],
+        labels = [obj[5], obj[6]];
+    if (pattern) {
+      each(labels, function(k, v) {
+        labels[k] = pattern.indexOf(' ') == -1 ? v.split(' ') : [v];
+        var tmp = '';
+        for (var i in labels[k]) {
+          tmp += (i > 0 ? ' ' : '') + labels[k][i].replace(regexp, '$2<em>$3</em>');
+        }
+        labels[k] = tmp;
+      });
+    }
+    return {
+      id: obj[1],
+      performer: labels[0],
+      title: labels[1],
+      classname: checked ? ' olist_item_wrap_on' : ''
+    };
+  }
+};
+  each(album, function() {selected[this[1]] = 1;});
+  var tabsEl = geByClass1('summary_tabs', box.bodyNode);
+  tabsEl.parentNode.insertBefore(se('<div id="album_name_wrap" class="clear_fix"><div id="album_name_input" class="fl_l"><input id="album_name" type="text" class="text" placeholder="Название альбома" value="<?=empty($malbum['album_name']) ? '' : $malbum['album_name']?>" /></div></div>'), tabsEl);
+  placeholderSetup('album_name', {back: true});
+  tabsEl.appendChild(se('<div class="olist_actions audio_album fl_r"><div class="olist_filter_wrap"><input type="text" class="text olist_filter" placeholder="Быстрый поиск" /></div></div>'));
+  setStyle(box.tabContent, {overflow: 'hidden'});
+  box.scroll = new Scrollbar(box.tabContent, {
+    nomargin: true,
+    global: true,
+    nokeys: true,
+    right: vs.rtl ? 'auto' : 1,
+    left: !vs.rtl ? 'auto' : 1,
+    wheelObj: box.tabContent
+  });
+  box.tabContent.scrollTop = 0;
+  var all = (cur.audiosList && cur.audiosList.all ? clone(cur.audiosList.all) : []).sort(function(a,b) {return a._order - b._order});
+  cur.editOList = new OList(box, all, selected || {}, js_options);
+	
+	ge('olist_all').innerHTML = cur.audiosList.all.length;
+  ge('olist_unsorted').innerHTML = js_options.getUnsorted(all).length;
+  if (albumId) {
+    ge('album_name_wrap').appendChild(se('<a class="audio_delete_album fl_r" href="" onclick="Audio.deleteAlbum(<?=$album_id?>, \'<?=hash_get($user->id, 12, 'aldel')?>\'); return false;">Удалить альбом</a>'));
+  }
+  ge('album_name').focus();
+  box.setControlsText('<span class="audio_album_length">Общая длительность &ndash; <span id="audio_total_duration">0:00</span></span>');
+  cur.editOList.onTabUpdate();
+};
+initBox();

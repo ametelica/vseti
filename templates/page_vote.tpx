@@ -1,0 +1,101 @@
+<?php
+global $group, $poll, $langpack;
+
+if ($poll and $poll->error == 0) {
+    $poll_topic_id = $poll->oid . '_' . $poll->topic_id;
+    //$pi = $poll->poll_info;
+    $total_votes = $poll->total_votes();
+    
+    ?><div class="module voting_module" id="group_voting">
+        <a href="/topic<?= $poll_topic_id ?>"  class="module_header" onclick="return nav.go(this, event)">
+            <div class="header_top clear_fix">
+                <span class="right_link fl_r">перейти к теме</span>
+                Опрос
+            </div>
+            <div class="p_header_bottom">
+                <span class="fl_r"></span>
+                <?
+                if ($total_votes > 0) {
+                    echo 'Проголосовал' . $langpack->dln(total_votes, 'vot') . ' ' . nf(total_votes) . ' человек' . $langpack->dln(total_votes, 'cnt');
+                } else {
+                    echo 'Пока никто не голосовал';
+                }
+                ?>
+            </div>
+        </a>
+        <div class="module_body">
+            <?
+            if (!empty($var['message'])) {
+                echo '<div id="group_voting_msg" class="msg">' . $var['message'] . '</div>';
+            }
+						
+						if(empty($var['hide'])) {
+            ?>
+
+            <div class="group_voting_title">
+                <div class="fl_r group_voting_actions"><? if ($poll->aid == $user->id or $poll->can_edit) { ?><a id="privacy_edit_voting_action" onclick="Privacy.show(this, event, 'voting_action', [0, 0])">Настройки опроса</a><? } ?></div>
+                <div class="fl_r progress" id="group_voting_progress"></div>
+                <?= $poll->title ?>
+            </div>
+            <div class="group_voting_table" id="vote_option<?= $poll->id ?>">
+                <?
+                if(!$poll->can_vote or $poll->close) {
+					$total_votes = 0;
+					foreach($poll->answers as $answer) {
+						$total_votes += $answer['cnt'];
+					}
+					echo '<table cellspacing="0" cellpadding="0">';
+					foreach($poll->answers as $answer_id => $answer) {
+						$pers = round($answer['cnt'] / $total_votes * 100);
+						echo '<tr><td colspan="2" class="group_voting_text">' . $answer['title'] . '</td></tr>
+			<tr>
+			  <td class="group_voting_row_wrap"><div class="group_voting_row"><div class="group_voting_percent" style="width: '.$pers.'%"></div></div></td>
+			  <td class="group_voting_row_desc"><nobr><b>'.nf($answer['cnt']).'</b> ('.$pers.'%)</nobr></td>
+			</tr>';
+					}
+					echo '</table>';
+				} else {
+					foreach($poll->answers as $answer_id => $answer) {
+						echo '<div
+				  class="radiobtn bv_radio_first"
+				  onclick="radiobtn(this, ' . $answer_id . ', \'vote_option' . $poll->id . '\'); Groups.vote(this, \'' . $poll->oid . '\', \'' .$poll->id  . '\', ' . $answer_id . ');">
+				  <div></div>' . $answer['title'] . '
+				</div>';
+					}
+				}
+
+                
+                	/*
+                if ($poll->poll_voted == 0 and $group->user_rank > -1 and $poll->poll_info['poll_closed'] == 0) {
+                    $i = 0;
+                    foreach ($pi['poll_options'] as $k => $v) {
+                        echo '<div class="radiobtn ' . ($i == 0 ? 'first' : '') . '" onclick="radiobtn(this, ' . $i . ', \'vote_option' . $pi['poll_id'] . '\'); Groups.vote(this, \'-' . $group->id . '\', \'' . $pi['poll_id'] . '\', ' . $i . ');"><div></div>' . $v . '</div>';
+                        $i++;
+                    }
+                } else {
+                    echo '<table cellspacing="0" cellpadding="0">';
+                    
+                    $max_perc = max($pi['poll_answers_perc']);
+                    
+                    foreach ($pi['poll_options'] as $k => $v) {
+                        echo '<tr><td colspan="2" class="group_voting_text">' . $v . '</td></tr>
+    <tr>
+    <td class="group_voting_row_wrap">
+        <div class="group_voting_row">
+        <div class="group_voting_percent" style="width: ' . round($pi['poll_answers_perc'][$k]/$max_perc*100) . '%"></div>
+        </div>
+    </td>
+    <td class="group_voting_row_desc"><nobr><b>' . $pi['poll_answers'][$k] . '</b> (' . $pi['poll_answers_perc'][$k] . '%)</nobr></td>
+    </tr>';
+                    }
+                    echo '</table>';
+                }
+                */
+                ?>
+            </div>
+            <div class="fl_l progress" id="group_voting_progress"></div>
+            <br class="clear" />
+						<? } ?>
+        </div>
+    </div>        
+<? } ?>

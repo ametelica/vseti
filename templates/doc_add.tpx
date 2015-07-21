@@ -1,0 +1,45 @@
+<?php
+global $doc;
+
+if(empty($doc)) {
+?><div class="docs_add_box" id="docs_add_box" style="">
+  <div class="docs_restrictions">Ограничения</div>
+  <ul class="listing">
+    <li><span>Файл не должен превышать 50 Мб.</span></li>
+    <li><span>Поддерживаемые типы файлов: <b>doc</b>, <b>docx</b>, <b>xls</b>, <b>xlsx</b>, <b>ppt</b>, <b>pptx</b>, <b>rtf</b>, <b>fb2</b>, <b>djvu</b>, <b>odt</b>, <b>ods</b>, <b>pdf</b>, <b>txt</b>, <b>psd</b> или <b>zip</b>-архив с этими типами.</span></li>
+  </ul>
+  <div id="docs_upload_error">Не удалось загрузить файл. Файл не должен быть исполняемым, а его размер не должен превышать 50 Мб.</div>
+  <div id="docs_upload_cont"></div>
+</div><? } ?>
+<? if(empty($doc)) { ?><div class="docs_save_box" id="docs_save_box" style="display: none;"><? } ?>
+  <div class="docs_edit_header">Название</div>
+<input id="docs_title_text" type="text" class="text docs_edit_text" value="<?=empty($doc) ? '' : $doc->title ?>"/>
+<div style="">
+  <div class="docs_edit_options">
+  <div id="docs_file_type">
+    <div class="radiobtn" id="docs_file_type_0" onclick="return cur.docChangeType(0);"><div></div>
+      Личный документ <span style="color:#777">(недоступен через поиск)</span>
+    </div>
+    <div class="radiobtn" id="docs_file_type_2" onclick="return cur.docChangeType(2);"><div></div>
+      Учебный документ
+    </div>
+    <div class="radiobtn" id="docs_file_type_3" onclick="return cur.docChangeType(3);"><div></div>
+      Книга
+    </div>
+    <div class="radiobtn" id="docs_file_type_4" onclick="return cur.docChangeType(4);"><div></div>
+      Другой документ
+    </div>
+  </div>
+  </div>
+  <div class="docs_edit_header">Метки</div>
+  <input id="docs_tags_text" type="hidden" value="<?=empty($doc) ? '' : $doc->tags() ?>">
+  <div class="docs_tags_desc">Вы можете указать через запятую короткие метки, по которым данный документ можно будет найти при помощи поиска. Например: <span class="docs_links"><a onclick="cur.tagsDD.addTag(this.innerHTML);">реферат</a>, <a onclick="cur.tagsDD.addTag(this.innerHTML);">диссертация</a>, <a onclick="cur.tagsDD.addTag(this.innerHTML);">курсовая</a>, <a onclick="cur.tagsDD.addTag(this.innerHTML);">дипломная работа</a></span>. </div>
+</div>
+<? if(empty($doc)) { ?></div><? } ?>
+<div id="docs_dropbox" class="dropbox">
+  <div class="dropbox_wrap">
+    <div class="dropbox_area">
+      <div class="dropbox_label">Перетащите файлы сюда</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,322 @@
+<?php
+global $path_css,$path_js,$hash,$user,$to_ass,$langpack,$datetime,$setting;
+echo tpx('header_css');
+?>
+<style>
+#content img {
+	border-radius: 7px;
+	float: left;
+	margin-right: 12px;
+}
+#content {
+	padding: 0px !important;
+	margin: 0px !important;
+	background: url(/images/ny2012bg.jpg) 0 0 no-repeat;
+}
+#content a {
+	color: #01dbfc;
+}
+#content p {
+	font-size: 14px;
+	text-align: justify;
+	text-indent: 30px;
+}
+#content h4{
+	color: #01dbfc;
+	font-size: 15px;
+	text-shadow: #000 2px 2px 5px;
+}
+#content h1{
+	border-bottom: 1px solid #E8EBEE;
+  color: #01dbfc;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  padding: 0 0 3px;
+  margin-bottom: 10px;
+  text-shadow: #000 2px 2px 5px;
+}
+#button_green {
+	margin: 0px auto;
+}
+#main_panel {
+	border-right: 1px solid #ECF1E9;
+	width: 550px;
+	float: left;
+	background-color: rgba(0, 50, 50, 0.4);
+	padding: 12px;
+	color: white;
+}
+#right_panel {
+	width: 230px;
+	float: right;
+	color: white;
+	padding: 12px;
+}
+#bxxt1{
+	font-size: 25px; 	
+	text-shadow: #000 0px -2px 0px;
+	font-weight: bold;
+}
+#video_admin {
+	width: 220px;
+	height: 170px;
+	/* background: black;
+	color: silver;
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+	border: gray 1px solid;
+	padding: 10px;
+	font-size: 14px; */
+}
+</style>
+<script src="<?=$path_js?>/common.js"></script>
+<script src="<?=$path_js?>/snowstorm.js"></script>
+<link rel="stylesheet" href="<?=$path_css?>/al/common.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/rustyle.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/al/page.css" type="text/css" />
+<?
+echo tpx('header_func');
+?>
+<div id="page_body" class="fl_r">
+ <div id="header_wrap2">
+  <div id="header_wrap1">
+   <div id="header" style="">
+    <h1 id="title">
+     <a href="/start.php">Главная</a> &raquo; С Новым 2013 годом!
+    </h1>
+   </div>
+  </div>
+ </div>
+
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content">
+		
+		<div id="main_panel">
+		
+		<h1>Новогодние украшения</h1>
+		<p>Дорогие друзья! Мы успешно пережили "конец света", и теперь можно вовсю радоваться, веселиться и готовиться к новогодним праздникам :)</p>
+		 <p>Чтобы в Новом году успех не обошёл стороной - нужно как следует подготовиться к его встрече. Так как значительная часть нашей жизни теперь проходит в интернете - без виртуальных украшений тоже не обойтись. Кстати, можно посмотреть у кого под Новый Год <a href="/rate?act=ny"><b>самая большая гора подарков</b></a> под ёлкой и кто <a href="/rate?act=dm"><b>самый щедрый Дед Мороз</b></a></p>. 
+		
+		<h4>Дизайн страничек</h4>
+		 <p>
+		 <img src="/images/nydesign.jpg" width="150" height="125" alt=""/>
+		 Администрация ВСети дарит всем пользователям возможность <b>бесплатно</b> украсить свои странички к празднику при помощи <a href="/settings.php?act=design">настроек дизайна</a>. Пожалуйста, постарайтесь не пугать Деда Мороза психоделическими сочетаниями кислотных цветов.</p>
+		 
+<?
+
+if($user->usersetting_info['usersetting_design_to']<1358046001) {
+	if($user->usersetting_info['usersetting_design_to']<0) {
+	 ?>
+<p>А у Вас и так пожизненный дизайн ;) Идём дальше...</p>
+<?	
+	} else {
+?>
+	<form name="ny_design" action="/settings.php" method="post">
+		<input type="hidden" name="act" value="ny_design" />
+		<input type="hidden" name="hash" value="<?=$hash->get_hash($user->user_info['user_id'],18,'nyd')?>" />
+	</form>
+	<div class="button_green">
+<button onclick="document.ny_design.submit(); return false;"> Включить дизайн! </button>
+	</div><br /><br />
+<?		
+	}
+} else {	
+?>
+<p>Ваши настройки дизайна уже продлены до <?=$datetime->cdate($setting['setting_dateformat'],$user->usersetting_info['usersetting_design_to'])?>. Идём дальше...</p>
+<?				
+}
+?>		
+		<h4>Снежок</h4>
+		 <p>
+		 <img src="/images/snow1.jpg" width="150" height="125" alt=""/>
+		 Какой же Новый год без снега?! Лёгкий, серебристый снежок, медленно падающий на спящую землю, или на нижнюю часть странички, в нашем случае. Отлично дополняет праздничное настроение и оживляет страничку!</p>
+		 <p>Сбор, погрузка, транспортировка, оцифровка и равномерная подача снега на страничку стоит <b>1 зайчик</b>. Падать будет до весны.</p>
+<?
+//$user->user_info['user_votes'] = 0;
+
+$get_votes_button = '<div class="button_green">
+<button onclick="window.location = \'payments.php\'; return false;"> Получить зайчики </button>
+	</div>';
+
+if($user->usersetting_info['ny_snow']!=2) {
+	if(empty($user->usersetting_info['ny_snow'])){ 
+		if($user->credits>0) {
+		?>
+		 <form name="snow1" action="/settings.php" method="post">
+		 	<input type="hidden" name="act" value="snow_on" />
+		 	<input type="hidden" name="type" value="1" />
+		 	<input type="hidden" name="hash" value="<?=$hash->get_hash($user->user_info['user_id'].'1',18,'sn')?>" />
+		 </form>
+		 <div class="button_green">
+<button onclick="document.snow1.submit(); return false;"> Пусть идёт снег! </button>
+		</div>
+		<? } else { 
+			echo $get_votes_button;
+		 } ?>
+		<div class="button_gray">
+<button onclick="window.location = '<?=$user->lnk?>?snow=1'; return false;"> Предпросмотр </button>
+		</div>
+<? } else { ?>
+	<form name="snow1" action="/settings.php" method="post">
+		 	<input type="hidden" name="act" value="snow_on" />
+		 	<input type="hidden" name="type" value="0" />
+		 	<input type="hidden" name="hash" value="<?=$hash->get_hash($user->user_info['user_id'].'0',18,'sn')?>" />
+	</form>
+	<!--<p>На <a href="<?=$user->lnk?>">Вашей страничке</a> идёт снег.-->
+	<div class="button_gray">
+<button onclick="if(confirm('Точно хватит?')) { document.snow1.submit(); } else { alert('Ну не хотите - как хотите!');} return false;"> Хватит снега! </button>
+	</div>
+<? } 	
+	} else {
+?>		
+		<p>На <a href="<?=$user->lnk?>">Вашей страничке</a> идёт антикризисный снег. Метеорологи в шоке.
+<?
+	} ?>
+	<br /><br />
+		
+		<h4>АнтикриZи$ный $н&euro;жок</h4> 
+		 <p>
+		 <img src="/images/snow2.jpg" width="150" height="125" alt=""/>
+		 Белорусские учёные из Парка Высоких Технологий открыли новый способ борьбы с экономическим кризисом: экспериментальная установка через антенны Белтелекома посылает информацию с фондовых бирж прямо в небо. Из-за мощного излучения снежинки принимают форму доллара и евро, и вместе со снежинками падает их курс. По неофициальным данным, тем, кто попадает под такой снегопад, как-то необычно везёт в бизнесе.</p>
+		 <p>Использование этой передовой наукоёмкой технологии стоит <b>2 зайчика</b>. Учёные уверены, что снег закончится не раньше 2го января.</p> 
+		 
+<? 
+
+	if(empty($user->usersetting_info['ny_snow'])){ 
+		if($user->credits>1) {
+		?>
+		 <form name="snow2" action="/settings.php" method="post">
+		 	<input type="hidden" name="act" value="snow_on" />
+		 	<input type="hidden" name="type" value="2" />
+		 	<input type="hidden" name="hash" value="<?=$hash->get_hash($user->id.'2',18,'sn')?>" />
+		 </form>
+		 <div class="button_green">
+<button onclick="document.snow2.submit(); return false;"> Пусть идёт $нег!!! </button>
+		</div>
+<?		
+		} else {
+			echo $get_votes_button;
+		} ?>
+		<div class="button_gray">
+<button onclick="window.location = '<?=$user->lnk?>?snow=2'; return false;"> Предпросмотр </button>
+		</div>
+<? } else { ?>
+	<form name="snow2" action="/settings.php" method="post">
+		 	<input type="hidden" name="act" value="snow_on" />
+		 	<input type="hidden" name="type" value="0" />
+		 	<input type="hidden" name="hash" value="<?=$hash->get_hash($user->user_info['user_id'].'0',18,'sn')?>" />
+	</form>
+	<div class="button_gray">
+<button onclick="if(confirm('Точно хватит?')) { document.snow2.submit();} else { alert('Ну не хотите - как хотите!');} return false;"> Хватит снега! </button>
+	</div>
+<? } ?>
+	<br />	<br />
+	
+<? if($to_ass>0) { 
+	$white_price = ceil($to_ass/5);
+	?>
+	<h4>Просветление ауры</h4>
+	<p>
+	<img src="/images/angel.jpg" width="150" height="125" alt=""/>
+	У деток, которые плохо себя вели в этом году, добавлялись в друзья к кому попало, получили кучу "путёвок", и из-за этого упал рейтинг - есть уникальная возможность его восстановить, потратив 1 зайчик на каждый 5% (в том числе неполные) упавшего рейтинга. В Вашем случае, это <?=$to_ass?>% упавшего рейтинга и <b><?=$white_price?> зайчик<?=$langpack->votes($white_price)?></b>.</p> <p>Батарейки к нимбу в комплект не входят.</p>
+	
+<? 
+if($user->credits >= $white_price) {
+?>	
+		 <form name="aura_clean" action="/settings.php" method="post">
+		 	<input type="hidden" name="act" value="aura_clean" />
+		 	<input type="hidden" name="hash" value="<?=$hash->get_hash($user->id,18,'acn')?>" />
+		 </form>
+		 <div class="button_green">
+<button onclick="document.aura_clean.submit(); return false;"> Почистить ауру </button>
+		</div>
+<? 
+} else {
+	echo $get_votes_button;
+} ?>	
+	
+	 	
+<? } ?>
+	
+		<!-- 
+		<h4>Разноцветная гирлянда</h4>
+		 <p>Вверху странички появятся празднично мигающие огоньки, свет которых поможет празднику найти ваш дом, адрес хоста и ID-шник.</p>
+		 <p>Монтаж огоньков и подведение линии позитивной энергии стоят <b>1 зайчик</b>. Заряда хватит до Старого Нового года.</p>
+		 
+		 <div class="button_green">
+<button onclick="document.changeType.submit(); return false;"> Включить огоньки! </button>
+		</div><br /><br />
+		 -->
+		 
+		</div>
+		<div id="right_panel">
+			<h1>Подарки</h1>
+			<p><?=$user->user_info['user_name']?>, а ты не забыл<? if($user->user_info['user_sex']==1) echo 'a';?> помочь создать праздничное настроение <a href="/friends.php">твоим друзьям</a>? Возможно стоит проверить, у кого на страничке не хватает в <a href="/gifts.php">подарках</a> атрибутов Нового года?</p>
+			<p>Кстати, наша жизнь - это не только интернет. Вот когда ты в последний раз подписывал<? if($user->user_info['user_sex']==1) echo 'a';?> открытку от руки, чтобы поздравить друзей? Может быть стоит этим заняться, пока время ещё есть?</p>
+			<h1>Время</h1>
+			<p><span id="bxxt1">-</span></p>
+			
+			<h1>Видеообращение</h1>
+			<a href="http://vseti.by/video16_34569130"><img border="0" src="http://cs3.vseti.by/uploads_video_pic/823000/822373.jpg" id="video_admin" /></a>
+			<!--<p>Здесь должно было быть видеообращение админов, но у них пока никак не получается собраться всем вместе в одной точке. Бегают туда-сюда, трудятся, чтобы наш любимый сайт был ещё лучше...</p> -->
+			
+			
+		</div>
+						
+<script type="text/javascript">
+function tt1() {
+v = new Date();
+var bxxt1 = document.getElementById('bxxt1');
+n = new Date();
+sst1 = ppt1;
+sst1 = sst1 - Math.round((n.getTime() - v.getTime()) / 1000.);
+mt1 = 0;
+ht1 = 0;
+dt1 = 0;
+if (sst1 < 0) {
+	bxxt1.innerHTML = "C НОВЫМ 2013 ГОДОМ!";
+} else {
+	if (sst1 > 59) {
+		mt1 = Math.floor(sst1 / 60);
+		sst1 = sst1 - mt1 * 60;
+	}
+	if (mt1 > 59) {
+		ht1 = Math.floor(mt1 / 60);
+		mt1 = mt1 - ht1 * 60;
+	}
+	if (ht1 > 24) {
+		dt1 = Math.floor(ht1 / 24);
+		ht1 = ht1 - dt1 * 24;
+	}
+	if (sst1 < 10) {
+		sst1 = "0" + sst1;
+	}
+	if (mt1 < 10) {
+		mt1 = "0" + mt1;
+	}
+	bxxt1.innerHTML = dt1 + ":" +ht1 + ":" + mt1 + ":" + sst1;
+}
+ppt1 = ppt1 - 1;
+window.setTimeout("tt1();", 999);
+}
+
+</script>
+<script language="JavaScript">
+ppt1 = <?=(1356987600-$_SERVER['REQUEST_TIME'])?>;
+tt1();
+snowStorm = new SnowStorm();
+snowStorm.followMouse = true; 
+snowStorm.toggleSnow();
+</script>
+		 
+		 
+   </div><!--/content-->
+  </div><!--/wrap1-->
+ </div><!--/wrap2-->
+</div><!--/page_body-->
+<?
+echo tpx('footer');
+?>

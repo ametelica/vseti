@@ -1,0 +1,17 @@
+<?php
+//dmp($var);
+
+global $user;
+
+$duid = $var['doc']['owner_id'] . '_' . $var['doc']['id'];
+?><div class="media_desc"><a id="post_media_lnk<?=$var['obj']?>_<?=$var['i']?>" class="lnk" <? if(!empty($var['obj'])) { ?>onmouseover="wall.postTooltip(this, '<?=$var['obj']?>', {i: '<?=$var['i']?>'})" <? } ?>target="_blank" href="/doc<?=$duid?><?
+
+if(empty($var['obj'])) { // это - личное сообщение
+	echo '?hash=' . hash_get($user->id . $duid, 12, 'pdx');
+}
+
+?>">
+<b class="fl_l doc"></b>
+Файл
+<span class="a"><?=$var['doc']['title']?></span>
+</a></div>

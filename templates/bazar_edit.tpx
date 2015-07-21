@@ -1,0 +1,105 @@
+<?php
+global $new_design, $categories, $cat, $act, $item, $bazar;
+
+if (!empty($new_design))
+	echo tpx('header_design');
+
+	
+	//dmp($item);
+?>
+<div id="wrap2">
+	<div id="wrap1">
+		<div id="content" class="white_page bazar_page">
+			<div class="bazar_main_panel">
+				<h2>Редактирование объявления</h2>
+				
+				<div class="bazar_edit_label fl_l ta_r">Категория:</div>
+				<div class="bazar_edit_field fl_l "><div class="edit_field_text"><?=$item->get('type_text')?></div></div>
+				
+				<div class="bazar_edit_label fl_l ta_r">Название:</div>
+				<div class="bazar_edit_field fl_l">
+					<input id="bazar_edit_name" class="text" type="text" maxlength="50" value="<?=$item->get('title')?>" placeholder="Что продаём?" />
+				</div>
+				
+				<div class="bazar_edit_label fl_l ta_r">Описание:</div>
+				<div class="bazar_edit_field fl_l">
+					<textarea id="bazar_edit_desc" class="text" placeholder="Описание, чем подробнее - тем лучше"><?=$item->get('desc')?></textarea>
+				</div>
+				
+				<!--
+				<div class="bazar_edit_label fl_l ta_r">Фото:</div>
+				<div class="bazar_edit_field fl_l">
+					<div style="display: none">
+						<input id="bazar_edit_photo" class="text" type="hidden" />
+					</div>
+				</div>-->
+				
+				<div class="bazar_edit_label fl_l ta_r">Цена:</div>
+				<div class="bazar_edit_field fl_l">
+					<input id="bazar_edit_price" class="text" type="text" maxlength="10" value="<?=$item->get('price')?>" placeholder="Сколько денег" />
+				</div>
+				
+				<div class="bazar_edit_label fl_l ta_r">Валюта:</div>
+				<div class="bazar_edit_field fl_l">
+					<input id="bazar_edit_currency" class="text" type="hidden">
+				</div>
+				
+				<div class="bazar_edit_label fl_l ta_r"></div>
+				<div class="bazar_edit_field fl_l">
+					<div class="button_green fl_l" style="margin-right: 15px">
+						<button onclick="cur.saveItem()">Сохранить</button>
+					</div>
+					Размещая объявление, Вы соглашаетесь с <a href="/bazar?act=terms" target="_blank">правилами</a>.
+				</div>
+				
+				
+				<br class="clear">
+				
+				
+				<h2>Добавить изображение</h2>
+				Объявления с изображениями <b>намного</b> привлекательнее!
+				
+				<div class="bazar_edit_screenshot_cont fl_l">
+					<table><tr><td class="bazar_edit_screen_l" id="bazar_edit_screens_list" valign="top">
+					  <?
+						$screenshots = $item->get('screenshots');
+				
+						//dmp($screenshots);
+						for($i = 0; $i < 6; $i++) {
+							if(!empty($screenshots[$i])) {
+								echo '<div style="background: url('.$item->screenshot($screenshots[$i], 'n').') no-repeat;" rel="'.$screenshots[$i].'" class="bazar_edit_screen fl_l" onclick="bazar.ssClick(this);" onmouseover="bazar.ssOver(this);" onmouseout="bazar.ssOut(this)"></div>';
+							} else {
+								echo '<div style="background: url(/images/screenshot_c.gif);" class="bazar_edit_screen item_empty_screen fl_l" onclick="bazar.ssClick(this);" onmouseover="bazar.ssOver(this);" onmouseout="bazar.ssOut(this)"></div>';
+							}
+						}
+						?>
+					</td><td valign="top" class="bazar_edit_screen_r">
+					  
+					  <div class="item_edit_banner_no_upload" id="items_edit_ss_reason" style="<? if(count($screenshots) < 6) {?>display: none<? } ?>">Вы загрузили максимальное число изображений. Удалите одно из изображений для того, чтобы иметь возможность загрузить новое.</div>
+					  <div id="items_edit_ss_limit" style="<? if(count($screenshots) >= 6) {?>display: none<? } ?>">
+					    <ul class="listing item_edit_info_restrictions">
+					      <li><span>Файл не должен превышать 5 Мб.</span></li>
+					      <li><span>Файл должен быть в формате jpg, png или gif.</span></li>
+					      <li><span>Изображение должно иметь прямое отношение к объявлению.</span></li>
+					    </ul>
+					    <div class="item_edit_imgs_info">
+					      <div id="item_edit_upload_screenshot"></div>
+					    </div>
+					  </div>
+					</td></tr>
+					</table>
+
+
+				</div>
+				
+			</div>
+			<div class="bazar_side_panel">
+				<div style="padding: 20px">
+					<div class="button_green button_wide">
+						<button onclick="cur.saveItem()">Просмотреть объявление</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

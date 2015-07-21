@@ -1,0 +1,16 @@
+<?php
+	$groups = $var['groups'];
+	$cats = $var['cats'];
+	echo '<ul style="margin: 0px; padding: 0px; list-style-type: none;">';
+	if(!empty($groups)) {
+		foreach($groups as $cat_id => $gr) {
+			echo '<li><h4 style="padding-left: 20px;">'.$cats[$cat_id].'</h4>
+				<ul style="margin: 0px 0px 5px 0px; padding-left: 0px; list-style-type: none;">';
+			foreach($gr as $g) {
+				echo '<li><a href="'.$g['l'].'" onclick="return nav.go(this, event)">'.$g['n'].'</a></li>';
+			}
+			echo '</ul>';
+		}
+	}
+	echo '</ul>';
+?>

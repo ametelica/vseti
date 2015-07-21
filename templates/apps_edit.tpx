@@ -1,0 +1,48 @@
+<?php
+global $section,$app, $new_design;
+
+$sections = array();
+
+if($app->app_info['app_type']>=0){
+    $sections['info'] = 'Информация';
+}
+
+$sections += array(
+	'options' => 'Настройки',
+	'stats' => 'Статистика',
+	'payments' => 'Платежи',
+	'admins' => 'Администраторы',
+);
+
+if (!empty($new_design)) {
+
+	echo tpx('header_design');
+}
+
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><div id="app_edit">
+<div class="app_edit_tabs t_bar clear_fix">
+  <img id="apps_edit_progress" src="/images/upload.gif">
+  <ul id="apps_edit_tabs" class="t0">
+
+<?
+foreach($sections as $k=>$v){
+	echo '<li id="tab_'.$k.'" '.($k==$section?'class="active_link"':'').'>
+    <a href="/editapp?section='.$k.'&id='.$app->app_info['app_id'].'" onclick="return checkEvent(event);" onmousedown="return AppsEdit.switchTab(\''.$k.'\', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">'.$v.'</b>
+    </a>
+   </li>';
+}
+?>
+  </ul>
+  <div class="fl_r"><a href="/app<?=$app->app_info['app_id']?>" onclick="return nav.go(this, event, {noback: true})">К приложению</a></div>
+</div>
+<div class="app_edit_main">
+  <div id="app_edit_error_wrap"><div id="app_edit_error"></div></div>
+  <div id="app_edit_wrap">
+    <?=$var['html']?>
+  </div>
+</div>
+</div></div></div></div>

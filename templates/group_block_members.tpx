@@ -1,0 +1,23 @@
+<?php
+global $group, $members, $langpack, $total_friends_in, $langpack, $friends_in, $new_design;
+
+// В новом дизайне комбинируем друзей и участников
+if($new_design and $total_friends_in > 0) {
+	$members = array_slice(array_unique(array_merge($friends_in, $members)), 0, 12);
+}
+?>
+<div class="module clear people_module" id="group_followers">
+    <a href="/search?c[section]=people&basic=1&c[group]=<?=$group->id?>" class="module_header" onclick="return nav.go(this, event)">
+    <div class="header_top clear_fix">
+        <span class="right_link fl_r"><? if($new_design) { echo nf($group->group_info['num_members']); } ?></span>
+        Участники
+    </div>
+    <div class="p_header_bottom">
+        <span class="fl_r"></span>
+        <?=nf($group->group_info['num_members'])?> <?=$langpack->humans($group->group_info['num_members'])?>
+    </div>
+    </a>
+    <div class="module_body clear_fix">
+        <?=tpx('people_rows',array('users'=>$members))?>
+    </div>
+</div>

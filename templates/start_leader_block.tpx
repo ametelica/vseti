@@ -1,0 +1,57 @@
+<?php
+global $lead, $leaders, $langpack;
+function load_leader($arr) {
+	if(empty($arr)) {
+		$arr['img'] = '/images/leader.jpg';
+		$arr['img2'] = '/images/leader100.jpg';
+		$arr['title'] = 'Может быть Вы?';
+		$arr['city'] = 'Ваш город';
+		$arr['lnk'] = '#';
+	} else {	
+		$u = pdata($arr['lead_user_id']);
+		$u->load_city_name();
+		$arr['img'] = $u->photo('a');
+		$arr['img2'] = $u->photo('b');
+		$arr['title'] = $u->title;
+		//$arr['city'] = $u->profile_info['basic_city_name'];
+		$arr['lnk'] = $u->lnk;
+	}
+	return $arr;
+}
+
+// 198   W
+// 228   H
+
+$lead = load_leader($lead);
+?><div id="leader_block">
+	<div class="leader_header">Лидер сайта</div>
+	<? if(!empty($lead['lnk'])) { ?><a href="<?=$lead['lnk']?>" onclick="return nav.go(this, event)"><? } ?>
+	<div class="leader_photo">
+		
+		<img src="<?=$lead['img']?>" width="198" alt="<?=$lead['title']?>" title="<?=$lead['title']?>"/>
+		<div class="leader_info"><?=$lead['title']?>
+			<div class="leader_city"><?=$lead['city']?></div>
+		</div>
+		
+	</div>
+	<? if(!empty($lead['lnk'])) { ?></a><? } ?>
+	<div class="button_green button_wide leader_button">
+		<button onclick="showBox('start.php', {act: 'a_leader_box'}, {params: {bodyStyle: 'padding: 0px; position: relative;'}});">Как стать лидером?</button>
+	</div>
+</div>
+<div id="leader_popup">
+	<div id="leader_time" class="leader_data">Время: <span id="bxxt1">-</span></div>
+	<div id="leader_price" class="leader_data">Ставка: <?=intval($lead['lead_price'])?></div>
+	<div class="button_green button_wide leader_data">
+		<button onclick="try_leader(<?=$lead['lead_price']+1?>); return false;">Стать лидером! (<?=($lead['lead_price']+1). ' зайчик' . $langpack->dln($lead['lead_price']+1, 'file')?>)</button>
+	</div>
+	<div id="leader_hist">
+	<?php
+		for($i = 5; $i > 0; $i--){
+			$w = 115-($i*15);
+			$l = load_leader($leaders[$i]);
+			?><div class="leader_hist_item" style="left: <?=$i*(100 - ($i * 7))+40?>px;"><a href="<?=$l['lnk']?>" onclick="return nav.go(this, event)"><img src="<?=$l['img2']?>" width="<?=$w?>" alt="<?=$l['title']?>" /></a></div><?
+		}
+	?>
+	</div>
+</div>

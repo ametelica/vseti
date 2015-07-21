@@ -1,0 +1,41 @@
+<?php
+global $user, $setting;
+
+// Определяем внешнюю ссылку
+$home_link = 'http://' . $setting['host'];
+if(1 or substr($var['link'], 0, strlen($home_link) ) != $home_link) {
+	$data = array(
+		'u' => $user->id,
+		'a' => $var['id'],
+		'h' => hash_get($user->id . $var['id'], 16, 'xlnk'),
+		'l' => $var['link'],
+	);
+	$str = 'QxscGkFyCl' . urlencode(str_replace('=','-',base64_encode(json_encode($data))));
+	$var['link'] = $home_link . '/away.php?to=' . $str;
+}
+
+?><div class="ads_ad_box ver repeat_ver size_site" id="ads_ad_box_ad_<?= $var['id'] ?>"><?
+if (empty($var['preview'])) {
+	?><div id="left_hidead_<?= $var['id'] ?>" class="left_hide" onclick="leftAdBlockClose('ad_<?= $var['id'] ?>', '/ads?act=a_ad_hide&aid=<?= $var['id'] ?>&hash=<?= hash_get($user->id . $var['id'], 16, 'adh') ?>'); return cancelEvent(event);" onmouseout="leftBlockOut(this);" onmouseover="leftBlockOver(this);" style="opacity: 0;"></div>
+		<div id="ads_ad_close_info_ad_<?= $var['id'] ?>" class="ads_ad_close_info">
+			<div class="ads_ad_box_border repeat_ver last"></div>
+			<div class="ads_ad_close_info2">
+				<div class="ads_ad_close_info3">
+					<div class="ads_ad_close_info4">
+						<div class="ads_ad_close_text">Данное объявление больше не будет Вам показываться.</div>
+						<div class="ads_ad_close_complain">
+							<span class="ads_ad_close_complain_info">Если объявление содержит нарушения или ошибку, </span>
+							<span class="ads_ad_close_complain_link" onclick="reportAd(<?= $var['id'] ?>, this);">сообщите нам.</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><?
+}
+?><div class="ads_ad_box_border repeat_ver"></div><a class="ads_ad_box2 ver repeat_ver size_site" id="ads_ad_box2_ad_<?= $var['id'] ?>" href="<?= $var['link'] ?>" target="_blank"><div class="ads_ad_box3 ver"><div class="ads_ad_box4 ver"><div class="ads_ad_box5 ver repeat_ver"><div class="ads_ad_box5_spacer ver repeat_ver size_site"></div><div class="ads_ad_box6 ver"><div class="ads_ad_text_box ver repeat_ver size_site"><div class="ads_ad_title_box"><div class="ads_ad_title_spacer1"><div class="ads_ad_title_spacer2"></div></div><div class="ads_ad_title"><?= $var['name'] ?></div></div><div class="ads_ad_domain ver"><?= $var['host']?></div><div class="ads_ad_photo_box ver"><img class="ads_ad_photo ver" src="<?= $var['photo'] ?>"><div class="ads_ad_play ver empty" style="display: none;"></div></div><div class="ads_ad_description ver" <? if (empty($var['text'])) { ?>style="display: none;"<? } ?>><?= $var['text'] ?></div><div class="ads_ad_community_join" style="display: none;"></div><div class="ads_ad_disclaimers"><div class="ads_ad_disclaimer_medical ver" style="display: none;"></div><div class="ads_ad_disclaimer_specialist ver" style="display: none;"></div></div></div></div></div></div></div></a><?
+
+if (empty($var['preview'])) {
+	echo '<div class="ads_ads_all_ads"><a class="ads_ads_all_ads_link" href="http://' . $setting['host'] .'/ads">Что это?</a></div>';	
+}
+
+	?></div>

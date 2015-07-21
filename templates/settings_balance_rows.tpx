@@ -1,0 +1,76 @@
+<?php	
+global $langpack, $datetime;
+$payments_log = $var['plog'];
+
+$pay_types = array ( 
+		21 => 'получено от пользователя',
+		18 => 'вывод из приложения',
+		7 => 'получено из IPay (ЕРИП)',
+		6 => 'получено из SMSrent',
+		5 => 'получено из EasyPay',
+		4 => 'получено из 2Pay',
+		3 => 'получено из Mobile Solutions',
+		2 => 'получено из IPay',
+		1 => 'получено из Strimline',
+		0 => 'поправка',
+		-2 => 'рейтинг',
+		-3 => 'установка спецеффекта',
+		-5 => 'хочу общаться',
+		-6 => 'невидимость',
+		-7 => 'дизайн',
+		-8 => 'установка алиаса пользователя',
+		-9 => 'продление алиаса пользователя',
+		-10 => 'установка алиаса группы',
+		-11 => 'продление алиаса группы',
+		-12 => 'подарок',
+		-13 => 'продвижение некоммерческой группы',
+		-14 => 'продвижение коммерческой группы',
+		-15 => 'подарочный сертификат',
+		-16 => 'новогодний снег',
+		-17 => 'чистка ауры',
+		-18 => 'перевод в приложение',
+		-20 => 'видеоаватар',
+		-21 => 'перевод пользователю',
+		-22 => 'игра лидер',
+		-23 => 'таргетированная реклама'
+);
+foreach($payments_log['log'] as $p) { 
+	$tr_class = $p['cnt']>0?'settings_votes_income':'';
+	
+	//dmp($p);
+	
+	$pay_text = $pay_types[$p['type']];
+	
+	
+	if(!empty($p['author'])) {
+		if(in_array($p['type'], array(18, -18))) {
+			$author = new se_app($user->id, $p['author']);
+			//dmp($author);
+			
+			//echo $author->app_photo('b');
+			$pay_photo = '<a href="'.$author->lnk.'"><img width="32" height="32" src="'.$author->app_photo('b').'"></a>';
+			//$pay_photo = '<div class="settings_history_thumb settings_history_thumb_payment_system"> </div>';
+			
+			$pay_text .= ' <a href="'.$author->lnk.'">' . $author->app_info['app_title'] . '</a>';
+		} else {
+			$author = pdata($p['author']);
+			$pay_text .= ' <a href="'.$author->lnk.'">'.$author->title.'</a>';
+			$pay_photo = '<a href="'.$author->lnk.'"><img width="32" height="32" src="'.$author->photo().'"></a>';
+		}
+	} else {
+		$pay_photo = '<div class="settings_history_thumb settings_history_thumb_payment_system"> </div>';
+	}
+	
+	$pay_votes = $p['cnt'].' зайчик'.$langpack->dln(abs($p['cnt']),'file');
+	if($p['bonus']) 
+		$pay_votes .= ' (бонус)';
+	
+	$pay_date = $datetime->sdate($p['time']);
+?>
+<tr class="<?=$tr_class?>">
+	<td class="settings_history_photo"><?=$pay_photo?></td>
+	<td class="settings_history_title"><?=$pay_text?></td>
+	<td class="settings_history_amount"><?=$pay_votes?></td>
+	<td class="settings_history_date"><?=$pay_date?></td>
+</tr>
+<? } ?>

@@ -1,0 +1,149 @@
+<?php
+global $colors, $owner, $bgimg, $bg_pos, $glass, $user, $design, $setting;
+global $new_design;
+//dmp($design);
+?>
+<style>
+<? 
+if(empty($new_design)) {
+if($design->bgpos['img_tile']==4) { 
+
+?>
+	
+html,body {background-color:transparent;}
+html{
+	background:transparent <? echo " url('http://".($user->byfly!=1?'v':'')."cs".$bgimg."') "?> no-repeat center center fixed;
+	-moz-background-size:cover;
+	-o-background-size:102% auto;
+	-webkit-background-size:102% auto;
+	-khtml-background-size:cover;
+	background-size:cover;
+}
+
+#profile {
+	background-color: white;	
+}
+#greenBar {
+	z-index: 2;
+}
+#page_header {
+	z-index: 3;
+}
+<? } else { ?>
+#profile {
+	background: <? echo $colors['mainbg']; if($owner->usersetting_info['usersetting_bgimg']!='') { echo " url('http://".($user->byfly!=1?'v':'')."cs".$bgimg."') ".$bg_pos; }?>;	
+}
+<? } ?>
+
+#profile a, #current_info {
+	color: <?=$colors['mainlnk']?>;
+}
+
+#currinfo_input {
+    color: black;
+}
+
+.profile_info div.label {
+	color: <?=$colors['tlabels']?>;
+}
+
+.dataWrap, .text, #profile_activity, .wall_reply_text, .audio_title_wrap, .labeled, .audio .info .title, .audio b, .wall_post_text {
+	color: <?=$colors['maintxt']?>;
+}
+
+div#profile_info h4, h4 {
+	color: <?=$colors['tuname']?>;
+}
+
+.header_top {
+	background: <?=$colors['bopenbg']?> !important;
+	color: <?=$colors['twopen']?> !important;
+}
+
+.wall_module .post, .module_header .header_top {
+	border-top: <?=$colors['thr']?> 1px solid;
+}
+
+h4  {
+	border-bottom: <?=$colors['thr2']?> 1px solid;
+}
+
+.wall_module .reply, .wall_module .more_link, .profile_info_link {
+    border-top: <?=$colors['thr2']?> 1px solid;
+}
+
+.profile_info_link:hover, .more_link:hover, .other_acts a, .wr_header {
+    color: <?=$colors['twopen']?> !important;
+    background: <?=$colors['bopenbg']?> !important;
+}
+
+.wallpost td.info div.header {
+	border-bottom: <?=$colors['thr2']?> 1px solid;
+}
+
+.p_header_bottom, #submit_post_box, .reply_box, .note_header, #profile_full_info h4, .audio.over .area {
+	color: <?=$colors['thwall']?> !important;
+	background: <?=$colors['shbg']?> !important;
+}
+
+.note_header a {
+	color: <?=$colors['thwall']?> !important;
+}
+
+.mention_rich_ta {
+    color: black !important;
+}
+
+.module_body, #profile_actions, #profile_wall, #profile_full_info {
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/<?=$glass?>.png',sizingMethod='scale'); 
+ 	background: url(/images/<?=$glass?>.png) !important; 
+}
+<? } else {
+
+	// Новый дизайн 
+
+	if(empty($owner)) {
+		global $user;	
+		$owner = $user;
+	}
+
+	if(empty($owner->usersetting_info) and $owner->oid > 0) {
+		$owner->user_settings_load();
+	}
+	
+	global $bazar;
+	if(!isset($bazar)) {
+		if ($owner->user_deleted == '0' and $owner->usersetting_info['usersetting_bgimg'] != '') {
+			$bgi = $owner->usersetting_info['usersetting_bgimg'];
+
+			if(is_numeric($bgi)) {
+				$bgimg = '/images/bg/' . intval($bgi) . '.jpg';
+			} elseif(($owner->usersetting_info['usersetting_design_to'] > time() or $owner->usersetting_info['usersetting_design_to'] < 0) and rq('nodesign') == '') {
+				
+				if(strpos($bgi, '/') === false) {
+					$bgi = $owner->user_info['user_cs'] . '.' . $setting['host'] . '/u' . $owner->id . '/h' . $bgi;
+				}
+				$bgimg = "http://".($user->byfly!=1?'v':'')."cs" . $bgi;
+			} else {
+				$bgimg = '/images/bg.jpg';
+			}
+		} else {
+			$bgimg = '/images/bg.jpg';
+		}
+	} else {
+		$bgimg = '/images/bg.jpg';
+	}
+?>
+	
+/* <?=$owner->usersetting_info['usersetting_bgimg']?> */
+html,body {background-color:transparent;}
+html {
+	background:transparent url('<?=$bgimg?>') no-repeat center center fixed;
+	-moz-background-size:cover;
+	-o-background-size:102% auto;
+	-webkit-background-size:102% auto;
+	-khtml-background-size:cover;
+	background-size:cover;
+}
+<? }?>
+</style>

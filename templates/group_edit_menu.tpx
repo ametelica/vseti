@@ -1,0 +1,48 @@
+<?php
+	global $group, $tab, $act;
+?><div class="t_bar clear_fix">
+	<ul id="group_edit_filters" class="t0">
+		<li class="<? if($act == 'edit') { ?>active_link<? } ?>">
+			<a href="<?= $group->lnk ?>?act=edit" onclick="return checkEvent(event)" onmousedown="return GroupsEdit.go(this, event)">
+				<b class="tl1"><b></b></b>
+				<b class="tl2"></b>
+				<b class="tab_word">Информация</b>
+			</a>
+		</li>
+		<li>
+			<a href="/groups.php?act=pages&gid=<?=$group->id?>">
+				<b class="tl1"><b></b></b>
+				<b class="tl2"></b>
+				<b class="tab_word">Страницы</b>
+			</a>
+		</li>
+		<li class="<? if($act == 'users') { ?>active_link<? } ?>">
+			<a href="<?= $group->lnk ?>?act=users" onclick="return checkEvent(event)" onmousedown="return GroupsEdit.go(this, event)">
+				<b class="tl1"><b></b></b>
+				<b class="tl2"></b>
+				<b class="tab_word">Участники</b>
+			</a>
+		</li>
+		<li class="<? if($act == 'blacklist') { ?>active_link<? } ?>">
+			<a href="<?= $group->lnk ?>?act=blacklist" onclick="return checkEvent(event)" onmousedown="return GroupsEdit.go(this, event)">
+				<b class="tl1"><b></b></b>
+				<b class="tl2"></b>
+				<b class="tab_word">Чёрный список</b>
+			</a>
+		</li>
+		<li>
+			<a href="/groups.php?act=links&gid=<?=$group->id?>">
+				<b class="tl1"><b></b></b>
+				<b class="tl2"></b>
+				<b class="tab_word">Ссылки</b>
+			</a>
+		</li>
+		<li>
+			<a href="/groups.php?act=advance&gid=<?=$group->id?>">
+				<b class="tl1"><b></b></b>
+				<b class="tl2"></b>
+				<b class="tab_word">Реклама</b>
+			</a>
+		</li>
+	</ul>
+</div>

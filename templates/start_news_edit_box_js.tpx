@@ -1,0 +1,30 @@
+<?php
+global $main_tags, $user;
+?>
+cur.save_my_tags = function() {
+	ajax.post('start.php', {act: 'a_save_tags', 'tags': cur.topics.val()}, {onDone: function() {
+		box.hideProgress();
+		box.hide();
+		//nav.go('/start.php?clear_news=1');
+		nav.reload();
+	}})
+}
+
+box.removeButtons();
+box.addButton('Сохранить', cur.save_my_tags);
+
+cur.topics = new Autocomplete(ge('start_news_topics'), 'start.php?act=a_get_tags', {
+	width: 502,
+	maxItems: 15,
+	introText: 'Введите первые буквы',
+	noResult: 'Тема не найдена',
+	imageId: 'to_image',
+	placeholder: 'Выберите тему',
+	defaultItems: <?=jenc($main_tags)?>,
+	selectedItems: "<?=$user->usersetting_info['usersetting_news_tags']?>",
+	email: options.email,
+	placeholderColored: true,
+	autocomplete: true,
+	cacheLength: 10000,
+	multiselect: true
+}); 

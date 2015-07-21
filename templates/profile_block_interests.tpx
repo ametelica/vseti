@@ -1,0 +1,68 @@
+<?php
+global $owner, $user, $langpack, $interests2;
+?>
+<style>
+.interests {
+	margin-left: -3px;
+	margin-right: -3px;
+}
+.interest {
+	width: 130px;
+	height: 100px;
+	margin: 5px;
+	background: red;
+	color: white;
+	z-index: 2;
+	position: relative;
+}
+.interest .title {
+	height: 19px;
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	left: 0px;
+	color: white;
+	background: rgba(30,30,30,.4);
+	text-overflow: ellipsis;
+	padding: 4px 7px;
+	font-size: 13px;
+	font-weight: bold;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.i_ver {
+	width: 130px;
+	height: 210px;
+}
+.i_hor {
+	width: 200px;
+	height: 100px;
+}
+.i_big {
+	width: 200px;
+	height: 210px;
+}
+</style>
+
+<div class="profile_info clear" id="profile_interests">
+    <h4 class="module_header">
+        Интересы
+        <? if($user->is_me($owner)) { ?><a class="fl_r edit_info" href="/edit?act=interests"></a><? } ?>
+    </h4>
+
+ <div class="module_body clear_fix">
+ 	<div class="interests"><?
+ 		$types = array(
+ 			1 => 'i_big',
+ 			2 => 'i_hor',
+ 			3 => 'i_ver',
+ 			4 => ''
+ 		);
+ 	
+ 		foreach($interests2 as $i) {
+ 			echo '<a href="/search?c[section]=people&c[interest]='.$i[0].'&c[name]=0"  class="interest ' . $types[$i[2]] . '" style="background: url(/images/interests/' . $i[0] . '.jpg)" onclick="return nav.go(this, event)"><div class="title">' . $i[1] . '</div></a>';
+ 		}
+ 		
+ 	?></div>
+ </div>
+</div>

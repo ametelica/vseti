@@ -1,0 +1,106 @@
+<?php
+	global $new_design, $board, $topic, $topic_id, $langpack, $posts, $user, $offset, $limit, $user, $topic_open, $poll;
+	if($new_design) echo tpx('header_design');
+	$posts_tpx = $posts['comments'];
+	if($posts['total'] > $limit) {
+		$posts_tpx = array_slice($posts_tpx, 0, $limit);
+	}
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><div class="tabs t_bar clear_fix">
+  <ul class="t0">
+    <li class="">
+      <a href="/board<?=$board->oid?>" onclick="return nav.go(this, event, {back: true})">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Обсуждения</b>
+      </a>
+    </li>
+    <li class=" bt_unshown" style="">
+      <a href="/board<?=$board->oid?>?act=search&q=" onclick="return nav.go(this, event, {back: true})">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Результаты поиска</b>
+      </a>
+    </li>
+    <li class=" bt_unshown">
+      <a href="/board<?=$board->oid?>?act=create" onclick="return nav.go(this, event)">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Новая тема</b>
+      </a>
+    </li>
+    <li class="active_link bt_unshown">
+      <a href="/topic-<?=$board->oid?>_<?=$topic_id?>" onclick="return nav.go(this, event)">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Просмотр темы</b>
+      </a>
+    </li>
+    <li class="t_r" style="display: none">
+      <a href="/board<?=$board->oid?>?act=create" onclick="return nav.go(this, event)">
+        Создать тему
+      </a>
+    </li>
+    <li class="t_r" style="<? if($topic['aid'] != $user->id and !$board->can_edit) { ?>display: none<? } ?>">
+      <a onclick="return Privacy.show(this, event, 'topic_action', [0, 0])" id="privacy_edit_topic_action">
+        Редактировать
+      </a>
+      <div class="progress" id="edit_topic_prg"></div>
+    </li>
+  </ul>
+</div>
+<div class="bt_header">
+  <a href="/topic<?=$topic_id?>" onclick="return nav.go(this, event)" id="bt_title"><?=$topic['body']?></a>
+  <div class="bt_author"><a href="<?=$board->owner->lnk?>" class="group_link"><?=$board->owner->title?></a></div>
+</div>
+<?
+	if(!empty($poll)) {
+		echo '<div id="bv_wrap">' .tpx('board_poll_block'). '</div>';
+	}
+	$messages = array(
+		1 => '<b>Тема открыта.</b><br>Все участники сообщества смогут оставлять сообщения в этой теме.',
+		2 => '<b>Тема закрыта.</b><br>Участники сообщества больше не смогут оставлять сообщения в этой теме.',
+	);
+	$m = rq('m');
+	if(array_key_exists($m, $messages)) {
+		echo '<div id="bt_msg" class="msg">' . $messages[$m] . '</div>';
+	}
+?>
+<div id="bv_wrap"></div>
+<div class="summary_wrap bt_summary">
+  <div class="pg_pages fl_r" id="bt_pages"><?= pg_pages('/topic' . $topic_id . '?', $posts['total'], $limit, $offset) ?></div>
+  <div class="summary" id="bt_summary">В теме <?=$posts['total']?> сообщени<?=$langpack->dln($posts['total'], array('е', 'я', 'й'))?></div>
+</div>
+<div id="bt_rows" class="wall_module wide_wall_module"><?=tpx('board_topic_rows', array('posts' => $posts_tpx, 'first_page' => 1))?></div>
+<a id="bt_load_more" class="pg_more_link" onclick="Pagination.showMore()" style="<? if($limit + $offset >= $posts['total']) {?>display: none<? } ?>"><span>Показать ещё сообщения</span>
+  <div id="bt_more_progress" class="pg_more_progress progress"></div>
+</a>
+<? if($topic_open) { ?><div id="ba_post_wrap"><div id="ba_post" class="board_post_open">
+  <div id="ba_post_sh"></div>
+  <table cellspacing="0" cellpadding="0" class="ba_table"><tr>
+    <td class="ba_thumb_td">
+      <a class="ba_thumb" href="<?=$user->lnk?>" onclick="return nav.go(this, event)"><img width="50" height="50" src="<?=$user->photo()?>" /></a>
+    </td>
+    <td class="ba_info">
+      <div class="ba_text_cont">
+        <div id="ba_reply_smile" title="" class="emoji_smile fl_l" onmouseover="if (window.Emoji) Emoji.ttOver(this);" onmouseout="if (window.Emoji) Emoji.ttOut(this);" onmousedown="return Board.showEmojiTT(this, event);" onclick="return cancelEvent(event);" style="right: 1px; opacity: 0.7;"><div class="emoji_smile_icon_on"></div><div class="emoji_smile_icon"></div></div>
+        <div id="ba_text" placeholder="Комментировать.." onfocus="return Board.showPostField();" onkeyup="checkTextLength(4096, this, 'ba_warn')" contenteditable="true"></div>
+      </div>
+      <div id="ba_media_preview" class="clear_fix media_preview"></div>
+      <div id="ba_warn"></div>
+      <div class="ba_buttons">
+        <div id="ba_add_media" class="fl_r"><span class="add_media_lnk">Прикрепить</span></div>
+        <div class="button_green fl_l">
+          <button onclick="Board.sendPost()">Отправить</button>
+        </div>
+        <div class="checkbox fl_l" id="ba_from_group" style="<? if(!$board->can_edit) { ?>display: none<? } ?>" onclick="checkbox(this)"><div></div>от имени сообщества</div>
+        <div id="ba_cancel" class="button_cancel fl_l">
+          <div class="button" onclick="Board.cancelAddPost(true)">Отмена</div>
+        </div>
+        <div id="ba_progress" class="progress fl_l"></div>
+      </div>
+    </td>
+  </tr></table>
+</div></div><? } ?></div>
+  </div></div>

@@ -1,0 +1,33 @@
+<?php
+	global $group, $admins, $langpack; 
+?>
+<div class="module clear page_list_module" id="group_leaders">
+    <a href="/groups.php?act=people&gid=<?=$group->id?>#section=1" class="module_header">
+  <div class="header_top clear_fix">
+    <span class="right_link fl_r"  onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href=''"></span>
+    Организаторы
+  </div>
+  <div class="p_header_bottom">
+    <span class="fl_r"></span>
+    <? echo $total_admins = count($admins); ?> организатор<?=$langpack->dln($total_admins, 'file')?>
+  </div>
+</a>
+  <div class="module_body clear_fix">
+<?
+    foreach($admins as $adm){
+        $admin = pdata($adm['u']);
+?>
+      <div class="line_cell clear_fix">
+        <div class="fl_l thumb">
+            <a href="<?=$adm['user']->lnk?>" onclick="return nav.go(this, event)"><img src="<?=$admin->photo()?>" /></a>
+        </div>
+        <div class="fl_l desc_info">
+            <div class="people_name"><a href="<?=$admin->lnk?>" onclick="return nav.go(this, event)"><?=$admin->title?></a></div>
+            <div class="people_extra"><?=$adm['s']?></div>
+        </div>
+    </div>
+<?      
+    }
+?>    
+  </div>
+</div>

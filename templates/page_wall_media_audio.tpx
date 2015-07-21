@@ -1,0 +1,88 @@
+<?php
+global $user, $setting;
+
+extract($var);
+
+$track_path = 'http://cs'.$cs.'.'.$setting['host'].'/audio.php?mp3='.$obj.'&mid='.$user->id.'&hash='.hash_get($obj.$user->id,8,'al');
+/*
+echo '<div class="audio clear" id="audio'.$id.'">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tbody><tr>
+      <td>
+        <a onclick="playAudioNew(\''.$id.'\')"><div class="play_new" id="play'.$id.'"></div></a>
+        <input id="audio_info'.$id.'" value="'.$track_path.','.$sec.'" type="hidden">
+      </td>
+      <td class="info">
+        <div class="duration fl_r">'.$dur.'</div>
+        <div class="audio_title_wrap fl_l"><b>'.strcut($artist, 25).'</b> - <span id="title'.$id.'">'.strcut($title, 40).'</span></div>
+      </td>
+    </tr>
+  </tbody></table>
+  <div class="player_wrap">
+    <div id="line'.$id.'" class="playline"><div></div></div>
+    <div id="player'.$id.'" class="player" ondragstart="return false;" onselectstart="return false;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0">
+        <tbody><tr id="audio_tr'.$id.'" valign="top">
+          <td style="width: 100%; padding: 0px; position: relative;">
+            <div id="audio_white_line'.$id.'" class="audio_white_line" onmousedown="audioPlayer.prClick(event);"></div>
+            <div id="audio_load_line'.$id.'" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>
+            <div id="audio_progress_line'.$id.'" class="audio_progress_line" onmousedown="audioPlayer.prClick(event);">
+              <div id="audio_pr_slider'.$id.'" class="audio_pr_slider"><!-- --></div>
+            </div>
+          </td>
+          <td id="audio_vol'.$id.'" style="position: relative;"></td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>';
+*/
+//dmp($var);
+
+echo '<div class="audio" id="audio'.$id.'" onmouseover="addClass(this, \'over\');" onmouseout="removeClass(this, \'over\');">
+  <a name="'.$id.'"></a>
+  <div class="area clear_fix" onclick="if (cur.cancelClick){ cur.cancelClick = false; return false;} playAudioNew(\''.$id.'\')">
+    <table cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+        <td>
+          <div class="play_btn_wrap"><div class="play_new" id="play'.$id.'"></div></div>
+          <input type="hidden" id="audio_info'.$id.'" value="'.$track_path.','.$sec.'" />
+          
+        </td>
+        <td class="info">
+          <div class="title_wrap fl_l" onmouseover="setTitle(this)"><b onclick="event.cancelBubble = true;"><a href="/search?c[section]=audio&c[q]='.rawurlencode($artist).'&c[performer]=1" onclick="return nav.go(this, event);">'.strcut($artist, 25).'</a></b> &ndash; <span class="title" id="title'.$id.'">'.strcut($title, 40).'</span><span class="user" onclick="event.cancelBubble = true;"></span></div>
+          <div class="actions" onclick="event.cancelBubble = true;">
+            
+          </div>
+          <div class="duration fl_r" onmousedown="if (window.audioPlayer) audioPlayer.switchTimeFormat(\''.$id.'\', event);" onclick="cancelEvent(event)">'.$dur.'</div>
+        </td>
+      </tr>
+    </table>
+    <div id="player'.$id.'" class="player" ondragstart="return false;" onselectstart="return false;" onclick="event.cancelBubble = true;">
+      <table cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tbody><tr>
+          <td style="width: 100%;">
+            <div id="audio_pr'.$id.'" class="audio_pr" onmouseover="addClass(this, \'over\'); if (cur.hideTipTO) clearTimeout(cur.hideTipTO);" onmouseout="removeClass(this, \'over\'); cur.hideTipTO = setTimeout(hide.pbind(\'audio_tip_wrap\'), 100);" onmousedown="addClass(this, \'down\'); audioPlayer.prClick(event);" onmouseup="removeClass(this, \'down\')">
+              <div id="audio_white_line'.$id.'" class="audio_white_line" onmousedown="audioPlayer.prClick(event);"></div>
+              <div id="audio_back_line'.$id.'" class="audio_back_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>
+              <div id="audio_load_line'.$id.'" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>
+              <div id="audio_pr_line'.$id.'" class="audio_progress_line" onmousedown="audioPlayer.prClick(event);">
+                <div id="audio_pr_slider'.$id.'" class="audio_slider"><!-- --></div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div id="audio_vol'.$id.'" class="audio_vol" onmouseover="addClass(this, \'over\')" onmouseout="removeClass(this, \'over\'); removeClass(this, \'down\')" onmousedown="addClass(this, \'down\'); audioPlayer.volClick(event)" onmouseup="removeClass(this, \'down\')">
+              <div id="audio_vol_white_line'.$id.'" class="audio_vol_white_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>
+              <div id="audio_vol_back_line'.$id.'" class="audio_load_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>
+              <div id="audio_vol_line'.$id.'" class="audio_progress_line" onmousedown="audioPlayer.volClick(event);">
+                <div id="audio_vol_slider'.$id.'" class="audio_slider" onmousedown="audioPlayer.volClick(event);"><!-- --></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>';
+?>

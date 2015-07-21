@@ -1,0 +1,123 @@
+<?php
+global $order_id, $app, $user, $order_response;
+
+
+$votes = isset($order_response['price']) ? $order_response['price'] : 0;
+$order_id = intval($order_id);
+?>
+/* <?=$order_response['price']?> */
+
+extend(cur, {
+  isPaymentsAppOrder: true,
+  paymentsOrderId: <?=$order_id?>,
+  paymentsOrderAppId: <?=$app->app_id?>,
+  paymentsOrderTestMode: <?=in_array($user->id, explode(',', $app->app_info['app_pay_testers']))?1:0?>,
+  paymentsOrderHash: '<?=hash_get($order_id . $app->app_id . $user->id . $votes, 16, 'pay_order')?>',
+  paymentsPreferVotes: '<?= $votes ?>',
+  paymentsProcessOrder: function(votes_ok) {
+    var isPayBoxVisible = isVisible('payments_box') ? 2 : 0;
+    if (!votes_ok) votes_ok = isPayBoxVisible;
+    if (isPayBoxVisible) {
+      lockButton('payments_getvotes_submit');
+    }
+    ajax.post('al_apps.php', {act: 'a_order', aid: cur.paymentsOrderAppId, order_id: cur.paymentsOrderId, votes: cur.paymentsPreferVotes, test_mode: cur.paymentsOrderTestMode, _votes_ok: votes_ok, hash: cur.paymentsOrderHash}, {
+      onDone: function(orderId, checkOrderHash, html, errorCode) {
+        if ((errorCode === 0 || errorCode > 0)) {
+          cur.paymentsPreferVotes = 1; // no onAppOrderCancel
+          if (isPayBoxVisible) {
+            cur.paymentsShowBoxError(html);
+          } else {
+            box.hide();
+            showFastBox(getLang('global_error'), html);
+          }
+          if (cur.onAppOrderFail) {
+            cur.onAppOrderFail(errorCode);
+          }
+          return;
+        }
+
+        if (!orderId) {
+          cur.paymentGetOrderItemTO = setTimeout(cur.paymentsProcessOrder, 1000);
+          return;
+        }
+
+        if (html) {
+          box = showFastBox('', html);
+          addClass(boxLayerBG, 'bg_medium');
+          box.setOptions({title: false, width: 520, bodyStyle: 'padding: 0;', hideButtons: true, onClean: function() {
+            removeClass(boxLayerBG, 'bg_medium');
+          }});
+        }
+
+        unlockButton('payments_getvotes_submit');
+        cur.isPaymentsAppOrder = false;
+        cur.paymentsOrderId = orderId;
+        cur.paymentsOrderCheckHash = checkOrderHash;
+        cur.paymentsShowProgress();
+        ge('payments_box_progress_msg_wrap').innerHTML = '<span id="payments_box_progress_msg">Ожидаем завершения платежа..</span>';
+        cur.paymentsCheckOrderCnt = 0;
+        cur.paymentsCheckOrderInt = setInterval(cur.paymentsCheckOrder, 2000);
+      },
+      onFail: function(msg) {
+        if (!msg) {
+          return true;
+        }
+        if (isPayBoxVisible) {
+          cur.paymentsShowBoxError(msg);
+        } else {
+          box.hide();
+          showFastBox(getLang('global_error'), msg);
+        }
+        return true;
+      }
+    });
+  },
+  paymentsCheckOrder: function() {
+    if (cur.paymentsCheckOrderCnt == 15) {
+      ge('payments_box_progress_msg').innerHTML = 'Подождите ещё немного..';
+    } else if (cur.paymentsCheckOrderCnt > 30) {
+      clearInterval(cur.paymentsCheckOrderInt);
+      box.hide();
+      showFastBox('Передача зайчиков приложению', 'Мы ожидаем подтверждение от приложения. Если оно не будет получено в течение часа, зайчики будут возвращены на Ваш счёт.', getLang('global_close'), function() {
+        if (cur.onAppOrderCancel) {
+          cur.onAppOrderCancel();
+        }
+        curBox().hide();
+      });
+      return;
+    }
+    cur.paymentsCheckOrderCnt++;
+
+    ajax.post('al_apps.php', {act: 'a_check_order', aid: <?=$app->app_id?>, order_id: cur.paymentsOrderId, test_mode: 0, hash: cur.paymentsOrderCheckHash}, {
+      onDone: function(result, text, balance, errorCode) {
+        if (!result) {
+          return;
+        }
+        curBox().hide();
+        clearInterval(cur.paymentsCheckOrderInt);
+        cur.paymentsCheckOrderCnt = 0;
+
+        toggleFlash(false);
+        showDoneBox(text, {out: 1000, callback: function() { toggleFlash(true); }});
+        if (balance) {
+          updateMoney(balance);
+        }
+
+        if (result == 1) {
+          if (cur.onAppOrderSuccess) {
+            cur.onAppOrderSuccess(cur.paymentsOrderId);
+          }
+        } else {
+          if (cur.onAppOrderFail) {
+            cur.onAppOrderFail(errorCode);
+          }
+        }
+      },
+      onFail: function(msg) {
+        clearInterval(cur.paymentsCheckOrderInt);
+        cur.paymentsShowBoxError(msg);
+        return true;
+      }
+    });
+  }
+});

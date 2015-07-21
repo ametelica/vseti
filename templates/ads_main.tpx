@@ -1,0 +1,102 @@
+<?php
+global $new_design, $user, $ad_balance, $today_price, $yesterday_price;
+if($new_design) echo tpx('header_design');
+?><div id="wrap2">
+  <div id="wrap1">
+   <div id="content" class="white_page">
+	
+<div class="tabs t_bar clear_fix">
+<ul class="t0">
+<li id="feedtab_news" class="active_link">
+<a href="/ads?act=office">Личный кабинет</a>
+</li>
+<li class="t_r"></li>
+</ul>
+</div>
+	
+	
+	<div id="ads_page_wrap3" class="clear_fix ">
+		<!--
+  <div id="ads_navigation" class="fl_l ads_nav">
+    <div class="edit_button_wrap"><a href="/adscreate?parent_id=1600560983" class="button_link"><div class="button_green button_wide"><button>Создать объявление</button></div></a></div><a class="nav nav_selected" href="/ads?act=office">Рекламные кампании</a><a class="nav" href="/ads?act=budget">Бюджет</a><a class="nav" href="/ads?act=export_stats">Экспорт статистики</a><a class="nav" href="/ads?act=settings">Настройки</a><div class="nav_separator"></div><div><a id="ads_navigation_union_1000719453" class="nav" href="/ads?act=office&union_id=1000719453">Мои объявления</a></div><div class="nav_separator"></div><a class="nav" href="/ads?act=office_help">Помощь</a><a class="nav" href="/ads?act=office_help&terms=1">Правила</a><a class="nav" href="/board19542789">Новости</a>
+  </div>
+	-->
+		
+	
+		
+  
+      
+      <div id="ads_page">
+        <div id="ads_unions_content">
+  <div id="ads_union_general_info" class="clear_fix">
+  <!--<h2>Личный кабинет</h2>-->
+ 
+  <div style="padding: 20px 0 0 10px;">
+    <table class="ads_general_info ads_unions_content_label" style="float: left;">
+      <tr class="" id="general_info_row_budget" style="">
+  <td class="table_label" style="">Оставшийся бюджет:</td>
+  <td class="table_value "><span id="general_info_budget"><span style="white-space:nowrap;"><?=nf_price($ad_balance)?></span></span> (<a href="/ads?section=balance" onclick="return nav.go(this, event)">пополнить</a>)</td>
+</tr><tr class="" id="general_info_row_money_amount_day_now" style="">
+  <td class="table_label" style="">Потрачено сегодня:</td>
+  <td class="table_value "><span style="white-space:nowrap;"><?=nf_price(ceil($today_price/1000))?></span></td>
+</tr><tr class="" id="general_info_row_money_amount_day_prev" style="">
+  <td class="table_label" style="">Потрачено вчера:</td>
+  <td class="table_value "><span style="white-space:nowrap;"><?=nf_price(ceil($yesterday_price/1000))?></span></td>
+</tr>
+    </table>
+    
+<div class="ads_create_button_office">
+  <div class="edit_button_wrap">
+    <a class="button_link" href="/adscreate">
+      <div class="button_green ">
+        <button>Создать объявление</button>
+      </div>
+    </a>
+  </div>
+</div>
+
+  </div>
+</div>
+<div id="ads_union_children">
+  <h2><!--<a href="/ads?act=office&union_id=1600560983&view=periods" class="fl_r ads_h2_add">К статистике по дням</a>-->Рекламные кампании</h2>
+  <div>
+    <div class="row_div control_label" style="width: 170px;">Период статистики:</div>
+    <div class="row_div" style="margin-left: -3px;"><a id="table_selector" class="dd_link">За всё время</a><img id="union_children_table_progress" src="/images/upload.gif" style="display: none;" /></div>
+  </div>
+
+  <div id="union_children_table">
+    <div id="paginated_table" class="ads_unions_list_p"></div>
+  </div>
+</div>
+<div id="ads_union_children_graph">
+  <h2 style="margin-bottom: 15px; ">Статистика</h2>
+
+  <table style="border-collapse: collapse; width: 100%;">
+    <tr>
+      <td class="ads_graph_wrap">
+        
+<div style="">
+  <div id="wrapper_ads_graph_unions" style="width: 700px; height: 385px;" class="stats_flash_wrap">
+    <div id="ads_graph_unions">
+      <div style="padding: 10px; margin: 10px auto; text-align: center"></div>
+    </div>
+  </div>
+</div>
+      </td>
+      <td id="ads_graph_navigation" style="vertical-align: top; padding: 29px 0 0 20px;">
+        <a href="#" onclick="this.blur(); cur.changeGraph(0); return false;" class="nav nav_selected" id="graph_navigation_0">Переходы</a>
+        <a href="#" onclick="this.blur(); cur.changeGraph(1); return false;" class="nav" id="graph_navigation_1">Показы</a>
+        <a href="#" onclick="this.blur(); cur.changeGraph(2); return false;" class="nav" id="graph_navigation_2">CTR</a>
+        <a href="#" onclick="this.blur(); cur.changeGraph(3); return false;" class="nav" id="graph_navigation_3">Потрачено (руб.)</a>
+      </td>
+    </tr>
+  </table>
+</div>
+</div>
+      </div>
+      <div id="ads_page_bottom_info">
+        Если у Вас возникли какие-либо проблемы, обязательно обратитесь в <a href="/support">Техническую поддержку</a>.
+      </div>
+    </div>
+  </div>
+</div></div>

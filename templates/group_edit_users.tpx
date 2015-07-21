@@ -1,0 +1,83 @@
+<?php
+global $new_design, $group, $members, $tab, $langpack;
+
+//dmp($group->admins);
+
+if ($new_design) {
+	echo tpx('header_design');
+}
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><?=tpx('group_edit_menu')?>
+    <? if($group->user_level > 1 and ($tab != 'admins' or $group->user_level >= 3)) { ?>
+			<div id="gedit_users_search_wrap" class="clear_fix">
+				<div class="fl_r button_green button_wide" id="gedit_users_search_btn">
+					<button onclick="GroupsEdit.uSearch()">Поиск</button>
+				</div>
+				<div class="fl_r button_green button_wide" id="gedit_users_admsearch_btn" style="display: none">
+					<button onclick="GroupsEdit.uSearch()">Назначить админом</button>
+				</div>
+				<div id="gedit_reset_search" onclick="GroupsEdit.uResetSearch()" class="gedit_search_wide"></div>
+				<input type="text" class="text gedit_search_wide" id="gedit_users_search_inp" placeholder="Введите имя пользователя или ссылку на его страницу" onkeyup="GroupsEdit.uSearchUpdate(false)" onchange="GroupsEdit.uSearchUpdate(false)" onpaste="GroupsEdit.uSearchUpdate(false)" onkeydown="if (event.keyCode == 27) GroupsEdit.uResetSearch(); else if (event.keyCode == 10 || event.keyCode == 13) GroupsEdit.uSearch();" onfocus="addClass(ge('gedit_users_wrap'), 'gedit_search_focused')" onblur="removeClass(ge('gedit_users_wrap'), 'gedit_search_focused')" />
+			</div>
+			<div class="summary_tabs clear_fix" id="gedit_summary_tabs"><?
+			
+			$summary_tabs = array(
+					'members' => 'Все участники',
+					'requests' => 'Заявки',
+					'invites' => 'Приглашения',
+					'admins' => 'Руководители',
+			);
+			
+			foreach($summary_tabs as $k => $v) {
+				
+				// Если вкладка пустая или кто-то ниже администратора пробует залезть в управление админами
+				if(($k == 'admins' and $group->user_level < 3) 
+					or empty($members[$k]['total'])) continue;
+				
+				?><div class="fl_l summary_tab<? if($k == $tab) { ?>_sel<? } ?>">
+					<a class="summary_tab2" id="gedit_tab_<?=$k?>" href="<?= $group->lnk ?>?act=users&tab=<?=$k?>" onclick="return checkEvent(event)" onmousedown="return nav.go(this, event)">
+						<div class="summary_tab3">
+							<nobr><?=$v?></nobr>
+						</div>
+					</a>
+				</div><?				
+			}
+			?></div>
+			<div id="gedit_users_wrap"><?
+			
+			$summary_text = array(
+					'members'	=> array('участник', 'участника', 'участников'),
+					'requests'  => array('заявка на вступление', 'заявки на вступление', 'заявок на вступление'),
+					'invites'	=> array('приглашенный участник', 'приглашенных участника', 'приглашенных участников'),
+					'admins'	=> array('руководитель', 'руководителя', 'руководителей'),
+			);
+			
+			
+foreach ($members as $t => $m) {
+
+	$assign = array(
+			'ids' => $m['ids'],
+			'tab' => $t
+	);
+	
+	//dmp($assign);
+	
+	?>
+	<div id="gedit_users_<?= $t ?>" <? if($t != $tab) {?>style="display: none"<? } ?> >
+		<div id="gedit_users_summaryw_<?= $t ?>" class="summary_wrap">
+			<div id="gedit_users_summary_<?= $t ?>" class="summary">В сообществе <?=$m['total']?> <?=$langpack->dln($m['total'], $summary_text[$t])?><? if($t == 'requests') { ?><span class="divide">|</span>
+<span><a onclick="GroupsEdit.uApproveAll()">Принять всех</a></span><? } ?></div>
+		</div>
+		<div id="gedit_users_rows_<?= $t ?>" class="gedit_users_rows"><?= tpx('group_edit_users_rows', $assign) ?></div><a id="gedit_users_more_<?= $t ?>" class="gedit_users_more" <? if($m['total'] < 20) { ?>style="display: none;"<? } ?> onclick="GroupsEdit.uShowMore()">Показать ещё</a>
+	</div>
+<? } ?>
+</div><? } else { ?>
+	<div id="empty_page" class="clear_fix">
+     <div style='font-size:14px; padding:100px; text-align: center;'>
+        Для доступа к этой странице необходимо быть руководителем группы не ниже уровня <b><? if($tab == 'admins') { ?>Администратор<? } else { ?>Редактор<? } ?></b>.
+     </div>
+    </div>
+<? } ?></div>
+  </div>
+</div>

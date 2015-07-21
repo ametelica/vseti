@@ -1,0 +1,42 @@
+<?php
+global $type,$act,$user,$new_design;
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap1">
+ <div id="content" class="white_page"><div class="app_tabs t_bar clear_fix">
+  <a href="#" onclick="Apps.toggleGroupAddForm(); return false;" id="app_form_toggler" class="app_tab_link fl_r" style="display: none;">Добавить приложение</a>
+  <ul id="apps_tabs" class="t0">
+   <li id="tab_catalog" class="<?if($act=='catalog'){?>active_link<?}?>">
+    <a href="/al_apps.php?act=catalog" onclick="return checkEvent(event);" onmousedown="return Apps.switchTab('catalog', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Каталог</b>
+    </a>
+   </li>
+   <li id="tab_apps" class="<?if($act=='apps'){?>active_link<?}?>">
+    <a href="/al_apps.php?act=apps" onclick="return checkEvent(event);" onmousedown="return Apps.switchTab('apps', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Мои приложения</b>
+    </a>
+   </li>
+   <li id="tab_notifications" class="<?if($act=='notifications'){?>active_link<?}?>" style="">
+    <a href="/al_apps.php?act=notifications" onclick="return checkEvent(event);" onmousedown="return Apps.switchTab('notifications', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Оповещения <?=$user->usersetting_info['new_apps'] > 0?'(<b>'.$user->usersetting_info['new_apps'].'</b>)':''?></b>
+    </a>
+   </li>
+   <li id="tab_settings" class="fl_r " style="">
+    <a href="/al_apps.php?act=settings" onclick="return checkEvent(event);" onmousedown="return Apps.switchTab('settings', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Настройки</b>
+    </a>
+   </li>
+  </ul>
+</div>
+<div id="apps_search" class="app_search clear_fix" style="">
+  <div class="fl_l">
+    <input placeholder="Поиск по приложениям" onkeyup="Apps.updateList(event, this);" id="s_search" type="text" class="s_search text" value="" />
+  </div>
+  <div id="apps_query_reset" class="search_reset fl_l" onmouseover="if (isVisible(this)) animate(this, {opacity: 1}, 100)" onmouseout="if (isVisible(this)) animate(this, {opacity: .6}, 100)" onclick="Apps.clearSearch(this, event)"></div>
+  <div class="search_progress fl_l"></div>
+</div>
+ <div id="apps">
+	<?=$var['apps']?>
+  </div>
+ </div>
+</div>

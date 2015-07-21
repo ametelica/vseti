@@ -1,0 +1,39 @@
+<?php
+global $owner, $photos_list, $langpack, $photos_on_page, $new_design;
+
+$photos_assign = array(
+	'photos' => $photos_list['data'],
+	'from' => 'photos'.$owner->oid,
+	'limit' => $photos_on_page,
+);
+
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+			<div class="t_bar photos_tabs clear_fix">
+				<ul class="t0"><li class="">
+						<a href="/albums<?= $owner->oid ?>" onclick="return checkEvent(event);" onmousedown="if ((window.PhotosAdd || nav).go(this, event) === false) (window.PhotosAdd || window.photos || window.friendsphotos).activeTab(this);">
+							<b class="tl1"><b></b></b>
+							<b class="tl2"></b>
+							<b class="tab_word"><nobr>Все фотографии</nobr></b>
+						</a>
+					</li><li class="active_link">
+						<a href="/photos<?= $owner->oid ?>" onclick="return checkEvent(event);" onmousedown="if ((window.PhotosAdd || nav).go(this, event) === false) (window.PhotosAdd || window.photos || window.friendsphotos).activeTab(this);">
+							<b class="tl1"><b></b></b>
+							<b class="tl2"></b>
+							<b class="tab_word"><nobr>Обзор фотографий</nobr></b>
+						</a>
+					</li></ul>
+			</div><div class="photos_albums_page">
+				<div class="summary_wrap" style="">
+					<div class="summary"><a class="fl_r sort_rev_icon" onmouseover="showTooltip(this, {text: 'Показать в обратном порядке', black: 1})" href="/photos<?= $owner->oid ?>?rev=1" onclick="return nav.go(this, event)"></a><?= $photos_list['total'] ?> фотографи<?= $langpack->dln($photos_list['total'], 'pht2') ?><span class="divide">|</span><span><a href="/photos<?= $owner->oid ?>?act=comments" onclick="return nav.go(this, event)">Комментарии к альбомам</a></span></div>
+				</div>
+				<div id="photos_container" class="clear_fix"><?= tpx('photo_photos_rows', $photos_assign) ?></div>
+				<a id="photos_load_more" onclick="photos.load()" style="<? if($photos_list['total'] < $photos_on_page) { ?>display: none;<? } ?>"><span>Показать больше фотографий</span>
+					<div id="photos_more_progress" class="progress"></div>
+				</a>
+			</div>
+		</div>
+  </div></div>

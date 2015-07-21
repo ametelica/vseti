@@ -1,0 +1,32 @@
+<?
+global $act;
+$u=$var['u'];
+
+$city = empty($u->profile_info['city_name'])?'не указан':'<b>'.$u->profile_info['city_name'].'</b>';
+$age = date2age($u->profile_info['b_date']);
+if($age!='-') $age = '<b>'.$age.'</b>';
+
+$rate = empty($u->user_info['rate_delta'])?$u->user_info['rate']:'+'.$u->user_info['rate_delta'];
+
+echo '<table class="rate_table" style="width: 300px;">
+	<tr>
+		<td class="ava_col">
+			<a href="'.$u->lnk.'" onclick="return nav.go(this, event)"><img class="ava" src="'.$u->user_photo('','b').'" width="100" height="100" alt="'.$u->user_info['fio'].'" /></a>
+		</td>
+		<td class="info_col">
+			<div class="rate_name">
+				<a href="'.$u->lnk.'" onclick="return nav.go(this, event)">'.$u->user_info['fio'].'</a>
+			</div>
+			<div class="rate_about">
+				'.$u->user_info['about'].'
+			</div>
+			<div class="rate_stat">
+				<table>
+					<tr><td>'.(($act=='mm' or $act=='ny' or $act=='dm')?'Подарки':'Рейтинг').': <b>'.$rate.'</b></td><td>Возраст: '.$age.'</td></tr>
+					<tr><td colspan="2">Город: '.$city.'</td></tr>
+				</table>
+			</div>
+		</td>
+	</tr>
+</table>';
+?>

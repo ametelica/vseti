@@ -1,0 +1,157 @@
+<?php
+global $new_design, $item, $bazar, $user, $datetime, $cur_chars, $owner;
+
+if (!empty($new_design))
+	echo tpx('header_design');
+	
+	//$parent_cat = $bazar->categories[$item['type']]['parent_id'];
+	
+	//$album_uid = $album->oid . '_' . $album->id;
+	//$photo_uid = $album->oid . '_' . $album->cover;	
+?>
+<div id="wrap2">
+	<div id="wrap1">
+		<div id="content" class="white_page bazar_page">
+			<div class="bazar_main_panel">
+				<div class="bazar_price"><?=$item->get('price_text')?></div>
+				<h2><?=$item->get('title')?></h2>
+				<? if($item->get('deleted') == 0) { ?>
+				<? if($item->get('accept') == 0) { ?>
+					<div class="message">Объявление будет опубликовано после проверки модератором</div>
+				<? } ?>
+				<? if($item->get('accept') == -1) { ?>
+					<div class="error">Объявление было отклонено модератором<? 
+						if($item->get('accept_text') != '') {
+							echo ' с причиной: ' .  $item->get('accept_text');
+						}
+						?></div>
+				<? } ?>
+				<? } else { ?>
+					<div class="error">Объявление потеряло актуальность <?=$datetime->sdate($item->get('update_time'))?></div>
+				<? }?>
+				<div class="item_info">
+					<? if(trim($item->get('desc')) != '') { ?> 
+					<?=vc_code($item->get('desc'))?>
+					<br class="clear">
+					<br class="clear">
+					<? } ?>
+					
+					<div class="bazar_view_label fl_l ta_r">Категория:</div>
+					<div class="bazar_view_field fl_l"><?=$item->get('type_text')?></div>	
+			
+					<div class="bazar_view_label fl_l ta_r">Расположение:</div>
+					<div class="bazar_view_field fl_l"><?=$item->get('address')?></div>	
+
+					<div class="bazar_view_label fl_l ta_r">Обновлено:</div>
+					<div class="bazar_view_field fl_l"><?=$datetime->sdate($item->get('update_time'))?></div>	
+					
+					<div class="bazar_view_label fl_l ta_r">Просмотров:</div>
+					<div class="bazar_view_field fl_l"><?=$item->get('views')?></div>
+						
+					<div class="bazar_view_label fl_l ta_r">Автор:</div>
+					<div class="bazar_view_field fl_l"><a href="<?=$item->get('owner')->lnk?>" onclick="return nav.go(this, event)"><?=$item->get('owner')->title?></a></div>
+						
+					<div class="bazar_view_label fl_l ta_r">&nbsp;</div>
+					<div class="bazar_view_field fl_l">
+						<div class="button_green button_wide">
+							<button onclick="return showWriteMessageBox(event, <?=$item->get('owner')->id?>)">Отправить сообщение</button>
+						</div>
+					</div>
+					<br class="clear">
+				</div>
+				<div class="item_desc">
+					<img rel="<?=$item->get('photo')?>" src="<?=$item->photo('x')?>" width="240" onclick="bazar.ssClick(this);"/>
+					  <?
+						$screenshots = $item->get('screenshots');
+						if(count($screenshots) > 1) {
+						echo '<div class="bazar_edit_screen_l" id="bazar_edit_screens_list">';
+						//dmp($screenshots);
+						for($i = 1; $i < 6; $i++) {
+							if(!empty($screenshots[$i])) {
+								echo '<div style="background: url('.$item->screenshot($screenshots[$i], 'n').') no-repeat;" rel="'.$screenshots[$i].'" class="bazar_edit_screen fl_l" onclick="bazar.ssClick(this);"></div>';
+							}
+						}
+						echo '</div><br class="clear">';
+						}
+						
+						//and $item->get('accept') == 0 
+						?>
+					<? if ( $user->hr('bz_moder')) { 
+						global $user_item_list, $user_item_list_active;
+						?> <h2>Модерация</h2> <?
+						if($item->get('accept') == 0) {
+						$owner = $item->get('owner');
+						$owner->privacy_load();
+						//dmp($owner->privacy_info);
+						//dmp($owner);
+						$page_priv = empty($owner->privacy_info['privacy_profile']['src']) ? '<span style="color: green">Да</span>' : '<span style="color: red">Нет</span>';
+						$phone_priv = empty($owner->profile_info['privacyMPhone']) ? '<span style="color: green">Да</span>' : '<span style="color: red">Нет</span>';
+						$ls_priv = empty($owner->privacy_info['privacy_mail_send']['src']) ? '<span style="color: green">Да</span>' : '<span style="color: red">Нет</span>';
+						?>
+						Объявлений у пользователя: <?=$user_item_list['total']?> (<?=$user_item_list_active['total']?>)<br />
+						Приватность страницы: <?=$page_priv?><br />
+						Приватность телефона: <?=$phone_priv?><br />
+						Личные сообщения: <?=$ls_priv?><br />
+						<input type="hidden" id="item_cat" /><br />
+						<textarea placeholder="Причина отказа" id="bazar_accept_text"><?=$item->get('accept_text')?></textarea>
+						<div class="button_green">
+							<button onclick="return cur.bazarAccept(<?=$item->get('id')?>, 1)">Одобрить</button>
+						</div>
+						<div class="button_gray">
+							<button onclick="return cur.bazarAccept(<?=$item->get('id')?>, -1)">Отклонить</button>
+						</div>
+						<? } else { ?>
+						Категория: <input type="hidden" id="item_cat" /><br />
+						<div class="button_green">
+							<button onclick="return cur.bazarMove(<?=$item->get('id')?>)">Перенести</button>
+						</div>
+						<? } ?>
+						<br /><br />
+					<? } ?>
+					
+				</div>
+				
+				
+				<?  /* dmp($item)*/ ?>
+			</div>
+			
+			<div class="bazar_side_panel">
+				<div style="padding: 20px">
+				<? 	if($item->get('user_id') == $user->id) { ?>
+					<? if(time() - $item->get('update_time') < (3600 * 12)) { 
+						$timer = $item->get('update_time') + (12 * 3600) - time();
+						$timer = floor($timer/3600) . ':'. (($timer/60) % 60);
+						?>
+					<div class="button_gray button_wide" >
+						<button onclick="showFastBox('Ошибка', 'Поднимать объявление можно раз в 12 часов.')">Поднять через <?=$timer?></button>
+					</div>
+					<? } else { ?>
+					<div class="button_green button_wide" id="button_up">
+						<button onclick="cur.bazarUp(this, '<?=$item->get('id')?>')">Поднять</button>
+					</div>
+					<? } ?>
+				
+					<div class="button_green button_wide mt15">
+						<button onclick="nav.go('al_bazar.php?act=edit&id=<?=$item->get('id')?>')">Редактировать</button>
+					</div>
+					<div class="button_gray button_wide mt15">
+						<button onclick="cur.bazarDelete(<?=$item->get('id')?>, '<?=hash_get($user->id . $item->get('id'), 16, 'id')?>')">Удалить</button>
+					</div>
+				<? } else { 
+					if($bazar->is_favorite($item->get('id'))) { ?>
+					<div class="button_green button_wide">
+						<button onclick="cur.bazarFave(this, <?=$item->get('id')?>, 0)">Убрать из избранного</button>
+					</div>
+				<? } else { ?>
+					<div class="button_green button_wide">
+						<button onclick="cur.bazarFave(this, <?=$item->get('id')?>, 1)">Добавить в избранное</button>
+					</div>
+				<? } 
+				}?>
+				</div>
+				<?=tpx('bazar_nav_panel')?>
+			</div>
+
+		</div>
+	</div>
+</div>

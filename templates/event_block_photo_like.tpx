@@ -1,0 +1,123 @@
+<?php
+global $group, $user, $is_group_private, $lang_var, $new_design;
+
+$hash = hash_get($user->id.$group->id,'18','gin');
+
+if($new_design) {
+?>
+
+
+<div>
+
+	<div id="group_actions">
+		<a onclick="return Groups.otherActs(this)">
+			<span class="other">Действия в событии</span>
+		</a>
+	</div>
+	<div id="page_other_acts" class="other_acts" onmouseout="Groups.hideOther(500)" onmouseover="Groups.otherActs()">
+		<table cellpadding="0" cellspacing="0">
+			<tbody><tr>
+					<td class="side_shadow"><div></div></td>
+					<td>
+						<div class="header" onclick="Groups.hideOther(-1)"><div><span>Действия в событии</span></div></div>
+						<div class="actions">
+							<?=tpx('event_block_photo_actions')?>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+</div>
+
+
+
+
+
+<div id="group_subscribe" class="like_link_state clear_fix <?= $group->status > 0 ? 'unshown' : '' ?>">
+<? if($is_group_private) { ?>    
+    
+    Это закрытое событие. Все участники присоединяются только по приглашению организаторов.
+    
+<? } else { ?>    
+    <div class="subscribe_button_wrap">
+        <div class="button_green button_wide subscribe_button">
+            <button id="join_button" onclick="Groups.enter(this, <?= $group->id ?>, '<?= $hash?>')">Точно пойду</button>
+        </div>
+    </div>
+    <div class="subscribe_button_wrap">
+        <div class="button_green button_wide subscribe_button">
+            <button id="unsure_button" onclick="Groups.enter(this, <?= $group->id ?>, '<?= $hash?>', '_unsure')">Возможно пойду</button>
+        </div>
+    </div>
+    <div class="subscribe_button_wrap">
+        <div class="button_green button_wide subscribe_button">
+            <button id="leave_button" onclick="Groups.enter(this, <?= $group->id ?>, '<?= $hash?>', '_decline')">Не могу пойти</button>
+        </div>
+    </div>
+    <div class="group_friends_count">
+        <a onclick="return page.showPageMembers(false, -<?= $group->id ?>, 'friends')"></a>
+    </div>
+    
+<? } ?>    
+</div>
+
+<div id="group_unsubscribe" class="like_link_state <?= $group->status == 0 ? 'unshown' : '' ?>">
+    <div class="desc">
+        <div id="group_status" class="group_status"><?=$lang_var['eventstatus'][$group->status]?></div>
+        <div id="group_share_link" class="share_group_link clear_fix unshown">
+            <a class="fl_l" onclick="Groups.shareGroup(<?= $group->id ?>, '<?= $hash?>');">Рассказать друзьям</a>
+            <a class="fl_l group_share_club " onclick="showBox('al_groups.php', {act: 'share_box', gid: <?= $group->id ?>})" title="Отправить в сообщество или другу"></a>
+        </div>
+        <div id="group_share_progress" class="progress"></div>
+    </div>
+    <a onclick="Groups.enter(this, <?= $group->id ?>, '<?= $hash?>', '_undecided')">Изменить решение</a>
+</div>
+
+
+
+<?
+} else {
+?>
+<div id="group_subscribe" class="like_link_state clear_fix <?= $group->status > 0 ? 'unshown' : '' ?>">
+<? if($is_group_private) { ?>    
+    
+    Это закрытое событие. Все участники присоединяются только по приглашению организаторов.
+    
+<? } else { ?>    
+    <div class="subscribe_button_wrap">
+        <div class="button_green button_wide subscribe_button">
+            <button id="join_button" onclick="Groups.enter(this, <?= $group->id ?>, '<?= $hash?>')">Точно пойду</button>
+        </div>
+    </div>
+    <div class="subscribe_button_wrap">
+        <div class="button_green button_wide subscribe_button">
+            <button id="unsure_button" onclick="Groups.enter(this, <?= $group->id ?>, '<?= $hash?>', '_unsure')">Возможно пойду</button>
+        </div>
+    </div>
+    <div class="subscribe_button_wrap">
+        <div class="button_green button_wide subscribe_button">
+            <button id="leave_button" onclick="Groups.enter(this, <?= $group->id ?>, '<?= $hash?>', '_decline')">Не могу пойти</button>
+        </div>
+    </div>
+    <div class="group_friends_count">
+        <a onclick="return page.showPageMembers(false, -<?= $group->id ?>, 'friends')"></a>
+    </div>
+    
+<? } ?>    
+</div>
+
+<div id="group_unsubscribe" class="like_link_state <?= $group->status == 0 ? 'unshown' : '' ?>">
+    <div class="desc">
+        <div id="group_status" class="group_status"><?=$lang_var['eventstatus'][$group->status]?></div>
+        <div id="group_share_link" class="share_group_link clear_fix unshown">
+            <a class="fl_l" onclick="Groups.shareGroup(<?= $group->id ?>, '<?= $hash?>');">Рассказать друзьям</a>
+            <a class="fl_l group_share_club " onclick="showBox('al_groups.php', {act: 'share_box', gid: <?= $group->id ?>})" title="Отправить в сообщество или другу"></a>
+        </div>
+        <div id="group_share_progress" class="progress"></div>
+    </div>
+    <a onclick="Groups.enter(this, <?= $group->id ?>, '<?= $hash?>', '_undecided')">Изменить решение</a>
+</div><?
+}
+?>

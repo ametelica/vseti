@@ -1,0 +1,20 @@
+<?php
+global $audio_total,$owner,$audio_html,$langpack;
+if($audio_total > 0){
+?>
+<div class="module clear audios_module" id="profile_audios">
+ <a href="/audios<?=$owner->id?>" class="module_header" onclick="return nav.go(this, event)">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/audio?id=<?=$owner->user_info['user_id']?>'"><?=nf($audio_total)?></span>
+    Аудиозаписи
+  </div>
+  <div class="p_header_bottom">
+   <span class="fl_r">Все</span>
+   <?=$audio_total?> аудиозапис<?=$langpack->dln($audio_total,'zap')?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+    <?=tpx('group_block_audio_body', array('audio' => $audio_html))?>
+ </div>
+</div>
+<? } ?>

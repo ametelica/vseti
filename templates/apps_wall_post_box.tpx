@@ -1,0 +1,72 @@
+<?php
+global $app, $owner, $text, $attachment, $wall;
+?>
+<div id="apps_wall_post_header">
+  Приложение <b><?= $app->app_info['app_title'] ?></b> предлагает разместить у Вас на стене и в новостях у Ваших друзей следующую запись.
+</div>
+<div id="apps_wall_post_box" class="clear_fix">
+  <a href="<?= $owner->lnk ?>" class="fl_l"><img width="50" height="50" src="<?= $owner->photo() ?>" /></a>
+  <div class="apps_wall_post_name fl_l">
+    <b><a href="<?= $owner->lnk ?>"><?= $owner->title ?></a></b><br />
+		<?= $text ?>
+    <br class="clear"/>
+    <div class="attachments"><?
+		$comment = array();
+		$comment['media'] = $attachment;
+
+
+		if ($comment['media'] != '') {
+			$comment = $wall->parse_media($comment);
+			$cnt_photo = 0;
+			foreach ($comment['media_arr'] as $media) {
+				if (is_array($media) and $media['type'] == 'photo') {
+					$cnt_photo++;
+				}
+			}
+			foreach ($comment['media_arr'] as $media) {
+				if (is_array($media)) {
+					$assign = $media;
+					if ($cnt_photo == 1) {
+						$assign['cnt_photo'] = 1;
+					}
+
+					echo tpx('page_wall_media_' . $media['type'], $assign);
+				} else
+					echo $media;
+			}
+		}
+
+
+		/*
+		  if(!empty($attachment)) {
+
+		  $comment = $wall->parse_media($comment);
+
+		  dmp($comment);
+
+
+
+
+
+
+		  if(!empty($comment['media_arr'])) {
+		  foreach ($comment['media_arr'] as $media) {
+		  if (is_array($media)) {
+
+		  $assign = $media;
+		  if ($cnt_photo == 1) {
+		  $assign['cnt_photo'] = 1;
+		  }
+
+		  echo tpx('page_wall_media_' . $media['type'], $assign);
+		  } else
+		  echo $media;
+		  }
+		  }
+		  }
+		 * 
+		 */
+		?></div>
+  </div>
+  <br class="clear"/>
+</div>

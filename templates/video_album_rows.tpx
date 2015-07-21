@@ -1,0 +1,30 @@
+<?php
+global $video_albums, $owner, $langpack;
+if($video_albums['total'] > 0) {
+?><div id="video_albums_wrap" class="clear_fix"><?
+$i = 0;
+foreach($video_albums['data'] as $v) {
+	?><a id="video_album_<?=$v[0]?>" href="/videos<?=$owner->oid?>?section=album_<?=$v[0]?>" onclick="if (cur.cancelClick) return (cur.cancelClick = false); return nav.change({section:'album_<?=$v[0]?>'});" class="video_album video_album_candrop" onmouseover="Video.albumOver(this);" onmouseout="Video.albumOut(this)" ><div class="video_album_row_inner">
+  
+  <div class="video_album_controls">
+    <div class="video_row_icon_edit fl_l" onmouseover="Video.activate(this);" onmouseout="Video.deactivate(this);" onclick="return Video.editAlbum(<?=$v[0]?>, event);"><div class="video_row_icon"></div></div>
+    <div class="video_row_icon_delete fl_l" onmouseover="Video.activate(this);" onmouseout="Video.deactivate(this);" onclick="return Video.deleteAlbum('album_<?=$v[0]?>', event);"><div class="video_row_icon"></div></div>
+    <br class="clear" />
+  </div>
+  <div class="video_album_info"><div class="video_album_text fl_l"><?=$v[1]?></div><div class="video_album_count fl_r"><div class="video_row_icon video_album_count_icon"></div><?=$v[3]?></div><br class="clear" /></div>
+  <div class="video_album_bg" style="background-image: url('<?=$v[2]?>')"></div></div>
+</a><?
+	$i++;
+	if($i == 4 and $video_albums['total'] > 4) {
+		?></div><a id="video_albums_show_more" class="video_albums_show_more" style="" onclick="Video.showAlbums(this)">Показать все <?=$video_albums['total']?> альбом<?=$langpack->dln($video_albums['total'], 'file')?></a>
+<div id="video_albums_more"><?
+	}
+}
+?>	
+</div>
+<? } 
+if($video_albums['total'] <= 4) {
+	?><a id="video_albums_show_more" class="video_albums_show_more" style="display: none" onclick="Video.showAlbums(this)">Показать все <?=$video_albums['total']?> альбом<?=$langpack->dln($video_albums['total'], 'file')?></a><div id="video_albums_more"></div><?
+}
+
+?>

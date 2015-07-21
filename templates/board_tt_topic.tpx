@@ -1,0 +1,22 @@
+<?php
+	global $setting;
+	//dmp($var);
+	
+	
+	$topic = $var['topic'];
+	$topic_uid = 'topic' . $topic['oid'] . '_' . $topic['id'];
+	
+	//dmp($var['posts']);
+	
+	$post = $var['posts']['comments'][0];
+	$post_uid = $post['oid'] . '_' . $post['id'];
+	
+	
+	
+?><div class="wrap">
+  <div class="content">
+    <div class="header"><a href="/<?=$topic_uid?>"><?=$topic['body']?></a></div>
+    <?=$post['body']?>
+  </div>
+  <!--<div class="bottom"><a href="/<?=$topic_uid?>">http://<?=$setting['host']?>/<?=$topic_uid?></a></div>-->
+</div>

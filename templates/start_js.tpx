@@ -1,0 +1,87 @@
+<?php
+	global $hotnews, $current_new, $datetime;
+
+	$news_js = array();
+	foreach($hotnews as $n) {
+		$id = intval($n['id']);
+		$news_js[$id] = array(
+				'title' => $n['title'],
+				'desc' => $n['desc'],
+				'img' => $n['img2'],
+				'date' => $datetime->sdate($n['date']),
+				'lnk' => $n['lnk'],
+		);
+	}
+?>
+
+cur.start_news = <?=jenc($news_js)?>;
+cur.topx = 0;
+cur.start_news_cur = <?=intval($current_new['id'])?>;
+
+cur.news_scroll_timer = 0;
+cur.news_scroll_timer2 = 0;
+
+cur.show_news_box = function() {
+	showBox('/start.php', {act: 'a_news_box'}, {params: {bodyStyle: 'padding: 0px; position: relative;', width: 550}}); 
+	return false;
+}
+
+cur.start_news_over = function() {
+	//$('#list_news_scroll').children().removeClass('cur');
+	clearTimeout(cur.news_scroll_timer);
+	clearTimeout(cur.news_scroll_timer2);
+}
+
+cur.start_news_out = function() {
+	cur.news_scroll_timer2 = setTimeout('cur.scroll_start_news()', 500);
+}
+
+cur.make_aktive = function(id) {
+
+	if(id == 0) {
+		$('#list_news_scroll').children().removeClass('cur');
+		var ch3 = $('#list_news_scroll').children()[2];
+		cur.start_news_cur = $(ch3).attr('new_id');
+		$(ch3).addClass('cur');
+
+		//console.log(cur.start_news_cur);
+		//console.log(cur.start_news[cur.start_news_cur]);
+	} else {
+		cur.start_news_cur = id;
+	}
+	
+	cur_new = cur.start_news[cur.start_news_cur];
+	
+	if(cur_new.img == null || cur_new.img == '') {
+		$('#full_new_img').css('width', '0px');	
+		$('#full_new_img').hide();
+	} else {
+		$('#full_new_img').html('<img width="225" src="'+ cur_new.img +'" alt="" />').show();
+		$('#full_new_img').css('width', '225px');
+	}
+	$('#full_new_header').text(cur_new.title);
+	$('#full_new_text').html(cur_new.desc);
+	$('#full_new_date').text(cur_new.date);
+	//$('#full_new_lnk').attr('href', cur_new.lnk);
+}
+
+cur.scroll_start_news = function () {
+	cur.topx++;
+	if(cur.start_news_cur == 0)
+		cur.make_aktive(0);
+		
+	if($('#list_news_scroll').children().length < 4) return false;
+		
+	if(cur.topx > 100) {
+		first_elem = $('#list_news_scroll').children().first();
+		last_elem = $('#list_news_scroll').children().last();
+		cur.topx -= first_elem.outerHeight();
+		first_elem.insertBefore(last_elem);
+		cur.make_aktive(0);
+	}
+	
+	$('#list_news_scroll').css('top', -cur.topx);
+	clearTimeout(cur.news_scroll_timer);
+	cur.news_scroll_timer = setTimeout('cur.scroll_start_news();', 70);
+}
+cur.scroll_start_news();

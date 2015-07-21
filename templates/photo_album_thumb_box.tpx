@@ -1,0 +1,37 @@
+<?php
+global $photos_list, $vs_album, $langpack;
+?>
+<div class="fl_r photos_choose_close">
+  <span id="photos_choose_right_link"></span><a class="photos_close_link" onclick="curBox().hide();">Закрыть</a>
+</div>
+<div class="photos_choose_header">Выберите фотографию для обложки альбома &laquo;<?=$vs_album->title?>&raquo;</div>
+<div id="photos_choose_upload_area_wrap" class="photos_choose_upload_area_wrap"><div id="photos_choose_upload_area_cont" class="photos_choose_upload_area_cont">
+  <a id="photos_choose_upload_area" class="photos_choose_upload_area" title="Отпустите, чтобы начать загрузку." onclick="return cur.uploadPhotos(this, event);">
+    <div class="photos_choose_upload_area_upload">
+      <span id="photos_choose_upload_area_label" class="photos_choose_upload_area_label">
+        Загрузить фотографию
+      </span>
+    </div>
+    <div class="photos_choose_upload_area_drop">
+      Отпустите, чтобы начать загрузку.
+    </div>
+  </a>
+  <input id="choose_photo_upload" class="choose_photo_upload file" type="file" size="28" onchange="Upload.onFileApiSend(cur.uplId, this.files);" multiple="true" name="photo" style="visibility: hidden; position: absolute;"/>
+  <div class="top_shadow"></div>
+</div></div>
+<div id="photos_choose_wrap">
+  
+  <div id="photos_choose_rows" class="photos_choose_rows">
+  <?=tpx('photo_album_thumb_box_rows', array('photos' => $photos_list['data']))?><br id="photos_choose_clear" class="clear" /></div>
+</div>
+<a onclick="cur.photosChooseMore();" id="photos_choose_more" class="photos_choose_more" style="display: none;">
+Показать все <?=$photos_list['title']?> фотографи<?=$langpack->dln($photos_list['title'], 'pht2')?>
+</a>
+<div id="photos_choose_bottom_wrap" class="photos_choose_bottom_wrap">
+  <div id="photos_choose_bottom" class="photos_choose_bottom">
+    <div class="button_green">
+      <button id="photos_choose_button" class="photos_choose_button" onclick="cur.chooseAllSelected()"></button>
+    </div>
+    <a onclick="cur.cancelMultiple();">Отмена</a>
+  </div>
+</div>

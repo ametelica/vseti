@@ -1,0 +1,19 @@
+<?php
+global $aid, $oid;
+?>function doDelete() {
+  ajax.post('al_video.php', {act: 'do_delete_album', aid: <?=$aid?>, hash: '<?=hash_get($oid . $aid, 12, 'albrem')?>', oid: cur.oid}, {onDone: function(albumId, albumsList) {
+    box.hide();
+    //nav.reload();
+    var list  = cur.videoList['all'];
+    for (var i in list) {
+      if (list[i][6] == <?=$aid?>) {
+        list[i][6] = 0;
+      }
+    }
+    Video.updateAlbums(albumsList);
+    nav.change({section:'all'});
+  }});
+}
+
+box.removeButtons().addButton('Отмена', box.hide, 'no');
+box.addButton('Удалить', doDelete);

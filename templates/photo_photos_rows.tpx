@@ -1,0 +1,17 @@
+<?php
+global $owner;
+
+if (!empty($var['photos']) or !empty($var['part'])) {
+	$i = 0;
+	foreach ($var['photos'] as $photo) {
+		$i++;
+		if (isset($var['offset']) and $i <= $var['offset']) 
+			continue;
+		if (isset($var['limit']) and $i > $var['limit'])
+			break;
+		?><div class="photo_row" id="photo_row<?= $photo->uid ?>"><a href="/photo<?= $photo->uid ?>?all=1" onclick="if (cur.cancelClick) return (cur.cancelClick = false); return showPhoto('<?= $photo->uid ?>', '<?= $var['from'] ?>', {img: this, root: 1}, event)"><img class="photo_row_img" src="<?= $photo->view('m') ?>" /></a></div><?
+	}
+} else {
+	echo '<div class="photos_no_content">' . (empty($var['album']) ? 'У пользователя ещё нет фотографий' : 'В этом альбоме ещё нет фотографий') . '</div>';
+}
+?>

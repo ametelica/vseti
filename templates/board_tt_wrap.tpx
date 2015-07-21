@@ -1,0 +1,23 @@
+<?php
+	global $datetime, $user, $board;
+	$p = $var['post'];
+	$post_author = pdata($p['aid']);
+	$post_id = $p['oid'] . '_' . $p['id'];
+?><div class="bp_tt_wrap">
+  <div class="bp_tt_content">
+    <div id="post<?=$post_id?>" class="bp_post" onmouseover="wall.replyOver('<?=$p['oid']?>topic_<?=$p['id']?>')" onmouseout="wall.replyOut('<?=$p['oid']?>topic_<?=$p['id']?>')"><table class="bp_table" cellspacing="0" cellpadding="0"><tr>
+  <td class="bp_thumb_td">
+    <a class="bp_thumb" href="<?=$post_author->lnk?>" onclick="return nav.go(this, event)"><img width="50" src="<?=$post_author->photo()?>" /></a>
+  </td>
+  <td class="bp_info">
+    <div class="bp_author_wrap"><a class="bp_author" href="<?=$post_author->lnk?>" onclick="return nav.go(this, event)"><?=$post_author->title?></a></div>
+    <div id="bp_data<?=$post_id?>"><div class="bp_text"><?=tpx('wall_post_body', array('comment' => $p))?></div><div></div></div>
+    <div class="bp_bottom clear_fix">
+      <div class="bp_edited_by"></div>
+      <div class="fl_l"><a class="bp_date" href="/topic<?=$p['oid']?>_<?=$p['pid']?>?post=<?=$p['id']?>" onclick="return nav.go(this, event)"><?=$datetime->sdate($p['date'])?></a></div>
+      <div class="fl_l progress bp_progress"></div>
+    </div>
+  </td>
+</tr></table></div>
+  </div>
+</div>

@@ -1,0 +1,112 @@
+<?php
+global $app_notice,$app_invite,$datetime,$user,$hash,$langpack;
+$app_invite_cnt = count($app_invite);
+$app_notice_cnt = count($app_notice);
+$app_total = $app_invite_cnt+$app_notice_cnt; 
+
+if($app_invite_cnt>0){
+	$title = 'Вас приглашают установить '.$app_invite_cnt.' приложени'.$langpack->dln($app_invite_cnt,'inv');
+} elseif($app_notice_cnt>0) {
+	$title = 'У вас '.$app_notice_cnt.' оповещени'.$langpack->dln($app_notice_cnt,'inv');
+} else {
+	$title = 'Нет оповещений';
+}
+
+?>
+<div id="apps_wrap">
+   <div class="apps_summary clear_fix">
+    <span id="apps_summary" class="summary fl_l"><?=$title?></span>
+<? if($app_total>0) { ?>
+    <a class="fl_r" onclick="Apps.removeAllNotifies(this, '<?=$hash->get_hash($user,12,'apd')?>');">Удалить все уведомления</a>
+<? } ?>   
+    <div id="apps_summary_progress" class="fl_r apps_progress"><img src="/images/upload.gif" /></div>
+   </div>
+   <div id="apps_results" class="apps_results clear_fix">
+    <div id="app_rows" class="app_rows">
+<?
+
+if($app_invite_cnt>0){
+
+foreach($app_invite as $an){
+	$ai = $an->app_info;
+	$ui = $ai['ai_from'];
+	echo '<div id="invitei_'.$an->app_id.'_'.$ui->user_info['user_id'].'" class="app_row last">
+ <table cellspacing="0" border="0">
+  <tr>
+   <td class="app_image" >
+    <div class="app_subimage">
+     <a href="/app'.$an->app_id.'_'.$ai['ai_from']->user_info['user_id'].'?ref=2"><img src="'.$an->app_photo().'" width="75"/></a>
+    </div>
+   </td>
+   <td class="app_invite_info">
+    <div class="app_name">
+     <a href="/app'.$an->app_id.'_'.$ai['ai_from']->user_info['user_id'].'?ref=2" class="app_link">'.$ai['app_title'].'</a>
+    </div>
+    
+    <div class="app_users"><!--Приложение установил <a href="#" onclick="Apps.showAppFriends('.$an->app_id.', event); return false">1 Ваш друг</a>--></div>
+
+    <div class="app_friends"><table><tr><td><a title="'.$ui->user_info['fio'].'" href="'.$ui->lnk.'" onclick="return nav.go(this, event);"><img src="'.$ui->user_photo().'" /></a></td></tr></table></div>
+    <div class="app_from">Приглаcил'.($ui->user_info['sex']==1?'а':'').' <a class="mem_link" href="'.$ui->lnk.'">'.$ui->user_info['fio'].'</a></div>
+    <div class="app_invite_buttons fl_l" id="app_buttons_i_'.$an->app_id.'_'.$ui->user_info['user_id'].'">
+      <div class="button_green fl_l"><button onclick="if (showApp(event, '.$an->app_id.', 1, 2, '.$ui->user_info['user_id'].')) {nav.go(\'/app'.$an->app_id.'_'.$ui->user_info['user_id'].'?ref=2\')}">Перейти к приложению</button></div>
+      <a class="app_decline fl_l" onclick="Apps.deleteNot(\'i_'.$an->app_id.'_'.$ui->user_info['user_id'].'\', \''.$hash->get_hash($an->app_id.$user,12,'apn').'\')">Отклонить приглашение</a>
+    </div>
+   </td>
+
+  </tr>
+ </table>
+</div>';
+}
+
+} elseif($app_notice_cnt==0) {
+?>
+<div id="no_apps" class="app_msg">У Вас нет ни одного оповещения</div>
+<?
+}
+?>    
+    </div>
+    <div id="app_hidden_rows" class="app_rows" style="display: none;"></div>
+    <a id="more_link" onclick="show(this.previousSibling); hide(this);" class="more" style="display: none;">
+      <div id="show_more" class="show_more">
+        Показать все приглашения
+      </div>
+    </a>
+<? if($app_notice_cnt>0) {?>
+  <div id="app_notify_results">
+    <div id="app_notify_wrap" class="app_notify_wrap" style="">
+<? if($app_invite_cnt>0) { ?>    
+      <div id="app_notify_summary" class="app_notify_summary">Свежие оповещения</div>
+<? } ?>      
+    </div>
+    <div id="app_notify_list">
+<?
+	foreach($app_notice as $an){
+		$ai = $an->app_info;
+		echo '<div id="notifyn_'.$an->app_id.'" class="app_notify_row " onmouseover="Apps.rowOver(\'n_'.$an->app_id.'\')" onmouseout="Apps.rowOut(\'n_'.$an->app_id.'\')">
+ <table cellspacing="0" border="0">
+  <tr>
+   <td class="apps_notify_photo" valign="top" >
+     <a href="'.$an->lnk.'?ref=2"><img class="apps_notify_img" src="/images/icons/app_icon.gif"/></a>
+   </td>
+   <td class="apps_notify_info" valign="top" id="notify_infon_'.$an->app_id.'">
+    <b id="name_n_'.$an->app_id.'"><a href="'.$an->lnk.'?ref=2" onclick="return nav.go(this, event)">'.$ai['app_title'].'</a></b><br /><div class="apps_notify_item">'.nl2br($ai['an_text']).'</div>
+    <div class="app_notify_date">'.$datetime->sdate($ai['an_date']).'</div>
+   </td>
+   <td class="app_notify_hide" id="notify_hiden_'.$an->app_id.'">
+      <div class="app_delete_row" id="delete_rown_'.$an->app_id.'" onmouseover="Apps.rowActive(\'n_'.$an->app_id.'\', \'Удалить это оповещение\')" onmouseout="Apps.rowInactive(\'n_'.$an->app_id.'\')" onclick="Apps.deleteNot(\'n_'.$an->app_id.'\', \''.$hash->get_hash($an->app_id.$user,12,'apn').'\', \'0\')"></div>
+   </td>
+  </tr>
+ </table>
+</div>';
+	}
+	//dmp($app_notice);
+?>    	
+    
+    
+
+</div>
+</div>
+<? } ?>
+
+</div>
+</div>

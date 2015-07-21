@@ -1,0 +1,56 @@
+<?php
+    global $set_op, $user, $hash;
+?>
+<style>
+#opsos {
+    padding: 20px;
+}
+.op_text {
+    font-size: 14px;
+    line-height: 20px;
+}
+</style>
+
+<div id="wrap1">
+ <div id="content">
+  <div id="opsos">
+<? if($set_op==0) { ?>
+    <span class="op_text">
+    <b>Выберите пожалуйста Вашего оператора сотой связи.</b><br />
+    Если Вы пользуетесь услугами нескольких операторов - выберите того, чьими услугами пользуетесь чаще.<br /><br /><br />
+    </span>
+    
+    <table width="80%" align="center">
+        <tr>
+            <td align="center">
+    <a title="МТС" href="/opsos.php?act=set&op=1&hash=<?=$hash->get_hash($user->user_info['user_id'].'1',12,'ops')?>"><img class="" onmouseover="this.style.opacity=1;" onmouseout="this.style.opacity=0.65;" alt="МТС" src="/images/mts.png" style="opacity: 0.65;"></a>
+            </td>
+            <td align="center">
+    <a title="Velcom" href="/opsos.php?act=set&op=2&hash=<?=$hash->get_hash($user->user_info['user_id'].'2',12,'ops')?>"><img class="" onmouseover="this.style.opacity=1;" onmouseout="this.style.opacity=0.65;" alt="Velcom" src="/images/velcom.png" style="opacity: 0.65;"></a>
+            </td>
+            <td align="center">
+    <a title="Life" href="/opsos.php?act=set&op=3&hash=<?=$hash->get_hash($user->user_info['user_id'].'3',12,'ops')?>"><img class="" onmouseover="this.style.opacity=1;" onmouseout="this.style.opacity=0.65;" alt="Life" src="/images/life.png" style="opacity: 0.65;"></a>
+            </td>
+        </tr>
+    </table><br />
+    <span class="op_text">
+    Собранные сведения помогут нам в планировании стратегии развития ВСети.<br /><br /><br /><br />
+    </span>
+<? } else { ?>
+    <span class="op_text">
+    <b>Спасибо за участие! Собранная статистика нам очень поможет!</b><br /><br />
+    <center>Выбранный Вами оператор: <br /><br />
+<?   if($set_op==1) { ?>
+    <img alt="МТС" src="/images/mts.png">
+<? } if($set_op==2) { ?>    
+    <img alt="Velcom" src="/images/velcom.png">
+<? } if($set_op==3) { ?>    
+    <img alt="Life" src="/images/life.png">
+<? } ?>
+    <br /><br />
+    <a href="/opsos.php?act=unset&hash=<?=$hash->get_hash($user->user_info['user_id'],12,'ops')?>">Изменить выбор</a><br /></center>
+    </span>
+<? } ?>
+  </div>
+ </div>
+</div>

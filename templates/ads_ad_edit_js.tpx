@@ -1,0 +1,626 @@
+<?php
+global $union_id, $user, $ads, $ad_info, $camp_info, $parent_id, $user_no_campaigns;
+
+$my_groups_ids = $user->user_groups_admin();//$user->user_groups_owner();
+$my_groups = kv2arr($my_groups_ids);
+
+//dmp($my_groups);
+//die();
+
+//dmp($camp_info);
+//die();
+
+//echo $union_id;
+//die();
+
+//$user_no_campaigns = 
+
+$saveAdHash = hash_get($user->id . $union_id, 16, 'adsave');
+$adParams = array(
+		'ad_id' => intval($union_id),
+		'format_type' => $ad_info['ad_format'],
+		'cost_type' => intval($ad_info['ad_type']),
+		'link_type' => intval($ad_info['link_type']),
+		'link_id' => $ad_info['link_id'],
+		'link_owner_id' => "",
+		"link_url" => $ad_info['link'],
+		"link_domain" => "",
+		"title" => $ad_info['name'],
+		"description" => $ad_info['text'],
+		"photo" => $ad_info['ph'],
+		"photo_link" => $ad_info['photo'],
+		"stats_url" => "",
+		"disclaimer_medical" => 0,
+		"disclaimer_specialist" => 0,
+		"views_places" => 1,
+		"cost_per_click" => $ad_info['ad_price'],
+		"views_limit_flag" => $ad_info['limit_by_day'] > 0 ? 1 : 0,
+		"views_limit_exact" => "0",
+		"client_id" => $user->id,
+		"campaign_type" => $user_no_campaigns,
+		"campaign_id" => empty($ad_info['ad_campaign_id']) ? $parent_id : $ad_info['ad_campaign_id'],
+);
+
+$targetingGroups = array(
+		'geography' => array(
+				'criteria' => array('country', 'cities', 'cities_not'),
+		),
+		'demography' => array(
+				'criteria' => array('sex', 'age_from_to', 'age_from', 'age_to', 'statuses'),
+		),
+		'interests' => array(
+				'criteria' => array('interests', 'group_types', 'groups', 'apps', 'apps_not', 'religions', 'travellers'),
+		),
+		'geography_ex' => array(
+				'criteria' => array('districts', 'stations', 'streets'),
+				'hidden' => true,
+		),
+		'graduation' => array(
+				'criteria' => array('schools', 'school_from_to', 'school_from', 'school_to', 'uni_from_to', 'uni_from', 'uni_to', 'positions'),
+				'hidden' => true,
+		),
+		'additional' => array(
+				'criteria' => array('operators', 'browsers', 'pays_money', 'retargeting_groups', 'retargeting_groups_not', 'tags'),
+				'hidden' => true,
+		),
+);
+
+$targetingCriteriaHelp = array(
+		'cities' => 'В данном поле Вы можете перечислить города, по которым будет производиться таргетинг объявления.<br><br>В подсказчике всплывают только те города, которые относятся к стране, выбранной в поле <b>Страна</b>.<br><br>Если Вы выбрали хотя бы один город, то страна, к которой он относится, не учитывается.',
+		'interests' => 'В данном поле Вы можете указать популярные ключевые слова, встречающиеся в анкетах пользователей.<br><br>Таргетинг объявления учитывает такие поля пользовательских страниц, как:<br><br><ul class="listing ads_edit_help_listing"><li><span>Деятельность</span></li><li><span>Интересы</span></li><li><span>Любимая музыка</span></li><li><span>Любимые фильмы</span></li><li><span>Любимые телешоу</span></li><li><span>Любимые книги</span></li><li><span>Любимые игры</span></li></ul>',
+		'group_types' => 'В данном поле Вы можете выбрать категории групп, в которых должны состоять пользователи.<br><br>Например, если Вы ввели категорию <b>Домашние животные</b>, то в целевую аудиторию войдут все пользователи, которые состоят в группах этой тематики.',
+		'travellers' => 'Данная настройка охватывает всех пользователей ВСети, которые заходят на сайт, когда посещают другие страны.<br><br>В эту категорию попадают как деловые люди, которые посещают зарубежные страны во время командировок, так и более обширная аудитория людей, которые выезжают за границу с туристическими целями.',
+		'schools' => 'Вы можете таргетировать объявление по школам, ВУЗам и другим учебным заведениям выбранных городов.<br><br>Для более детального таргетинга по ВУЗам можно выбирать конкретные факультеты, для факультетов &ndash; кафедры.',
+		'positions' => 'В данном поле Вы можете выбрать профессии из списка наиболее популярных.',
+		'browsers' => 'Обратите внимание, что реклама <b>не показывается</b> в мобильных версиях ВСети.<br><br>Таргетинг на пользователей любых мобильных устройств охватывает тех пользователей, которые в недавнее время заходили на сайт с таких устройств.',
+		'pays_money' => 'Пользователями платежной системы считаются те, кто приобретал <b>голоса</b> ВСети в течение последних <b>6 месяцев</b>.',
+		'tags' => 'Если Вы хотите, чтобы Ваше таргетированное объявление выводилось пользователям в результатах <b>поиска по разделам</b> ВСети, укажите несколько ключевых слов или сочетаний слов через запятую, например: «Велосипеды, покупка велосипедов, bicycles». <br><br>Обратите внимание, что поисковые объявления работают в тестовом режиме. При выведении объявлений в поиске таргетинг учитывается <b>только по городу</b>.',
+);
+
+
+$targetingCriteriaParams = array(
+		'groups' => array(
+				'link_object_id' => $ad_info['link_id'],
+				'link_object_item' => array($ad_info['link_id'], $my_groups_ids[$ad_info['link_id']], 'Рекламируемый объект')
+		),
+		'pays_money' => array(
+				'hidden' => true,
+		),
+		'retargeting_groups' => array(
+				'hidden' => true,
+				'allowed' => false,
+		),
+		'retargeting_groups_not' => array(
+				'hidden' => true,
+				'allowed' => false,
+		),
+		'birthday' => array(
+				'label_checkbox_today' => 'Сегодня',
+				'label_checkbox_tomorrow' => 'Завтра',
+		),
+		'travellers' => array(
+				'label_checkbox' => 'Путешественники <a class="ads_edit_value_help" href="#" onclick="return AdsEdit.showTargetingCriterionHelp(event, \'travellers\');">(?)</a>',
+		),
+		'operators' => array(
+				'allowed' => false,
+		),
+		'tags' => array(
+				'max_length' => 1000,
+		),
+);
+
+$targetingCriteriaData_data = array(
+		'country' => array(
+				array(0, 'Любая'),
+				array(3, 'Беларусь'),
+				array(1, 'Россия'),
+				array(2, 'Украина'),
+				/*
+				array(4, 'Казахстан'),
+				array(5, 'Азербайджан'),
+				array(6, 'Армения'),
+				array(7, 'Грузия'),
+				array(8, 'Израиль'),
+				array(9, 'США'),
+				array(10, 'Канада'),
+				array(11, 'Кыргызстан'),
+				array(12, 'Латвия'),
+				array(13, 'Литва'),
+				array(14, 'Эстония'),
+				array(15, 'Молдова'),
+				array(16, 'Таджикистан'),
+				array(17, 'Туркменистан'),
+				array(18, 'Узбекистан'),
+				array(-1, 'Другие страны'),
+				*/
+				
+		),
+		'sex' => array(
+				array(0, 'Любой'),
+				array(1, 'женский'),
+				array(2, 'мужской'),
+		),
+		'statuses' => array(
+				'male' => array(
+					array(1, 'Не женат'),
+					array(2, 'Есть подруга'),
+					array(3, 'Помолвлен'),
+					array(4, 'Женат'),
+					array(7, 'Влюблён'),
+					array(5, 'Всё сложно'),
+					array(6, 'В активном поиске')
+				),
+				'female' => array(
+					array(1, 'Не замужем'),
+					array(2, 'Есть друг'),
+					array(3, 'Помолвлена'),
+					array(4, 'Замужем'),
+					array(7, 'Влюблена'),
+					array(5, 'Всё сложно'),
+					array(6, 'В активном поиске')
+				),
+		),
+		'group_types' => array(
+				array(32, 'R&B', NULL),
+				array(33, 'Rap & Hip-Hop', NULL),
+				array(92, 'Автомобили', NULL),
+				array(93, 'Автоспорт', NULL),
+				array(58, 'Азартные игры', NULL),
+				array(81, 'Академические группы', NULL),
+				array(47, 'Баскетбол', NULL),
+				array(76, 'Бизнес', NULL),
+				array(79, 'Благотворительность', NULL),
+				array(26, 'Блюз', NULL),
+				array(55, 'Боевые искусства', NULL),
+				array(15, 'ВСети', NULL),
+				array(49, 'Велосипеды', NULL),
+				array(54, 'Водный спорт', NULL),
+				array(86, 'Города', NULL),
+				array(82, 'Группы выпускников', NULL),
+				array(89, 'Дачи', NULL),
+				array(27, 'Джаз', NULL),
+				array(90, 'Дискуссионные клубы', NULL),
+				array(12, 'Домашние животные', NULL),
+				array(1, 'Друзья', NULL),
+				array(64, 'Железо', NULL),
+				array(10, 'Здоровье', NULL),
+				array(52, 'Зимние виды спорта', NULL),
+				array(13, 'Знаки зодиака', NULL),
+				array(39, 'Знакомства', NULL),
+				array(61, 'Игры', NULL),
+				array(28, 'Инди', NULL),
+				array(6, 'История', NULL),
+				array(18, 'Кино', NULL),
+				array(29, 'Классика', NULL),
+				array(30, 'Латина', NULL),
+				array(53, 'Легкая атлетика', NULL),
+				array(17, 'Литература', NULL),
+				array(88, 'Места отдыха', NULL),
+				array(31, 'Металл', NULL),
+				array(65, 'Мобильные технологии', NULL),
+				array(77, 'Молодежные движения', NULL),
+				array(94, 'Мотоспорт', NULL),
+				array(75, 'Музыкальные движения', NULL),
+				array(63, 'Мультимедиа', NULL),
+				array(95, 'Настольные игры', NULL),
+				array(9, 'Наука', NULL),
+				array(3, 'Новости', NULL),
+				array(24, 'Обмен музыкой', NULL),
+				array(83, 'Общежития', NULL),
+				array(85, 'Общества и клубы', NULL),
+				array(80, 'Общества и клубы', NULL),
+				array(5, 'Общество', NULL),
+				array(14, 'Однофамильцы и тезки', NULL),
+				array(40, 'Отношения полов', NULL),
+				array(4, 'Политика', NULL),
+				array(67, 'Программирование', NULL),
+				array(96, 'Работа', NULL),
+				array(23, 'Радио и Интернет-радио', NULL),
+				array(34, 'Регги', NULL),
+				array(8, 'Религия', NULL),
+				array(35, 'Рок', NULL),
+				array(51, 'Ролики', NULL),
+				array(66, 'Сайты', NULL),
+				array(62, 'Софт', NULL),
+				array(56, 'Спортивные игры', NULL),
+				array(78, 'Спортивные организации', NULL),
+				array(87, 'Страны', NULL),
+				array(84, 'Студенческие советы', NULL),
+				array(36, 'Танцевальная', NULL),
+				array(50, 'Танцы', NULL),
+				array(16, 'Творчество', NULL),
+				array(19, 'Театр', NULL),
+				array(25, 'Тексты и аккорды', NULL),
+				array(22, 'Телевидение', NULL),
+				array(46, 'Теннис', NULL),
+				array(41, 'Технические вопросы', NULL),
+				array(11, 'Туризм и путешествия', NULL),
+				array(60, 'Университетский спорт', NULL),
+				array(57, 'Упражнения и фитнес', NULL),
+				array(91, 'Фан-клубы', NULL),
+				array(7, 'Философия', NULL),
+				array(37, 'Фолк', NULL),
+				array(20, 'Фотография и живопись', NULL),
+				array(45, 'Футбол', NULL),
+				array(48, 'Хоккей', NULL),
+				array(59, 'Экстремальный спорт', NULL),
+				array(38, 'Электронная', NULL),
+				array(21, 'Юмор', NULL),
+				array(2, 'Языки', NULL),
+		),
+		'religions' => array(
+				array(102, 'Православие'),
+				array(103, 'Православный'),
+				array(104, 'Православная'),
+				array(105, 'Orthodox'),
+				array(101, 'Католицизм'),
+				array(99, 'Католик'),
+				array(98, 'Католичка'),
+				array(97, 'Catholic'),
+				array(96, 'catholicism'),
+				array(107, 'Протестантизм'),
+				array(108, 'Протестант'),
+				array(167, 'Иудаизм'),
+				array(168, 'Иудей'),
+				array(169, 'Иудейка'),
+				array(170, 'Jewish'),
+				array(171, 'Judaism'),
+				array(122, 'Islam'),
+				array(123, 'Muslim'),
+				array(124, 'Ислам'),
+				array(125, 'Мусульманин'),
+				array(126, 'Мусульманка'),
+				array(129, 'Буддизм'),
+				array(130, 'Буддист'),
+				array(131, 'Buddhism'),
+				array(139, 'Конфуцианство'),
+				array(138, 'Даосизм'),
+				array(200, 'Светский гуманизм'),
+				array(201, 'Христианство'),
+				array(202, 'Христианин'),
+				array(203, 'Христианство'),
+				array(204, 'Christian'),
+				array(205, 'Атеизм'),
+				array(206, 'Атеист'),
+				array(207, 'Атеистка'),
+		),
+		'districts' => array(),
+		'stations' => array(),
+		'browsers' => array(
+				array(10, 'Firefox'),
+				array(30, 'Chrome'),
+				array(90, 'Opera'),
+				array(50, 'Safari'),
+				array(70, 'Internet Explorer'),
+				array(3, 'Opera Mini'),
+				array(4, 'iPhone и iPad устройства'),
+				array(5, 'Android устройства'),
+				array(8, 'Планшеты iPad'),
+				array(9, 'Планшеты Android'),
+				array(2, 'Другие мобильные устройства'),
+				array(1, 'Другие браузеры'),
+		),
+		'pays_money' => array(
+				array(0, 'Любая аудитория'),
+				array(2, 'Использовали голоса ВСети'),
+				array(1, 'Не использовали голоса ВСети'),
+		),
+);
+
+$adParamsData = array(
+		'link_type' => array(
+				array(0, '- Выберите тип -'),
+				array(1, 'Группа'), /*  ,[6,"Публичная страница"],[4,"Приложение"],[7,"Видеозапись"],[5,"Внешний сайт"] */
+				array(5, 'Внешний сайт'),
+		),
+);
+
+if($ad_info['link_type'] == 1) {
+	$adParamsData['link_id'] = $my_groups;
+}
+	
+	//link_id
+
+/*
+dmp($ad_info['ad_campaign_id']);
+
+
+dmp($union_info);
+
+die();
+*/
+
+if (empty($ad_info['ad_campaign_id'])) {
+	
+	
+	// Для новых объявлений
+	
+	$default_country = 3; // Белая Русь
+	
+	// Существующие кампании
+	$ads_user_camp_info = $ads->adc_info_db();
+	
+	$camp_arr = array(
+			array(0, "- Выберите кампанию -")
+	);
+	foreach ($ads_user_camp_info as $camp) {
+		$camp_arr[] = array($camp['id'], $camp['name']);
+	}
+
+	$adParamsData['link_id'] = $my_groups;
+	$adParamsData['campaign_id'] = $camp_arr;
+
+	$campaign_type_hidden = false;
+	$cost_type_hidden = false;
+	$format_type_hidden = false;
+} else {
+	
+
+	//dmp($ad_info);
+	//die();
+	
+	// Для существующих объявлений
+	$targetingCriteria = array(
+			'sex' => $ad_info['ad_t_sex'],
+			'age_from' => $ad_info['ad_t_age_from'],
+			'age_to' => $ad_info['ad_t_age_to'],
+			'birthday' => '0',
+			'country' => $ad_info['ad_t_region'],
+			'cities' => $ad_info['ad_t_city'],
+			'cities_not' => $ad_info['ad_t_city_not'],
+			'group_types' => '',
+			'groups' => '',
+			'apps' => '',
+			'apps_not' => '',
+			'retargeting_groups' => '',
+			'retargeting_groups_not' => '',
+			'interests' => '',
+			'districts' => '',
+			'stations' => '',
+			'streets' => '',
+			'schools' => '',
+			'positions' => '',
+			'religions' => '',
+			'statuses' => $ad_info['ad_t_status'],
+			'school_from' => '0',
+			'school_to' => '0',
+			'uni_from' => '0',
+			'uni_to' => '0',
+			'operators' => '',
+			'browsers' => '',
+			'travellers' => '0',
+			'pays_money' => '0',
+			'tags' => '',
+	);
+
+	$campaign_type_hidden = true;
+	$cost_type_hidden = true;
+	$format_type_hidden = true;
+}
+
+
+// Таргейтинг по умолчанию, страна
+/*
+$targetingCriteria = array (
+		'country' => $default_country
+);
+*/
+
+// Города
+$places = new se_places($user->id);
+$cityes = $places->city_list($default_country);
+foreach($cityes as $city) {
+	$cities_data[] = array($city['city_id'], $city['city_name']);
+}
+
+
+$targetingCriteriaData_defaultData = array(
+		'cities' => array(), // TODO города Беларуси
+		'interests' => array(),
+		'groups' => $my_groups,
+		'apps' => array(),
+		'positions' => array(),
+);
+
+function city_arr($str) {
+	global $db;
+	$out = array();
+	if(!empty($str)) {
+		$str = uintarr(explode(',', $str));
+		$cities = $db->join_etc('city', $str, '');
+		foreach($cities as $city) {
+			$out[] = array(intval($city['city_id']), $city['city_name']);
+		}
+	}
+	return $out;
+}
+
+$targetingCriteriaData_selectedData = array(
+	'cities' => city_arr($ad_info['ad_t_city']),
+	'cities_not' => city_arr($ad_info['ad_t_city_not']),
+	'groups' => array(),
+	'apps' => array(),
+	'apps_not' => array(),
+	'districts' => array(),
+	'stations' => array(),
+	'streets' => array(),
+	'schools' => array(),
+	'positions' => array(),
+	'operators' => array()
+);
+
+
+
+
+
+	
+	//cur.targetingCriteriaData.selectedData = {"cities":[],"cities_not":[],"groups":[],"apps":[],"apps_not":[],"districts":[],"stations":[],"streets":[],"schools":[],"positions":[],"operators":[]};
+
+$adParamsParams = array(
+		'format_type' => array(
+				'hidden' => $format_type_hidden,
+				'allow_exclusive_ads' => false,
+				'allow_promotion_community' => false,
+		),
+		'cost_type' => array(
+				'hidden' => $cost_type_hidden,
+				'allow_exclusive_ads' => false,
+				'allow_promotion_community' => true,
+		),
+		'link_type' => array(
+				'disabled' => false,
+				'data_normal' => array(
+						array(0, '- Выберите тип -'),
+						array(1, 'Группа'),
+						array(6, 'Публичная страница'),
+						array(4, 'Приложение'),
+						array(7, 'Видеозапись'),
+						array(5, 'Внешний сайт'),
+				),
+				'data_promotion_community' => array(
+						array(0, '- Выберите тип -'),
+						array(1, 'Группа'),
+						array(6, 'Публичная страница'),
+						array(4, 'Приложение'),
+				),
+		),
+		'link_id' => array(
+				'hidden' => false,
+				'video_value' => '',
+		),
+		'link_url' => array(
+				'hidden' => true,
+				'video_value' => '',
+		),
+		'link_domain' => array(
+				'hidden' => true,
+				'disabled' => true,
+				'link_url' => '',
+		),
+		'link_owner_id' => array(
+				'video_value' => '',
+		),
+		'title' => array(
+				'max_length' => 25,
+				'max_new_lines' => 1,
+				'disabled' => false,
+				'value_max' => 'Мурлыки',
+		),
+		'description' => array(
+				'max_length' => 60,
+				'max_new_lines' => 3,
+		),
+		'photo' => array(
+		),
+		'photo_link' => array(
+				'value_default_s' => '/images/ads_size_s.png',
+				'value_default_m' => '/images/ads_size_m.png',
+				'value_default_b' => '/images/ads_size_b.png',
+				'value_default_p' => '/images/ads_size_p.png',
+				'value_empty_m' => '/images/ads_empty_m.png',
+				'value_empty_b' => '/images/ads_empty_b.png',
+		),
+		'stats_url' => array(
+				'allow' => false,
+				'hidden' => true,
+		),
+		'disclaimer_medical' => array(
+				'hidden' => true,
+				'label_checkbox' => 'Имеются противопоказания',
+		),
+		'disclaimer_specialist' => array(
+				'hidden' => true,
+				'label_checkbox' => 'Необходима консультация специалистов',
+		),
+		'views_places' => array(
+				'disabled' => false,
+				'hidden' => true,
+				'value_normal' => 1,
+				'value_disabled' => 1,
+		),
+		'cost_per_click' => array(
+				'value_cpc' => '100',
+				'value_cpm' => '2500',
+				'value_cpc_app' => '3.87',
+				'value_cpm_app' => '0.77',
+				'value_cpm_exclusive' => '4.65',
+				'value_cpm_exclusive_app' => '2.32',
+				'recommended_cpc' => 'Рекомендованное значение – от <b>80</b> до <b>200 рублей</b>',
+				'recommended_cpm' => 'Рекомендованное значение – от <b>2000</b> до <b>4000 рублей</b>',
+				'recommended_cpc_app' => 'Рекомендованное значение – от <b>1.99</b> до <b>3.70 рубля</b>',
+				'recommended_cpm_app' => 'Рекомендованное значение – от <b>0.57</b> до <b>1.07 рубля</b>',
+				'recommended_cpm_exclusive' => 'Рекомендованное значение – от <b>3.47</b> до <b>6.45 рубля</b>',
+				'recommended_cpm_exclusive_app' => 'Рекомендованное значение – от <b>1.73</b> до <b>3.22 рубля</b>',
+				'edited' => true,
+				'last_value' => 'value_cpm',
+		),
+		'views_limit_flag' => array(
+				'hidden' => false,
+				'label_checkbox' => 'Не более 20 показов на человека',
+		),
+		'views_limit_exact' => array(
+				'hidden' => true,
+				'allow' => false,
+		),
+		'campaign_type' => array(
+				'allow_special_app' => true,
+				'hidden' => $campaign_type_hidden,
+		),
+		'campaign_id' => array(
+				'hidden' => $user_no_campaigns ? true : false,
+		),
+		'campaign_name' => array(
+				'hidden' => $user_no_campaigns ? false : true,
+		),
+);
+
+// Если фото выбрано - устанавливаем значения по умолчанию
+if(!empty($ad_info['ph'])) {
+	$photo_data = unserialize2($ad_info['ph']);
+	$adParamsParams['photo']['value_' . $photo_data['size']] = $ad_info['ph'];
+	$adParamsParams['photo_link']['value_' . $photo_data['size']] = $ad_info['photo'];
+}
+
+?>
+cur.uploadVideoBoxHash = '9e4e7ad67f4638c904';
+cur.targetingCriteriaHelp = <?= jenc($targetingCriteriaHelp) ?>;
+cur.targetingPrefsHash = '0a14cdd9c2d25c287c';
+cur.targetingCriteria = <?= jenc($targetingCriteria) ?>;
+cur.targetingGroups = <?= jenc($targetingGroups) ?>;
+cur.targetingCriteriaParams = <?= jenc($targetingCriteriaParams) ?>;
+cur.targetingCriteriaData = {};
+cur.targetingCriteriaData.data = <?= jenc($targetingCriteriaData_data) ?>;
+cur.targetingCriteriaData.defaultData = <?= jenc($targetingCriteriaData_defaultData) ?>;
+cur.targetingCriteriaData.selectedData = <?= jenc($targetingCriteriaData_selectedData )?>;
+cur.targetingCriteriaRanges = {"age_min":12,"age_max":80,"school_min":1945,"school_max":2019,"uni_min":1955,"uni_max":2020};
+
+cur.lang = extend({}, cur.lang , {"ads_edit_ad_format_type_text_and_image":"Изображение и текст","ads_edit_ad_format_type_big_image":"Большое изображение","ads_age_any":"Любой","ads_age_from":"от %s","ads_age_to":"до %s","ads_school_from":"с %s","ads_school_to":"по %s","ads_uni_from":"с %s","ads_uni_to":"по %s","ads_starttypingname_city_region":"Введите название города или региона","ads_notfound_city":"Ничего не найдено","ads_first_select_country":"Сначала выберите страну","ads_select_marital":"Выберите статусы","ads_notfound_marital":"Ничего не найдено","ads_starttypingname_interest":"Начните вводить интересы","ads_notfound_interest":"Ничего не найдено","ads_starttypingname_group":"Начните вводить название","ads_notfound_group":"Ничего не найдено","ads_type_group_public":"Введите название группы или страницы","ads_type_app_site":"Введите название приложения или сайта","ads_notfound_app":"Ничего не найдено","ads_select_religion":"Выберите предпочтения","ads_notfound_religion":"Ничего не найдено","ads_starttypingname_district":"Начните вводить название","ads_starttypingname_station":"Начните вводить название","ads_starttypingname_street":"Начните вводить название","ads_first_select_city":"Сначала выберите город","ads_noinfo_districts":"Нет информации о районах","ads_noinfo_stations":"Нет информации о станциях метро","ads_notfound_district":"Ничего не найдено","ads_notfound_station":"Ничего не найдено","ads_notfound_street":"Ничего не найдено","ads_starttypingname_school":"Начните вводить название","ads_notfound_school":"Ничего не найдено","ads_starttypingname_position":"Начните вводить должность","ads_notfound_position":"Ничего не найдено","ads_select_mobile_operator":"Выберите сотового оператора","ads_notfound_mobile_operator":"Ничего не найдено","ads_select_internet_browser":"Выберите интернет-браузер","ads_notfound_internet_browser":"Ничего не найдено","ads_select_retargeting_group":"Выберите группу ретаргетинга","ads_notfound_retargeting_groups":"Ничего не найдено","ads_error_url_unreachable_title":"Нет доступа к указанному сайту","ads_save_ad_confirm_unreachable_url":"Не удалось выполнить запрос к указанному сайту. Вы уверены, что хотите сохранить объявление?","ads_edit_ad_upload_done_title":"Загрузка завершена"});
+
+cur.adParamsHelp = {
+"cost_type":"Данный тип объявления гарантирует отсутствие любых других таргетированных рекламных объявлений на странице ВСети во время показа данного объявления.<br><br>Размер изображения увеличен до 90x160.",
+"views_places":"Вы можете показывать рекламу на сайте <b>ВСети<\/b> и на доверенных площадках <b>сайтов-партнёров<\/b>.<br><br>Включение сторонних площадок ускоряет показы рекламного объявления и увеличивает их эффективность.<br><br>Реклама на сайтах-партнерах работает в <b>тестовом режиме<\/b>.",
+			"views_limit_flag":"Ваше объявление будет показано каждому пользователю выбранной целевой аудитории не более 20 раз в сутки."
+			};
+
+			cur.saveAdHash = '<?= $saveAdHash ?>';
+			cur.adParams = <?= jenc($adParams) ?>;
+
+			cur.adParamsData = <?= jenc($adParamsData) ?>;
+
+			/*
+			{"link_type":[[0,"- Выберите тип -"],[1,"Группа"]], 
+			"link_id":<?= jenc($my_groups) ?>,
+			"views_places":[[0,"ВСети и сайты-партнёры"],[1,"Только ВСети"]],
+			"views_limit_exact":[[0,"Без ограничений"],[5,"До 5 показов на человека"],[10,"До 10 показов на человека"],[15,"До 15 показов на человека"],[20,"До 20 показов на человека"],[30,"До 30 показов на человека"],[50,"До 50 показов на человека"],[100,"До 100 показов на человека"]]};
+			*/
+															cur.adParamsParams = <?= jenc($adParamsParams) ?>;
+
+
+															cur.lang = extend({}, cur.lang , {"ads_edit_ad_cost_type_per_click":"Оплата за переходы","ads_edit_ad_cost_type_per_views":"Оплата за показы","ads_edit_ad_cost_type_per_views_exclusive":"Эксклюзивные показы","ads_edit_ad_cost_type_per_click_promotion_community":"Продвижение сообществ за переходы","ads_select_group_placeholder":"Выберите группу","ads_select_event_placeholder":"Выберите встречу","ads_select_market_placeholder":"Выберите объявление","ads_select_app_placeholder":"Выберите приложение","ads_select_public_page_placeholder":"Выберите публичную страницу","ads_notfound_link_object":"Ничего не найдено","global_ad_link_type_group":"Группа","global_ad_link_type_event":"Событие","global_ad_link_type_market":"Объявление","global_ad_link_type_app":"Приложение","global_ad_link_type_public":"Страница","global_ad_link_type_video":"Видеозапись","global_ad_link_type_local":"Страница на vseti.by","ads_edit_ad_campaign_type_select":"Выбрать существующую","ads_edit_ad_campaign_type_new":"Создать новую","ads_edit_ad_campaign_type_app_discount":"Реклама приложений со скидкой","ads_default_first_app_campaign_name":"Реклама приложений","global_money_amount_rub_text":["","рубль","рубля","рублей"],"ads_edit_ad_cost_per_click_label":"Стоимость перехода:","ads_edit_ad_cost_per_views_label":"Стоимость 1000 показов:","ads_edit_ad_choose_view_not_found":"По запросу <b>{query}<\/b> не найдено ни одного объявления.","ads_error_url_not_checked":"Сайт обрабатывается. Пожалуйста подождите.","ads_error_url_unreachable":"Нет доступа к указанному сайту.","global_group_join":"Вступить","global_event_join":"Я пойду","global_public_join":"Подписаться","global_app_join":"Запустить"});
+
+																cur.lang = extend({}, cur.lang , {"ads_tip":"Подсказка","ads_photo_notloaded":"Фотография не была загружена из-за ошибки на сервере.","ads_image_too_small":null,"ads_err_code":"Код ошибки: {code}","ads_image_upload_error":"При загрузке изображения произошла ошибка.","ads_photo_upload_error_1":"Непредвиденная ошибка.","ads_photo_upload_error_2":"Формат файла не поддерживается либо файл повреждён.","ads_photo_upload_error_3":"Слишком большое изображение.","ads_photo_upload_error_4":"Слишком маленькое изображение.","ads_error":"Произошла ошибка","ads_edit_small_photo":"Редактирование фотографии","ads_save":"Сохранить","ads_video_upload_done":"Загрузка видеофайла успешно завершена.","global_error":"Ошибка","ads_error_unexpected_error_try_later":"Произошла непредвиденная ошибка. Попробуйте позже."});
+
+																cur.unionsLimits = <?=$ads->limits()?>;
+
+																Ads.init();
+																AdsEdit.init();

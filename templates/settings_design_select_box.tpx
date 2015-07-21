@@ -1,0 +1,18 @@
+<?php
+global $sections, $cur_tab;
+
+$html = '';
+$tabs = array();
+foreach($sections as $k => $v){
+	if($cur_tab == $k){
+		$html .= '<div id="gifts_box_'.$k.'" class="gifts_section clear_fix">';
+		foreach($v['ids'] as $bid){
+			$html .= '<a class="bg_cell fl_l" onclick="cur.showBg('.$bid.'); return false;"><img class="gift_img png" src="/images/bg/'.$bid.'s.jpg" width="120" height="90"/></a>';
+		}
+		$html .= '</div>';
+	} else {
+		$html .= '<div id="gifts_box_'.$k.'" class="gifts_section clear_fix" style="display: none;"></div>';
+	}
+}
+echo $html;
+?>

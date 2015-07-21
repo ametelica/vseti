@@ -1,0 +1,31 @@
+<?php
+global $langpack, $user;
+foreach($var['group_ids'] as $gid) {
+	$group = pdata(-$gid);
+	$inviter = pdata($var['inviter_ids'][$gid]);
+?><div id="gl_groups<?=$group->id?>" class="group_list_row groups_list_last_row">
+  <div class="fl_l group_inv_user">
+    <a href="<?=$inviter->lnk?>"><img width="50" height="50" src="<?=$inviter->photo()?>"/></a>
+  </div>
+  <div class="groups_inv_info fl_l">
+    <b><a href="<?=$inviter->lnk?>" class="mem_link"><?=$inviter->title?></a></b><span class="groups_inv_info_l">приглашает Вас вступить в сообщество</span>
+    <div class="groups_inv_cont">
+      <div class="fl_l group_row_photo">
+        <a href="<?=$group->lnk?>"><img width="100" src="<?=$group->photo('b')?>"/></a>
+      </div>
+      <div class="fl_l groups_row_inv_info">
+        <a href="<?=$group->lnk?>"><b><?=$group->title?></b></a>
+        <div class="group_row_status group_inv_status"><?=nf($group->group_info['num_members'])?> <?=$langpack->dln($group->group_info['num_members'], array('участник', 'участника', 'участников'))?>, среди которых <a class="mem_link" href="<?=$inviter->lnk?>"><?=$inviter->title?></a></div><div class="group_row_actions group_inv_actions"><div class="group_row_buttons">
+  <div class="group_row_button button_green fl_l">
+    <button onclick="GroupsList.enter(this, <?=$group->id?>, '<?=hash_get($user->id . $group->id, 18, 'gin')?>')">Вступить в группу</button>
+  </div>
+  <div class="group_row_button button_cancel fl_l">
+    <div class="button" onclick="GroupsList.leave(this, <?=$group->id?>, '<?=hash_get($user->id . $group->id, 18, 'gout')?>')">Отклонить приглашение</div>
+  </div>
+</div></div>
+      </div>
+      <br class="clear" />
+    </div>
+  </div>
+  <br class="clear" />
+</div><? } ?>

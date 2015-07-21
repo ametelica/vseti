@@ -1,0 +1,113 @@
+<?php
+global $group, $hash, $user, $hash, $new_design;
+
+if ($new_design) {
+	if ($group->user_rank >= 0) {
+		?>
+		<div class="group_like_desc">
+			<div>
+
+				<div id="group_actions">
+					<a onclick="return Groups.otherActs(this)">
+						<span class="other">Действия в группе</span>
+					</a>
+				</div>
+				<div id="page_other_acts" class="other_acts" onmouseout="Groups.hideOther(500)" onmouseover="Groups.otherActs()">
+					<table cellpadding="0" cellspacing="0">
+						<tbody><tr>
+								<td class="side_shadow"><div></div></td>
+								<td>
+									<div class="header" onclick="Groups.hideOther(-1)"><div><span>Действия в группе</span></div></div>
+									<div class="actions">
+										<?=tpx('group_block_photo_actions')?>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+			<div class="group_share_wrap">
+				<div id="group_share_link" class="clear_fix unshown">
+					<a class="fl_l" onclick="Groups.shareGroup(<?= $group->id ?>, 'eeaa9ea5ad4bfd411b')">Рассказать друзьям</a>
+					<a class="fl_l group_share_club " title="Отправить в сообщество или другу" onclick="showBox('al_groups.php', {act: 'share_box', gid: <?= $group->id ?>})"></a>
+				</div>
+				<div id="group_share_progress" class="progress"></div>
+			</div>
+		</div>
+		<?
+		if ($group->user_rank > 0 or $group->group_info['group_privacy'] > 0) {
+			echo '<a onclick="Groups.confirm(\'group_confirm_' . ($group->user_rank > 0 ? 'adm' : 'mem') . '\', this, ' . $group->id . ', \'' . $hash->get_hash($user->id . $group->id, '18', 'gout') . '\')">Выйти из группы</a>';
+		} else {
+			echo '<a onclick="Groups.leave(this, ' . $group->id . ', \'' . $hash->get_hash($user->id . $group->id, '18', 'gout') . '\')">Выйти из группы</a>';
+		}
+	} else {
+
+		if ($group->user_rank == -2) {
+			echo '<div class="group_like_desc">
+  <div>Вы подали заявку в группу.</div>
+</div>
+<a onclick="Groups.leave(this, ' . $group->id . ', \'' . $hash->get_hash($user->id . $group->id, '18', 'gout') . '\')">Отменить заявку</a>';
+		} else {
+			if ($group->user_rank == -3) {
+				$button_text = 'Принять приглашение';
+				$state_text = 'Вы приглашены в группу.';
+			} else {
+				if ($group->group_info['group_privacy'] > 0) {
+					$button_text = 'Подать заявку';
+					$state_text = 'Это закрытая группа.';
+				} else {
+					$button_text = 'Вступить в группу';
+					$state_text = 'Это открытая группа.';
+				}
+			}
+			echo '<div class="button_green button_wide"><button onclick="Groups.enter(this, ' . $group->id . ', \'' . $hash->get_hash($user->id . $group->id, '18', 'gin') . '\')">' . $button_text . '</button></div>';
+			echo '<div class="group_like_enter_desc">' . $state_text . '</div>';
+		}
+	}
+} else {
+
+	if ($group->user_rank >= 0) {
+		?>
+		<div class="group_like_desc">
+			<div>Вы состоите в группе.</div>
+			<div class="group_share_wrap">
+				<div id="group_share_link" class="clear_fix unshown">
+					<a class="fl_l" onclick="Groups.shareGroup(<?= $group->id ?>, 'eeaa9ea5ad4bfd411b')">Рассказать друзьям</a>
+					<a class="fl_l group_share_club " title="Отправить в сообщество или другу" onclick="showBox('al_groups.php', {act: 'share_box', gid: <?= $group->id ?>})"></a>
+				</div>
+				<div id="group_share_progress" class="progress"></div>
+			</div>
+		</div>
+		<?
+		if ($group->user_rank > 0 or $group->group_info['group_privacy'] > 0) {
+			echo '<a onclick="Groups.confirm(\'group_confirm_' . ($group->user_rank > 0 ? 'adm' : 'mem') . '\', this, ' . $group->id . ', \'' . $hash->get_hash($user->id . $group->id, '18', 'gout') . '\')">Выйти из группы</a>';
+		} else {
+			echo '<a onclick="Groups.leave(this, ' . $group->id . ', \'' . $hash->get_hash($user->id . $group->id, '18', 'gout') . '\')">Выйти из группы</a>';
+		}
+	} else {
+
+		if ($group->user_rank == -2) {
+			echo '<div class="group_like_desc">
+  <div>Вы подали заявку в группу.</div>
+</div>
+<a onclick="Groups.leave(this, ' . $group->id . ', \'' . $hash->get_hash($user->id . $group->id, '18', 'gout') . '\')">Отменить заявку</a>';
+		} else {
+			if ($group->user_rank == -3) {
+				$button_text = 'Принять приглашение';
+				$state_text = 'Вы приглашены в группу.';
+			} else {
+				if ($group->group_info['group_privacy'] > 0) {
+					$button_text = 'Подать заявку';
+					$state_text = 'Это закрытая группа.';
+				} else {
+					$button_text = 'Вступить в группу';
+					$state_text = 'Это открытая группа.';
+				}
+			}
+			echo '<div class="button_green button_wide"><button onclick="Groups.enter(this, ' . $group->id . ', \'' . $hash->get_hash($user->id . $group->id, '18', 'gin') . '\')">' . $button_text . '</button></div>';
+			echo '<div class="group_like_enter_desc">' . $state_text . '</div>';
+		}
+	}
+}

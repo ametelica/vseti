@@ -1,0 +1,88 @@
+<?php
+global $group_array, $invite_array, $admin_array, $langpack, $on_page, $tab, $new_design;
+
+if(!empty($invite_array['total'])) {
+	list($groups_invite_data, $groups_invite_preload) = gen_preload($invite_array, 1, 'group_ids');
+}
+
+if(!empty($admin_array['total'])) {
+	$admin_array['tab'] = 'admin';
+	//list($groups_admin_data, $groups_admin_preload) = gen_preload($admin_array, $on_page, 'group_ids');
+}
+
+if($new_design) echo tpx('header_design');
+
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><div id="user_groups"><div class="t_bar clear_fix">
+  <ul class="t0" id="groups_list_tabs">
+    <li <? if($tab == 'groups') { ?>class="active_link"<? } ?> id="groups_tab_groups">
+      <a href="/groups" onmousedown="nav.go(this, event)" onclick="return checkEvent(event)">
+        <b class="tl1"><b></b></b><b class="tl2"></b>
+        <b class="tab_word">Сообщества</b>
+      </a>
+    </li>
+    <li <? if($tab == 'admin') { ?>class="active_link"<? } ?> style="<? if(empty($admin_array['total'])) { ?>display: none;<? } ?>" id="groups_tab_admin">
+      <a href="/groups?tab=admin" onmousedown="nav.go(this, event)" onclick="return checkEvent(event)">
+        <b class="tl1"><b></b></b><b class="tl2"></b>
+        <b class="tab_word">Управление</b>
+      </a>
+    </li>
+    	  
+    <li>
+      <a href="/search?c[section]=communities" onclick="return nav.go(this, event)">
+        <b class="tl1"><b></b></b><b class="tl2"></b>
+        <b class="tab_word">Все группы</b>
+      </a>
+    </li>
+    	  
+    <li class="t_r">
+      <a onclick="showBox('al_groups.php', {act: 'create_box'})">Создать сообщество</a>
+    </li>
+  </ul>
+</div>
+<div class="groups_list_search top_search_wrap" id="groups_list_search_wrap">
+  <div id="groups_loading"></div>
+  <div id="groups_reset_search" onmouseover="setStyle(this, {opacity: 1});" onmouseout="setStyle(this, {opacity: 0.6});" onclick="GroupsList.resetSearch();"></div>
+  <input placeholder="Начните вводить имя или название" onkeyup="GroupsList.showMore(false); GroupsList.updateEvents();" onkeydown="if (event.keyCode == 27) GroupsList.resetSearch();" onfocus="addClass(ge('groups_list_content'), 'groups_search_focused')" onblur="removeClass(ge('groups_list_content'), 'groups_search_focused')" id="groups_list_search" type="text" class="text top_search_inp" value="" />
+</div>
+<? if(!empty($invite_array['total'])) { ?><div id="gle_invites_wrap" style="<? if(empty($invite_array['total']) or $tab != 'groups') { ?>display: none;<? } ?>">
+  <div class="summary_wrap">
+    <div id="gle_inv_summary" class="summary">Вас приглашают в <?=$invite_array['total']?> <?=$langpack->dln($invite_array['total'], array('сообщество', 'сообщества', 'сообществ'))?></div>
+  </div>
+  <div id="gle_invites_actions"></div>
+  <div class="gle_invites_list clear_fix"><?=tpx('groups_invite_rows', $groups_invite_data)?></div>
+  <div id="gle_invites_more"><?=tpx('groups_invite_rows', $groups_invite_preload)?></div>
+</div><? } ?><div id="gle_list_wrap" style="display: none;">
+  <div class="summary_wrap">
+    <div class="summary">Ближайшие мероприятия
+      <div id="groups_summary_progress" class="gle_summary_progress fl_r"><img src="/images/upload.gif" /></div>
+    </div>
+  </div>
+  <div id="gle_list_cont" class="gle_list clear_fix"></div>
+  <a id="gle_list_more_lnk" onclick="GroupsList.eventsMore()" style="display: none"></a>
+  <div id="gle_list_more" class="gle_list clear_fix"></div>
+</div>
+<div class="summary_wrap gl_summary_short">
+  <div class="summary" id="groups_list_summary">
+		<? if($tab == 'admin') { ?>
+		Вы управляете <?=$admin_array['total']?> <?=$langpack->dln($admin_array['total'], array('сообществом', 'сообществами', 'сообществами'))?>
+		<? } else { ?>
+		Вы состоите в <?=$group_array['total']?> <?=$langpack->dln($group_array['total'], array('сообществе', 'сообществах', 'сообществах'))?>
+		<? } ?>
+	</div>
+</div>
+<div id="groups_list_content">
+  <div id="groups_list_tab_groups" style="<? if($tab != 'groups') { ?>display: none;<? } ?>">
+    <div id="groups_list_groups" class="groups_list"><?=tpx('groups_rows', $group_array)?></div>
+    <div id="groups_list_search_cont" class="groups_list"></div>
+    <a id="groups_list_groups_more" class="groups_more_link" onclick="GroupsList.showMore()" style="<? if($group_array['total'] < $on_page) { ?>display: none<? } ?>">Показать больше групп</a>
+  </div>
+  <div id="groups_list_tab_admin" style="<? if($tab != 'admin') { ?>display: none<? } ?>">
+    <div id="groups_list_admin" class="groups_list"><?=tpx('groups_rows', $admin_array)?></div>
+    <a id="groups_list_admin_more" class="groups_more_link" onclick="GroupsList.showMore()" style="display: none">Показать больше групп</a>
+  </div>
+</div></div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,19 @@
+<?
+global $tab2, $poll_id;
+?>
+extend(cur, {tab: '<?=$tab2?>', poll_id: '<?=$poll_id?>'});
+
+function gvote(id, hash){
+    ajax.post('gpoll.php', {act: 'vote', id: id, hash: hash, poll: cur.poll_id}, {onDone: function(text) {
+	if(text == 'ok') {
+		nav.go('gpoll.php?tab=' + cur.tab);
+	} else {
+      		showDoneBox(text);
+	}
+
+    }});
+    return false; 
+}
+<? if($tab2 == 'terms') { 
+echo tpx('timer', array('time' => 1385391601, 'msg' => 'Голосование завершено'));
+} ?>

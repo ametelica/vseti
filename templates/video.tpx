@@ -1,0 +1,99 @@
+<?php
+global $videolist, $owner, $langpack, $on_page, $edit, $video_albums, $section, $album, $section, $comments, $user, $new_design, $can_add;
+$vlist = $videolist;
+$vlist['data'] = array_slice($vlist['data'], 0, $on_page);
+
+if($new_design) echo tpx('header_design');
+
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+    <? if($owner->oid < 0 and $owner->group_info['show_video'] == 0) { ?>			
+			<div id="not_found" class="video_info_msg "><span class="video_empty">Видеозаписи группы отключены</span></div>
+	<? } else { ?>
+    
+    <div class="t_bar clear_fix" id="video_tabs">
+  <ul class="t0"><li class="<? if($album[0] == 0 and $section != 'comments') { ?>active_link<? } ?>" id="video_tab_all">
+			<a href="/videos<?=$owner->oid?>" onclick="return checkEvent(event);" onmousedown="return nav.change({section: 'all'});">
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr>Все видеозаписи</nobr></b>
+  </a>
+</li><li class="<? if($album[0] == 0 and $section != 'comments') { ?>video_tab_hidden<? } else { ?>active_link<? } ?>" id="video_tab_hidden">
+  <a href="/videos<?=$owner->oid?>" onclick="return checkEvent(event);" onmousedown="return false;">
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr><? if($section == 'comments') { echo 'Обзор комментариев'; } else { echo $album[1]; } ?></nobr></b>
+  </a>
+</li><li class="t_r"><div id="video_tabs_progress" class="progress"></div><? if($edit and $video_albums['total'] == 0) { ?><a id="video_tabs_link" class="fl_r"  onclick="Video.createAlbum()">Новый альбом</a><? } ?></li></ul>
+</div>
+<div id="video_content" class="<? if($video_albums['total'] == 0) { ?>video_albums_hidden video_no_albums<? } elseif($album[0] > 0 or $section == 'comments') { ?>video_albums_hidden<? } ?>">
+  <div id="video_search" style="" class="video_search top_search_wrap ">
+    <? if($edit or $can_add) { ?><div class="button_green fl_r" id="video_add_button"><button onclick="return Video.uploadVideoBox();">Добавить видеоролик</button></div><? } ?>
+    <div class="video_loading_cont">
+      <div class="video_loading"></div>
+    </div>
+    <div id="video_reset_search" class="video_reset_search" onmouseover="setStyle(this, {opacity: 1});" onmouseout="setStyle(this, {opacity: 0.6});" onclick="Video.searchVideos(false);"></div>
+    <div id="video_search_controls">
+      <div class="video_search_cont">
+        <div class="video_checkbox checkbox fl_l" id="video_hd_option" onclick="checkbox(this); Video.toggleHD(1);"><div></div>Высокое качество</div>
+            <div class="video_checkbox checkbox on fl_l" id="video_adult_option" onclick="checkbox(this); Video.toggleAdult();"><div></div>Безопасный поиск</div>
+        <a id="video_length_0" class="video_length video_length_sel fl_r" onclick="return Video.toggleLength(this, 0);">Любые</a>
+        <a id="video_length_1" class="video_length fl_r" onclick="return Video.toggleLength(this, 1);">Короткие</a>
+        <a id="video_length_2" class="video_length fl_r" onclick="return Video.toggleLength(this, 2);">Длинные</a>
+
+        </div>
+        <br class="clear" />
+    </div>
+    <input type="text" id="v_search" onkeydown="Video.updateList(event, this);" onpaste="Video.updateList(event, this);" oncut="Video.updateList(event, this);" class="text video_search_input top_search_inp" placeholder="Поиск по видеозаписям" onfocus="addClass(cur.vList, 'search_focus');" onblur="removeClass(cur.vList, 'search_focus');" />
+  </div>
+  <div id="video_albums_list" style="" class="video_albums_can_edit">
+
+    <div class="summary_wrap">
+      <div class="clear_fix">
+        <? if($edit) { ?><a id="video_create_album" class="fl_r" onclick="Video.createAlbum()" style="">Новый альбом</a><? } ?>
+        <div id="video_albums_summary" class="summary "><? if($user->is_me($owner)) { ?>У Вас <? } ?><?=nf($video_albums['total'])?> альбом<?=$langpack->dln($video_albums['total'], 'file')?></div>
+      </div>
+    </div>
+    <div class="video_albums_cont" id="video_albums_cont"><? if($video_albums['total'] > 0) { echo tpx('video_album_rows'); } ?></div>
+  </div>
+  <div class="summary_wrap video_main_summary">
+    <div class="clear_fix">
+      <a id="video_comments_link" style="<? if($section == 'comments') { ?>display: none;<? } ?>" href="/videos<?=$owner->oid?>?section=comments" class="fl_r" onclick="return nav.change({section: 'comments'});">Обзор комментариев</a>
+      <div id="video_summary" class="summary fl_l"><? 
+      	  if($section == 'comments') { 
+      	  	echo nf($comments['total']) . ' комментари' . $langpack->dln($comments['total'], 'com'); 
+      	  } else { 
+      	  	if($videolist['total'] > 0) {
+      	  		echo nf($videolist['total']) .' видеозапис' . $langpack->dln($videolist['total'], 'zap'); 
+      	  	} else {
+      	  		echo 'Нет видеозаписей';
+      	  	}
+      	  } ?><? if($album[0] > 0 and $edit) { ?><span class="divider">|</span><span><a onclick="Video.deleteAlbum('album_<?=$album[0]?>');">Удалить альбом</a></span><? } ?></div>
+      
+    </div>
+  </div>
+  <div id="video_list" class="video_list">
+    <div id="video_rows" class="clear_all "><?=tpx('video_rows', array('videolist' => $vlist))?></div>
+    <? if($videolist['total'] == 0) {?><div  class="video_info_msg ">Нет ни одной видеозаписи.</div><? } ?>
+    <div id="video_search_summary" class="summary_wrap clear" style="display: none"></div>
+    <a id="video_sort_dd" class="dd_link fl_r">По релевантности</a>
+    <div id="video_search_rows">
+    </div>
+    <div id="show_more" class="show_more" style="<? if(($section != 'comments' and $videolist['total'] <= $on_page) or ($section == 'comments' and $comments['total'] <= $on_page)) { ?>display: none;<? } ?>">
+      <a href="" onclick="Video.showMore(); return false;" class="more">
+        Показать ещё
+      </a>
+    </div>
+    <div class="clear">
+      <div id="not_found" class="video_info_msg " style="display: none;">
+  <span class="video_empty">Нет ни одной видеозаписи.</span>
+  <span class="video_by_search">По запросу <b><span id="search_ph"></span></b> не найдено ни одной видеозаписи</span>
+  <span class="video_empty_album">В этом альбоме ещё нет видеозаписей.</span>
+</div>
+    </div>
+  </div>
+</div>
+<div id="page_end"></div><? } ?></div>
+  </div>
+</div>

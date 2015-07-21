@@ -1,0 +1,187 @@
+//var opts = {"search":["CCCP","Минск"],"edit":1,"provider":"yandex","providerId":1,"searchbar":1,"lngcode":"ru","zoom":12,"lat":53.910190,"long":27.569045,"geocodeProvider":"yandex"};
+var opts = <?=jenc($var['opts'])?>;
+cur.placeMap = cur.mapPlace = cur.placeMarker = false;
+var placePoint = false;
+var geocodeProvider = opts.geocodeProvider || 'google';
+
+function providerById(val) {
+  switch (val) {
+    case 1:
+      return 'yandex';
+    case 3:
+      return 'mapbox';
+    case 2:
+    default:
+      return 'google';
+  }
+}
+
+function setPlace(place, forceSet) {
+  cur.mapPlace = place;
+  cur.placeMap.setBounds(place.bounds)
+  if (opts.edit || forceSet) {
+    setMarker(place.point);
+  }
+}
+
+if (opts.searchbar) {
+  placeholderSetup(ge('places_filter'), {back: true})
+  cur.onMapSearch = function() {
+    vsMaps.load(geocodeProvider, function(){
+      var value = val('places_filter');
+      var geocoder = new vsMaps.Geocoder(geocodeProvider, setPlace, function() {
+        notaBene('places_filter');
+      })
+      geocoder.geocode({address: value, language: opts.lngcode, bounds: cur.geobounds})
+    });
+  }
+}
+
+extend(cur.lang, {
+  places_map_roadmap: 'Схема',
+  places_map_satellite: 'Спутник',
+  places_map_hybrid: 'Гибрид'
+});
+
+if (opts.edit && navigator.geolocation && (!opts.lat || !opts.long)) {
+  navigator.geolocation.getCurrentPosition(function(position) {
+    var gpos = position.coords;
+    if (gpos && gpos.latitude && gpos.longitude) {
+      opts.lat = gpos.latitude;
+      opts.long = gpos.longitude;
+      placePoint = new vsMaps.LatLonPoint(opts.lat, opts.long);
+
+      if (cur.placeMap.isLoaded(opts.provider)) {
+        cur.placeMap.setCenterAndZoom(placePoint, (opts.zoom || 12));
+        setMarker(placePoint);
+      }
+    }
+  },
+  function(error) {
+    debugLog(error);
+  });
+}
+
+function setMarker(point) {
+  placePoint = point;
+  cur.placeMap.removeAllMarkers();
+  cur.placeMarker = new vsMaps.Marker(point);
+  cur.placeMap.addMarkerWithData(cur.placeMarker, {
+    draggable: opts.edit ? true : false,
+    icon: '/images/map/'+(opts.edit ? 'move' : 'marker')+'.png',
+    icon2x: '/images/map/'+(opts.edit ? 'move_2x' : 'marker_2x')+'.png',
+    iconSize: (opts.edit ? [33, 32] : [26, 23]),
+    iconAnchor: (opts.edit ? [16, 32] : [7, 23]),
+    infoBubble: ''
+  });
+}
+
+function placeInitMap() {
+  cur.placeMap.addMapTypeControls();
+  cur.placeMap.addControls({zoom: 'large', pan: false});
+  if (cur.mapPlace) {
+    setPlace(cur.mapPlace, true);
+    return;
+  }
+  if (opts.lat && opts.long) {
+    var point = new vsMaps.LatLonPoint(opts.lat, opts.long);
+    cur.placeMap.setCenterAndZoom(point, opts.zoom || 17);
+    setMarker(point);
+  /*} else if (opts.search && opts.search[0]) {
+    if (placePoint) return;
+    cur.geocoder = new vsMaps.Geocoder(geocodeProvider, function(place) {
+      if (placePoint) return;
+      cur.geobounds = place.sourceBounds;
+      setPlace(place);
+      cur.placeMap.setZoom(parseInt(cur.placeMap.getZoom() * 1.4))
+    })
+    cur.geocoder.geocode({address: opts.search[0], language: opts.lngcode})*/
+  } else {
+    var point = new vsMaps.LatLonPoint(0, 0);
+    cur.placeMap.setCenterAndZoom(point, 2);
+    setMarker(point);
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var gpos = position.coords;
+      if (gpos && gpos.latitude && gpos.longitude) {
+        opts.lat = gpos.latitude;
+        opts.long = gpos.longitude;
+        var point = new vsMaps.LatLonPoint(opts.lat, opts.long);
+        cur.placeMap.setCenterAndZoom(point, opts.zoom || 12);
+        setMarker(point);
+      }
+    },
+    function(error) { });
+  }
+}
+
+cur.providerChaneged = function(obj, val) {
+  var oldObj = geByClass1('summary_tab_sel', ge('places_search_bar'))
+  opts.providerId = val;
+  opts.provider = providerById(val);
+  var newObj = ge('places_provider_'+opts.providerId);
+  if (newObj != oldObj) {
+    removeClass(oldObj, 'summary_tab_sel');
+    addClass(newObj, 'summary_tab_sel');
+  }
+  if (cur.placeMarker) {
+    cur.placeMarker.update();
+    cur.mapPlace = extend(cur.mapPlace, {
+      bounds: cur.placeMap.getBounds(),
+      point: cur.placeMarker.location
+    });
+    placePoint = cur.placeMarker.location;
+  }
+  cur.placeMap.removeAllMarkers();
+  cur.placeMap.swap('place_map_' + opts.provider, opts.provider, true);
+  if (!cur.placeMap.isLoaded(opts.provider)) {
+    cur.placeMap.load.addHandler(placeInitMap);
+  } else if (placePoint) {
+    setMarker(placePoint);
+  }
+}
+
+if (ge('places_provider_' + opts.providerId)) {
+  addClass(ge('places_provider_' + opts.providerId), 'summary_tab_sel');
+}
+
+box.setOptions({hideButtons: true, width: 680, bodyStyle: 'padding: 0px;'});
+addClass(boxLayerBG, 'bg_medium');
+if (ge('places_filter')) ge('places_filter').focus();
+cur.attachMap = function() {
+  var marker = cur.placeMap.markers[0];
+  if (marker) {
+    marker.update();
+    var loc = marker.location;
+  } else {
+    var loc = cur.placeMap.getCenter();
+  }
+  var lat = marker.location.lat;
+  var lon = marker.location.lon;
+  cur.chooseMedia('map', lat+'_'+lon+'_'+opts.providerId, [lat, lon, 'ru', opts.providerId]);
+}
+
+function placeInitBox(provider) {
+  box.showProgress();
+  placeInitMap();
+  box.hideProgress();
+}
+
+show('place_map_' + opts.provider);
+var mapCont = ge('place_map_' + opts.provider);
+cur.placeMap = new vsMaps.VSMap(mapCont, opts);
+if (opts.edit) {
+  setStyle(mapCont, {cursor: 'pointer'})
+}
+cur.placeMap.click.addHandler(function(eventType, map, place) {
+  if (opts.edit) {
+    setMarker(place.location);
+  } else {
+    cur.placeMap.setCenter(place.location);
+  }
+});
+
+if (cur.placeMap.isLoaded(opts.provider)) {
+  placeInitBox();
+} else {
+  cur.placeMap.load.addHandler(placeInitBox);
+}

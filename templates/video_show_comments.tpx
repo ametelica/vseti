@@ -1,0 +1,24 @@
+<?php
+	global $datetime, $langpack;
+    $is_my_video = $var['video']->author_id == $user->id ? 1 : 0;
+
+
+    // Обрабатываем описание
+    $desc = ChopText($var['video']->desc);
+    if (mb_strlen($desc, 'UTF-8') > 280) {
+        $desc_short = wordcut($desc, 280);
+        $desc = '<span>' . vc_code(close_opened_tags_wiki($desc_short)) . '<br /></span><a class="video_desc_more" onclick="hide(this, this.previousSibling);show(this.nextSibling);return false;">Показать полностью...</a><span id="desc_full" style="display: none">' . vc_code($desc) . '</span>';
+    } else {
+        $desc = vc_code($desc);
+    }
+?>
+<div id="mv_description" class="mv_desc"><?=nl2br($desc)?></div>
+<div id="mv_action_info" style="display: none;"></div><div id="mv_tags" style="display: none;">На видео присутствуют:<span id="mv_tags_list"></span></div><div id="mv_date_wrap" class="fl_l">Добавлена <?=$datetime->sdate($var['video']->create)?></div><div class="divider fl_l">|</div><div id="mv_like_wrap" class="fl_l" onmouseover="videoview.likeOver()" onmouseout="videoview.likeOut()" onclick="videoview.like()"><span class="fl_l">Мне нравится</span><div class="fl_l <?=($var['video']->like == 0 ? 'nolikes' : '')?>" <?=($var['video']->like_my ? 'style="filter: alpha(opacity=100); opacity: 1;"' : 'style="filter: alpha(opacity=40); opacity: 0.4;"')?> id="mv_like_icon"></div> <span id="mv_like_count" class="fl_l"><?=($var['video']->like > 0 ? $var['video']->like : '')?></span></div><br class="clear" /><?=($var['comments_total'] > 3 ? '<div id="mv_comments_header" onclick="videoview.comments();">Показать предыдущие ' . ($var['comments_total'] - 3) . ' комментари' . $langpack->dln($var['comments_total'] - 3, 'com') . '</div>' : '<div id="mv_comments_header" onclick="videoview.comments();" style="display: none;"></div>')?>
+<div id="mv_comments"><?=$var['comments_html']?></div><div class="mv_comment_header">Ваш комментарий</div>
+<textarea id="mv_comment" onkeyup="checkTextLength(4096, this, ge('mv_comment_warn'))" onkeypress="onCtrlEnter(event, videoview.sendComment);" placeholder="Комментировать..."></textarea>
+<div id="mv_comment_submit">
+  <div class="button_green fl_l"><button onclick="videoview.sendComment();" id="mv_comment_send">Отправить</button></div>
+  <div class="progress fl_l" id="mv_comment_progress"></div>
+  <div id="mv_comment_warn" class="fl_l"></div>
+  <br class="clear" />
+</div>

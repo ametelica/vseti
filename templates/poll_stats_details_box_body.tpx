@@ -1,0 +1,16 @@
+<?
+if($var['stats']['total'] > 0) {
+	foreach($var['stats']['user_ids'] as $uid) {
+			$u = pdata($uid);
+	?><div class="wk_poll_voter inl_bl">
+  <div class="wk_pollph_wrap"  ><!--onmouseover="WkPoll.bigphOver(this, <?=$uid?>)"-->
+    <a class="wk_poll_voter_ph" href="<?=$u->lnk?>">
+      <img class="wk_poll_voter_img" src="<?=$u->photo('b')?>" />
+    </a>
+  </div>
+  <div class="wk_poll_voter_name"><a class="wk_poll_voter_lnk" href="<?=$u->lnk?>"><?=$u->user_info['name']?></a></div>
+</div><? } 
+	} else {
+		echo '<div class="wk_poll_voter_no_rows">За этот вариант еще никто не проголосовал.</div>';
+	}
+?>	

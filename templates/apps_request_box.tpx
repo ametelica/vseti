@@ -1,0 +1,10 @@
+<?php
+global $app,$user,$message,$user_to;
+?>
+<div id="apps_wall_post_header">Приложение <b><?=$app->app_info['app_title']?></b> предлагает отправить <b><a class="mem_link" href="<?=$user_to->lnk?>"><?=$user_to->user_info['fio']?></a></b> уведомление.</div>
+<div id="apps_wall_post_box" class="clear_fix">
+  <a href="<?=$user->lnk?>" class="fl_l" target="_blank"><img class="apps_icon" src="<?=$user->user_photo()?>"/></a>
+  <div class="apps_request_box_info fl_l">
+    <div class="apps_request_header"><b><a class="mem_link" href="<?=$user->lnk?>"><?=$user->user_info['fio']?></a></b></div><?=htmlspecialchars($message)?>
+  </div>
+</div>

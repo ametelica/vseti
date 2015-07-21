@@ -1,0 +1,16 @@
+<?php
+global $hash;
+
+echo '<div id="left_block'.$var['n'].'" class="left_box '.($var['important'] ? 'always_show' : '').'" onmouseout="leftBlockOut(\''.$var['n'].'\')" onmouseover="leftBlockOver(\''.$var['n'].'\')">
+  <div id="left_hide'.$var['n'].'" class="left_hide" onclick="leftBlockHide(\''.$var['n'].'\', \'9010e132140f9365a1\')" onmouseout="leftBlockOut(this)" onmouseover="leftBlockOver(this)" style="opacity: 0;"></div>
+  <div class="left_box attention" '.(empty($var['link'])?'':' onclick="window.location=\''.$var['link'].'\'" style="cursor: pointer;" ').' >';
+
+if(!empty($var['header']))
+    echo '<h4>'.$var['header'].'</h4>';
+  
+echo '<div>
+  '.$var['text'].'
+ </div>
+ </div>
+</div>';
+?>

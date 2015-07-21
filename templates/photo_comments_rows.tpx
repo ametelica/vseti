@@ -1,0 +1,50 @@
+<?php
+global $datetime, $user;
+
+$vars = array(
+		'comments' => 'массив с комментами',
+		'oid' => 'id владельца',
+		'owners' => 'список id тех, кто может удалять коммент'
+);
+
+foreach ($var['comments'] as $comment) {
+	$cid = $var['oid'] . '_' . $comment->id;
+	$lid = $var['oid'] . 'photo_comment' . $comment->id . 'pv';
+	$rid = $var['oid'] . 'photo_' . $comment->id . 'pv';
+
+	//dmp($comment);
+	$author = pdata($comment->author_id, 1);
+
+	if ($user->is_me($author) or in_array($user->id, $var['owners'])) {
+		$delete_action = 'delete';
+		$delete_hint = 'Удалить';
+		$delete_hash = hash_get($cid . $user->id, 10, 'phc');
+	} else {
+		$delete_action = 'spam';
+		$delete_hint = 'Это спам';
+		$delete_hash = hash_get($cid . $user->id, 10, 'phs');
+	}
+	?><div class="clear_fix pv_comment reply_replieable" id="pv_comment<?= $cid ?>" onclick="Photoview.commentClick(this, event, <?= $comment->author_id ?>)" onmouseover="wall.replyOver('<?= $rid ?>')" onmouseout="wall.replyOut('<?= $rid ?>')"><div class="reply_table">
+			<div class="fl_l pv_thumb">
+				<a href="<?= $author->lnk ?>" onclick="return nav.go(this, event)"><img src="<?= $author->photo() ?>" /></a>
+			</div>
+			<div class="fl_l pv_comm">
+				<div class="fl_r reply_actions_wrap">
+					<div class="reply_actions">
+						<div id="reply_delete<?= $rid ?>" class="reply_delete_button fl_r" onclick="Photoview.commAction('<?= $delete_action ?>', '<?= $cid ?>', '','<?= $delete_hash?>')" onmouseover="wall.activeDeletePost('<?= $rid ?>', '<?= $delete_hint ?>', 'reply_delete')" onmouseout="wall.deactiveDeletePost('<?= $rid ?>', 'reply_delete')"></div>
+					</div>
+				</div>
+				<a href="<?= $author->lnk ?>" onclick="return nav.go(this, event)" class="name"><?= $author->title ?></a>
+				<div class="pv_commtext"><?= $comment->text ?></div>
+				<div class="like_wrap fl_r" style="display: none;" onclick="wall.like('<?= $lid ?>', '664c74e9dc90e42121'); event.cancelBubble = true;" onmouseover="wall.likeOver('<?= $lid ?>')" onmouseout="wall.likeOut('<?= $lid ?>')">
+					<span class="like_link fl_l" id="like_link<?= $lid ?>">Мне нравится</span>
+					<i class="no_likes fl_l" id="like_icon<?= $lid ?>"></i>
+					<span class="like_count fl_l" id="like_count<?= $lid ?>"></span>
+				</div>
+				<div class="pv_commdata">
+					<span class="fl_l pv_commdate"><?= $datetime->sdate($comment->time) ?></span>
+					<div class="fl_r progress" id="pv_progress<?= $cid ?>"></div>
+				</div>
+			</div>
+
+		</div></div><? } ?>

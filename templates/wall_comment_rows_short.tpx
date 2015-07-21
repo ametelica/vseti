@@ -1,0 +1,116 @@
+<?php
+global $langpack, $datetime, $user, $group;
+
+$vars = array(
+		'can_edit' => 'пользователь может редактировать страницу как её владелец или админ группы',
+		'wcomments' => 'массив с комментариями',
+		'oid' => 'id пользователя или группы',
+		'cid' => 'id коммента'
+);
+
+$wc_id = $var['oid'].'_'.$var['cid'];
+$start_id = $var['total_wcomments']>2?$var['total_wcomments']-2:0;
+
+$show_wcomments = count($var['wcomments']);
+
+/*
+
+ * 
+ */
+
+if($var['total_wcomments']>3) {
+		if($var['total_wcomments']!=$show_wcomments){
+    echo '<a class="wr_header" onclick="return wall.showReplies(\''.$wc_id.'\', false, false, event);" offs="4/'.$var['total_wcomments'].'" href="/wall'.$wc_id.'?offset=last&f=replies">
+  <div class="wrh_text" id="wrh_text'.$wc_id.'">Показать все '.$var['total_wcomments'].' комментари'.$langpack->dln($var['total_wcomments'],'com').'</div>
+  <div class="progress wrh_prg" id="wrh_prg'.$wc_id.'"></div>
+</a>';
+		} else {
+			echo '<a class="wr_header wrh_all" href="/wall'.$wc_id.'?offset=last&f=replies" offs="'.$var['total_wcomments'].'/'.$var['total_wcomments'].'" onclick="return wall.showReplies(\''.$wc_id.'\', 3, false, event);">
+<div id="wrh_text'.$wc_id.'" class="wrh_text">Скрыть комментарии</div>
+<div id="wrh_prg'.$wc_id.'" class="progress wrh_prg"></div>
+</a>';
+		}
+} else {
+    $start_id = 0;
+}
+
+foreach($var['wcomments'] as $wcomment) {
+   /*
+    if($wcomment['oid']<0 and !empty($wcomment['opt']['o'])) {
+				$rid = $wcomment['oid'];
+    } else {
+        $rid = $wcomment['aid'];
+    }
+	  * 
+	  */
+		$author = pdata($wcomment['aid']);
+    
+    $post_id = $var['oid'].'_'.$wcomment['id'];
+    $parent_id = $var['oid'].'_'.$wcomment['pid'];
+    
+    echo '<div id="post'.$post_id.'" class="reply reply_dived clear  reply_replieable" onmouseover="wall.replyOver(\''.$post_id.'\')" onmouseout="wall.replyOut(\''.$post_id.'\')"  onclick="wall.replyClick(\''.$parent_id.'\', '.$wcomment['id'].', event, '.$wcomment['aid'].')">
+  <div class="reply_table">
+    <a class="reply_image" href="'.$author->lnk.'" onclick="return nav.go(this, event)">
+       <img border="0" src="'.$author->photo().'" width="50" height="50" class="reply_image" />
+    </a>
+    <div class="reply_info">
+      <div class="fl_r post_actions_wrap">
+        <div class="post_actions">';
+
+    if($var['can_edit'] or $user->id == $wcomment['aid']){
+        echo '<div id="reply_delete'.$post_id.'" class="reply_delete_button fl_r" onclick="wall.deletePost(\''.$post_id.'\', \''.hash_get($post_id,16,'wd').'\');" onmouseover="wall.activeDeletePost(\''.$post_id.'\', \'Удалить\', \'reply_edit\')" onmouseout="wall.deactiveDeletePost(\''.$post_id.'\', \'reply_edit\')"></div>';
+	if($user->id == $wcomment['aid'] and ($_SERVER['REQUEST_TIME'] - $wcomment['date'] < 3600)) {
+		echo '<div id="reply_edit'.$post_id.'" class="reply_edit_button fl_r" onmouseout="wall.deactiveDeletePost(\''.$post_id.'\', \'reply_edit\')" onmouseover="wall.activeDeletePost(\''.$post_id.'\', \'Редактировать\', \'reply_edit\')" onclick="wall.editPost(\''.$post_id.'\')" style="opacity: 0;"></div>';
+	}
+
+    } else {
+        echo '<div id="delete_post'.$post_id.'" onclick="wall.markAsSpam(\''.$post_id.'\', \''.hash_get($post_id,16,'spm').'\');" onmouseover="wall.activeDeletePost(\''.$post_id.'\', \'Это спам\')" onmouseout="wall.deactiveDeletePost(\''.$post_id.'\')"></div>';
+    }
+		/*
+		if(!empty($wcomment['full'])){
+			$page_text = '<span>'.nl2br($wcomment['body']).'<br></span><a class="wall_post_more" onclick="hide(this, this.previousSibling);show(this.nextSibling);return false;">Показать полностью...</a><span style="display: none">'.nl2br($wcomment['full']).'</span>';
+		} else {
+			$page_text = nl2br($wcomment['body']);
+		}*/
+
+
+
+    echo '</div>
+          </div>
+          <div class="reply_text">
+          <a class="author fw_reply_author" href="'.$author->lnk.'" onclick="return nav.go(this, event)">'.$author->title.'</a>
+          <div id="wpt'.$post_id.'">'.tpx('wall_post_body', array('comment' => $wcomment)).'</div>
+        </div>
+        <div id="wpe_bottom'.$post_id.'" class="info_footer sm">';
+		
+		$like_id = $var['oid'].'_wall_reply'.$wcomment['id'];
+		
+		$like_icon_class = $wcomment['like'] == 0 ? 'no_likes' : ($wcomment['like_my'] == 1 ? 'my_like' : ''); 
+		$like_count = $wcomment['like'] == 0 ? '' : $wcomment['like'];
+		
+		
+		echo '<div class="like_wrap fl_r" onmouseout="wall.likeOut(\''.$like_id.'\')" onmouseover="wall.likeOver(\''.$like_id.'\')" onclick="wall.like(\''.$like_id.'\', \''. hash_get('wall_reply' . $post_id . $user->id, 18, 'lk') .'\'); event.cancelBubble = true;">
+<span id="like_link'.$like_id.'" class="like_link fl_l" style="opacity: 0;">Мне нравится</span>
+<i id="like_icon'.$like_id.'" class="'.$like_icon_class.' fl_l" ></i>
+<span id="like_count'.$like_id.'" class="like_count fl_l">'.$like_count.'</span>
+</div>';
+		
+		echo '<a class="wd_lnk" href="/wall'.$wc_id.'?reply='.$wcomment['id'].'" onclick="return nav.go(this, event)">'.$datetime->sdate($wcomment['date']).'</a>'; 
+				
+				if(!empty($wcomment['opt']['a']) and !empty($wcomment['opt']['a']['u'])) {
+					$answer = $wcomment['opt']['a'];
+					$answer_to = pdata($answer['u']);
+					//$answer_post_id = $answer['u'].'_'.$answer['m'];
+					$parent_answer_post_id = $var['oid'].'_'.$var['cid'];
+					$answer_post_id = $var['oid'].'_'.$answer['m'];
+					echo ' для <a class="reply_to" rid="'.$answer['u'].'" onclick="return wall.showReply(\''.$parent_answer_post_id.'\', \''.$answer_post_id.'\')" href="'.$answer_to->lnk.'">'.$answer_to->title.'</a>';
+				} 
+					
+        echo '</div>
+      </div>
+  </div>
+</div>';
+}
+
+echo '<input type="hidden" id="start_reply'.$parent_id.'" value="'.$start_id.'"/>';
+?>

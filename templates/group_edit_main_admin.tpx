@@ -1,0 +1,35 @@
+<?php
+global $user, $group, $remove;
+$admin_info = $group->admins[$user->id];
+
+?><div class="gedit_admbox_top clear_fix">
+  Вы - создатель группы и обладаете исключительными правами управления. <!-- Вы можете передать права создателя группы другому участнику этой группы.-->
+</div>
+<div id="gedit_admbox_check" class="checkbox clear_fix <? if($admin_info['c'] == 1) { ?>on<? } ?>" onclick="checkbox(this); toggle('gedit_admbox_contact_info', isChecked(this)); if (isChecked(this)) elfocus('gedit_admbox_position');" <? if($remove) { ?>style="display:none"<? } ?>>
+  <div></div>
+  <p class="gedit_admbox_desc fl_l">Отображать в блоке контактов</p>
+</div>
+<div id="gedit_admbox_contact_info" <? if($admin_info['c'] == 0 or $remove) {?>style="display: none"<? } ?>>
+  <div class="gedit_admbox_contact_row clear_fix">
+    <input type="text" class="text fl_l" id="gedit_admbox_position" value="<?=$admin_info['s']?>" />
+    <div class="gedit_admbox_contact_desc fl_l">укажите должность</div>
+  </div>
+  <div class="gedit_admbox_contact_row clear_fix" id="gedit_admbox_email_row" <? if($admin_info['m'] == '') {?>style="display: none"<? } ?>>
+    <input type="text" class="text fl_l" id="gedit_admbox_email" value="<?=$admin_info['m']?>" />
+    <div class="gedit_admbox_contact_desc fl_l">укажите e-mail</div>
+  </div>
+  <div class="gedit_admbox_contact_fill" id="gedit_admbox_email_fill" <? if($admin_info['m'] != '') {?>style="display: none"<? } ?>>
+    <a onclick="hide(domPN(this)); show('gedit_admbox_email_row'); elfocus('gedit_admbox_email');">
+      указать контактный e-mail
+    </a>
+  </div>
+  <div class="gedit_admbox_contact_row clear_fix" id="gedit_admbox_phone_row" <? if($admin_info['p'] == '') {?>style="display: none"<? } ?>>
+    <input type="text" class="text fl_l" id="gedit_admbox_phone" value="<?=$admin_info['p']?>" />
+    <div class="gedit_admbox_contact_desc fl_l">укажите телефон</div>
+  </div>
+  <div class="gedit_admbox_contact_fill" id="gedit_admbox_phone_fill" <? if($admin_info['p'] != '') {?>style="display: none"<? } ?>>
+    <a onclick="hide(domPN(this)); show('gedit_admbox_phone_row'); elfocus('gedit_admbox_phone');">
+      указать контактный телефон
+    </a>
+  </div>
+</div>

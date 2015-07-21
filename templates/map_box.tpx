@@ -1,0 +1,110 @@
+<?php
+	global $owner, $user;
+?><link rel="stylesheet" href="http://dev.map.by/map.css"  type="text/css" />
+<style>
+.shadow div {
+  background: #000;
+  height: 1px;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+  position: absolute;
+  width: 548px;
+  z-index: 4;
+  overflow: hidden;
+}
+.shadow .sh0 {
+  background: #FFFFFF;
+}
+.shadow .sh1 {
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+  margin-top: 0px;
+}
+ .shadow.bottom .sh1 {
+  margin-top: -1px;
+}
+ .shadow .sh2 {
+  opacity: 0.11;
+  filter: alpha(opacity=11);
+  margin-top: 1px;
+}
+.shadow.bottom .sh2 {
+  margin-top: -2px;
+}
+.shadow .sh3 {
+  opacity: 0.07;
+  filter: alpha(opacity=7);
+  margin-top: 2px;
+}
+.shadow.bottom .sh3 {
+  margin-top: -3px;
+}
+.shadow .sh4 {
+  opacity: 0.03;
+  filter: alpha(opacity=3);
+  margin-top: 3px;
+}
+.shadow.bottom .sh4 {
+  margin-top: -4px;
+}
+div.copyright p {
+  font-size: 9px; 
+}
+.orange { 
+  color: #d46b51; 
+  font-size: 10px; 
+  text-decoration: none;
+}
+</style>
+<div id="page_add_place_box" class="page_add_place_box no_type">
+<div id="add_place_data" class="search_bar clear_fix">
+    <div id="country_row" class="row">
+      <div class="label fl_l ta_r">Страна:</div>
+      <div class="labeled fl_l">
+        <input type="text" name="place_country" id="place_country" value="" />
+      </div>
+      <div class="details fl_l" id="country_details"></div>
+      <br class="clear"/>
+    </div>
+    <div id="city_row" class="row">
+      <div class="label fl_l ta_r">Город:</div>
+      <div class="labeled fl_l">
+        <input type="text" name="place_city" id="place_city" value="" />
+      </div>
+      <div class="details fl_l" id="city_details"></div>
+      <br class="clear"/>
+    </div>
+    <div id="address_row" class="row">
+      <div class="label fl_l ta_r">Адрес:</div>
+      <div class="labeled fl_l">
+        <input type="text" name="place_address" id="place_address" value="" />
+      </div>
+      <div class="details fl_l" id="address_details"></div>
+      <br class="clear"/>
+    </div>
+    <div id="title_row" class="row">
+      <div class="label fl_l ta_r">Место:</div>
+      <div class="labeled fl_l">
+        <input type="text" class="text" name="place_title" id="place_title" value="" />
+      </div>
+      <div class="details fl_l" id="title_details"></div>
+      <br class="clear"/>
+    </div>
+  </div>
+
+
+<div class="shadow">
+<div class="sh1"></div>
+<div class="sh2"></div>
+<div class="sh3"></div>
+<div class="sh4"></div>
+</div>
+<div id="map" style="width: 548px; height: 400px;">Идёт загрузка карты...</div>
+<div class="shadow bottom">
+<div class="sh4"></div>
+<div class="sh3"></div>
+<div class="sh2"></div>
+<div class="sh1"></div>
+<div class="sh0"></div>
+</div>
+</div>

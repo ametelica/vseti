@@ -1,0 +1,65 @@
+<?php
+	global $datetime, $user, $board, $search;
+	
+	foreach($var['posts'] as $p) {
+		$post_author = pdata($p['aid']);
+		//dmp($post_author);
+		$post_id = $p['oid'] . '_' . $p['id'];
+		$topic_uid = $p['oid'] . '_' . $p['pid'];
+?><div id="post<?=$post_id?>" class="bp_post" onmouseover="wall.replyOver('<?=$p['oid']?>topic_<?=$p['id']?>')" onmouseout="wall.replyOut('<?=$p['oid']?>topic_<?=$p['id']?>')"><table class="bp_table" cellspacing="0" cellpadding="0"><tr>
+  <td class="bp_thumb_td">
+    <a class="bp_thumb" href="<?=$post_author->lnk?>" onclick="return nav.go(this, event)"><img width="50" src="<?=$post_author->photo()?>" /></a>
+  </td>
+  <td class="bp_info">
+    <div class="bp_author_wrap"><a class="bp_author" href="<?=$post_author->lnk?>" onclick="return nav.go(this, event)"><?=$post_author->title?></a> написал<? if($post_author->user_info['sex'] != 2) {?>a<? } ?> в теме <a href="/topic<?=$topic_uid?>?post=<?=$p['id']?>" onclick="return Board.searchGo(this, event)"><?=$p['topic_name']?></a></div>
+    <div id="bp_data<?=$post_id?>"><div class="bp_text"><?=str_replace($search, '<span class="bs_match">' . $search . '</span>', tpx('wall_post_body', array('comment' => $p)))?></div></div>
+    <div class="bp_bottom clear_fix">
+      <div class="bp_edited_by"></div>
+      
+      <div class="fl_l"><a class="bp_date" href="/topic<?=$topic_uid?>?post=<?=$p['id']?>" onclick="return nav.go(this, event)"><?=$datetime->sdate($p['date'])?></a><span class="divide">|</span><a href="/topic<?=$topic_uid?>?post=<?=$p['id']?>" onclick="return Board.searchGo(this, event)">Перейти к сообщению в теме</a></div>
+      <div class="fl_l progress bp_progress"></div>
+    </div>
+  </td>
+</tr></table></div><? } ?>
+		  
+		  
+		
+		<!--
+		
+		
+		
+		<div id="blst_cont"><div id="post<?=$p['oid']?>_10" class="bp_post" onmouseover="Wall.replyOver('-60093444topic_10')" onmouseout="Wall.replyOut('-60093444topic_10')"><table class="bp_table" cellspacing="0" cellpadding="0"><tr>
+  <td class="bp_thumb_td">
+    <a class="bp_thumb" href="/al.metelica" onclick="return nav.go(this, event)"><img width="50" src="https://pp.vk.me/c607818/v607818497/7fff/3KzmI6OqiH8.jpg" /></a>
+  </td>
+  <td class="bp_info">
+    <div class="bp_author_wrap"><a class="bp_author" href="/al.metelica" onclick="return nav.go(this, event)">Александр Метелица</a> написал в теме <a href="/topic-60093444_29883604" onclick="return Board.searchGo(this, event)">Ещё тема <span class="bs_match">123</span></a></div>
+    <div id="bp_data-60093444_10"><div class="bp_text"><span class="bs_match">123123</span></div></div>
+    <div class="bp_bottom clear_fix">
+      <div class="bp_edited_by"></div>
+      
+      <div class="fl_l"><a class="bp_date" href="/topic-60093444_29883604?post=10" onclick="return nav.go(this, event)">сегодня в 14:59</a><span class="divide">|</span><a href="/topic-60093444_29883604" onclick="return Board.searchGo(this, event)">Перейти к теме</a></div>
+      <div class="fl_l progress bp_progress"></div>
+    </div>
+  </td>
+</tr></table></div>
+		  
+		  
+
+		  
+		  
+		  <div id="post-60093444_6" class="bp_post" onmouseover="Wall.replyOver('-60093444topic_6')" onmouseout="Wall.replyOut('-60093444topic_6')"><table class="bp_table" cellspacing="0" cellpadding="0"><tr>
+  <td class="bp_thumb_td">
+    <a class="bp_thumb" href="/rirak_metelitsa" onclick="return nav.go(this, event)"><img width="50" src="https://pp.vk.me/c607818/v607818173/b040/dxsO_C0V0ow.jpg" /></a>
+  </td>
+  <td class="bp_info">
+    <div class="bp_author_wrap"><a class="bp_author" href="/rirak_metelitsa" onclick="return nav.go(this, event)">Татьяна Метелица</a> написала в теме <a href="/topic-60093444_29871322?post=6" onclick="return Board.searchGo(this, event)">Новая тема</a></div>
+    <div id="bp_data-60093444_6"><div class="bp_text"><span class="bs_match">123</span>, asd</div></div>
+    <div class="bp_bottom clear_fix">
+      <div class="bp_edited_by"></div>
+      
+      <div class="fl_l"><a class="bp_date" href="/topic-60093444_29871322?post=6" onclick="return nav.go(this, event)">сегодня в 0:42</a><span class="divide">|</span><a href="/topic-60093444_29871322?post=6" onclick="return Board.searchGo(this, event)">Перейти к сообщению в теме</a></div>
+      <div class="fl_l progress bp_progress"></div>
+    </div>
+  </td>
+</tr></table></div></div>-->

@@ -1,0 +1,97 @@
+cur.dropDowns = {};
+window.radioBtns['app_type'] = {
+  els: [ge('app_type_0'), ge('app_type_1'), ge('app_type_2')]
+}
+
+cur.checkAppType = function(type) {
+  radiobtn(ge('app_type_' + type), type, 'app_type')
+  if (type == 2) {
+    hide('apps_edit_connect_options');
+    show('apps_edit_iframe_options');
+    ge('apps_create_app_btn').innerHTML = 'Перейти к загрузке приложения';
+  } else if (type) {
+    show('apps_edit_connect_options');
+    ge('apps_create_app_btn').innerHTML = 'Подключить сайт';
+    hide('apps_edit_iframe_options');
+  } else {
+    hide('apps_edit_connect_options');
+    ge('apps_create_app_btn').innerHTML = 'Подключить приложение';
+    hide('apps_edit_iframe_options');
+  }
+}
+cur.checkAppType(0);
+
+cur.createApp = function() {
+  var params = AppsEdit.getParams();
+  if (!params.title) {
+    return notaBene('app_title');
+  }
+  var appType = params.type;
+  if (appType == 2) {
+    params.type = params.subcategory;
+    params.desc = val('app_desc');
+  } else if (appType == 1) {
+    params.type = -1
+    if (!params.site_url) {
+      return notaBene('app_site_url');
+    }
+    if (!params.base_domain) {
+      return notaBene('app_base_domain');
+    }
+  } else {
+    params.type = -2;
+  }
+  params.hash = 'a4765e769d95879f7f';
+  ajax.post('al_apps_edit.php', extend(params, {act: 'do_create'}), {
+    onFail: function(error) {
+      ge('app_edit_error').innerHTML = error;
+      if (error) {
+        if (!isVisible('app_edit_error_wrap')) {
+          slideDown('app_edit_error_wrap', 100);
+        }
+      } else {
+        if (isVisible('app_edit_error_wrap')) {
+          slideUp('app_edit_error_wrap', 100);
+        }
+      }
+      return true;
+    }
+  })
+};
+cur.mainCat = 0;
+
+<?php
+global $lang_var;
+$cat_list = array();
+foreach($lang_var['app_types'] as $k=>$v){
+    if(!$k) continue;
+    $cat_list[$k<100?0:1][$k] = $v;
+}
+?>
+var catList = <?php echo jenc(array(kv2arr($cat_list[0]),kv2arr($cat_list[1])));?>;
+window.radioBtns['app_category'] = {
+  els: [ge('app_category_0'), ge('app_category_1')]
+}
+
+cur.defVals = [5, 100];
+cur.defVals[0] = 10;
+
+cur.checkAppCat = function(type) {
+  radiobtn(ge('app_category_' + type), type, 'app_category');
+  if (type != cur.mainCat) {
+    var dd = cur.dropDowns['app_subcategory'];
+    cur.defVals[cur.mainCat] = dd.val();
+
+    cur.mainCat = type;
+
+    dd.setData(catList[cur.mainCat]);
+    dd.val(cur.defVals[cur.mainCat])
+  }
+}
+cur.checkAppCat(cur.mainCat);
+
+cur.dropDowns['app_subcategory'] = new Dropdown(ge('app_subcategory'), catList[cur.mainCat], {
+  width: '258px',
+  selectedItems: '10',
+  multiselect: false
+});

@@ -1,0 +1,32 @@
+<?php
+
+global $feed;
+
+//dmp($feed);
+
+foreach ($feed['comments'] as $comments) {
+
+    $assign = array(
+        'can_edit' => $comments['can_edit'],
+        'oid' => $comments['oid'],
+        'type' => $comments['type'],
+        'access_comm' => $comments['access_comm'],
+        'comments' => $comments,
+        'feed' => 1
+    );
+
+    switch ($comments['type']) {
+        case '':
+        case 'wall':
+            echo '<div class="feed_row">' . tpx('wall_rows', $assign) . '</div>';
+            break;
+        case 'topic':
+            echo '<div class="feed_row">' . tpx('wall_topic_rows', $assign) . '</div>';
+            break;
+        case 'video':
+        case 'photo':
+            echo '<div class="feed_row">' . tpx('wall_other_rows', $assign) . '</div>';
+            break;
+    }
+}
+?>

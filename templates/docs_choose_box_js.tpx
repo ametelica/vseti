@@ -1,0 +1,474 @@
+<?php
+global $uplink, $to_id, $user, $mail_add;
+?>var offset = 20;
+var startOffset = offset;
+var startHTML = ge('docs_choose_rows').innerHTML;
+var toId = <?=$to_id?>;
+var chooseBack = false;
+var objMore = ge('docs_choose_more');
+var loading = false;
+var tab = 'user_docs';
+var uploadWrap = ge('docs_choose_upload_area_wrap'), uploadCont = ge('docs_choose_upload_area_cont');
+cur.docsSearchEnabled = false;
+cur.docsTitleSearchBack = false;
+cur.docsSearchStr = '';
+cur.toggleDocUpload = function(obj) {
+  if (cur.docsSearchEnabled) {
+    cur.docsSearchEnabled = false;
+    hide('docs_attach_search_cont');
+    show('docs_choose_upl');
+    obj.innerHTML = cur.docsTitleSearchBack;
+  } else {
+    cur.docsSearchEnabled = true;
+    show('docs_attach_search_cont');
+    hide('docs_choose_upl');
+    if (!cur.docsTitleSearchBack) {
+      cur.docsTitleSearchBack = obj.innerHTML;
+      placeholderSetup('choose_docs_query', {back: true});
+    }
+    var oldW = getSize(obj)[0];
+    obj.innerHTML = 'Отмена';
+    if (getSize(obj)[0] < oldW) {
+      setStyle(obj, {width: oldW});
+    }
+    elfocus(ge('choose_docs_query'));
+  }
+}
+
+cur.updateChooseList = function(e, obj) {
+  clearTimeout(this.filterTimeout);
+  this.filterTimeout = setTimeout((function() {
+    var str = trim(obj.value);
+    if (str == cur.chooseDocsQuery) {
+      return;
+    }
+    toggleClass(ge('choose_query_reset'), 'shown', !!str);
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout((function() {
+      cur.chooseDocsSearch(obj);
+    }).bind(this), obj.value ? 300 : 0);
+  }).bind(this), 10);
+}
+
+cur.chooseClearSearch = function() {
+  var obj = ge('choose_docs_query');
+  val(obj, '');
+  removeClass(ge('choose_query_reset'), 'shown');
+  cur.chooseDocsSearch(obj);
+}
+
+cur.chooseDocsSearch = function(obj) {
+  var str = trim(obj.value);
+  if (str == cur.docsSearchStr) {
+    return;
+  }
+  cur.docsSearchStr = str;
+  if (str) {
+    offset = 0;
+    cur.docsChooseMore();
+  } else {
+    offset = startOffset;
+    ge('docs_choose_rows').innerHTML = startHTML;
+  }
+}
+
+cur.showFileTT = function(obj) {
+  obj.docLoading = true;
+  var img = new vsImage();
+  var src = obj.href+'?wnd=1';
+  img.src = src;
+  img.onload = function() {
+    if (!obj.docLoading) {
+      return false;
+    }
+    var el = obj.parentNode;
+    if (cur.prevTT && cur.prevTT != el && cur.prevTT.tt) {
+      cur.prevTT.tt.hide();
+    }
+    clearTimeout(el.hidetimer);
+    el.hidetimer = false;
+    cur.prevTT = el;
+    showTooltip(el, {
+      content: '<div class="docs_tt_preview"><img style="max-width: 300px; max-height: 350px;" src="'+src+'" align="center"/></div>',
+      shift: [4, 0, 0],
+      slide: 15,
+      className: 'wall_tt docs_tt',
+      hasover: false,
+      nohideover: true,
+      showdt: 0
+    });
+  }
+}
+
+cur.docsChooseMore = function() {
+  if (!chooseBack) {
+    chooseBack = objMore.innerHTML;
+  }
+  if (loading) {
+    return false;
+  }
+  loading = true;
+  ajax.post('docs.php', {act: 'a_choose_doc_box', offset: offset, to_id: toId, tab: tab, q: cur.docsSearchStr, more: 1}, {
+    onDone: function(rows, newOffset, hideMore) {
+      if (offset == 0) {
+        ge('docs_choose_rows').innerHTML = rows;
+      } else {
+        ge('docs_choose_rows').appendChild(cf(rows));
+      }
+      offset = newOffset;
+      if (hideMore) {
+        hide(objMore);
+      }
+      loading = false;
+    },
+    onFail: function() {
+      loading = false;
+    },
+    showProgress: function() {
+      if (offset) {
+        objMore.innerHTML = '<img src="/images/upload.gif">';
+      } else {
+        addClass(ge('docs_attach_search_cont'), 'loading');
+      }
+    },
+    hideProgress: function() {
+      if (offset) {
+        objMore.innerHTML = chooseBack;
+      } else {
+        removeClass(ge('docs_attach_search_cont'), 'loading');
+      }
+    }
+  });
+}
+var switchBack = false;
+cur.docsChooseSwitch = function(obj) {
+  if (tab == 'user_docs') {
+    tab = 'group_docs';
+  } else {
+    tab = 'user_docs';
+  }
+  if (switchBack) {
+    return false;
+  }
+  switchBack = obj.innerHTML;
+  ajax.post('docs.php', {act: 'a_choose_doc_box', offset: 0, to_id: toId, tab: tab, switch_tab: 1}, {
+    onDone: function(rows, newOffset, showMore, moreStr, switchStr) {
+      ge('docs_choose_rows').innerHTML = rows;
+      objMore.innerHTML = moreStr;
+      obj.innerHTML = switchStr;
+      offset = newOffset;
+      if (showMore) {
+        hide(objMore);
+        debugLog('hide', objMore);
+      } else {
+        show(objMore);
+        debugLog('show', objMore);
+      }
+      switchBack = false;
+    },
+    onFail: function() {
+      switchBack = false;
+      obj.innerHTML = switchBack;
+    },
+    showProgress: function() {
+      obj.innerHTML = '<img src="/images/upload.gif">';
+    }
+  })
+}
+cur.chooseDocsScroll = function() {
+  var st = boxLayerWrap.scrollTop, mx = 200, vis = cur.lSTLWas || (st > mx), o = 0;
+  cur.lSTL.style.marginTop = st + 'px';
+  if (!vis) {
+    if (cur.lSTLShown !== 0) {
+      hide(cur.lSTL);
+      cur.lSTLShown = 0;
+    }
+  } else {
+    if (cur.lSTLShown !== 1) {
+      show(cur.lSTL);
+      cur.lSTLShown = 1;
+    }
+    if (cur.lSTLWas && st > 500) {
+      cur.lSTLWas = 0;
+    }
+    if (st > mx) {
+      o = (st - mx) / mx;
+      if (cur.lSTLWasSet) {
+        cur.lSTLWasSet = 0;
+        val(domLC(cur.lSTL), getLang('global_to_top'));
+        removeClass(domLC(cur.lSTL), 'down');
+      }
+    } else {
+      o = (mx - st) / mx;
+      if (cur.lSTLWas) {
+        if (!cur.lSTLWasSet) {
+          cur.lSTLWasSet = 1;
+          val(domLC(cur.lSTL), '');
+          addClass(domLC(cur.lSTL), 'down');
+        }
+      }
+    }
+  }
+  setStyle(cur.lSTL, {opacity: Math.min(Math.max(o, 0), 1)});
+
+  var pos = getXY(uploadWrap)[1], h = getSize(uploadCont)[1] + 12;
+  toggleClass(uploadCont, 'fixed', pos < scrollGetY());
+  setStyle(ge('docs_choose_rows'), {marginTop: (pos < scrollGetY() ? h : 0)});
+
+  var bt = lastWindowHeight;
+
+  if (isVisible(objMore) && (bt > getXY(objMore, true)[1] - (browser.msie6 ? 0 : scrollGetY()) - bt)) {
+    objMore.click();
+  }
+}
+cur.lSTLDown = function(e) {
+  e = e || window.event;
+  if (checkEvent(e)) return;
+
+  if (!__afterFocus) {
+    var to = 0, st = boxLayerWrap.scrollTop;
+    if (cur.lSTLWasSet && cur.lSTLWas) {
+      to = cur.lSTLWas;
+      cur.lSTLWas = 0;
+    } else {
+      cur.lSTLWas = st;
+    }
+    boxLayerWrap.scrollTop = to;
+  }
+  return cancelEvent(e);
+}
+
+if (cur.lSTL) re(cur.lSTL);
+extend(cur, {
+  lSTL: boxLayerWrap.appendChild(ce('div', {id: 'layer_stl', innerHTML: '<div id="layer_stl_bg" class="fixed"></div><div id="layer_stl_cl"></div><nobr id="layer_stl_text" class="fixed">' + getLang('global_to_top') + '</nobr>', el: box.bodyNode, onclick: cancelEvent, onmousedown: cur.lSTLDown, sc: cur.chooseVideoScroll})),
+  lSTLShown: 0,
+  lSTLWas: 0,
+  lSTLWasSet: 0
+});
+setTimeout(onBodyResize, 0);
+box.setOptions({hideButtons: true, title: false, width: 644, bodyStyle: 'padding: 0px; border: 0px;', onClean: function() {
+  removeClass(boxLayerBG, 'bg_dark');
+  removeEvent(boxLayerWrap, 'scroll', cur.chooseDocsScroll);
+  re(cur.lSTL);
+}});
+addClass(boxLayerBG, 'bg_dark');
+addEvent(boxLayerWrap, 'scroll', cur.chooseDocsScroll);
+
+
+cur.checkHtml5Uploader = function() {
+  return (window.XMLHttpRequest || window.XDomainRequest) && (window.FormData || window.FileReader && (window.XMLHttpRequest && XMLHttpRequest.sendAsBinary ||  window.ArrayBuffer && window.Uint8Array && (window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder)));
+}
+cur.uploadDocs = function(obj, ev) {
+  if (cur.uplId !== undefined && window.Upload && Upload.checked && Upload.checked[cur.uplId] && cur.checkHtml5Uploader()) {
+    ge('choose_photo_upload').click();
+    return false;
+  }
+  return true;
+}
+
+cur.selectDoc = function(oid, id, data, ev) {
+  if (ev.target.tagName == 'A' || ev.target.parentNode.tagName == 'A') {
+    return true;
+  }
+  data.lang = {profile_choose_doc: 'Документ'};
+  cur.chooseMedia('doc', oid+'_'+id, data);
+  return cancelEvent(ev);
+};
+
+cur.chooseDocsUploaded = function(info, params) {
+  var i = info.ind !== undefined ? info.ind : info;
+  var fileName = info.fileName ? info.fileName : info.filename || info;
+
+  var fname = info.fileName || info.filename;
+  var ind = fname ? i+'_'+fname : info;
+  if (ge('upload'+ind+'_progress_wrap')) {
+    var x = geByClass1('progress_x', ge('upload'+ind+'_progress_wrap'));
+    if (x) hide(x);
+  }
+
+  ajax.post('docs.php', extend({act: 'a_save_doc', from: 'choose', mail_add: <?=intval($mail_add)?>}, params), {
+    onDone: function(oid, id, data) {
+      cur.chooseMedia('doc', oid+'_'+id, extend(data, {upload_ind: ind}));
+    },
+    onFail: cur.chooseDocsUploadFailed.pbind(info),
+    progress: (Upload.types[i] == 'form') ? box.progress : null
+  });
+}
+cur.chooseDocsUploadFailed = function(info, code) {
+  var i = info.ind !== undefined ? info.ind : info, fileName = info.fileName ? info.fileName : info.filename || info;
+  if (Upload.types[i] == 'fileApi' && !Upload.options[i].wiki_editor) {
+    var fname = info.fileName || info.filename;
+    var lnkId, ind = fname ? i+'_'+fname : info;
+    if (cur.imMedia || cur.imwMedia) {
+      re('upload'+ind+'_progress_wrap');
+      lnkId = (cur.peer == -3 ? cur.imwMedia : cur.imMedia).lnkId;
+      cur.addMedia[lnkId].unchooseMedia(false);
+    } else if (cur.addMedia) {
+      re('upload'+ind+'_progress_wrap');
+      lnkId = (cur.attachMediaIndexes || {})[fileName];
+      if (lnkId) cur.addMedia[lnkId].unchooseMedia(false);
+    }
+    setTimeout(showFastBox('Ошибка', 'Не удалось загрузить файл. Файл не должен быть исполняемым, а его размер не должен превышать 50 Мб.').hide, 4000);
+  }
+  hide(box.progress);
+  topError('Upload failed', {dt: -1, type: 102, url: (ge('file_uploader_form'+i) || {}).action});
+  Upload.embed(i);
+}
+
+
+var files = {};
+var uploadFlash = false;
+var uploadKey = false;
+function uploadStart(info, res) {
+  var i = info.ind !== undefined ? info.ind : info, options = Upload.options[i];
+  var type = Upload.types[i];
+  files[i] = res || info;
+  if (type == 'form') {
+    show(box.progress);
+    box.changed = true;
+    geByClass1('file', ge('choose_photo_upload')).disabled = true;
+  }
+  if (type == 'flash') {
+    boxLayerWrap.visibilityHide = true;
+    uploadFlash = true;
+  }
+
+  if (!options.wiki_editor) {
+    if (cur.notStarted) {
+      boxQueue.hideLast();
+      delete cur.notStarted;
+    }
+    uploadProgress(info, 0, 0);
+  }
+
+  removeClass(boxLayerWrap, 'dropbox_over');
+}
+
+function uploadProgress(info, bytesLoaded, bytesTotal) {
+  var i = info.ind !== undefined ? info.ind : info;
+  if (!info.ind) {
+    info = files[i];
+  }
+  if (Upload.options[i].wiki_editor) {
+    ge('docs_choose_upload_area').innerHTML = '<img src="/images/upload.gif"/>';
+  } else {
+    var lnkId = (cur.attachMediaIndexes || {})[i];
+    if (lnkId === undefined || lnkId && cur.addMedia[lnkId].chosenMedia || cur.imMedia) {
+      var data = {loaded: bytesLoaded, total: bytesTotal};
+      if (info.fileName || info.filename) {
+        data.fileName = info.fileName || info.filename;
+      }
+      cur.showMediaProgress('photo', i, data);
+    }
+  }
+}
+
+function uploadComplete(info, res) {
+  var params, i = info.ind !== undefined ? info.ind : info, fileName = info.fileName ? info.fileName : info;
+  if (!res) return;
+  try {
+    params = eval('(' + res + ')');
+  } catch(e) {
+    params = q2ajx(res);
+  }
+  if (!params.file) {
+    Upload.onUploadError(info);
+    return;
+  }
+  var options = Upload.options[i];
+  cur.chooseDocsUploaded(info, params);
+}
+
+function hideFlashUploader() {
+  if (hasClass(boxLayerWrap,  'box_layer_hidden')) {
+    removeClass(boxLayerWrap, 'box_layer_hidden');
+    hide(boxLayerWrap);
+  }
+  boxLayerWrap.visibilityHide = false;
+  re(uploadKey);
+}
+
+
+cur.maxFiles = 10;
+cur.uploaderLang = {"max_files_warning":"Вы можете прикрепить к сообщению не более 10 файлов."};
+var max_files = cur.maxFiles - (cur.savedDocs || []).length;
+cur.html5LiteUrl = '<?=$uplink['link']?>';
+cur.html5LiteVars = {"act":"add_doc","aid":1,"gid":0,"mid":<?=$uplink['mid']?>,"hash":"<?=$uplink['hash']?>","rhash":"<?=$uplink['rhash']?>","vs":1,"upldr":1};
+cur.html5LiteOptions = {
+  file_name: 'file',
+  fieldEl: 'docs_choose_upload_area',
+  file_size_limit: 1024*1024*50, // 50Mb
+  file_types_description: 'Documents',
+  file_types: '*.*;',
+
+  lang: cur.uploaderLang,
+  wiki_editor: 0,
+
+  onUploadStart: uploadStart,
+  onUploadProgress: uploadProgress,
+  onUploadComplete: uploadComplete,
+  onUploadCompleteAll: hideFlashUploader,
+  onUploadError: cur.chooseDocsUploadFailed,
+
+  clear: 1,
+  noFlash: 1,
+  chooseBox: 1,
+  type: 'doc',
+  max_attempts: 3,
+  server: <?=intval($uplink['server'])?>,
+  error: 1,
+  error_hash: 'f1a93efcd46163995178ecbae1618b60',
+  dropbox: boxLayerWrap,
+  dragEl: boxLayerWrap,
+  visibleDropbox: true,
+  multiple: true,
+  multi_progress: true,
+  max_files: max_files
+}
+cur.uplId = Upload.init('choose_photo_upload', cur.html5LiteUrl, cur.html5LiteVars, cur.html5LiteOptions);
+
+function onBoxDragEnter(ev) {
+  if (cur.uploadDroped) {
+    return;
+  }
+  if (cur.dragTimeout) {
+    clearTimeout(cur.dragTimeout);
+    delete cur.dragTimeout;
+  }
+  addClass(ge('docs_choose_upload_area_wrap'), 'docs_choose_upload_area_enter');
+  return cancelEvent(ev);
+}
+function onBoxDragLeave(ev) {
+  if (cur.dragTimeout) {
+    clearTimeout(cur.dragTimeout);
+    delete cur.dragTimeout;
+  }
+  cur.dragTimeout = setTimeout(function() {
+    removeClass(ge('docs_choose_upload_area_wrap'), 'docs_choose_upload_area_enter');
+  }, 100);
+  return cancelEvent(ev);
+}
+function onBoxDragDrop(ev) {
+  removeClass(ge('docs_choose_upload_area_wrap'), 'docs_choose_upload_area_enter');
+  cur.uploadDroped = true;
+  if (cur.uplId !== undefined && window.Upload && Upload.checked && Upload.checked[cur.uplId]) {
+    Upload.onFileApiSend(cur.uplId, ev.dataTransfer.files);
+  } else {
+    docs.onUploadSelect(ev.dataTransfer.files);
+  }
+  return cancelEvent(ev);
+}
+addEvent(boxLayerWrap, "dragenter dragover", onBoxDragEnter);
+addEvent(boxLayerWrap, "dragleave", onBoxDragLeave);
+addEvent(boxLayerWrap, "drop", onBoxDragDrop);
+box.setOptions({onHide: function() {
+  removeEvent(boxLayerWrap, "dragenter dragover", onBoxDragEnter);
+  removeEvent(boxLayerWrap, "dragleave", onBoxDragLeave);
+  removeEvent(boxLayerWrap, "drop", onBoxDragDrop);
+  if (!uploadFlash) {
+    hideFlashUploader();
+  }
+  if (cur.prevTT && cur.prevTT.tt) {
+    cur.prevTT.tt.hide();
+  }
+}});

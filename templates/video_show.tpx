@@ -1,0 +1,7 @@
+<div class="video_box">
+  <div class="wrap">
+    <div style="display:block; width:895px; height:500px; margin:auto;" id="video_box_wrap<?=$var['video']->uid?>"><? if($var['video']->is_external()) {?><iframe id="video_player" preventhide="1" onload="if (1 && cur && cur.incViews) cur.incViews();" onmouseover
+="if (cur && cur.incViews) cur.incViews();" type="text/html" width="896" height="541" src="<?=$var['video']->movie()?>" frameborder="0" webkitallowfullscreen
+ mozallowfullscreen allowfullscreen><?} ?></div>
+  </div>
+</div>

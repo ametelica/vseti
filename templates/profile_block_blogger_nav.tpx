@@ -1,0 +1,33 @@
+<?php
+	global $blog_total,$blog,$langpack,$qcat,$qdt,$owner,$datetime;
+?>
+<div class="module clear notes_module" id="profile_notes">
+ <a href="/notes<?=$owner->user_info['user_id']?>" class="module_header">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/notes<?=$owner->user_info['user_id']?>'"></span>
+    Календарь заметок
+  </div>
+  <div class="p_header_bottom">
+    <span class="fl_r">Все</span>
+    <?=$blog_total?> замет<?=$langpack->dln($blog_total,'ord')?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+ 		<h4>Категории</h4>
+    <ul class="notes_titles">
+    <? foreach($blog->cats as $k=>$cat) {
+    	if(empty($blog->cats_cnt[$k])) continue;
+    	?>
+    	<li class="written"><a href="?cat=<?=$k?>" <?if($k===$qcat) { ?>style="font-weight: bold;"<? } ?>><?=$cat?> (<?=$blog->cats_cnt[$k]?>)</a></li>
+		<? } ?>
+ 		</ul>
+ 		<h4>Месяцы</h4>
+ 		<ul class="notes_titles">
+ 		<? foreach($blog->dates as $k=>$dt) { 
+ 			if(empty($blog->dates[$k])) continue;
+ 			?>
+    	<li class="written"><a href="?md=<?=$k?>" <?if($k==$qdt){?>style="font-weight: bold;"<?}?>><?=$datetime->prndm($k)?> (<?=$blog->dates[$k]?>)</a></li>
+		<? } ?>
+ 		</ul>
+ </div>
+</div>

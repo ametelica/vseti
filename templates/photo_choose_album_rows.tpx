@@ -1,0 +1,38 @@
+<?php
+foreach($var['albums'] as $album) {
+	if($album->files) {
+		$cover = $album->cover('photo');
+		if(is_object($cover)) {
+			$adata = array(
+				'count' => $album->files,
+				'thumb' => '',
+				'title' => str_replace ( '&', '&amp;', $album->title),
+				'description' => str_replace ( '&', '&amp;', $album->desc),
+				'editable' => array(
+					'sizes' => $cover->sizes()
+				)
+			);
+			$onclick = "cur.chooseMedia('album', '".$album->uid."', ".str_replace('"', '&quot;', jenc($adata))."); if (this.tt) this.tt.hide(); cancelEvent(event);";
+		} else {
+			$onclick = '';
+		}
+	} else {
+		$onclick = '';
+	}
+	
+?><div class="photos_choose_album_row" id="album<?= $album->uid ?>" onmouseover="cur.chooseAlbumOver(this, '<?= $album->uid ?>');" onmouseout="cur.chooseAlbumOut(this, '<?= $album->uid ?>');">
+  <a href="/<?= $album->lnk() ?>?rev=1" onclick="return cur.chooseFromAlbum('<?= $album->uid ?>');" class="photos_choose_album_link <? if($album->files){ ?>add<? } ?>">
+    <img class="photos_choose_album_img" src="<?=$album->cover('x')?>" />
+    <div class="photos_choose_album_add" onmouseover="addClass(this, 'over'); showTooltip(this, {black: 1, shift: [10, 0, 0], text: 'Прикрепить альбом'})" onmouseout="removeClass(this, 'over')" onclick="<?=$onclick?>">
+      <div class="back"></div>
+      <div class="cont"></div>
+    </div>
+    <div class="photos_choose_album_title">
+      <div class="clear_fix">
+        <div class="photos_choose_album_text fl_l" title="<?=$album->title?>"><?=$album->title?></div>
+        <div class="photos_choose_album_camera fl_r"><?= $album->files ?></div>
+      </div>
+      <div class="photos_choose_album_desc"><?= $album->desc ?></div>
+    </div>
+  </a>
+</div><? } ?>

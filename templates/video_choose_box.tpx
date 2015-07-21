@@ -1,0 +1,37 @@
+<?php
+global $to_id, $tab, $videolist, $video_total, $langpack;
+
+?><div class="choose_box video_search_wrap" id="choose_video">
+
+<div class="fl_r choose_close">
+  <span id="video_choose_right_link"><? if($to_id < 0) { 
+		if($tab == 'user_videos') {
+?><a href="" onclick="return cur.switchChooseGroupVideos(1)" class="tab_link">К видеозаписям сообщества</a><span class="divider">|</span><? 
+		} else { 
+?><a href="" onclick="return cur.switchChooseGroupVideos(0)" class="tab_link">К моим видеозаписям</a><span class="divider">|</span><?
+		}
+	}
+?></span><a class="choose_close_link" onclick="curBox().hide();">Закрыть</a>
+</div>
+<div class="choose_header">Прикрепление видеозаписи</div>
+<div id="video_attach_search_wrap">
+  <div id="video_attach_search_cont" class="choose_search_cont">
+    <div id="video_attach_search" class="search_bar clear_fix">
+      <div class="fl_l">
+        <input placeholder="Поиск по видеозаписям" onpaste="cur.updateChooseList(event, this)" onkeyup="cur.updateChooseList(event, this)" id="choose_video_query" type="text" class="s_search text" value="" />
+      </div>
+      <div class="search_progress fl_l"></div>
+      <div id="choose_query_reset" class="search_reset fl_l" onmouseover="if (isVisible(this)) animate(this, {opacity: 1}, 100)" onmouseout="if (isVisible(this)) animate(this, {opacity: .6}, 100)" onclick="cur.chooseClearSearch(this, event)"></div>
+    </div>
+    <div class="top_shadow"></div>
+  </div>
+</div>
+
+<div id="choose_video_content">
+  <div id="choose_video_rows" class="clear_fix"><?=tpx('video_choose_box_rows', array('videolist' => $videolist['data']))?></div>
+  <div id="choose_video_preload_rows" class="choose_preload"></div>
+  <a onclick="cur.videoChooseMore();" id="video_choose_more" class="choose_more_btn" style="<? if($videolist['total'] <= $on_page) {?>display: none;<? } ?>">
+    Показать все <?=$videolist['total']?> видеозапис<?=$langpack->dln($videolist['total'], 'zap')?>
+  </a>
+</div>
+</div>

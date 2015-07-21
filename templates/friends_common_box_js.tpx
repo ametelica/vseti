@@ -1,0 +1,1 @@
+box.setOptions({bodyStyle: 'padding: 0px', dark: 1});

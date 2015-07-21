@@ -1,0 +1,63 @@
+<?php
+global $privacy_wall_send,$wall_total,$wall_html,$owner,$user,$new_design,$wall,$langpack;
+?>
+<? if(($user->is_me($owner) and $user->user_info['user_id']>825880 and $user->user_info['user_verified_phone'] == 0 and $user->user_info['user_verified'] == 0 and $new_design)) {?>
+ 
+   <div class="error" style="margin: 0px; clear: both; float: none;"><span style="color:red">Вам необходимо <blink>подтвердить страницу</blink>! Без подтверждения - Вы не сможете полноценно использовать все функции сайта!</span> <a href="#" id="verify_more_link" onclick="hide('verify_more_link'); show('verify_more');">Подробнее &raquo;</a><br />
+   <div id="verify_more" style="display: none">
+   <br /><center><b>Как подтвердить страничку</b></center><br />
+   <b>1. Через мобильный телефон (так лучше).</b><br />
+   Идём в <a href="/settings.php?act=mobile">Настойки - Мобильные сервисы</a>, пишем свой номер полностью, следуем появившимся инструкциям. Этот способ лучше тем, что страничка надёжнее защищена от кражи (восстановить пароль можно только на телефон), к тому же подтверждение через телефон даёт дополнительные +10% к рейтингу.
+   <br /><br />
+   <b>2. Через E-mail (а так бесплатно).</b><br />
+   <? if($user->user_info['user_email']!='') { ?>
+   1.1. Проверяем почту, находим свежее письмо от vseti.by и открываем специальную ссылку из письма.<br /> 
+   1.2. Если при регистрации Вы ошиблись со вводом е-мейла, или ввели несуществующий е-мейл, или письмо не пришло даже через полчаса - 
+   идём в <a href="/settings.php">настройки</a>, и в разделе "Изменить основной E-Mail" пишем правильный, рабочий адрес, жмём кнопку "Изменить е-маil", на этот адрес уходит письмо с новой ссылкой, возвращаемся к пункту 1.1.
+   <? } else { ?>
+   1.1. Идём в <a href="/settings.php">настройки</a>, и в разделе "Изменить основной E-Mail" пишем правильный, рабочий адрес, жмём кнопку "Изменить е-маil", на этот адрес уходит письмо со специальной ссылкой<br />
+   1.2. Проверяем почту, находим свежее письмо от vseti.by и открываем специальную ссылку из письма.
+   <? } ?>
+   <br /><br />
+   Если что-то не получается - <a href="/write16" style="color: red; text-decoration: underline;">пишите в техподдержку</a>, мы обязательно Вам поможем!</div></div>
+  <? } ?>
+
+<div class="wall_module clear <?=($new_design==1?'wide_wall_module':'')?>" id="profile_wall">
+ <div class="module_header wall_header">
+   <a id="page_wall_header" class="header_top clear_fix">
+     <? if($user->is_me($owner) and $wall_total > 0) {?><span onclick="cancelEvent(event); return wall.clean('<?=hash_get($user->id,8,'cwall');?>', this);" class="right_link fl_r">очистить стену</span><? } ?>
+     Стена <b id="page_wall_posts_count"></b>	
+  </a>
+ </div>
+<? if($privacy_wall_send) { ?>
+ <div id="submit_post_box" class="clear_fix" onclick="event.cancelBubble=true;">
+  <div class="clear_fix">
+    <textarea
+      id="post_field"
+      class="fl_l"
+      onkeyup="wall.postChanged(this.value)"
+      onkeydown="onCtrlEnter(event, wall.sendPost)"
+      onfocus="wall.showEditPost();"
+      placeholder="<?=$user->is_me($owner)?'Что новенького, '.$user->profile_info['name'].'?':'Написать сообщение...'?>"
+    ></textarea>
+  </div>
+  <div id="post_warn"></div>
+    <div id="submit_post" onclick="event.cancelBubble=true;">
+      <div id="media_preview" class="clear_fix media_preview"></div>
+        <div class="button_green fl_l"><button id="send_post" onclick="wall.sendPost()">Отправить</button></div>
+        <div id="page_add_media" class="fl_r"><span class="add_media_lnk">Прикрепить</span></div>
+      <div class="progress fl_r" id="page_post_progress"></div>
+    </div>
+  </div>
+<? } 
+
+echo '<div id="wall_postponed" style="'.(($wall->postpone_cnt > 0 and $wall->can_edit) ? '' : 'display: none').'">' . tpx('wall_postpone_button') . '</div>';
+?>
+ 
+ <div class="clear_fix">
+  <div id="page_wall_posts" class="wall_posts all">
+  <input type="hidden" id="page_wall_count_all" value="<?=$wall_total?>" />
+  <input type="hidden" id="page_wall_count_own" value="0" /><? if($wall_total>0) echo $wall_html; else echo '<div id="page_no_wall">На стене пока нет ни одной записи.</div>';?></div>
+  <a class="more_link clear" id="wall_more_link" onclick="wall.showMore(10);"><div class="progress" id="wall_more_progress"></div><div>к предыдущим записям</div></a>
+ </div>
+</div>

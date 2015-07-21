@@ -1,0 +1,11 @@
+<?php
+global $datetime, $setting, $hash, $user, $langpack;
+if(count($var['blog'])>0){
+	echo '<ul class="notes_titles">';
+	foreach($var['blog'] as $b){
+		$title = $b['blogentry_title']==''?'Нет названия':strcut($b['blogentry_title'],50);
+		echo '<li class="written"><a href="/note'.$b['blogentry_user_id'].'_'.$b['blogentry_id'].'">'.$title.'</a> <small>'.$datetime->sdate($b['blogentry_date'],2).'<span class="divide">|</span><a href="/note'.$b['blogentry_user_id'].'_'.$b['blogentry_id'].'#comments">'.$b['blogentry_comm_cnt'].' комментари'.$langpack->dln($b['blogentry_comm_cnt'],'com').'</a></small></li>';
+	}
+	echo '</ul>';
+} else echo '<!--b-->';
+?>

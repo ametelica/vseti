@@ -1,0 +1,70 @@
+<?php
+
+global $group;
+
+//dmp($var);
+
+$levels = array(
+	1 => 'Модератор',
+	2 => 'Редактор',
+	3 => 'Администратор',
+	4 => 'Сообщество-организатор',
+	5 => 'Создатель',
+	6 => 'Создатель',
+);
+
+foreach($var['ids'] as $m) {
+	$member = pdata($m);
+	$member_data = $group->member_data($member);
+	
+	
+	//dmp($member);
+	//dmp($member_data);
+	
+?><div id="gedit_user_<?=$var['tab']?><?=$member->id?>" class="gedit_user">
+  <div class="gedit_user_bigph_wrap fl_l" > <!-- onmouseover="GroupsEdit.bigphOver(this, <?=$member->id?>)" -->
+    <a class="gedit_user_thumb" href="<?=$member->lnk?>"><img class="gedit_user_img" src="<?=$member->photo('b')?>" /></a>
+  </div>
+  <div class="gedit_user_info fl_l">
+    <div class="gedit_user_name"><a class="gedit_user_lnk" href="<?=$member->lnk?>"><?=$member->title?></a></div>
+		<? if($member_data[6] > 0) { ?>
+			<div class="gedit_user_level"><?=$levels[$member_data[6]]?></div>
+		<? } ?>
+    <div class="gedit_user_uni"></div><? if($member->user_info['online']) { ?><div class="gedit_user_online">ВСети</div><? } ?>
+    <div class="gedit_user_btns"><?
+    	if($var['tab'] == 'requests') {	?>
+    	<div class="button_green fl_l">
+			<button onclick="GroupsEdit.uAction(this, <?=$member->id?>, '<?=$member_data[7]?>', 1)">Принять в группу</button>
+		</div>
+		<div class="button_cancel gedit_user_cancel_button fl_l">
+			<div class="button" onclick="GroupsEdit.uAction(this, <?=$member->id?>, '<?=$member_data[7]?>', -1)">Отклонить заявку</div>
+		</div>
+    	<? } ?></div>
+  </div>
+  <div class="gedit_user_actions fl_r"><?
+		
+		if($member_data[6] > 4 and $group->user_level > 4) { // Создатель группы
+			
+			?><a class="gedit_user_action" onclick="GroupsEdit.uMainAdmin()">Редактировать</a>
+				<a class="gedit_user_action" onclick="GroupsEdit.uChangeMainAdmin()">Изменить создателя</a><?
+		} elseif($member_data[6] >= 1) { // в списке админ
+			if($member_data[6] < 5 and $group->user_level >= 3) {
+				?><a class="gedit_user_action" onclick="GroupsEdit.uEditAdmin(<?=$member->id?>)">Редактировать</a><a class="gedit_user_action" onclick="GroupsEdit.uRemoveAdmin(<?=$member->id?>)">Разжаловать</a><?
+				?><a class="gedit_user_action" onclick="GroupsEdit.uAction(this, <?=$member->id?>, '<?=$member_data[7]?>', -1)">Удалить из сообщества</a><?
+			}
+		} elseif($var['tab'] == 'invites') { // приглашения
+			
+			?><a class="gedit_user_action" onclick="GroupsEdit.uAction(this, <?=$member->id?>, '<?=$member_data[7]?>', -1)">Отменить приглашение</a><?
+				
+		} elseif($var['tab'] == 'members') { // рядовые юзеры в группе
+			if($group->user_level >= 3) {
+				?><a class="gedit_user_action" onclick="GroupsEdit.uEditAdmin(<?=$member->id?>)">Назначить админом</a><?
+			}
+			?><a class="gedit_user_action" onclick="GroupsEdit.uAction(this, <?=$member->id?>, '<?=$member_data[7]?>', -1)">Удалить из сообщества</a><?
+		}
+	?>
+		
+		</div>
+</div><? 
+}
+?>

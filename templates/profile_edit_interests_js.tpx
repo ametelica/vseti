@@ -1,0 +1,24 @@
+<?php
+	global $user, $interests_main, $interests_str;
+
+?>cur.lang = extend(cur.lang || {}, {"profileEdit_interests_saved":"<b>Изменения сохранены.<\/b><br>Новые данные будут отражены на Вашей странице.","profileEdit_interests_changed":"Вы изменили информацию о своих интересах. Вы уверены, что не хотите сохранить изменения?"});
+cur.options = {"hash":"<?=hash_get($user, 16, 'edp')?>"};
+
+cur.interests2 = new Autocomplete(ge('pedit_interests_interests2'), 'al_profileEdit.php?act=a_get_interests', {
+	width: 474,
+	maxItems: 25,
+	introText: 'Введите первые буквы',
+	noResult: 'Интерес не найден',
+	imageId: 'to_image',
+	placeholder: 'Выберите интересы',
+	defaultItems: <?=jenc($interests_main)?>,
+	selectedItems: "<?=$interests_str?>",
+	placeholderColored: true,
+	autocomplete: true,
+	cacheLength: 10000,
+	multiselect: true
+}); 
+	
+	//*email: options.email,
+
+ProfileEditor.initInterests();

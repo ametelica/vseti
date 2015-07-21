@@ -1,0 +1,23 @@
+<?php
+global $group, $langpack;
+
+if($group->group_info['html_links_cnt']>0) {
+    $header_start_tag = ($group->user_level > 0 ? '<a href="/groups.php?act=links&gid='.$group->id.'" class="module_header">' : '<span class="module_header">');
+    $header_end_tag = ($group->user_level > 0 ? '</a>' : '</span>');
+?>
+<div class="module clear page_list_module" id="group_links">
+    <?=$header_start_tag?>
+  <div class="header_top clear_fix">
+    <span class="right_link fl_r"  onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href=''"></span>
+    Ссылки
+  </div>
+  <div class="p_header_bottom">
+    <span class="fl_r"></span>
+    <?=$group->group_info['html_links_cnt']?> ссыл<?=$langpack->dln($group->group_info['html_links_cnt'],'ord')?>
+  </div>
+<?=$header_end_tag?>
+  <div class="module_body clear_fix">
+      <?=$group->group_info['html_links']?>      
+  </div>
+</div>
+<? } ?>

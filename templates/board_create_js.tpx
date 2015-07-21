@@ -1,0 +1,29 @@
+<?php
+global $board;
+?>showBackLink('<?=$board->owner->lnk?>', '<?=$board->owner->title?>');
+cur.lang = extend(cur.lang || {}, {
+  voting_topic: 'Тема опроса',
+  voting_variants: 'Варианты ответа',
+  board_delete_quest: 'Удалить опрос',
+  voting_variants_add: 'Добавить вариант',
+  voting_variants_del: 'Убрать вариант',
+  dont_attach: 'Не прикреплять'
+});
+elfocus('bnt_title');
+autosizeSetup('bnt_text', {minHeight: 230});
+cur.postTo = 'board<?=$board->oid?>';
+cur.boardNewMedia = initAddMedia(ge('bnt_attach').firstChild, 'bnt_media_preview', [["photo","Фотографию"],["video","Видеозапись"],["audio","Аудиозапись"],["doc","Документ"],["poll","Опрос"]], {
+  limit: 10,
+  editable: 1,
+  sortable: 1,
+  teWidth: 420,
+  teHeight: 300
+});
+cur.boardNewMedia.onChange = function(type) {
+  if (type == 'poll') {
+    if (!ge('bnt_poll')) {
+      Board.attachPoll();
+    }
+    return false;
+  }
+};

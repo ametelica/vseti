@@ -1,0 +1,34 @@
+<?php
+global $friendlists, $user, $owner, $new_design;
+$i = 0;
+foreach($var['friends'] as $f) {
+	if(!array_key_exists('user', $f) or empty($f['user']->id)) continue;
+	$friend = $f['user'];
+	
+?><div class="user_block <? if($i == 0) { ?>user_block_first<? } ?> clear_fix" id="user_block<?=$friend->id?>">
+  <div class="friends_bigph_wrap fl_l" onmouseover="Friends.bigphOver(this, <?=$friend->id?>)">
+    <a class="img" href="<?=$friend->lnk?>"><img class="friends_photo_img" src="<?=$friend->photo('b')?>" /></a>
+  </div>
+  <div class="info fl_l">
+    <div class="friends_field"><a href="<?=$friend->lnk?>"><b><?=$friend->title?> <? if($new_design and $friend->user_info['online']) { ?>•<? } ?></b></a></div>
+		<? if($new_design and !empty($friend->user_info['user_status'])) echo '<div class="online">'.$friend->user_info['user_status'].'</div>'; ?>
+		<? if(empty($new_design) and $friend->user_info['online']) { ?><div class="online">ВСети</div><? } ?>
+    <div class="friends_field"></div>
+    <div id="lists<?=$friend->id?>" class="lists clear_fix"><?
+
+if(!empty($f['user_flid'])) {
+	foreach($f['user_flid'] as $flid) {
+		$group = (($flid - 1) % 8) + 1;
+		echo '<span class="group'.$group.' fl_l" onmousedown="Friends.toList('.$flid.');">'.$friendlists[$flid].'</span>';
+	}
+}
+?></div>
+  </div>
+  <div class="actions fl_r">
+    <a href="write<?=$friend->id?>" class="friends_act" onclick="return showWriteMessageBox(event, <?=$friend->id?>)">Написать сообщение</a><a href="friends?id=<?=$friend->id?>" class="friends_act">Просмотреть друзей</a><? if($user->is_me($owner)) { ?><a onmousedown="return Friends.deleteFriend(event, <?=$friend->id?>, this)" class="friends_act">Убрать из друзей</a><a class="lists_select friends_act" onmousedown="return Friends.ddShow(<?=$friend->id?>, this, event)">Настроить списки</a><? } ?>
+  </div>
+  <div class="fl_l" id="res<?=$friend->id?>"></div>
+</div><? 
+
+$i++;
+} ?>

@@ -1,0 +1,327 @@
+<?php
+global $videolist, $datetime, $langpack, $freshvideo, $smenu, $xhost, $act, $addr, $cid, $video_title, $cat_decs, $first_supplier, $new_design;
+
+function tree($pid = 0, $deep = 0, $type = -1, $order = "") {
+    global $db, $addr;
+    $addr = array();
+    $parent_keys_arr = array();
+    $q = "select distinct `cat_id` as `id`, `cat_parent_id` as `pid`, `cat_name` as `name`
+		from `se_video_cat`
+		where `cat_active` = '1'
+		order by `cat_name`";
+    $arr = $db -> selectsql($q, DB_VID);
+    if (!empty($arr)) {
+        foreach($arr as $val) {
+            $parent_keys_arr[$val['pid']][] = $val['id'];
+            $normal_ids_arr[$val['id']] = $val;
+        }
+        mk_tree($pid, $normal_ids_arr, $parent_keys_arr);
+
+        return $addr;
+    }
+}
+
+function video_menu($menu, $cat_active, $level = 1) {
+    $first = current($menu);
+
+    $html .= '<ul class="gray_menu level' . $level . '" ';
+
+    if ($first['lvl'] == 1) {
+        $html .= 'id="s' . $first['pid'] . '"';
+
+        if (!in_array($first['pid'], $cat_active)) {
+            $html .= ' style="display:none;"';
+        }
+    }
+    $html .= '>';
+
+    foreach($menu as $m) {
+        $style = in_array($m['id'], $cat_active)?'class="current"':'';
+
+        if ($m['lvl'] == 0) {
+            $lnk = 'href="#" onclick="if(ge(\'s' . $m['id'] . '\').style.display == \'none\')  show(\'s' . $m['id'] . '\'); else hide(\'s' . $m['id'] . '\');  full_height(); return false;"';
+            $title = $m['name'] . ' (' . (empty($m['cnt'])?'0':$m['cnt']) . ')';
+        } else {
+            $lnk = 'href="/start.php?act=video&cid=' . $m['id'] . '" onclick="return nav.go(this, event)"';
+            $title = $m['name'];
+        }
+        $html .= '<li><a ' . $lnk . ' ' . $style . '>' . $title . '</a>' . (isset($m['new'])?'<sup>new<sup>':'');
+        if (!empty($m['sub']))
+            $html .= video_menu($m['sub'], $cat_active, $level + 1);
+        $html .= '</li>';
+    }
+    $html .= '</ul>';
+    return $html;
+}
+
+function cat_tree($addr, $cid = 0) {
+    $cat_active = array($cid);
+
+    if ($addr[$cid]['pid'] > 0)
+        $cat_active[] = $addr[$cid]['pid'];
+
+    foreach($addr as $k => $v) {
+        if ($v['pid'] > 0) {
+            $addr[$v['pid']]['sub'][$k] = $v;
+            $addr[$v['pid']]['cnt']++;
+            unset($addr[$k]);
+        }
+    }
+
+    return video_menu($addr, $cat_active);
+}
+
+if ($new_design) {
+    echo tpx('header_design');
+
+    ?>
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content" <?php if (!$new_design) {
+
+        ?>style="background: #bad8f2 url(<?=$xhost?>images/start_bg.jpg) no-repeat;"<?php }
+
+    ?> >
+    <div id="main" style="height: 100%">
+      <div class="col_left dgray">
+    	<div class="pb bc2">
+        <div class="pbt">
+         <div><h2>Категории</h2></div>
+        </div>
+        <div class="c">
+         <div class="bp5">
+          <div id="video_menu">
+         <?php
+    $addr = array();
+    tree();
+    echo cat_tree($addr, $cid);
+
+    ?>
+          </div>
+        	<br />
+        	<br />
+        	<a href="/al_video_queue.php" onclick="return nav.go(this, event)">Очередь обработки видео &raquo;</a>
+        	<p style="color:gray; text-align: justify">В очереди обработки можно увидеть какие видеозаписи обрабатываются в данный момент. Это может пригодиться, если Вы закачали видеоролик и он долго не становится доступным для просмотра.</p>
+          <br class="clear">
+         </div>
+        </div>
+       </div>
+
+
+
+   </div><!-- /leftColumn -->
+
+   <div class="col_right">
+
+    <?php if (!empty($cat_decs)) { ?>
+        <div class="section">
+            <h2>Описание</h2>
+            <?=$cat_decs?>
+        </div>
+    <?php } ?>
+
+    <div class="section">
+         <h2><?=$video_title?></h2>
+         <div class="video_entries">
+    <?php
+        echo tpx('list_video', array('video' => $videolist));
+        echo '</div>';
+		
+		if($cid == 0) {
+			echo '
+            <a class="show_more_btn" onclick="return nav.go(this, event)" href="/search?c[section]=video&c[distinct]=1">Полный список &raquo;</a>';
+        
+        } else {
+        	if (!empty($first_supplier)) {
+            	echo '<a class="show_more_btn"  href="/videos'.$first_supplier.'"onclick="return nav.go(this, event)">Ещё видео &raquo;</a>';
+        	}
+        }
+    ?>
+
+
+    </div>
+
+<?php if ($cid == 0) { ?>
+    <div class="section">
+        <h2>Самое свежее</h2>
+        <div class="video_entries">
+            <?php echo tpx('list_video', array('video' => $freshvideo)); ?>            
+        </div>
+    </div >
+
+<?php }
+
+    ?>
+
+   </div><!-- /leftColumn2 -->
+   <br style="clear: both">
+   </div>
+  </div>
+ </div>
+</div>
+
+
+<?php } else {
+
+    ?>
+
+<style>
+#video_menu {
+	width: 180px;
+}
+#video_menu ul {
+  display: block;
+  list-style: none outside none;
+  text-align: left;
+  margin: 0;
+  padding: 0 0 0 10px;
+}
+#video_menu ul li {
+  display: block;
+  float: left;
+  width: 180px;
+  font-size: 14px;
+  color: #829D10;
+  margin-bottom: 10px;
+}
+#video_menu sup{
+  color: red;
+}
+#video_menu ul li ul {
+  margin: 5px 0 0 0;
+  padding-left: 10px;
+  line-height: 20px;
+}
+#video_menu ul li ul li {
+  font-size: 14px;
+  padding: 0px;
+  margin-bottom: 2px;
+}
+#video_menu a.current{
+  color: #2F8F38;
+  text-shadow: 0px 0px 2px #D4DE01;
+}
+#video_menu a{
+  color: #829D10;
+  text-shadow: 0px 0px 3px white;
+}
+#video_menu a:hover{
+  text-shadow: 0px 0px 2px #D4DE01;
+}
+</style>
+
+<div id="wrap2">
+  <div id="wrap1">
+   <div id="content" <?php if (!$new_design) {
+
+        ?>style="background: #bad8f2 url(<?=$xhost?>images/start_bg.jpg) no-repeat;"<?php }
+
+    ?> class="white_page">
+    <div id="main">
+
+     <div id="start_menu"><?=start_menu($smenu, $act)?></div>
+
+      <div class="leftColumn">
+
+
+		   <div class="pb bc2">
+        <div class="pbt">
+         <div><h2>Категории</h2></div>
+        </div>
+        <div class="c">
+         <div class="bp5">
+          <div id="video_menu">
+         <?php
+    $addr = array();
+    tree();
+    echo cat_tree($addr, $cid);
+
+    ?>
+          </div>
+          <br class="clear">
+         </div>
+        </div>
+       </div>
+
+
+
+   </div><!-- /leftColumn -->
+
+   <div class="leftColumn2">
+
+   <?php if (!empty($cat_decs)) {
+
+        ?>
+
+   	<div class="pb bc6">
+	        <div class="pbt">
+	         <div><h2>Описание</h2></div>
+	       </div>
+	       <div class="c">
+
+	       <div class="bp5">
+
+	   			<?=$cat_decs?>
+	     </div><!-- whenOpen -->
+    </div>
+    </div>
+
+   <?php }
+
+    ?>
+
+    <div class="pb bc6">
+	        <div class="pbt">
+	         <div><h2><?=$video_title?></h2></div>
+	       </div>
+	       <div class="c">
+
+	       <div class="whenOpen">
+
+	   <div class="flexBox clearFix aPad">
+<?php
+    echo tpx('list_video', array('video' => $videolist));
+    if ($cid == 0) {
+    	echo '<br class="clear"/><a class="show_more_btn" href="/search?c[section]=video&c[distinct]=1" onclick="return nav.go(this, event)">Полный список &raquo;</a>';
+    } else {
+	    if (!empty($first_supplier)) {
+	        if ($first_supplier < 0)
+	            echo '<br class="clear" /><br><center><a href="/video.php?gid=' . - $first_supplier . '">Ещё видео &raquo;</a></center>';
+	        else
+	            echo '<br class="clear" /><a href="/videos-' . $first_supplier . '">Ещё видео &raquo;</a>';
+	    }
+    }
+
+    ?>
+	   </div>
+	  </div><!-- whenOpen -->
+    </div>
+    </div>
+
+<?php if ($cid == 0) { ?>
+    <div class="pb bc3">
+       <div class="pbt">
+         <div><h2>Самое свежее</h2></div>
+       </div>
+
+       <div class="c">
+       <div class="bp5">
+<?php echo tpx('list_video', array('video' => $freshvideo)); ?>
+
+     </div>
+    </div>
+    </div>
+
+<?php }
+
+    ?>
+
+   </div><!-- /leftColumn2 -->
+   <br style="clear: both">
+   </div>
+  </div>
+ </div>
+</div>
+<?php }
+
+?>

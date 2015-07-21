@@ -1,0 +1,26 @@
+<?php
+global $app_list,$lang_var,$langpack;
+if(!empty($app_list)){
+foreach($app_list as $ap){
+	$ai = $ap->app_info;
+	echo '<table id="app'.$ai['app_id'].'" class="apps_cat_row" cellspacing="0" border="0">
+  <tr>
+   <td class="app_cat_image_cont" >
+      <div class="app_cat_image_h">
+      <a href="/app'.$ai['app_id'].'?ref=5" onclick="return showApp(event, '.$ai['app_id'].', '.$ap->need_install.', 5);"><img class="apps_wide_img" width="75" height="75" src="'.$ap->app_photo('d').'"></a>
+      </div>
+   </td>
+   <td class="apps_cat_info">
+      <div class="app_name">
+        <a href="/app'.$ai['app_id'].'?ref=5" onclick="return showApp(event, '.$ai['app_id'].', '.$ap->need_install.', 5);" class="app_link">'.$ai['app_title'].'</a>
+      </div>
+      <div class="apps_cat_users">'.nf($ai['app_rate']).' участник'.$langpack->dln($ai['app_rate'],'file').'</div>
+      <a class="apps_cat_type" onclick="Apps.switchType('.$ai['app_type'].', this)">'.$lang_var['app_types'][$ai['app_type']].'</a>
+   </td>
+  </tr>
+ </table>';
+}
+} else {
+	echo '<div class="app_msg" id="no_apps">По запросу не найдено ни одного приложения.</div>';
+}
+?>

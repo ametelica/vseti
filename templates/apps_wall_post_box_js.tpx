@@ -1,0 +1,22 @@
+<?php
+global $user;
+?>
+var posted = false;
+box.setOptions({bodyStyle: 'padding: 0px;', onHide: function() {
+  if (!posted) {
+    cur.apiWallPost('', {error_code: 10007, error_msg: "Operation denied by user"});
+  }
+}});
+box.removeButtons().addButton('Отмена', function() {
+  box.hide();
+  delete window.onVideoBoxHide;
+}, 'no');
+box.addButton('Разместить запись', function() {
+  cur.apiWallPost('<?=hash_get($user->id, 16, 'awps')?>');
+  posted = true;
+  box.hide();
+  delete window.onVideoBoxHide;
+}, 'yes');
+window.onVideoBoxHide = function() {
+  box.show();
+}

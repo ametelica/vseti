@@ -1,0 +1,268 @@
+<?php
+global $owner, $user, $video_albums;
+
+$privacy = $owner->privacy4js();
+$privacy['video'] = privacy4js(0);
+$privacy['videocomm'] = privacy4js(0);
+$privacy['video_external'] = privacy4js(0);
+$privacy['videocomm_external'] = privacy4js(0);
+
+if($owner->oid < 0) { ?>
+box.setControlsText('<a onclick="cur.groupSelectVideo(<?=$owner->oid?>);">Добавить из моих видеозаписей или поиска</a>');
+<? } ?>
+var switchToUpload = function() {
+  var params = {
+    act: 'a_save_before_upload',
+    oid: <?=$owner->oid?>,
+<? if($video_albums['total'] > 0) { ?>aid: cur.albumSelect.val(),<? } ?>
+    status_export: isChecked('video_upload_status_export'),
+    hash: '<?=hash_get($user->id . $owner->oid, 12, 'vupl')?>',
+    name: ge('video_upload_title').value,
+    desc: ge('video_upload_description').value
+  };
+  if (params.oid > 0) {
+    params['privacy_video'] = Privacy.getValue('video');
+    params['privacy_videocomm'] = Privacy.getValue('videocomm');
+  } else {
+    params['privacy_video'] = isChecked('video_upload_group_privacy');
+  }
+  if (ge('video_edit_repeat')) {
+    params['repeat'] = isChecked('video_edit_repeat');
+  }
+  hide('video_upload_info');
+  show('video_upload_file');
+  ajax.post('al_video.php', params, {onDone: function(result) {
+    eval('(function(box) {' + result + '})(box);');
+  },
+  onFail: function(msg) {
+    ge('video_upload_error_msg').innerHTML = msg;
+    show('video_upload_error_msg');
+    hide('video_upload_box');
+    return true;
+  }});
+
+  box.removeButtons();
+  box.addButton('Отмена', box.hide);
+}
+
+<? 
+	if($video_albums['total'] > 0) { 
+	$video_albums_js = array(array('0', '- Выберите альбом для загрузки'));
+	foreach($video_albums['data'] as $va) {
+		$video_albums_js[] = array($va[0], $va[1]);
+	}
+?>
+
+cur.albumSelect = new Dropdown(ge('video_upload_album'), <?=jenc($video_albums_js)?>, {
+  width: '258px',
+  multiselect: false
+}); 
+
+<? } ?>
+
+cur.toUploadVideo = function() {
+  show('video_upload_tab');
+  hide('video_add_from_youtube_tab');
+
+  box.removeButtons();
+	<? if($user->byfly == 1 and $user->user_info['user_video_upload']) { ?>
+  box.addButton('Отмена', box.hide, 'no');
+  box.addButton('Загрузить видео', switchToUpload);
+	<? } else { ?>
+	box.addButton('Отмена', box.hide);
+	<? } ?>
+}
+
+cur.toAddFromVideo = function() {
+  hide('video_upload_tab');
+  show('video_add_from_youtube_tab');
+  box.removeButtons();
+  box.addButton('Отмена', box.hide, 'no');
+  if (isVisible('video_extra_settings')) {
+    box.addButton('Сохранить', cur.saveExternalVideo);
+  }
+}
+
+cur.groupSelectVideo = function(gid) {
+  showBox('al_video.php', {act: 'a_choose_video_box', to_id: -gid, from: 'video_add'});
+  cur.chooseVideoAdd = function(obj, hash) {
+    debugLog(arguments);
+    ajax.post('al_video.php', {act: 'a_add', video: obj, hash: hash, gid: gid}, {
+      onDone: function() {
+        nav.reload();
+      }
+    })
+    return false;
+  }
+}
+
+cur.privacy = <?=jenc($privacy)?>;
+
+cur.toUploadVideo();
+
+var external = ge('video_external_link');
+
+var externalTimout, externalCheckVal;
+var fetchExternalVideo = function() {
+  var val = trim(external.value);
+  if (!val || externalCheckVal == val) {
+    return;
+  }
+  box.showProgress();
+  hide('video_share_server_error');
+  hide('video_share_error');
+  externalCheckVal = val;
+  ge('video_share_form').submit();
+}
+
+function fetchExternalVideoTimeout() {
+  if (externalTimout) clearTimeout(externalTimout);
+  externalTimout = setTimeout(fetchExternalVideo, 300);
+}
+
+var sharedVideo;
+
+window.onParseDone = function(obj) {
+  if (obj.extra > 0 && obj.extraData && obj.images[0]) {
+    hide('video_share_error');
+    box.hideProgress();
+    ge('video_share_photo_url').value = obj.url;
+    ge('video_share_photo_image').value = obj.images[0];
+    ge('video_share_photo_extra').value = obj.extra;
+
+    //ge('video_share_photo_form').submit();
+
+
+    cur.changeExternalImage = function(elem) {
+      cur.externalVideoImage++;
+      var img = obj.images[cur.externalVideoImage];
+      if (img) {
+        elem.src = img;
+      } else {
+        cur.externalVideoImage = 0;
+        elem.src = obj.images[0];
+      }
+    }
+
+    if (obj.images[0]) {
+      cur.externalVideoImage = 0;
+      var externalImageDiv = ge('video_external_image');
+      externalImageDiv.innerHTML = '<img id="video_external_img" width="130" src="'+obj.images[0]+'" onclick="cur.changeExternalImage(this)" />';
+      if (obj.images.length > 1) {
+        var load = vsImage();
+        load.src = obj.images[0];
+        load.onload = function() {
+          if (load.width < 130) {
+            cur.changeExternalImage(ge('video_external_img'));
+          }
+        }
+      }
+
+    }
+
+    ge('video_external_title').value = replaceEntities(obj.title);
+    ge('video_external_description').value = replaceEntities(obj.description);
+
+
+
+    show('video_extra_settings');
+
+    sharedVideo = obj;
+
+    box.removeButtons();
+    box.addButton('Отмена', box.hide, 'no');
+    cur.saveExternalVideo = function() {
+      if (obj && obj.images) {
+        box.showProgress();
+        cur.shareExternalImageSave = obj.images[cur.externalVideoImage]
+        ge('video_share_photo_image').value = cur.shareExternalImageSave;
+        ge('video_share_photo_form').submit();
+      }
+    }
+    box.addButton('Сохранить', cur.saveExternalVideo);
+  } else if (obj.extra == -1) {
+    show('video_share_not_allowed');
+    box.hideProgress();
+  } else {
+    show('video_share_error');
+    box.hideProgress();
+  }
+}
+
+window.onParseFail = function() {
+  box.hideProgress();
+  show('video_share_error');
+}
+
+window.onUploadDone = function(index, obj) {
+  if (obj.photo_id && obj.user_id && sharedVideo) {
+    sharedVideo.title = ge('video_external_title').value;
+    var desc = ge('video_external_description').value;
+
+    var query = extend(sharedVideo, {
+      oid: 16,
+      act: 'save_external',
+      hash: '25adf3ab590ac60e4c',
+      share_title: ge('video_external_title').value,
+      share_text: desc,
+      image_url: cur.shareExternalImageSave,
+      photo_owner_id: obj.user_id,
+      photo_id: obj.photo_id,
+      extra: sharedVideo.extra,
+      extra_data: sharedVideo.extraData,
+      to_video: 1
+    });
+    if (query.openGraph) {
+      delete query.openGraph;
+    }
+    delete sharedVideo.extraData;
+
+    if (query.oid > 0) {
+      query['privacy_video'] = Privacy.getValue('video_external');
+      query['privacy_videocomm'] = Privacy.getValue('video_external');
+    } else {
+      query['privacy_video'] = isChecked('video_upload_group_privacy_external');
+      query.gid = -query.oid;
+    }
+
+    if (isChecked('video_external_status_export')) {
+      query['to_status'] = 1;
+    }
+    delete query.images;
+    setTimeout(function() {
+      ajax.post('/al_video.php', query, {onDone: function(data) {
+        box.hideProgress();
+        hide('share_error');
+        if (data.owner_id && data.video_id) {
+          nav.go('/video'+data.owner_id+'_'+data.video_id);
+        } else {
+          show('share_server_error');
+        }
+      },
+      onFail: function(text) {
+        box.hideProgress();
+        hide('video_share_error');
+        ge('video_share_server_error').innerHTML = text;
+        show('video_share_server_error');
+        return true;
+      }});
+    }, 0);
+  } else {
+    box.showProgress();
+    show('video_share_error');
+  }
+}
+
+window.onUploadFail = function() {
+  box.hideProgress();
+  hide('video_share_error');
+  show('video_share_server_error');
+}
+
+addEvent(external, 'paste', fetchExternalVideo);
+addEvent(external, 'keydown input', fetchExternalVideoTimeout);
+
+cur.destroy.push(function() {
+  removeEvent(external, 'paste', fetchExternalVideo);
+  removeEvent(external, 'keydown input', fetchExternalVideoTimeout);
+});

@@ -1,0 +1,35 @@
+<?php
+global $app,$hash,$user;
+?>
+function saveSettings() {
+  var checkboxes = geByClass('checkbox', ge('apps_settings_controls'))
+  var params = {
+    act: 'save_settings',
+    aid: <?=$app->app_id?>,
+    hash: '<?=$hash->get_hash($app->app_id.$user,16,'ap')?>'
+  };
+  if (ge('app_pay_add')) params.add = ge('app_pay_add').value;
+  if (ge('app_pay_withdraw')) params.withdraw = ge('app_pay_withdraw').value;
+  for (var i in checkboxes) {
+    if (checkboxes[i].id) {
+      params[checkboxes[i].id] = isChecked(checkboxes[i]) ? 1 : 0;
+    }
+  }
+  ajax.post('al_apps.php', params, {onDone: function(result) {
+    if (cur.app)  {
+      cur.app.runCallback('onSettingsChanged', result.settings);
+    } else if (cur.section == 'settings') {
+      if (result.balance !== undefined) {
+        updateMoney(result.balance);
+      }
+      if (result.result) {
+        box.hide();
+        setTimeout(showFastBox(getLang('apps_app_settings'), result.result).hide, 2000);
+      }
+    }
+    box.hide();
+  }});
+}
+box.removeButtons();
+box.addButton("Отмена", box.hide, 'no');
+box.addButton("Разрешить", saveSettings);

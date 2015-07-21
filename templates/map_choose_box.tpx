@@ -1,0 +1,32 @@
+<div class="choose_box" id="choose_map">
+<div id="places_search_bar" class="place_search_bar clear_fix">
+  <input placeholder="Поиск по названию города или улицы" class="text fl_l" onkeydown="event.keyCode == 13 && cur.onMapSearch();" id="places_filter" />
+  <div class="button_green fl_l"><button class="places_search_button" onclick="cur.onMapSearch();">Поиск</button></div>
+  <div id="places_provider_1" class="places_provider_switcher fl_r">
+    <a class="summary_tab2" onclick="cur.providerChaneged(this, 1);">
+      <div class="summary_tab3"><nobr>
+        Яндекс
+      </nobr></div>
+    </a>
+  </div>
+  <div id="places_provider_2" class="places_provider_switcher fl_r">
+    <a class="summary_tab2" onclick="cur.providerChaneged(this, 2);">
+      <div class="summary_tab3"><nobr>
+        Google
+      </nobr></div>
+    </a>
+  </div>
+</div>
+
+<div id="choose_map_content">
+  <div id="place_maps" class="place_map">
+  <div id="place_map_yandex" class="place_map"></div>
+  <div id="place_map_google" class="place_map"></div>
+  <div id="place_map_mapbox" class="place_map"></div>
+</div>
+</div>
+
+<div class="choose_map_controls">
+  <div class="button_green"><button onclick="cur.attachMap();">Прикрепить местоположение</button></div>
+</div>
+</div>

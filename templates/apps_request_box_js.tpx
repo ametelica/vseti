@@ -1,0 +1,40 @@
+<?php
+global $app,$uid,$user,$hash,$message,$request_key;
+?>
+var sended = false;
+box.setOptions({bodyStyle: 'padding: 0px;', onHide: function() {
+  if (!sended) {
+    cur.app.runCallback('onRequestCancel');
+  }
+}});
+box.removeButtons();
+var bannedText = '';
+if (bannedText) {
+  box.addButton('Закрыть', function() {
+    box.hide();
+  }, 'yes');
+  box.setControlsText('<span class="apps_requests_banned">'+bannedText+'</span>')
+} else {
+  box.addButton('Отмена', function() {
+    box.hide();
+  }, 'no');
+  box.addButton('Отправить уведомление', function() {
+    ajax.post('al_apps.php', {
+      act: 'a_send_request',
+      hash: '<?=$hash->get_hash($app->app_id.$user->user_info['user_id'].$uid,16,'apr')?>',
+      message: "<?=html2js($message)?>",
+      uid: '<?=$uid?>',
+      aid: '<?=$app->app_id?>',
+      request_key: "<?=html2js($request_key)?>",
+    }, {
+      onDone: function(text, rid) {
+        sended = true;
+        box.hide();
+        showDoneBox(text);
+        cur.app.runCallback('onRequestSuccess', rid);
+      },
+      showProgress: box.showProgress,
+      hideProgress: box.hideProgress,
+    })
+  }, 'yes');
+}

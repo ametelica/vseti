@@ -1,0 +1,27 @@
+<?php
+global $datetime, $can_edit;
+if(empty($var['list'])) { ?><div class="docs_empty"><? if($can_edit) { ?>Здесь будут отображаться все Ваши документы.<br><br>Если Вы прикрепите документ к личному сообщению или новости,<br>он будет доступен всем, кто получит сообщение или видит новость.<br><br><a onclick="Docs.addDocBox()">Загрузить документ</a><? } else { ?>Нет документов<? } ?></div><? } else { 
+	$i = 0;
+	foreach($var['list'] as $doc) {
+		$tags = $doc->tags(true);
+		
+		?><div id="docs_file_<?=$doc->owner_id?>_<?=$doc->id?>" class="docs_item" onmouseout="Docs.rowOut(<?=$doc->owner_id?>, <?=$doc->id?>);" onmouseover="Docs.rowOver(<?=$doc->owner_id?>, <?=$doc->id?>);">
+<? if($can_edit) { ?><div id="docs_delete_row<?=$doc->owner_id?>_<?=$doc->id?>" class="docs_delete_row fl_r" style="opacity: 0;" onclick="Docs.deleteItem(<?=$doc->owner_id?>, <?=$doc->id?>, cur.hash); return false" onmouseout="Docs.rowInactive(<?=$doc->owner_id?>, <?=$doc->id?>, 1)" onmouseover="Docs.rowActive(<?=$doc->owner_id?>, <?=$doc->id?>, 1)"></div>
+<div id="docs_edit_row<?=$doc->owner_id?>_<?=$doc->id?>" class="docs_edit_row fl_r" style="opacity: 0;" onclick="Docs.editItem(<?=$doc->owner_id?>, <?=$doc->id?>); return false" onmouseout="Docs.rowInactive(<?=$doc->owner_id?>, <?=$doc->id?>, 2)" onmouseover="Docs.rowActive(<?=$doc->owner_id?>, <?=$doc->id?>, 2)"></div><? } else { ?><div id="docs_add_row<?=$doc->owner_id?>_<?=$doc->id?>" class="docs_add_row fl_r" style="opacity: 0;" onclick="Docs.addItem(<?=$doc->owner_id?>, <?=$doc->id?>, cur.hash); return false" onmouseout="Docs.rowInactive(<?=$doc->owner_id?>, <?=$doc->id?>, 3)" onmouseover="Docs.rowActive(<?=$doc->owner_id?>, <?=$doc->id?>, 3)"></div><? } ?>
+<a class="docs_item_icon" onclick="return Docs.downloadItem(<?=$doc->owner_id?>, <?=$doc->id?>, event);" href="/doc<?=$doc->owner_id?>_<?=$doc->id?>" ext="<?=$doc->mimetype?>" title="<?=$doc->mimetype?>"></a>
+<div class="docs_item_cont">
+<a class="docs_item_name" onclick="return Docs.downloadItem(<?=$doc->owner_id?>, <?=$doc->id?>);" href="/doc<?=$doc->owner_id?>_<?=$doc->id?>" title="<?=$doc->title?>"><?=strcut($doc->title, 70)?></a>
+<span class="docs_tags"></span>
+<br>
+<div class="docs_item_date">
+<?=$doc->text_size()?>, <?=$datetime->sdate($doc->time)?> <?=empty($tags) ? '' : ' - '?>
+<span class="docs_item_tags"><?=$tags?></span>
+</div>
+</div>
+</div><?
+		$i++;
+		if($i > 50) break;
+	}
+
+}
+?>

@@ -1,0 +1,98 @@
+<?php
+global $vid, $oid, $uplink, $user, $aid;
+?>
+if (!ge('video_dropbox')) {
+  var p = ge('video_upload_tab').parentNode.parentNode.parentNode;
+  var d = ce('div', {innerHTML: '<div id="video_dropbox" class="dropbox choose">\
+  <div class="dropbox_wrap">\
+    <div class="dropbox_area">\
+      <div class="dropbox_label">Перетащите файлы сюда</div>\
+    </div>\
+  </div></div>'}).firstChild;
+  p.appendChild(d);
+}
+
+Upload.init('video_upload_box', '<?=$uplink['link']?>', {"act":"add_video","aid":<?=$aid?>,"oid":<?=$oid?>,"mid":<?=$user->id?>,"vid":<?=$vid?>,"fid":0,"hash":"<?=$uplink['hash']?>","tag":"fe441ee3","vs":1,"upldr":1,"https_resp":1}, {
+  file_name: 'file',
+
+  file_size_limit: 1073741824, // 1Gb
+  file_types_description: 'Video files',
+  file_types: '*.avi;*.AVI;*.mp4;*.MP4;*.3gp;*.3GP;*.mpeg;*.MPEG;*.mov;*.MOV;*.mp3;*.MP3;*.flv;*.FLV;*.wmv;*.WMV',
+  lang: {"button_browse":"Выбрать файл","cannot_upload_title":"Ошибка","cannot_upload_text":"Загрузка видеозаписей в данный момент недоступна. Попробуйте повторить операцию позже.","switch_mode":"При проблемах с загрузкой Вы можете использовать {link}стандартный загрузчик{\/link}."},
+
+  onUploadStart: function(i, res) {
+    var ind = (i.num !== undefined) ? i.num : i;
+    cur._uploadStart = vsNow();
+    if (Upload.types[ind] == 'form') {
+      show(box.progress);
+      hide(box.progress.nextSibling);
+    }
+    hide('video_upload_error_msg');
+    show('video_upload_info_box');
+    if (Upload.types[ind] == 'form' || Upload.types[ind] == 'fileApi') geByClass1('file', ge('video_upload_box')).disabled = true;
+  },
+  onUploadComplete: function(i, res) {
+    var obj, ind = (i.num !== undefined) ? i.num : i;
+    try {
+      obj = eval('(' + res + ')');
+    } catch(e) {
+      obj = q2ajx(res);
+    }
+    if (obj.code || obj.error) {
+      Upload.onUploadError(i, obj.code ? obj.code : obj.error);
+      return;
+    }
+    hide(box.progress);
+    show(box.progress.nextSibling);
+    hide('video_upload_info_box');
+    ajax.post('al_video.php', {act: 'a_update_after_upload', server: Upload.options[ind].server, vid: <?=$vid?>, oid: <?=$oid?>, hash: '<?=hash_get($user->id . $vid . $oid, 16, 'vupl')?>'}, {
+      onDone: function() {
+	window.location.reload();
+        /* Video.show(false, '<?=$oid?>_1'); */
+      }
+    });
+  },
+  onUploadProgress: function(i, bytesLoaded, bytesTotal) {
+    var ind = (i.num !== undefined) ? i.num : i;
+    if (!ge('form'+ind+'_progress')) {
+      var obj = Upload.obj[ind], objHeight = getSize(obj)[1], tm = objHeight / 2 + 10;
+      var node = obj.firstChild;
+      while (node) {
+        if (node.nodeType == 1) {
+          if (node.id == 'uploader'+ind && browser.msie) {
+            setStyle(node, {position: 'relative', left: '-5000px'});
+          } else {
+            setStyle(node, {visibility: 'hidden'});
+          }
+        }
+        node = node.nextSibling;
+      }
+      obj.appendChild(ce('div', {innerHTML: '<div class="video_upload_progress_wrap">\
+        <div id="form' + ind + '_progress" class="video_upload_progress" style="width: 0%;"></div>\
+      </div></div>'}, {height: tm + 'px', marginTop: -tm + 'px'}));
+    }
+    var percent = intval(bytesLoaded / bytesTotal * 100);
+    setStyle(ge('form' + ind + '_progress'), {width: percent + '%'});
+  },
+  onUploadError: function(i, err) {
+    var ind = (i.num !== undefined) ? i.num : i;
+    hide(box.progress);
+    show(box.progress.nextSibling);
+    hide('video_upload_info_box');
+    show('video_upload_error_msg');
+    debugLog(err);
+    Upload.embed(ind);
+  },
+
+  clear: 1,
+  type: 'video',
+  max_attempts: 3,
+  server: <?=$uplink['server']?>,
+  error: 1,
+  error_hash: '87d2a65136d28a95247f0b66727609e3',
+  dropbox: 'video_dropbox',
+  custom_hash: 'add_video',
+  check_hash: 'd035ad82e26b557d9fe1f1ed80c6c5ef',
+  check_rhash: 'a4608710f4b6dcea61543c6251075705',
+  check_url: '<?=$uplink['link']?>',
+});

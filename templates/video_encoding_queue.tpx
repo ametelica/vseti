@@ -1,0 +1,43 @@
+<?php
+global $new_design, $datetime;
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+<div id="content" class="white_page">
+	<div class="video_queue_content">
+	<? if(!empty($var['queues']['jobs'])) { ?>
+    <div id="video_queue">
+        <div id="video_queue_jobs">
+            <h2 class="queue_title">Очередь обработки видео</h2>
+        	<table class="video_queue">
+        		<tr>
+        			<th></th>
+        			<th>Дата</th>
+        			<th>Название</th>
+        			<th>Сервер</th>
+        			<th>Владелец</th>
+        		</tr>
+            <? $i = 0;
+            foreach ($var['queues']['queue'] as $video) { 
+        		$author = pdata($video['video_user_id']);
+        		$i++;
+        ?>
+        		<tr <? if(in_array($video['video_id'], $var['queues']['jobs'])) { ?>class="process"<? }?>>
+        			<td><?=$i?></td>
+        			<td class="video_date"><?=$datetime->sdate($video['video_datecreated'])?></td>
+        			<td class="video_title"><?=$video['video_title']?></td>
+        			<td><?=$video['video_cs']?></td>
+        			<td><a href="<?=$author->lnk?>" onclick="return nav.go(this, event)"><?=$author->title?></a></td>
+        		</tr>
+            <? } ?>
+            </table>
+        </div>
+    </div>
+	<? } else { ?>
+		<div class="video_info_msg">Очередь обработки видео пуста.</div>
+	<? } ?>
+</div>
+</div>
+</div>
+</div>

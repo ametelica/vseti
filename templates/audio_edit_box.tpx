@@ -1,0 +1,70 @@
+<?php
+global $info;
+/*
+ * 
+ * Array
+(
+    [mu_id] => 40
+    [mu_track_id] => 13
+    [mu_cs] => 0
+    [mu_duration] => 0
+    [mu_user_id] => 16
+    [mu_author_id] => 16
+    [mu_artist] => 123
+    [mu_title] => На раёне.mp3
+    [mu_text] => 
+    [mu_genre] => 0
+    [mu_privacy] => 0
+    [mu_order] => 12
+    [mu_delete] => 0
+)
+ */
+?>
+<div id="audio_edit">
+  <div class="audio_edit_row clear_fix">
+    <div class="audio_edit_label fl_l ta_r">
+      Исполнитель:
+    </div>
+    <div class="audio_edit_input fl_l">
+      <input class="text" type="text" id="audio_performer_edit" value="<?=$info['mu_artist']?>" onchange="if (curBox()) curBox().changed=true;" onkeypress="onCtrlEnter(event, cur.saveAudio.pbind(curBox()))" />
+    </div>
+  </div>
+  <div class="audio_edit_row clear_fix">
+    <div class="audio_edit_label fl_l ta_r">
+      Название:
+    </div>
+    <div class="audio_edit_input fl_l">
+      <input class="text" type="text" id="audio_title_edit" value="<?=$info['mu_title']?>" onchange="if (curBox()) curBox().changed=true;" onkeypress="onCtrlEnter(event, cur.saveAudio.pbind(curBox()))" />
+    </div>
+  </div>
+  <div id="audio_extra_link" class="clear_fix"><a class="fl_r" onclick="hide('audio_extra_link'); show('audio_extra_edit')">Дополнительно</a></div>
+  <div id="audio_extra_edit">
+    <div class="audio_edit_row clear_fix">
+      <div class="audio_edit_label fl_l ta_r">
+        Жанр:
+      </div>
+      <div class="audio_edit_input fl_l">
+        <input class="hidden" type="hidden" id="audio_edit_genre" />
+      </div>
+    </div>
+    <div class="audio_edit_row clear_fix">
+      <div class="audio_edit_label fl_l ta_r">
+        Слова песни:
+      </div>
+      <div class="audio_edit_input fl_l">
+        <textarea
+          id="audio_text_edit"
+          onchange="if (curBox()) curBox().changed=true;"
+          onkeyup="cur.checkTextLen(this.value)"
+          onkeypress="onCtrlEnter(event, cur.saveAudio.pbind(curBox()))" ><?=$info['mu_text']?></textarea>
+        <div id="audio_edit_text_warn"></div>
+      </div>
+    </div>
+    <div class="audio_edit_row clear_fix">
+      <div class="audio_edit_label fl_l ta_r"></div>
+      <div class="audio_edit_input chk fl_l">
+        <input type="hidden" id="audio_hidden" value="<?=$info['mu_privacy']?>" onchange="if (curBox()) curBox().changed=true;" />
+      </div>
+    </div>
+  </div>
+</div>

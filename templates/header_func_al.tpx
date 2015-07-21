@@ -1,0 +1,217 @@
+<?php
+global $top_add,$langpack,$setting,$is_searchpage,$left_add,$left_add_context,$dr_friends,$user,$comm,$nnm,$hash,$owner,$day,$banner4,$day,$modern_skin,
+	$musuc_page, $new_design, $global_lang_num;
+?><div id="top_info_wrap"></div>
+<div>
+ <div class="scroll_fix">
+<?
+/*
+if(!empty($top_add)){
+	echo '<div>'.$top_add.'</div>';
+}
+*/
+echo $top_add;
+?>
+  <div id="greenBar2" class="<?=$modern_skin?'modern':($day?'day':'night')?>"></div>
+  <div id="page_layout">
+   <div id="greenBar" class="<?=$modern_skin?'modern':($day?'day':'night')?>"></div>
+   <div id="page_header" class="<?=$modern_skin?'modern':($day?'day':'night')?>">
+			<h1 id="home" class="lang<?=$global_lang_num?>"><a href="http://<?=$setting['host']?>">ВСети</a></h1>
+			<? if($new_design) {?><a id="head_online" class="white_page" onmouseover="animate(this, {'opacity': 1}, 1000)" onmouseout="animate(this, {'opacity': 0}, 1000)" onclick="return nav.go(this, event)" href="/start.php"><small>сейчас на сайте</small><?=nf($setting['online'])?></a><? } ?>
+		 <div id="sub_page_header">
+    <div id="user_counter"><?/* echo number_format($setting['online'], 0, ',', ' ').' '.$langpack->humans($setting['online']).' ВСети'; */?></div>
+    
+    <a id="top_home_link" class="top_home_link fl_l" href="/" onclick="return nav.go(this, event)" class="fl_l" style="display: none"></a>
+  
+  <table cellspacing="0" cellpadding="0" id="top_links" style="">
+    <tr>
+      <td class="top_home_link_td">
+        <a class="top_home_link" href="/" onclick="return nav.go(this, event)" class="fl_l"></a>
+      </td>
+      <td class="top_back_link_td">
+        <a class="top_nav_link fl_l" href="" id="top_back_link" onclick="if (nav.go(this, event, {back: true}) === false) { hide(this); return false; }"></a>
+      </td>
+    </tr>
+  </table>
+ 
+<? if(!empty($is_searchpage)) { ?>
+    <div id="quickSearch">
+     <table cellpadding=0 cellspacing=0><tr><td>
+      <div id='qquery' style="width:558px;margin-top:1px; margin-right:2px;">
+       <input id='qinput' style='width:387px; color:#000;' autocomplete='off' <? if($c['section']==''){ ?>onfocus="nameTip(this)"<? } ?> onblur="hide('qfriends');" onkeyup="friendFilter(event)" name="q" placeholder="Поиск" value="Поиск" />
+       <span id='qchoose'><div onclick='showQDrop()' id='qdrop' class='qdrop_off' onmouseover="qOn = 1;if (!qd) { this.className='qdrop_over'}" onmouseout="setTimeout('startHide()',1200); qOn = 0;if (!qd) {this.className='qdrop_off'}"></div></span>
+      </div>
+      </td><td><div class='top_search_button'><div onmouseover="this.style.backgroundColor='#8fae67'" onmouseout="this.style.backgroundColor='#659f4b'" onclick="globalSearch();">Поиск</div></div></td></tr>
+     </table>
+    </div>
+    <div id="qfriends"></div>
+    <div id="qdropdown"></div>
+<style>
+#qdropdown {
+ left: <?=$modern_skin?'760':'614'?>px;
+}
+#qfriends, .qfr_cell, .qfr_cell_on, .qfr_cell_un {
+ width: 558px;
+}
+</style>
+
+<script type="text/javascript">
+ qCur = 0;
+ ge('qinput').value='';
+ ge('qinput').focus();
+ ge('qdrop').innerHTML = qArr[qCur][1];
+ sOn = 1;
+ newSearch = 1;
+ function globalSearch() {
+  var force = setCriteria(qArr[qCur][3], ge('qinput').value);
+  updateResults(force);
+  hide('qfriends');
+  qfCur = -1;
+ }
+</script>
+<? } else { 
+	if($user->user_exists != 0){
+?>
+     <ul id="topNav" class="topNav">
+      <li style="width:0.2em"></li>
+      <!-- https -->
+      <li><a href="http://login.<?=$setting['host']?>/?act=logout&h=<?=$hash->get_hash($_SERVER['REMOTE_ADDR'],12,'lo')?>&from_host=<?=$setting['host']?>&from_protocol=http" class="icon" id="top_exit"><?=_e('tmenu_exit')?></a></li>
+      <li><a onclick="return nav.go(this, event, {noback: true})" href="/search" class="icon" id="top_search"><?=_e('tmenu_search')?></a></li>
+      <!--<li><a href="/invite.php?act=sms">пригласить</a></li> --->
+      
+      <li><a id="head_music" href="/audio" onclick="return nav.go(this, event)"><?=_e('tmenu_audio')?></a>
+	<div id="head_play_btn" class="" onclick="headPlayPause(event); return Pads.show('mus', event);" onmouseup="removeClass(this, 'down')" onmousedown="addClass(this, 'down')" onmouseout="removeClass(this, 'over'); removeClass(this, 'down')" onmouseover="addClass(this, 'over');"></div>
+	</li>
+      <li><a href="/start.php?act=video" onclick="return nav.go(this, event)"><?=_e('tmenu_video')?></a>
+      <!--<li style="width:7.0em"><a href="/new2012.php" >НГ 2012</a></li>-->
+      <li><a href="/apps" onclick="return nav.go(this, event)"><?=_e('tmenu_play')?></a></li>
+      <li><a href="/start.php" onclick="return nav.go(this, event, {noback: true})"><?=_e('tmenu_main')?></a></li>
+      <li><a href="/payments.php" title="<?=_e('tmenu_ptext')?> <?=$user->credits?> <?=$langpack->dln($user->credits, _e('tmenu_pcnt'))?>" id="top_balance"><?=_e('tmenu_pay')?> <?=str_pad($user->credits, 3, '0', STR_PAD_LEFT)?> <i class="zay"></i></a></li>
+     </ul>
+<? } else { ?> 
+     <ul id="topNav" class="topNav">
+      <li ></li>
+      <li ><a href="signup.php">зарегистрироваться</a></li>
+      <li ><a href="login.php">войти</a></li>
+     </ul>
+<? 	} 
+	}
+?>
+    </div>
+   </div><!-- /page_header -->
+	 <div id="side_bar_wrap">
+   <div id="side_bar" class="fl_l dgray">
+    <ol id='nav'>
+    <? echo $user->user_menu(); 
+    	$display_votes = ($user->user_exists != 0 and $user->is_me($owner) and $user->credits > 0);
+    ?>
+    </ol>
+    
+    <div id="left_blocks" style="display: block;"><? echo $user->user_remind(); ?></div>
+
+<? 
+	if(!empty($dr_friends)){
+?>
+	<style>
+	.gift_lnk {
+        background: url("/images/icons/gifts_s.gif") no-repeat scroll 3px 3px transparent;
+    	display: block;
+    	margin: 0px;
+    	padding: 5px 3px 5px 20px;
+	}		
+	</style>
+<?		
+	}
+	/*
+	if(!empty($dr_friends['0'])) { 
+	//if($user->user_info['user_id']==16)
+		//dmp($dr_friends);
+	?>
+		
+    <div class="left_box" style="margin-bottom:10px">
+     <h4 style="color:#900">Завтра</h4>
+     <p><div style="text-align: center">
+      День рождения у 
+      <?
+      $tmp = array();
+      $tmp_id = array();
+      foreach($dr_friends['0'] as $dr_friend){
+      	$tmp[] = '<a href="/id'.$dr_friend->user_info['user_id'].'">'.$nnm->firstName($nnm->gcaseGen,$dr_friend->user_info['name'],$dr_friend->user_info['sex']).'</a>';
+      	$tmp_id[] = $dr_friend->user_info['user_id'];
+      }
+      echo join(', ',$tmp);
+      echo '<br><a class="gift_lnk" href="/gifts.php?to='.join(',',$tmp_id).'">Поздравить</a>'
+      ?>
+      </div>
+     </p>
+    </div>
+<? } ?>
+
+<? if(!empty($dr_friends['1'])) { ?>    
+    <div class="left_box" style="margin-bottom:10px">
+     <h4 style="color:#900">Сегодня</h4>
+     <p><div style="text-align: center">
+      День рождения у 
+      <?
+      $tmp = array();
+      $tmp_id = array();
+      foreach($dr_friends['1'] as $dr_friend){
+      	$tmp[] = '<a href="/id'.$dr_friend->user_info['user_id'].'">'.$nnm->firstName($nnm->gcaseGen,$dr_friend->user_info['name'],$dr_friend->user_info['sex']).'</a>';
+      	$tmp_id[] = $dr_friend->user_info['user_id'];
+      }
+      echo join(', ',$tmp);
+      echo '<br><a class="gift_lnk" href="/gifts.php?to='.join(',',$tmp_id).'">Поздравить</a>'
+      ?>
+      </div>
+     </p>
+    </div>
+<? } */
+    
+    //echo $user->user_remind();
+    
+    ?>
+
+    <div style="width:124px"></div>
+
+<?=$banner4?>
+<?=$left_add?>
+<?
+echo $left_add_context;
+if(0 and $user->user_exists){
+
+	if($comm['user_id']>0) {
+		echo '<div class="left_box" style="margin-top:10px;"><h4>Хочу общаться!</h4><p>'.
+			'<a href="/settings.php?act=2c&u='.$comm['user_id'].'&id='.$comm['id'].'&hash='.$hash->get_hash($comm['id'].$comm['user_id'],8,'cm').'">'.
+			'<img src="'.$comm['photo'].'" /><br />'.$comm['fio'].'</a><br />';
+      
+    if (!empty($comm['city_name'])) echo $comm['city_name'].'<br />'; 
+    if (!empty($comm['about'])) echo $comm['about'];
+			
+		echo '<br /><br /><a href="/settings.php?act=add#comm">Как сюда попасть?</a>';
+     
+    if($user->hr('comm_delete')) {
+      echo '<br /><a href="/admin.php?act=comm_delete&id='.$comm['user_id'].'" onclick="return confirm(\'Серьёзно удалить из ротации?\');" style="color: red;">Удалить из ротации</a>'; 	
+    }
+    echo '</p></div>';       
+	} elseif($comm['user_id']<0) {
+		echo '<div class="left_box" style="margin-top:10px; '.(($comm['f'] and !$new_design)?'background: #d4f3c6;':'').'"><h4>Приглашаем</h4><p>'.
+			'<a href="/settings.php?act=2c&u='.$comm['user_id'].'&id='.$comm['id'].'&hash='.$hash->get_hash($comm['id'].$comm['user_id'],8,'cm').'">'.
+			'<img src="'.$comm['photo'].'" /><br />'.$comm['t'].'</a><br />';
+
+		if (!empty($comm['d'])) echo $comm['d'].'<br />'; 
+    if($user->hr('comm_delete')) {
+      echo '<br /><a href="/admin.php?act=comm_delete&id='.$comm['user_id'].'" onclick="return confirm(\'Серьёзно удалить из ротации?\');" style="color: red;">Удалить из ротации</a>';
+    }
+    echo '</p></div>';
+	}
+}
+?>
+
+<div class="side_bar">
+   <ol>
+	<li class="go_up" onclick="scrollToY(0, 200);">Наверх</li>
+   </ol>
+</div>
+   </div><!-- End sideBar -->
+	 </div>
+

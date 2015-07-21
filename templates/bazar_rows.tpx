@@ -1,0 +1,21 @@
+<?php
+global $datetime, $bazar, $cur_chars;
+if(count($var['items']) > 0) {
+foreach($var['items'] as $k => $item) {
+	?><a href="/bazar_lot<?=$item->get('id')?>" class="bazar_row<?=($item->get('accept') == -1) ? ' red' : '' ?>" onclick="nav.go(this, event)">
+		<div class="pic"><img src="<?=$item->photo('n')?>"></div>
+		<div class="info">
+			<div class="price"><?=$item->get('price_text')?></div>
+			<div class="title"><?=$item->get('title')?></div>
+			<?
+				echo '<span class="date">' . $item->get('type_text') . '</span><br />';
+				if($item->get('address') != '')
+					echo '<span class="date">' . $item->get('address') . '</span><br />';
+		 	 ?>
+			<span class="date"><?=$datetime->sdate($item->get('update_time'))?></span><br class="clear"/>
+		</div>
+	</a>
+<? } 
+} else { ?>
+	<div id="not_found" class="info_msg">В выбранной категории пока нет объявлений</div>
+<? }?>

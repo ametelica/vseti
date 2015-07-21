@@ -1,0 +1,55 @@
+<?php
+
+$comment = $var;
+
+$media_photos = array();
+
+if(count($comment['media_arr']) > 1 or $comment['media_arr'][0]['type'] != 'video') {
+	foreach($comment['media_arr'] as $k => $m) {
+		//dmp($m);
+		if($m['type'] == 'photo' or $m['type'] == 'video' or $m['type'] == 'album') {
+			$media_photos[] = $m;
+			unset($comment['media_arr'][$k]);
+		}
+	}
+}
+
+// Мозайка
+
+if(!empty($media_photos)){
+	
+	echo '<div class="page_post_queue_wide">';
+	$assign = mosaic(537, 310, $media_photos, array('wide' => 1));
+	echo tpx('page_wall_media_rows', $assign);
+	echo '</div>';
+	
+	echo '<div class="page_post_queue_narrow">';
+	$assign = mosaic(380, 250, $media_photos);
+	echo tpx('page_wall_media_rows', $assign);
+	echo '</div>';
+}
+
+// Остальное медиа
+
+if(!empty($comment['media_arr'])) {
+	echo '<div class="post_media">';
+	$cnt_photo = 0;
+	foreach ($comment['media_arr'] as $media) {
+		if(is_array($media) and $media['type']=='photo') {
+			$cnt_photo++;
+		}
+	}
+	foreach ($comment['media_arr'] as $media) {
+		if (is_array($media)) {
+
+			$assign = $media;
+			if($cnt_photo==1) {
+				$assign['cnt_photo'] = 1;
+			}
+			echo tpx('page_wall_media_' . $media['type'], $assign);
+		} else
+			echo $media;
+	}
+	echo '</div>';
+}
+?>

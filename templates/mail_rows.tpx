@@ -1,0 +1,89 @@
+<?php
+global $pm, $datetime, $out, $section, $user, $new_design;
+$cnt = count($pm);
+$i=0;
+//dmp($pm);
+if($section=='peer') {
+	
+	foreach($pm as $m){
+
+		
+		
+		
+		echo '<tr class="dialogs_row '.(($m['peer_status']==0 and $m['peer_out']==0)?'new_msg':'').'" id="mess'.$m['peer_pm_id'].'" read="'.($m['pm_status']==0?'0':'1').'" onmouseout="removeClass(this, \'dialogs_row_over\');" onmouseover="addClass(this, \'dialogs_row_over\');">
+  <td class="mail_photo dialog_photo" >
+    <div><a class="ava" href="'.$m['peer_with_user']->lnk.'" onclick="cancelEvent(event); return nav.go(this, event);" onmousedown="event.cancelBubble = true;"><img src="'.$m['peer_with_user']->photo().'"/></a></div>
+  </td>
+  <td class="mail_from">
+    <div class="name wrapped"><a  href="'.$m['peer_with_user']->lnk.'" onclick="cancelEvent(event); return nav.go(this, event);" onmousedown="event.cancelBubble = true;">'.$m['peer_with_user']->title.'</a></div>
+		'.($m['peer_with_user']->user_info['online']>0?'<div class="online">ВСети</div>':'').'
+    <div class="date">'.$datetime->sdate($m['peer_time']).'</div>
+  </td>
+
+  <td class="mail_contents dialog_contents" id="mb'.$m['peer_pm_id'].'"><div class="mail_contents_div '.(($m['peer_status']==0 and $m['peer_out']==1)?'new_msg':'').'" onclick="'.(($m['peer_status']==0 and $m['peer_out']==0)?'cur.mar('.$m['peer_pm_id'].');':'').' return showRWriteMessageBox(event,'.$m['peer_with_id'].','.$m['peer_pm_id'].');">';
+		
+		echo '<div class="dialogs_del_wrap">
+<div class="dialogs_del" onmouseover="showTooltip(this, {text: \'Удалить диалог\', black: 1, shift: [14, 4, 0]});" onclick="mail.deleteDialog('.$m['peer_pm_id'].','.$m['peer_with_id'].', \'6a5818a0841ccccef9\'); event.cancelBubble = true;"></div>
+</div>';
+		
+		if($m['peer_out']==1) {
+			echo '<div class="mail_body"><img class="dialogs_inline_author fl_l" width="32" height="32" src="'.$user->photo().'" /><a href="/mail?act=show&id='.$m['peer_pm_id'].'" onclick="return false;">'.$m['peer_body'].'</a></div>';
+		} else {
+			echo '<div class="mail_body"><a href="/mail?act=show&id='.$m['peer_pm_id'].'" onclick="'.(($m['peer_status']==0 and $m['peer_out']==0)?'cur.mar('.$m['peer_pm_id'].');':'').' return false;">'.$m['peer_body'].'</a></div>';
+		}
+    
+  echo '</div></td>
+</tr>';
+	
+	if($cnt>20 and $i==19) {
+		echo '</table><table id="mail_rows_t_next" cellpadding="0" cellspacing="0">';
+	}
+
+		$i++;
+	}
+	
+	
+} else {
+
+//onmousedown="return mail.fastGo(\'mail?act=show&id='.$m['pm_id'].'\', event);"
+
+
+foreach($pm as $m){
+
+	if($new_design) {
+		$tr_action = ' onclick="'.($out==0?'cur.mar('.$m['pm_id'].');':'').' return showRWriteMessageBox(event,'.$m['pm_user_id'].','.$m['pm_id'].');"';
+    } else {
+        $tr_action = '';
+    }
+
+	echo '<tr '.$tr_action.' class="'.($m['pm_status']==0?'new_msg':'').'" id="mess'.$m['pm_id'].'" read="'.($m['pm_status']==0?'0':'1').'">
+  <td class="mail_check" onmouseover="mail.checkOver(this, \''.$m['pm_id'].'\')" onmouseout="mail.checkOut(this, \''.$m['pm_id'].'\')" onclick="cancelEvent(event); mail.checkChange(this, \''.$m['pm_id'].'\')" onmousedown="event.cancelBubble = true;"><div></div></td>
+  <td class="mail_photo">
+    <div><a class="ava" href="'.$m['pm_user']->lnk.'" onclick="cancelEvent(event); return nav.go(this, event);" onmousedown="event.cancelBubble = true;"><img src="'.$m['pm_user']->user_photo().'"/></a></div>
+  </td>
+  <td class="mail_from">
+    <div class="name wrapped"><a  href="'.$m['pm_user']->lnk.'" onclick="cancelEvent(event); return nav.go(this, event);" onmousedown="event.cancelBubble = true;">'.$m['pm_user']->user_info['fio'].'</a></div>
+		'.($m['pm_user']->user_info['online']>0?'<div class="online">ВСети</div>':'').'
+    <div class="date">'.$datetime->sdate($m['pm_date']).'</div>
+  </td>
+
+  <td class="mail_contents" id="mb'.$m['pm_id'].'">
+    <!--<div class="mail_topic"><a href="/im?sel=53227745" onclick="cancelEvent(event); return nav.go(this, event);" onmousedown="event.cancelBubble = true;">Отправлено из диалогов</a></div>-->';
+    //<div class="mail_body"><a  href="/mail?act=show&id='.$m['pm_id'].'" onclick="cancelEvent(event); return nav.go(this, event);"  >'.strcut($m['pm_body'],180).'</a></div>
+  echo '<div class="mail_body"><a href="/mail?act=show&id='.$m['pm_id'].'" onclick="'.($out==0?'cur.mar('.$m['pm_id'].');':'').' return showRWriteMessageBox(event,'.$m['pm_user_id'].','.$m['pm_id'].');">'.strcut(strip_tags($m['pm_body']),180).' ' . ($m['pm_media'] != '' ? '<br /><span class="pm_media">Соообщение содержит медиафайлы</span>' : '') . '</a></div>';
+
+  echo '</td>
+  <td class="mail_actions" id="ma'.$m['pm_id'].'">
+    <a href="#" onclick="mail.deleteMsg('.$m['pm_id'].', event); return false;" onmousedown="event.cancelBubble = true;">Удалить</a>
+  </td>
+</tr>';
+
+if($cnt>20 and $i==19) {
+	echo '</table><table id="mail_rows_t_next" cellpadding="0" cellspacing="0">';
+}
+
+$i++;
+} 
+
+}?>
+

@@ -1,0 +1,44 @@
+<?php
+global $section,$offset,$total_pm,$pm,$user;
+
+//echo $total_pm, $offset;
+
+$msg_title_tpl = "<a href=\"%loc%\" onclick=\"return nav.go(this, event, {back: true});\">Личные сообщения</a> &raquo; просмотр сообщения";
+//"msg_media_types":[["photo","Фотографию"],["video","Видеозапись"],["audio","Аудиозапись"],["doc","Документ"],["map","Карту"]],
+$msg_tpl = "<div class=\"mail_message\">\n  %warning%\n  <div class=\"mail_envelope_wrap\">\n    <div class=\"mail_envelope\" id=\"mail_envelope\">\n      <table cellpadding=\"0\" cellspacing=\"0\">\n        <tr><td class=\"mail_envelope_photo_cell\">\n        <div class=\"mail_envelope_photo\">\n          <a href=\"%link%\" onclick=\"return nav.go(this, event);\" id=\"to_url\">\n            <img src=\"%photo%\" id=\"to_image\">\n          </a>\n        </div>\n        %online%\n        </td><td>\n          <h4>\n            <div id=\"mail_envelope_actions\" class=\"fl_r\">\n              <a href=\"#\" onclick=\"return mail.actShowMsg('delete', %id%)\">удалить</a>%buttons%\n            </div>\n            %header%\n          </h4>\n          <div class=\"mail_envelope_time\">%date%</div>\n\n          <!--div class=\"mail_envelope_topic\">%topic%</div>-->\n          <div class=\"mail_envelope_body wall_module wrapped\" style=\"width: 285px;\">%message%</div>\n        </td></tr>\n      </table>\n      <div class=\"mail_envelope_form\">\n        <textarea id=\"mail_reply_field\"  onkeypress=\"onCtrlEnter(event, mail.doPost);\" onkeyup=\"checkTextLength(4096, this, ge('mail_text_warn'))\"></textarea>\n        <div id=\"mail_text_warn\"></div>\n      </div>\n      <div id=\"mail_media_preview\" class=\"media_preview clear_fix\"></div>\n\n      <div class=\"mail_envelope_controls clear_fix\">\n        <div class=\"button_green fl_l\"><button id=\"mail_send\" onclick=\"mail.doPost();\">%button_label%</button></div>\n        <div class=\"fl_r\"><span class=\"add_media_lnk link\" id=\"mail_add_link\" style=\"display: none;\">Прикрепить</span></div>\n      </div>\n    </div>\n  </div>\n  <div class=\"mail_envelope_shadow\"></div>\n</div>\n<div id=\"mail_history\">%history%</div>\n";
+
+/*
+
+{"870":{"id":"870","photo":"http:\/\/cs304700.userapi.com\/u5744364\/d_7fae6695.jpg","link":"\/domovikx","header":"Сообщение для <a class=\"mem_link\" href=\"\/domovikx\">Ильи Ивановского<\/a>","date":"23 сен 2009 в 18:19","topic":"Re(6):  ...","message":"Илья, взгляни... Вот текст - вступление, который, кстати и заодно определяет идею сайта:<br>------------<br>Утренняя зарядка, упражнения для глаз, тренировки памяти и внимания - есть множество полезных для здоровья и жизни дел, которыми можно заниматься в свободное время. Вот только есть одна трудность: даже при всём желании и осознании полезности - идти этим путём в одиночку нелегко, упражнения надоедают быстрее, чем привыкаешь к ним как к чему-то постоянному. Но то, что с трудом даётся одному человеку - легче получается у группы людей, они могут продвигаться по своему пути все вместе, поддерживая друг друга.<br><br>Наш создан для того, чтобы помочь объединиться людям, увлекающимся различными техниками самосовершенствования. Для каждой методики создаётся отдельное сообщество, облегчающее общение, а также специальный график для каждого пользователя, позволяющий чётко отметить ритм занятий и воочию, в цифрах увидеть свои успехи.<br>------------------------<br>Вот предполагаемый простенький жумловский дизайн:<br><a href=\"\/away.php?to=http%3A%2F%2Fwww.joomlajet.com.au%2Fjj67%2F\" target=\"_blank\" target=\"_blank\">http:\/\/www.joomlajet.com.au\/jj67\/<\/a>","buttons":"","online":"","history":"<a id=\"mail_history_open\" href=\"#\" onclick=\"mail.showHistory(5744364); return false;\">Показать историю сообщений с Ильей<\/a><div id=\"mail_history_open_progress\"><img src=\"images\/upload.gif\" \/><\/div>","unread":false,"warning":"","button_label":"Отправить","htitle":"Сообщение для Ильи Ивановского","options":{"id":"5744364","msg_id":"870","hash":"05ab2939d4b6cdad92739a588","reply_title":"...","offset":0,"has_more":true,"delete_all_link":"<a href=\"#\" onclick=\"mail.deleteAllHistory(5744364, 'e2214df8334f039c94'); return false;\">удалить все<\/a>"}}
+*/
+
+$on_page = 40;
+
+if($section=='inbox'){
+	$summary = array("","Вы получили %s сообщение","Вы получили %s сообщения","Вы получили %s сообщений");
+} elseif($section=='outbox') {
+	$section = 'outbox';
+	$summary = array("","Вы отправили %s сообщение","Вы отправили %s сообщения","Вы отправили %s сообщений");
+} else {
+	$section = 'peer';
+	$summary = array("","У Вас %s диалог","У Вас %s диалога","У Вас %s диалогов");
+	$on_page = 20;
+}
+
+$init = array(
+	'section' => $section,
+	'filter' => 'all',
+	'offset' => $offset+$on_page,
+	'has_more' => $offset+$on_page<$total_pm?true:false,
+	'mail_cached' => pm2cashe($pm),
+	'loc' => 'mail',
+	'summary' => $summary,
+	'count' => $total_pm,
+	'new_msg' => $user->usersetting_info['new_messages'],
+	'msg_title_tpl' => $msg_title_tpl,
+	'msg_media_types' => array(),
+	'msg_tpl' => $msg_tpl,
+	'mark_hash' => hash_get($user->id, 18, 'mr'),
+);
+echo jenc($init);
+?>

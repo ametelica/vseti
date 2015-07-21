@@ -1,0 +1,16 @@
+<div class="apps_edit_box" id="apps_edit_box">
+  <div id="apps_edit_upload_error">Не удалось загрузить файл.</div>
+  <div class="apps_restrictions">Ограничения</div>
+  <ul class="listing">
+    <li><span>Файл не должен превышать 12 Мб.</span></li>
+    <li><span>Файл должен быть в формате swf.</span></li>
+  </ul>
+  <div id="apps_edit_upload_cont"></div>
+</div>
+<div id="apps_dropbox" class="dropbox">
+  <div class="dropbox_wrap">
+    <div class="dropbox_area">
+      <div class="dropbox_label">Перетащите файлы сюда</div>
+    </div>
+  </div>
+</div>

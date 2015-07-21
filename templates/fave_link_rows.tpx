@@ -1,0 +1,23 @@
+<?php
+global $user;
+$i = 0;
+foreach($var['links']['data'] as $uid) {
+	$lnk_id = '2_'.$user->id.'_'.$uid;
+	$u = pdata($uid);
+	//dmp($u);
+?><div class="fave_link_item<? if($i<2) {?> fave_video_item_first<? } ?>" id="link<?=$lnk_id?>" onmouseover="Fave.showDeleteLink(this);" onmouseout="Fave.hideDeleteLink(this);">
+<div class="fl_r fave_delete_link" id="unfave<?=$lnk_id?>" onclick="Fave.deleteLink(this, '<?=hash_get($user->id . -$uid , 18, 'fave')?>');"></div>
+<a href="<?=$u->lnk?>"  onclick="return nav.go(this, event);">
+<table><tr>
+<td>
+  <div class="fave_link_image fl_l"><img style="max-width: 50px;" src='<?=$u->photo('b')?>'/></div>
+</td>
+<td valign="top">
+  <div class="fave_link_info"><?=$u->title?></div>
+  <div class="fave_link_desc">Сообщество</div>
+</td>
+</tr></table>
+</a>
+</div><? 
+$i++;
+} ?>

@@ -1,0 +1,28 @@
+<?php
+global $user, $new_design;
+$comm = $var['comm'];
+?>
+<? if($comm['user_id'] > 0) {?>
+
+    <div class="left_box" style="margin-top:10px;">
+     <h4>Хочу общаться!</h4>
+     <p>
+      <a href="/settings.php?act=2c&u=<?=$comm['user_id']?>&id=<?=$comm['id']?>&hash=<?=hash_get($comm['id'].$comm['user_id'],8,'cm')?>"><img src="<?=$comm['photo']?>" <? if($new_design) echo 'width="119"'; ?> /><br />
+      <?=$comm['fio']?></a><br />
+      <? if($comm['city_name']!='') echo $comm['city_name'].'<br>'; ?>
+      <? if($comm['about']!='') echo $comm['about']; ?>
+      <br /><br /><a href="/settings.php?act=add#comm">Как сюда попасть?</a>
+      <? if($user->hr('comm_delete')) { ?><br /><a href="/admin.php?act=comm_delete&id=<?=$comm['user_id']?>" onclick="return confirm(\'Серьёзно удалить из ротации?\')" style="color: red;">Удалить из ротации</a><? } ?>
+     </p>
+    </div>
+ <? } elseif($comm['user_id'] < 0) { ?>
+    <div class="left_box <? if($comm['f']==1) echo "pay always_show";?>" style="margin-top:10px;">
+     <h4>Приглашаем</h4>
+     <p>
+     <a href="/settings.php?act=2c&u=<?=$comm['user_id']?>&id=<?=$comm['id']?>&hash=<?=hash_get($comm['id'].$comm['user_id'],8,'cm')?>"><img src="<?=$comm['photo']?>" <? if($new_design) echo 'width="119"'; ?> /><br />
+     <?=$comm['t']?></a>
+     <? if($comm['d']!=''){ echo '<br />'.$comm['d']; }?>
+     <? if($user->hr('comm_delete')) { ?><br /><a href="/admin.php?act=comm_delete&id=<?=$comm['user_id']?>" onclick="return confirm(\'Серьёзно удалить из ротации?\')" style="color: red;">Удалить из ротации</a><? } ?>
+     </p>
+    </div>
+<? } ?>

@@ -1,0 +1,26 @@
+<div class="graph_horizontal_menu_wrapper">
+<div class="stats_head">
+<?=empty($var['link'])?'':$var['link']?>
+<!-- <div id="stats_export_link" class="fl_r"><a onclick="showBox('al_stats.php', {act: 'export_stats_box', cid: -1002937922}); return false;">Выгрузить статистику</a>
+</div>--><?=$var['title']?></div>
+<div class="summary_tabs clear_fix">
+<?
+if(!empty($var['tabs'])){
+	foreach($var['tabs'] as $tab){
+		echo '<div class="fl_l summary_tab'.(empty($tab['active'])?'':'_sel').'">
+		<a id="'.$tab['id'].'" class="summary_tab2" href="">
+			<div class="summary_tab3">
+				<nobr>'.$tab['name'].'</nobr>
+			</div>
+		</a>
+	</div>';
+	}
+}
+?>
+</div>
+</div>
+<div id='wrapper_<?=$var['name']?>' class="stats_flash_wrap">
+  <div id='<?=$var['name']?>'>
+    <div style='padding:10px; margin:10px auto; text-align:center'></div>
+  </div>
+</div>

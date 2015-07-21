@@ -1,0 +1,22 @@
+<?php
+$lnk_m = media_link($var, 'm', 1);
+$lnk_x = media_link($var, 'x', 1);
+
+//dmp($var);
+
+$photo_id = $var['media_user_id'].'_'.$var['media_id'];
+
+if(!empty($var['cnt_photo']) and $var['cnt_photo']==1) {
+	if($var['media_id'] == 0) {
+		echo '<div class="page_media_thumb_one page_media_photo fl_l"><a class="photo" href="#" onclick="alert(\'Фото было удалено\'); return false;"><img src="' . $lnk_x . '"></a></div>';
+	} else {
+		echo '<div class="page_media_thumb_one page_media_photo fl_l"><a class="photo" href="/photo' . $photo_id . '" onclick="return showPhoto(\'' . $photo_id . '\', \'' . $var['post_id'] . '\', {temp: {x_src: &quot;' . $lnk_x . '&quot;}, dark: 1}, event)"><img src="' . $lnk_x . '"></a></div>';
+	}
+} else {
+	if($var['media_id'] == 0) {
+		echo '<div class="page_media_thumb page_media_photo fl_l"><a class="photo" href="#" onclick="alert(\'Фото было удалено\'); return false;"><img src="' . $lnk_m . '"></a></div>';
+	} else {
+		echo '<div class="page_media_thumb page_media_photo fl_l"><a class="photo" href="/photo' . $photo_id . '" onclick="return showPhoto(\'' . $photo_id . '\', \'' . $var['post_id'] . '\', {temp: {x_src: &quot;' . $lnk_x . '&quot;}, dark: 1}, event)"><img src="' . $lnk_m . '"></a></div>';
+	}
+}
+?>

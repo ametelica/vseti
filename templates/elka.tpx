@@ -1,0 +1,199 @@
+<style>	
+.elka_wrap {
+	position: relative;
+	margin: 0px auto 0;
+}
+.elka_gifts {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+}
+.elka_gift {
+	position: absolute;
+	left: 50%;
+}
+.elka_info {
+	font-size: 16px;
+	margin-left: 20px;
+	margin-top: 10px;
+	line-height: 26px;
+}
+img.elka_gift {
+	z-index: 1;
+}
+.elka_gift_text {
+	width: 170px;
+}
+.hover {
+	display: none;
+	position: absolute;
+	/* width: 200px; */
+	*height: 50px;
+	background: rgba(255,255,255,.8);
+	z-index: 2;
+	padding: 2px;
+}
+.elka_gift:hover .hover {
+	display: block;
+}
+.elka_gift:hover img {
+	display: block;
+	z-index: 3;
+}
+</style>
+<?
+global $elka, $gifts, $user_id, $user, $act, $elka_h;
+
+echo tpx('header_design');
+
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+
+	<div class="t_bar photos_tabs clear_fix">
+		<ul class="t0">
+			<? if($user->id == $user_id) { ?>
+			<li class="<?if(empty($act)) echo 'active_link';?>">
+				<a href="/elka.php?id=<?=$user_id?>" onclick="return nav.go(this, event)">
+				<b class="tab_word">
+				<nobr>Моя ёлочка</nobr>
+				</b>
+				</a>
+			</li>
+			<? } else { ?>
+				<li>
+					<a href="/elka.php?id=<?=$user->id?>" onclick="return nav.go(this, event)">
+					<b class="tab_word">
+					<nobr>Моя ёлочка</nobr>
+					</b>
+					</a>
+				</li>
+				<li class="<?if(empty($act)) echo 'active_link';?>">
+					<a href="/elka.php?id=<?=$user_id?>" onclick="return nav.go(this, event)">
+					<b class="tab_word">
+					<nobr><? if($user->id == $user_id) { ?>Моя ёлочка<? } else { $owner = new se_user($user_id); ?>Ёлочка <? echo $owner->user_info['user_name_gen']; } ?></nobr>
+					</b>
+					</a>
+				</li>
+			<? } ?>
+			<li class="<? if($act == 'help') echo 'active_link';?>">
+				<a href="/elka.php?act=help&id=<?=$user_id?>" onclick="return nav.go(this, event)">
+				<b class="tab_word">
+				<nobr>Справка</nobr>
+				</b>
+				</a>
+			</li>
+		</ul>
+	</div>
+    <?
+    if(empty($act)) {
+    	if(!empty($elka)) {
+    ?>
+    
+    <div class="elka_info">Подарков: <?=$elka['gift_cnt']?><br />Высота ёлки: <?=$elka_h?> см.<br /></div>
+    
+<div style="width: <?=$elka['width']?>px; height: <?=$elka['height']?>px" class="elka_wrap"><img class="tree" width="<?=$elka['im_width']?>" style="position:absolute; margin-top:<?=$elka['height']-round(293 * $elka['scale'])?>px; left: 50%; margin-left: -<?=round($elka['im_width']/2)?>px" src="/images/elka/fon.png" /><img class="tree" width="<?=$elka['im_width']?>" style="position:absolute; margin-top:<?=$elka['height']-round(293 * $elka['scale'])?>px; left: 50%; margin-left: -<?=round($elka['im_width']/2)?>px" src="/images/elka/pen.png" /><img class="tree" width="<?=$elka['m_width']?>" style="position:absolute; margin-top:0px; left: 50%; margin-left: -<?=round($elka['m_width']/2)?>px" src="/images/elka/1.png"><?
+	
+	$block_height = round(170 * $elka['scale']);
+	$out = array();
+	$max_level_width = 499 * $elka['scale'];
+	
+	for($i = 0; $i < $elka['l2cnt']; $i++) {
+		$block_width = round($elka['scale'] * 561);
+		$level_width = $block_width + (($elka['l2cnt']-$i-1 ) * $block_width * 0.20);
+		
+		if($i == 0) {
+			$max_level_width = $level_width;
+		}
+		
+		
+		$block_overlay_width = $block_width - $block_width * 0.2;
+		$parts = ceil($level_width / $block_overlay_width);
+		
+		for($n = 0; $n < $parts; $n++) {
+			
+			$fw = ($n + 1) * $block_width - ($n * $block_width * 0.2) ;
+			
+			$dw = $fw > $level_width ? ($fw - $level_width) : 0;
+			$ml = -round($level_width/2 - ($n * $block_overlay_width) + $dw);
+			
+			echo '<img class="tree" width="'.$block_width.'" height="'.round(239 * $elka['scale']).'" style="position:absolute; margin-top: '.round($elka['height'] - ($block_height * ($i + 1)) - (200 * $elka['scale'])).'px; left: 50%; margin-left: '.$ml.'px" src="/images/elka/' . ($i%2 == 0 ? 2 : 4) . '.png" />';
+		}
+		
+		
+	}
+	
+	$gifts_area_height = round($elka['l2cnt'] * 170 * $elka['scale']);
+	$min_level_width = 499 * $elka['scale'];
+	
+	?>
+		<div class="elka_gifts" style="margin-top: <?=round(550 * $elka['scale'])?>px; height: <?=$gifts_area_height?>px; width: <?=round($max_level_width)?>px; left: 50%; margin-left: -<?=round($max_level_width / 2)?>px ">
+		
+		<?
+			$dh = round($gifts_area_height / $elka['gift_cnt']);
+			$w_pos = 0;
+			$w_step = 100;
+			$gift_width = round(96 * $elka['scale'] * 1.5);
+			if($gift_width > 96) $gift_width = 96;
+			
+			$gift_top = 0;
+			$gift_level = 0;
+			$gift_top_d = 0;
+			
+			$dh_levels = ceil(($w_step * $elka['gift_cnt']) / (($min_level_width + $max_level_width) / 2));
+			$gifts_area_height = $gifts_area_height - ($max_level_width / $w_step) * 10;
+			
+			$dh1 = floor(($gifts_area_height) / $dh_levels);
+			
+			for($i = 0; $i < $elka['gift_cnt']; $i++) {
+				
+				$gift_top = $gift_level * $dh1 + $gift_top_d;
+				$level_width = $min_level_width + (($max_level_width - $min_level_width) * ($gift_top / $gifts_area_height)) - (96 * $elka['scale']);
+				$level_width *= 0.9;
+				
+				if($w_pos == 0 or ($w_pos) >= ($level_width / 2) ) {
+					if(($w_pos) >= ($level_width / 2)) {
+						$gift_level++;
+						$gift_top_d = 0;
+						$gift_top = $gift_level * $dh1;
+					}
+					$w_pos = -$level_width / 2;
+				}
+				
+				$gift_top_d += 10;
+				$ml = (-96 * $elka['scale'] / 2) + $w_pos;
+				echo '<div class="elka_gift" width="'.$gift_width.'" style="top: '.$gift_top.'px; margin-left: '.round($ml).'px"><img class="elka_gift" src="'.gift_img($gifts[$i]['gift_number']).'" width="'.$gift_width.'" /><div class="hover" style="min-height:'.($gift_width+4).'px; padding-left: '.$gift_width.'px">'.($gifts[$i]['gift_type'] == 0 ? '<a href="'.$gifts[$i]['gift_user']->lnk.'" target="_blank"><img width="'.$gift_width.'" src="' . $gifts[$i]['gift_user']->photo('b') . '" /></a>' : '').(empty($gifts[$i]['gift_text']) ? '' : '<div class="elka_gift_text">'.nl2br($gifts[$i]['gift_text']).'</div>').'</div></div>';
+				$gift_top += $dh;
+				$w_pos += $w_step;
+			}
+		?>
+		
+		</div>
+		</div>
+		
+<center>
+		<div class="button_green" style="margin: 10px">
+			<button onclick="nav.go('/id<?=$user_id?>?z=giftbox')">Добавить свой подарок</button>
+		</div>
+</center>
+
+		<? } else {
+			echo '<center><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />'.($user->id == $user_id ? 'У Вас пока ещё нет своей елочки!<br /><br /> <a href="/elka.php?act=get">Получить ёлочку в подарок от ВСети.бай</a></p>' : 'У этого пользователя пока ещё нет ёлочки.').'</center>';
+		}
+	} elseif($act == 'help') { ?>
+	<div style="margin: 0 20px;">
+    	<h2>Ёлочка ВСети</h2>
+    	<p>Ёлочка - это бесплатная новогодняя акция ВСети, чтобы Вы могли зарядиться праздничным настроением.</p>
+    	<p>Зелёное деревце собирает на свои ветки подарки, которые Вам преподнесли с момента добавления ёлочки на страницу<sup>*</sup>. Начальная высота ёлочки - 1 метр, но вместе с количеством подарков деревце будет расти и становиться пушистей. При наведении курсора на подарок будет видно фото отправителя и текст поздравления. Вы можете зайти на странички своих друзей и смотреть публичные поздравления на их ёлочках.</p>
+    	<p>После Старого Нового года ёлочка отправится обратно в лес, а все подарки с её веток останутся у пользователя и будут видны вместе со всеми остальными подарками в соответствующем разделе.</p>
+    	<p><b>Весёлого Вам Рождества и Нового года!</b></p>
+    	<br />
+    	<br />
+    	<p>* При проведении акции ни одна живая ёлка не пострадала :)</p>
+    	
+      </div>	
+	<? } ?>
+	</div>
+</div>
+</div>

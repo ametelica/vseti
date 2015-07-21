@@ -1,0 +1,30 @@
+<?php
+global $app;
+?>
+<div id="app_edit_cont">
+<div class="clear_fix" style="background-color: #F7F7F7;">
+ <div class="app_edit_admins clear_fix" id="app_edit_admins" style="">
+  <div class="clear_fix">
+   <div class="app_admin_label fl_l"></div>
+   <div class="fl_l">
+    <h5>Добавление администратора</h5>
+   </div>
+  </div>
+  <div class="clear_fix">
+   <div class="app_admin_label fl_l">Ссылка на страницу:</div>
+   <div class="fl_l">
+    <input type="text" name="uid" id="uid" class="app_admin_input text" onkeydown="if (event && (event.keyCode == 10 || event.keyCode == 13)) AppsEdit.addAdmin(<?=$app->app_info['app_id']?>, this.value);"><br/>
+
+    <div class="button_green" style="margin-top: 14px;"><button onclick="AppsEdit.addAdmin(<?=$app->app_info['app_id']?>, ge('uid').value)">Добавить администратора</button></div>
+   </div>
+  </div>
+ </div>
+ <div class="app_admin_label fl_l"></div>
+ <div id="app_admins" class="app_admins fl_l">
+   <h5>Администраторы приложения</h5>
+   <div id="admin_rows" class="app_admin_rows">
+    <?=tpx('apps_block_admins')?>
+   </div>
+ </div>
+</div>
+</div>

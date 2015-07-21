@@ -1,0 +1,87 @@
+<?php
+$page_id = $var['oid'].'_'.$var['pg']['page_id'];
+global $act, $group, $new_design;
+//dmp($var);
+
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content">
+<? if($act=='') {?>
+<div class="pages_cont">
+<div class="pages_header">
+<? if($group->user_rank>0) { ?>
+<span class="pages_actions fl_r">
+<a href="/groups.php?act=pages&gid=<?=$group->id?>">Вернуться к списку страниц</a><span class="divide" >|</span>
+<?=$var['pg']['page_id']==$group->group_info['group_page_id']?'<b>Главная страница</b>':'<a href="#" onclick="return cur.set_as_main('.$var['pg']['page_id'].' ,this)">Сделать главной</a>'?><span class="divide">|</span><a href="/page<?=$page_id?>?act=edit" onclick="return nav.go(this, event);">Редактирование</a></span>
+<? } ?>
+<?=$var['pg']['page_title']?>
+</div>
+<div class="wk_text">
+  <?=$var['pg']['page_html']?>
+</div>
+</div>
+<? } elseif($act=='edit') { ?>
+<div id="pages" class="pages_section_edit">
+<div class="pages_tabs t_bar clear_fix">
+  <img id="pages_progress" src="/images/upload.gif">
+
+<span class="pages_actions fl_r">
+<a class="pages_right_link" href="/groups.php?act=pages&gid=<?=$group->id?>">Вернуться к списку страниц</a>
+<span class="divide" >|</span>
+<a class="pages_right_link" id="pages_right_link" href="/page<?=$page_id?>" onclick="return nav.go(this, event);">Вернуться к странице</a>
+</span>
+
+
+  <ul id="pages_tabs" class="t0">
+   <li id="tab_view" class="">
+    <a href="/page<?=$page_id?>?act=edit&section=view" onclick="return checkEvent(event);" onmousedown="return Pages.switchTab('view', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Просмотр</b>
+    </a>
+   </li>
+   <li id="tab_edit" class="active_link"  style="">
+    <a href="/page<?=$page_id?>?act=edit&section=edit" onclick="return checkEvent(event);" onmousedown="return Pages.switchTab('edit', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Редактирование</b>
+    </a>
+   </li>
+  </ul>
+</div>
+<div id="pages_error_wrap"><div id="pages_error"></div></div>
+<div class="pages_main">
+  <div id="pages_wrap">
+    <div class="pages_cont_cache" id="pages_cont_cache_edit"><div class="pages_edit_title_cont">
+  <input class="text" id="pages_edit_title" value="<?=$var['pg']['page_title']?>" />
+  
+  <table class="fl_r" cellspacing="0" cellpadding="0">
+     <tr>
+        <td>Родитель: </td>
+        <td><input class="hidden" id="pages_edit_parent" value="" /></td>
+     </tr>  
+  </table>
+</div>
+<div id="pages_top_toolbox_shadow"></div>
+<div id="editor_cont">
+  <div id="wke_buttons_cont" class="wke_pcont pages_buttons_cont"></div>
+  <textarea id="wke_textarea" class="pages_wiki_text" style="display: none;"><?=$var['pg']['page_text']?></textarea>
+  <div id="wke_cont" class="wk_text pages_wiki_content" style=""><!--4--><?=$var['pg']['page_html']?></div>
+</div>
+<div id="pages_buttons_cont">
+  <div id="pages_buttons_panel" class="pages_buttons clear_fix">
+    <div class="pages_buttons_panel_shadow"></div>
+    <div class="pages_acts fl_r"><a onclick="return Pages.pageAccess(0);">Доступ к странице</a></div>
+    <div class="button_green fl_l"><button class="pages_save" id="pages_save_wysiwyg" onclick="Pages.saveInfo('wysiwyg');">Сохранить страницу</button></div>
+    <div class="fl_l">
+      <a id="pages_preview_edit_link" onclick="Pages.preview();">Предпросмотр</a>
+      <div class="pages_save_info" id="pages_save_info_wysiwyg"></div>
+    </div>
+  </div>
+</div></div>
+  </div>
+</div>
+<div id="pages_bottom_preview"></div>
+</div>
+<? } ?>
+    </div>
+  </div>
+</div>

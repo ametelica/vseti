@@ -1,0 +1,70 @@
+<?php
+	global $langpack, $albums_list, $photos_list, $tab, $photos_on_page;
+
+	$albums_assign = array(
+		'albums' => array_slice($albums_list['data'], 0, 2),
+	);
+
+	$photos_assign = array(
+		'photos' => $photos_list['data'],
+	);
+?><div class="fl_r photos_choose_close">
+<? if ($var['to_id'] < 0) { ?>
+	<span id="photos_choose_right_link">
+		
+		<a class="tab_link" onclick="cur.photosChooseSwitch(this);"><? if($tab == 'group_photos') { ?>Выбрать из моих фотографий<? } else { ?>Выбрать из фотографий сообщества<? } ?></a>
+		<span class="divider">|</span>
+	</span>
+<? } ?>
+  <span id="photos_choose_right_link"></span><a class="photos_close_link" onclick="curBox().hide();">Закрыть</a>
+</div>
+
+<div class="photos_choose_header">
+  <span class="photos_choose_header_title inl_bl">
+    Прикрепление фото
+  </span>
+  <a onclick="cur.togglePhotoUpload(this);" class="photos_title_search inl_bl" style="">Поиск<? if ($var['to_id'] > 0) { ?> по фотографиям<? } ?></a>
+</div>
+<div id="photos_choose_upload_area_wrap" class="photos_choose_upload_area_wrap"><div id="photos_choose_upload_area_cont" class="photos_choose_upload_area_cont">
+  <div id="photos_choose_upl">
+    <a id="photos_choose_upload_area" class="photos_choose_upload_area" title="Отпустите, чтобы начать загрузку." onclick="return cur.uploadPhotos(this, event);">
+      <div class="photos_choose_upload_area_upload">
+        <span id="photos_choose_upload_area_label" class="photos_choose_upload_area_label">
+          Загрузить фотографию
+        </span>
+      </div>
+      <div class="photos_choose_upload_area_drop">
+        Отпустите, чтобы начать загрузку.
+      </div>
+    </a>
+    <input id="choose_photo_upload" class="choose_photo_upload file" type="file" size="28" onchange="Upload.onFileApiSend(cur.uplId, this.files);" multiple="true" name="photo" style="visibility: hidden; position: absolute;"/>
+  </div>
+  <div id="photos_attach_search_cont" class="choose_search_cont" style="display: none;">
+    <div id="photos_attach_search" class="search_bar clear_fix">
+      <div class="fl_l">
+        <input onpaste="cur.updateChooseList(event, this)" onkeydown="if (event.keyCode == KEY.ESC && this.value) {cur.chooseClearSearch();return cancelEvent(event)}" onkeyup="cur.updateChooseList(event, this)" id="choose_photos_query" type="text" class="s_search text" value="" placeholder="Поиск по фотографиям">
+      </div>
+      <div class="progress photos_choose_progress"></div>
+      <div id="choose_query_reset" class="photos_choose_reset fl_l" onmouseover="if (isVisible(this)) animate(this, {opacity: 1}, 100)" onmouseout="if (isVisible(this)) animate(this, {opacity: 0.6}, 100)" onclick="cur.chooseClearSearch(this, event)"></div>
+    </div>
+  </div>
+  <div class="top_shadow"></div>
+</div></div>
+<div id="photos_choose_wrap">
+  <div id="photos_choose_album_rows" class="photos_choose_album_rows"><?=tpx('photo_choose_album_rows', $albums_assign)?><br id="photos_choose_album_clear" class="clear" /></div>
+<a onclick="cur.photosChooseMoreAlbums();" id="photos_choose_more_albums" class="photos_choose_more_albums" style="<? if($albums_list['total'] <= 2) {?>display:none;<? } ?>">
+Показать все <?=$albums_list['total']?> альбом<?=$langpack->dln($albums_list['total'], 'file')?>
+</a>
+  <div id="photos_choose_rows" class="photos_choose_rows"><?=tpx('photo_choose_photo_rows', $photos_assign)?></div>
+</div>
+<a onclick="cur.photosChooseMore();" id="photos_choose_more" class="photos_choose_more" style="<?=$photos_list['total'] <= $photos_on_page ? 'display:none;' : ''?>">
+Показать все <?=$photos_list['total']?> фотографи<?=$langpack->dln($photos_list['total'],'pht2')?>
+</a>
+<div id="photos_choose_bottom_wrap" class="photos_choose_bottom_wrap">
+  <div id="photos_choose_bottom" class="photos_choose_bottom">
+    <div class="button_green">
+      <button id="photos_choose_button" class="photos_choose_button" onclick="cur.chooseAllSelected()"></button>
+    </div>
+    <a onclick="cur.cancelMultiple();">Отмена</a>
+  </div>
+</div>

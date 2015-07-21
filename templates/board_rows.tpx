@@ -1,0 +1,36 @@
+<?php
+	global $langpack, $datetime, $limit;
+
+	foreach($var['topics'] as $t) {
+		$topic_id = $t['oid'] . '_' . $t['id'];
+		if($t['uid'] != 0) {
+			$answer_user = pdata($t['uid']);
+			$answer_word = 'ответ';
+			$answer_date = $t['update'];
+		} else {
+			$answer_user = pdata($t['aid']);
+			$answer_word = 'создано';
+			$answer_date = $t['date'];
+		}
+		
+		$topic_options = array();
+		if($t['pid'] < 0) {
+			$topic_options[] = 'закреплена';
+		}
+		
+		if(!empty($t['opt']['c'])) {
+			$topic_options[] = 'закрыта';
+		}
+		//dmp($t);
+		
+?><div class="blst_row clear_fix">
+  <a class="fl_r blst_last" href="/topic<?=$topic_id?>?offset=last&scroll=1" onclick="return nav.go(this, event)">
+    <div class="fl_l blst_thumb"><img class="blst_img" src="<?=$answer_user->photo()?>" /></div>
+    <div class="fl_l blst_mem"><?=$answer_user->title?></div>
+    <div class="fl_l blst_date"><?=$answer_word?> <?=$datetime->sdate($answer_date)?></div>
+  </a>
+  <div class="blst_info">
+    <div><a class="blst_title" href="/topic<?=$topic_id?>" onclick="return nav.go(this, event)"><?=$t['body']?></a><nobr class="blst_closed"><?=empty($topic_options) ? '' : 'тема ' . join(' и ', $topic_options)?></nobr></div>
+    <div class="blst_other"><span class="blst_msgs"><b><?=$t['cnt']?></b> сообщени<?=$langpack->dln($t['cnt'], array('е', 'я', 'й'))?>.</span> <?=topic_pages($t['cnt'], $topic_id, $limit)?></div>
+  </div>
+</div><? } ?>

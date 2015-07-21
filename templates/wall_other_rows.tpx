@@ -1,0 +1,148 @@
+<?php
+global $user, $datetime, $setting, $privacy_wall_comm, $new_design, $comment_time, $post_source, $post_id, $section;
+
+$vars = array(
+		'can_edit' => 'пользователь может редактировать страницу как её владелец или админ группы',
+		'comments' => 'массив с комментариями',
+		'oid' => 'id пользователя или группы',
+		'access_comm' => 'право доступа к комментированию',
+);
+
+$comments = $var['comments'];
+$type = $var['type'];
+
+foreach ($comments['comments'] as $comment) {
+	
+	$author = pdata($comment['aid']);
+	
+	$r = array();
+	$post_id = $var['oid'] . '_' . $type . $comment['id'];
+	$topic_uid = $var['oid'] . '_' . $comment['id'];
+	
+	?><div id="post<?= $post_id ?>" class="post <?=$type?>_comment <?= empty($author->user_info['online'])?'':'post_online' ?>" onclick="wall.postClick('<?= $post_id ?>', event)"  <?=empty($r)?'':'data-copy="'.$r['oid'].'_'.$r['id'].'"'?> onmouseout="wall.postOut('<?= $post_id ?>')" onmouseover="wall.postOver('<?= $post_id ?>')">
+		<div class="post_table">
+			<div class="post_image">
+				<a class="post_image" href="<?= $author->lnk ?>" onclick="return nav.go(this, event)"><img width="50" height="50" src="<?= $author->photo($new_design ? 'b' : 'c') ?>" /></a>
+				<?= (empty($author->user_info['online']) or !empty($new_design)) ? '' : '<span class="online">'._e('g_online').'</span>' ?>
+			</div>
+			<div class="post_info">
+				<? //dmp($author); 
+					//dmp($var); 
+		?>
+				<div class="fl_r post_actions_wrap">
+					<div class="post_actions">
+						<?
+						if(isset($var['feed'])) {
+							if($section == 'comments') {
+								echo '<div id="post_delete' . $post_id . '" class="post_delete_button fl_r" onmouseout="wall.deactiveDeletePost(\'' . $post_id . '\', \'post_delete\')" onmouseover="wall.activeDeletePost(\'' . $post_id . '\', \'Отписаться от комментариев\', \'post_delete\')" onclick="feed.unsubscribe(\'' . $post_id . '\', \'wall_' . $post_id . '\', \''.hash_get($post_id, 16, 'nene').'\'); event.cancelBubble = true;" style="opacity: 0;"></div>';
+							} else {
+								echo '<div id="post_delete' . $post_id . '" class="post_delete_button fl_r" onmouseout="wall.deactiveDeletePost(\'' . $post_id . '\', \'post_delete\')" onmouseover="wall.activeDeletePost(\'' . $post_id . '\', \'Это не интересно\', \'post_delete\')" onclick="feed.ignoreItem(\'' . $post_id . '\', \'wall_' . $post_id . '\', \''.hash_get($post_id, 16, 'nene').'\'); event.cancelBubble = true;" style="opacity: 0;"></div>';
+							}
+						} else {
+							if ($user->id == $comment['aid'] or $var['can_edit']) {
+								echo '<div id="post_delete' . $post_id . '" class="post_delete_button fl_r" onclick="wall.deletePost(\'' . $post_id . '\', \'' . hash_get($post_id, 16, 'wd') . '\');" onmouseover="wall.activeDeletePost(\'' . $post_id . '\', \'Удалить запись\', \'post_delete\')" onmouseout="wall.deactiveDeletePost(\'' . $post_id . '\', \'post_delete\')"></div>';
+								if(($user->id == $comment['aid'] or ($comment['aid'] < 0 and $comment['opt']['o'] == $user->id)) and ($_SERVER['REQUEST_TIME'] - $comment['date'] < 3600) ) {
+									echo '<div id="post_edit' . $post_id . '" class="post_edit_button fl_r" class="post_edit_button fl_r" onmouseout="wall.deactiveDeletePost(\'' . $post_id . '\', \'post_edit\', \'post_delete\')" onmouseover="wall.activeDeletePost(\'' . $post_id . '\', \'Редактировать\', \'post_edit\')" onclick="wall.editPost(\'' . $post_id . '\')" style="opacity: 0;"></div>';
+								}
+							} else {
+								echo '<div id="post_delete' . $post_id . '" class="post_delete_button fl_r" onclick="wall.markAsSpam(\'' . $post_id . '\', \'' . hash_get($post_id, 16, 'spm') . '\');" onmouseover="wall.activeDeletePost(\'' . $post_id . '\', \'Отметить как спам\', \'post_delete\')" onmouseout="wall.deactiveDeletePost(\'' . $post_id . '\', \'post_delete\')"></div>';
+							}
+						}
+						?>    
+					</div>
+				</div>
+				<div class="wall_text">
+					<a class="author" href="<?= $author->lnk ?>" onclick="return nav.go(this, event)"><?= $author->title ?></a><?= (empty($author->user_info['online']) or empty($new_design)) ? '' : '<b class="online">•</b>' ?>
+					
+					
+					<div id="wpt<?= $post_id ?>"><? 
+							if(empty($r) or $comment['date'] > 1385244744) {
+								echo tpx('wall_post_body', array('comment' => $comment));
+							}
+					?></div>
+					<?
+											
+					if ($comment['date'] > $now - 3600 * 5) {
+						$abs_time = $datetime->sdate2($comment['date']);
+						$comment_time = '<span class="rel_date rel_date_needs_update" abs_time="' . $abs_time . '" time="' . $comment['date'] . '">' . $abs_time . '</span>';
+					} else {
+						$comment_time = '<span class="rel_date">' . $datetime->cdate($setting['setting_dateformat'] . ' в ' . $setting['setting_timeformat'], $comment['date']) . '</span>';
+					}
+					
+					if(!empty($comment['opt']['p'])) {
+						$post_source = 'через <a class="wall_post_source" href="/app'.$comment['opt']['p'].'" onmouseover="wall.postTooltip(this, \''.$post_id.'\', {i: \'-1\'})">app'.$comment['opt']['p'].'</a>';
+					} else {
+						$post_source = '';
+					}
+					?>
+				</div>
+				
+				
+				
+				<div class="post_full_like_wrap fl_r">
+					<div class="post_full_like">
+						<div class="post_like fl_r" onclick="wall.like('<?= $post_id ?>', '<?= hash_get($type . $topic_uid . $user->id, 18, 'lk') ?>'); event.cancelBubble = true;" onmouseout="wall.likeOut('<?= $post_id ?>')" onmouseover="wall.likeOver('<?= $post_id ?>')">
+							<span id="like_link<?= $post_id ?>" class="post_like_link fl_l"><?=_e('g_like')?></span>
+							<i id="like_icon<?= $post_id ?>" class="post_like_icon fl_l <?= $comment['like'] == 0 ? 'no_likes' : '' ?><?= $comment['like_my'] == 1 ? 'my_like' : '' ?>"></i>
+							<span id="like_count<?= $post_id ?>" class="post_like_count fl_l"><?= $comment['like'] == 0 ? '' : $comment['like'] ?></span>
+						</div>
+					</div>
+				</div>
+				
+
+				<div class="replies">
+					<div id="wpe_bottom<?= $post_id ?>" class="reply_link_wrap">
+						<small>
+							<a href="/<?= $type.$topic_uid ?>?offset=last&scroll=1" onclick="return nav.go(this, event)">
+								<?= $comment_time ?>
+							</a>
+							 <?= $post_source?>
+						</small>
+						<? if ($comment['cw_total'] == 0) { ?>
+							<span id="reply_link<?= $post_id ?>" class="reply_link">
+								<span class="divide">|</span>
+								<a class="reply_link" onclick="wall.showEditReply('<?= $post_id ?>')"><?=_e('g_wall_comment')?></a>
+							</span>
+						<? } ?>
+					</div>
+					<div id="replies_wrap<?= $post_id ?>" class="replies_wrap clear" <?= ($comment['cw_total'] == 0 ? 'style="display: none"' : '') ?>>
+						<div id="replies<?= $post_id ?>">
+							<?
+							if ($comment['cw_total'] == 0) {
+								echo '<input type="hidden" id="start_reply' . $post_id . '" value=""/>';
+							} else {
+								$assign = array(
+										'cid' => $comment['id'],
+										'oid' => $var['oid'],
+										'can_edit' => $var['can_edit'],
+										'type' => $type,
+										'wcomments' => $comment['cw'],
+										'total_wcomments' => $comment['cw_total'],
+								);
+								echo tpx('wall_other_comment_rows_short', $assign);
+							}
+							?>                            
+						</div>
+						<? if($var['access_comm']) {?><div id="reply_fakebox<?= $post_id ?>" class="reply_fakebox_wrap" onclick="wall.showEditReply('<?= $post_id ?>')"><div class="reply_fakebox"><?=_e('g_wall_comment')?></div>
+						</div><? } ?>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div><?
+					}
+
+					if (isset($var['authors'])) {
+						echo '<!><!json>';
+						if (empty($var['comments']['user_ids'])) {
+							echo '{}';
+						} else {
+							$reply_names = array();
+							foreach ($comments['user_ids'] as $u) {
+								$u = pdata($u);
+								$reply_names[$u->id] = array('<a class="mem_link" href="' . $u->lnk . '" onclick="return nav.go(this, event)">' . $u->user_info['fio'] . '</a>', $u->user_info['name'] . ', ');
+							}
+							echo jenc($reply_names);
+						}
+					}
+?>

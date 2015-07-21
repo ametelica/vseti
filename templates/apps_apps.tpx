@@ -1,0 +1,67 @@
+<?php
+	global $my_apps,$langpack,$hash,$user;
+	$my_apps_total = count($my_apps);
+	
+	if($my_apps_total>0){
+		$title = 'У Вас '.$my_apps_total.' приложени'.$langpack->dln($my_apps_total,'inv');
+	} else {
+		$title = 'У вас нет приложений'; 
+	}
+?><div id="apps_wrap">
+   <div style="" class="apps_summary clear_fix">
+    <span class="summary fl_l" id="apps_summary"><?=$title?></span>
+    <div class="fl_r apps_progress" id="apps_summary_progress"><img src="/images/upload.gif"></div>
+   </div>
+   <div class="apps_results clear_fix" id="apps_results">
+    <div class="apps_msg msg" id="apps_message"></div>
+    <div class="app_rows" id="app_rows">
+<?
+if($my_apps_total>0) {	
+	foreach($my_apps as $ap){
+		$ai = $ap->app_info;
+		echo '<div id="app'.$ai['app_id'].'"><div onmouseout="Apps.rowOut('.$ai['app_id'].')" onmouseover="Apps.rowOver('.$ai['app_id'].')" class="app_row ">
+ <table cellspacing="0" border="0">
+  <tbody><tr>
+   <td class="app_image">
+    <div class="app_subdimage">
+    <a onclick="return nav.go(this, event)" href="'.$ap->lnk.'?ref=9"><img src="'.$ap->app_photo().'"></a>
+    </div>
+   </td>
+   <td class="app_info">
+      <div class="app_name">
+       <a onclick="return nav.go(this, event)" class="app_link" href="'.$ap->lnk.'?ref=9">'.$ai['app_title'].'</a>
+      </div>
+      <div class="app_audience">Приложение установили '.nf($ai['app_rate']).' человек'.$langpack->dln($ai['app_rate'],'cnt').'</div>
+   </td>
+   <td class="app_hide"><div onclick="Apps.removeApp('.$ai['app_id'].', \''.$hash->get_hash($ai['app_id'].$user->user_info['user_id'],16,'ap').'\'); return false" onmouseout="Apps.rowInactive('.$ai['app_id'].')" onmouseover="Apps.rowActive('.$ai['app_id'].', \'Убрать приложение\')" id="delete_row'.$ai['app_id'].'" class="app_delete_row" style="opacity: 0;"></div></td>
+  </tr>
+ </tbody></table>
+</div></div>';
+	} 
+	} else {
+?>
+<div id="no_apps" class="app_msg">У Вас не установлено ни одного приложения</div>
+<?				
+	}
+?>      
+    </div>
+    <a style="display: none;" class="more" onclick="Apps.showRows(true)" id="more_link">
+      <div class="show_more" id="show_more">
+        Показать больше приложений
+      </div>
+    </a>
+      <div class="app_search_results">
+    <div class="app_search_wrap" id="app_search_wrap">
+      <div class="app_search_summary" id="app_search_summary"></div>
+    </div>
+    <div class="app_search_list" id="app_search_list"></div>
+  </div>
+  <div class="app_preload" id="app_search_preload"></div>
+  <a style="display: none;" class="search more" onclick="Apps.loadRows()" id="s_more_link">
+    <div class="progress" id="s_show_more_progress"></div>
+    <div class="show_more" id="s_show_more">
+      Показать больше приложений
+    </div>
+  </a>
+  </div>
+ </div>

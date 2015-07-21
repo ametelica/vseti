@@ -1,0 +1,51 @@
+<?php
+global $owner, $vs_album, $comments_on_page, $langpack, $new_design;
+
+if($var['comments']['total'] > $comments_on_page) {
+	$var['comments']['data'] = array_slice($var['comments']['data'], 0, $comments_on_page);
+}
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+
+<div class="t_bar photos_tabs clear_fix">
+  <ul class="t0"><li class="">
+	<a href="/albums<?=$owner->oid?>" onclick="return checkEvent(event);" onmousedown="if ((window.PhotosAdd || nav).go(this, event) === false) (window.PhotosAdd || window.photos || window.friendsphotos).activeTab(this);">
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr>Все фотографии</nobr></b>
+  </a>
+</li>
+<? if($vs_album->id > 0) { ?>
+<li class="">
+  <a href="/album<?=$vs_album->uid?>" onclick="return checkEvent(event);" onmousedown="if ((window.PhotosAdd || nav).go(this, event) === false) (window.PhotosAdd || window.photos || window.friendsphotos).activeTab(this);">
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr><?=$vs_album->title?></nobr></b>
+  </a>
+</li><li class="active_link">
+  <a href="/album<?=$vs_album->oid?>?act=comments" onclick="return checkEvent(event);" onmousedown="if ((window.PhotosAdd || nav).go(this, event) === false) (window.PhotosAdd || window.photos || window.friendsphotos).activeTab(this);">
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr>Комментарии к альбому</nobr></b>
+  </a>
+</li><? } else { ?><li class="active_link">
+	<a onmousedown="if ((window.PhotosAdd || nav).go(this, event) === false) (window.PhotosAdd || window.photos || window.friendsphotos).activeTab(this);" onclick="return checkEvent(event);" href="/photos<?=$owner->oid?>?act=comments">
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr>Комментарии к альбомам</nobr></b>
+  </a>
+</li><? } ?></ul>
+</div><div class="photos_comments wall_module">
+  <div class="summary_wrap" style="">
+    <div class="summary"><? if($var['comments']['total'] > 0) {echo $var['comments']['total'] . ' комментари'.$langpack->dln($var['comments']['total'] ,'com'); } else { echo 'Пока нет комментариев';} ?></div>
+  </div>
+  <div id="photos_container" class="clear_fix"><?=tpx('photo_album_comments_rows', $var)?></div>
+  <a id="photos_load_more" onclick="photos.load()" style="<? if($var['comments']['total'] <= $comments_on_page) { ?>display: none<? } ?>"><span>Показать больше комментариев</span>
+    <div id="photos_more_progress" class="progress"></div>
+  </a>
+</div></div>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div id="wrap2">
+  <div id="wrap1">
+   <div id="content">
+    <div id="map_c">
+     <div id="map" style="width: 1200px; height: 700px;"></div>
+     <div id="panoramio" style="display:none"></div>
+    </div>
+   </div>
+  </div>
+</div>

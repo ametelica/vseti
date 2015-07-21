@@ -1,0 +1,272 @@
+<?php
+	global $union_id, $ad_info, $camp_info, $user;
+	
+	//dmp($ad_info);
+	//dmp($camp_info);
+	
+	$status_arr = array(
+		0 => 'Остановлено',
+		1 => 'Запущено',
+		2 => 'Приостановлено',
+		4 => 'Архивное',
+		5 => 'Ожидает модерации',
+		6 => 'Отклонено модератором'
+	);
+	echo tpx('header_design');
+?>
+
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"> 
+      <div class="tabs t_bar clear_fix">
+        <ul class="t0">
+          <li>
+            <a href="/ads?act=office" onclick="return nav.go(this, event)">Личный кабинет</a>
+          </li>
+          <li>
+            <a href="/ads?act=office&union_id=<?=$camp_info['union_id']?>" onclick="return nav.go(this, event)"><?=$camp_info['name']?></a>
+          </li>
+          <li class="active_link">
+            <a href="/ads?act=office&union_id=<?=$ad_info['union_id']?>"><?=$ad_info['name']?></a>
+          </li>
+        </ul>
+      </div>
+
+	<?
+		//dmp($ad_info);
+		?>
+
+  <div id="ads_page">
+        <div id="ads_unions_content">
+					<div id="ads_union_general_info" class="clear_fix">
+						<h2><span id="general_info_header_name_<?=$union_id?>"><?=$ad_info['name']?></span> <? if($ad_info['active'] != 4) { ?><a href="#" onclick="Ads.openUnionsGeneralInfoBox(<?=$union_id?>, {&quot;union_id&quot;:<?=$union_id?>,&quot;filter&quot;:&quot;name&quot;,&quot;from_header&quot;:true,&quot;hash&quot;:&quot;e2cfd6be69a0d970f5&quot;}); return false;" class="edit_name_link">изменить название</a><? } ?><!--<a class="fl_r ads_h2_add"href="<?=$user->lnk?>?ad_view=WQ8fBghWenEOWlRbEhJzAR4OdFpDCVcuHFA-">Посмотреть пример объявления на странице</a>--></h2>
+						<div style="padding: 0 0 0 10px;">
+							<table class="ads_general_info ads_unions_content_label" style="float: left;">
+								<tr class="" id="general_info_row_campaign_name" style="">
+									<td class="table_label" style="">Название кампании:</td>
+									<td class="table_value table_large_text"><?=empty($camp_info['name']) ? 'Не выбрана' : $camp_info['name'] ?></td>
+								</tr><tr class="" id="general_info_row_all_limit" style="">
+									<td class="table_label" style="">Лимит объявления:</td>
+									<td class="table_value table_large_text"><img id="inline_edit_progress1007018534" src="/images/upload.gif" style="display: none;" /><? if($ad_info['active'] != 4) { ?><a id="inline_edit_value1007018534" href="#" onmouseover="this.removeAttribute('onmouseover');Ads.createInlineEdit(ge(&#39;inline_edit_value1007018534&#39;), ge(&#39;inline_edit_progress1007018534&#39;), 0, <?=$union_id?>, &#39;all_limit&#39;, &quot;<?=$ad_info['limit_price']?>&quot;, &#39;70d771ea8bed76216f&#39;, {&quot;filter&quot;:&quot;all_limit&quot;,&quot;all_limit_max_precision&quot;:0});"><? } ?><span style="white-space:nowrap;"><?=nf_price($ad_info['limit_price'], 'Не задан')?></span><? if($ad_info['active'] != 4) { ?></a><? } ?></td>
+								</tr>
+								<tr class="" id="general_info_row_cost_per_click" style="">
+									<td class="table_label" style="">Цена за <? if($ad_info['ad_type'] == 0) { ?>1000 показов<? } else { ?>переход<? } ?>:</td>
+									<td class="table_value table_large_text"><img id="inline_edit_progress753960316" src="/images/upload.gif" style="display: none;" /><? if($ad_info['active'] != 4) { ?><a id="inline_edit_value753960316" href="#" onmouseover="this.removeAttribute('onmouseover');Ads.createInlineEdit(ge(&#39;inline_edit_value753960316&#39;), ge(&#39;inline_edit_progress753960316&#39;), 0, <?=$union_id?>, &#39;cost_per_click&#39;, &quot;<?=$ad_info['ad_price']?>&quot;, &#39;43a965666fadd9ad2f&#39;, {&quot;is_cost_per_click&quot;:<? if($ad_info['ad_type'] == 0) { ?>false<? } else { ?>true<? } ?>,&quot;is_app_admin&quot;:false,&quot;is_exclusive_ad&quot;:false,&quot;filter&quot;:&quot;cost_per_click&quot;});"><? } ?><span style="white-space:nowrap;"><?=nf_price($ad_info['ad_price'], 'Не задан')?></span><? if($ad_info['active'] != 4) { ?></a><? } ?></td>
+								</tr><tr class="" id="general_info_row_status" style="">
+									<td class="table_label" style="">Статус:</td>
+									<td class="table_value table_large_text"><img id="general_info_status_progress" src="/images/upload.gif" style="display: none;" /><span id="general_info_status_selector_box" style="white-space: nowrap;"><? if($ad_info['active'] != 4) { ?><a id="ads_general_info_status_selector" class="dd_link ads_status_link"><? } ?><?=$status_arr[$ad_info['active']]?><? if($ad_info['active'] != 4) { ?></a><? } ?></span>&nbsp;<a href="#" onclick="Ads.openHelpBox('statuses', <?=$union_id?>); return false;" style="white-space: nowrap;">(?)</a>
+									<? 
+									if($ad_info['active'] == 6) { echo '<div class="error">Объявление было отклонено модератором. '.(empty($ad_info['ad_comment']) ? '' : '<br /><b>Причина: '.$ad_info['ad_comment'].'</b><br />').'<br />Пожалуйста, ознакомьтесь с <a href="/ads?section=terms">правилами размещения объявлений</a> и внесите <a href="/adsedit?ad_id='.$ad_info['union_id'].'">исправления</a>.</div>';
+									}
+									?>
+									</td>
+								</tr>
+								<!--<tr class="" id="general_info_row_views_places" style="">
+									<td class="table_label" style="">Рекламные площадки:</td>
+									<td class="table_value table_large_text">Только ВCети</td>
+								</tr>--><tr class="<?=empty($ad_info['limit_by_day']) ? 'ads_general_info_hidden' : '' ?>" id="general_info_row_views_limit" style="">
+									<td class="table_label" style="">Ограничение показов:</td>
+									<td class="table_value table_large_text">До <?=$ad_info['limit_by_day']?> показов на человека в сутки</td>
+								</tr>
+										<tr class="" id="general_info_row_targeting_empty_row" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text">&nbsp;</td>
+								</tr>
+								<!--<tr class="" id="general_info_row_audience_count" style="">
+									<td class="table_label" style="">Целевая аудитория:</td>
+									<td class="table_value table_large_text">3<span class="num_delim"> </span>850<span class="num_delim"> </span>097 человек</td>
+								</tr>-->
+								
+								
+					
+								<tr class="<?=(empty($ad_info['ad_t_region']) and empty($ad_info['ad_t_city'])) ? 'ads_general_info_hidden' : ''  ?>" id="general_info_row_targeting_geography" style="">
+									<td class="table_label" style=""><?=empty($ad_info['ad_t_city']) ? 'Страна' : 'Города' ?>:</td>
+									<td class="table_value table_large_text"><?=empty($ad_info['ad_t_city']) ? $ad_info['ad_t_region_name'] : $ad_info['ad_t_city_name']?></td>
+								</tr>
+								<tr class="<?=empty($ad_info['ad_t_city_not']) ? 'ads_general_info_hidden' : '' ?>" id="general_info_row_targeting_geography_not" style="">
+									<td class="table_label" style=""><?=empty($ad_info['ad_t_city_not_name']) ? '' : 'Исключая города' ?>:</td>
+									<td class="table_value table_large_text"><?=$ad_info['ad_t_city_not_name']?></td>
+								</tr>
+								<tr class="<?=(empty($ad_info['ad_t_sex']) and $ad_info['ad_t_age_from'] < 12 and ($ad_info['ad_t_age_to'] > 98 or $ad_info['ad_t_age_to'] < 12)) ? 'ads_general_info_hidden' : '' ?>" id="general_info_row_targeting_demography" style="">
+									<td class="table_label" style="">Демография:</td>
+									<td class="table_value table_large_text">
+										<? if(!empty($ad_info['ad_t_sex'])) {
+												$sex = array(
+													'1' => 'Женщины',
+													'2' => 'Мужчины',
+												);
+												echo $sex[$ad_info['ad_t_sex']] . ' ';
+											}
+											if($ad_info['ad_t_age_from'] > 11) {
+												echo 'от ' . $ad_info['ad_t_age_from'] . ' ';
+											}
+											
+											if($ad_info['ad_t_age_to'] < 99 and $ad_info['ad_t_age_to'] > 11) {
+												echo 'до ' . $ad_info['ad_t_age_to'] . ' ';
+											}
+										?>
+									</td>
+								</tr>
+								<tr class="ads_general_info_hidden" id="general_info_row_targeting_birthday" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr>
+								<tr class="<?=empty($ad_info['ad_t_status']) ? 'ads_general_info_hidden' : ''?>" id="general_info_row_targeting_statuses" style="">
+									<td class="table_label" style="">Семейное положение:</td>
+									<td class="table_value table_large_text"><?
+											$status = array(
+												'0' => array(
+													1 => 'Не женат',
+													2 => 'Есть подруга',
+													3 => 'Помолвлен',
+													4 => 'Женат',
+													5 => 'Безвыходное',
+													6 => 'В активном поиске',
+													7 => 'Влюблён',
+													8 => 'Жду чуда',
+												),
+												'1' => array(
+													1 => 'Не замужем',
+													2 => 'Есть друг',
+													3 => 'Помолвлена',
+													4 => 'Замужем',
+													5 => 'Безвыходное',
+													6 => 'В активном поиске',
+													7 => 'Влюблена',
+													8 => 'Жду чуда',
+												)
+											);
+											$status_sex = $ad_info['ad_t_sex'] == 1 ? 1 : 0; 
+											$statuses = explode(',', $ad_info['ad_t_status']);
+											$statuses_name = array();
+											foreach($statuses as $s) {
+												$statuses_name[] = $status[$status_sex][$s];
+											}
+											echo join(', ', $statuses_name);
+									?></td>
+								</tr>
+								<tr class="ads_general_info_hidden" id="general_info_row_targeting_interests" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_group_types" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_groups" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_apps" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_apps_not" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_religions" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_travellers" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_districts" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_stations" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_streets" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_schools" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_school_end" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_uni_end" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_positions" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_operators" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_browsers" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_pays_money" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_retargeting_groups" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_retargeting_groups_not" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="ads_general_info_hidden" id="general_info_row_targeting_tags" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"></td>
+								</tr><tr class="" id="general_info_row_link_url" style="">
+									<td class="table_label" style="">Ссылка:</td>
+									<td class="table_value table_large_text"><a target="_blank" href="<?=$ad_info['link']?>"><?=$ad_info['link']?></a></td>
+								</tr><tr class="" id="general_info_row_edit_button" style="">
+									<td class="table_label" style=""></td>
+									<td class="table_value table_large_text"><? if($ad_info['active'] != 4) { ?><a href="/adsedit?ad_id=<?=$union_id?>">Редактировать</a><? } ?></td>
+								</tr>
+							</table>
+							<div style="float: right; margin: 5px 0 0 0;" id="ad_preview_top">
+								<?
+								$ad_info['preview'] = 1;
+								echo tpx('ad', $ad_info);
+								?>
+								<? if($ad_info['active'] != 4) { ?><a href="/adsedit?ad_id=<?=$union_id?>" class="button_link" style=""><div class="button_green button_wide" style="margin: 8px 0 0 0;"><button>Редактировать</button></div></a><? } ?>
+								<a href="/adscreate?parent_id=<?=$camp_info['union_id']?>&amp;copy_id=<?=$union_id?>" class="button_link" style=""><div class="button_gray button_wide" style="margin: 8px 0px 0px;"><button>Копировать</button></div></a>
+							</div>
+						</div>
+					</div>
+					
+					
+					<div id="ads_union_children">
+						<h2>Статистика</h2>
+						<div>
+							<div class="row_div control_label" style="width: 170px;">Период статистики:</div>
+							<div class="row_div" style="margin-left: -3px;"><a id="table_selector" class="dd_link">За 7 дней</a><img id="union_children_table_progress" src="/images/upload.gif" style="display: none;" /></div>
+						</div>
+
+						<div id="union_children_table">
+							<div id="paginated_table" class="ads_unions_list_p"></div>
+						</div>
+					</div>
+					<div id="ads_union_children_graph">
+						<h2 style="margin-bottom: 15px; display: none;">Статистика</h2>
+
+						<table style="border-collapse: collapse; width: 100%;">
+							<tr>
+								<td class="ads_graph_wrap">
+
+									<div style="">
+										<div id="wrapper_ads_graph_unions" style="width: 600px; height: 385px;" class="stats_flash_wrap">
+											<div id="ads_graph_unions">
+												<div style="padding: 10px; margin: 10px auto; text-align: center"></div>
+											</div>
+										</div>
+									</div>
+								</td>
+								<td id="ads_graph_navigation" style="vertical-align: top; padding: 29px 0 0 20px;">
+									<a href="#" onclick="this.blur(); cur.changeGraph(0); return false;" class="nav nav_selected" id="graph_navigation_0">Переходы</a>
+									<a href="#" onclick="this.blur(); cur.changeGraph(1); return false;" class="nav" id="graph_navigation_1">Показы</a>
+									<a href="#" onclick="this.blur(); cur.changeGraph(2); return false;" class="nav" id="graph_navigation_2">CTR</a>
+									<a href="#" onclick="this.blur(); cur.changeGraph(3); return false;" class="nav" id="graph_navigation_3">Потрачено (руб.)</a>
+								</td>
+							</tr>
+						</table>
+					</div>
+					
+					<!--<div id="ads_demography_wrap" style="padding-bottom: 10px; padding-top: 10px;"><h2>Демография</h2></div>-->
+					<?=tpx('ads_demographic')?>
+
+
+				</div>
+      </div>
+		</div>
+	</div>
+</div>

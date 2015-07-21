@@ -1,0 +1,15 @@
+<?php
+global $fave_links, $section, $langpack;
+?><div class="fave_module <? if($section != 'links'){ ?>unshown<? } ?>" id="links">
+  <div class="summary_wrap ">
+    <div class="summary">У Вас в закладках <?=$fave_links['total']?> ссыл<?=$langpack->dln($fave_links['total'], 'ord')?></div>
+  </div>
+  <div class="msg fave_msg unshown" id="msg_links"></div>
+  <div id="links_content"><div style="padding-left: 12px; padding-top: 7px;"><?=tpx('fave_link_rows', array('links' => $fave_links))?><br class="clear" /></div></div>
+  <a id="show_more_link_links" onclick="return Fave.showMore('links');" class="clear fave_more_link" style="">
+    <div id="show_more_progress_links" class="fave_show_more_progress progress"></div>
+    <div id="show_more_links">Показать еще</div>
+  </a>
+  <div id="fave_all_shown_links" class="fave_all_shown" style=""></div>
+  <div id="fave_list_empty_links" class="fave_list_empty" style=""></div>
+</div>

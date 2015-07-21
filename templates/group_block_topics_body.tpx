@@ -1,0 +1,44 @@
+<?php
+global $datetime, $langpack, $user, $new_design, $poll;
+$topics = $var['topics'];
+if (!empty($topics) and is_array($topics)) {
+	if ($new_design) {
+		$n = 1;
+		foreach ($topics['comments'] as $t) {
+			$author = pdata($t['uid']);
+			$topic_id = $t['oid'] . '_' . $t['id'];
+			?>
+			<a class="clear_fix topic_row " href="/topic<?= $topic_id ?>" onclick="return nav.go(this, event)">
+				<div class="info fl_l">
+					<div><span class="topic_title"><?= $t['body'] ?></span></div>
+					<small>
+						<span class="topic_to_last" onmouseover="this.parentNode.parentNode.parentNode.href='/topic<?= $topic_id ?>?offset=last&scroll=1'" onmouseout="this.parentNode.parentNode.parentNode.href='/topic<?= $topic_id ?>'"><?= $t['cnt'] ?></span>
+						<? if ($t['aid'] != 0) { ?><span class="topic_inner_link" onmouseover="this.parentNode.parentNode.parentNode.href='<?= $author->lnk ?>'" onmouseout="this.parentNode.parentNode.parentNode.href='/topic<?= $topic_id ?>'"><?= $author->title ?></span>,<? } ?> <span class="topic_date">  <?= $datetime->sdate($t['update']) ?></span>
+
+					</small>
+				</div>
+			</a>
+			<?
+			$n++;
+			if($n > (($poll and $poll->error == 0) ? 3 : 6)) break;
+		}
+	} else {
+		foreach ($topics['comments'] as $t) {
+			$author = pdata($t['aid']);
+			$topic_id = $t['oid'] . '_' . $t['id'];
+			?>
+			<a class="clear_fix topic_row " href="/topic<?= $topic_id ?>" onclick="return nav.go(this, event)">
+				<div class="info fl_l">
+					<div><span class="topic_title"><?= $t['body'] ?></span></div>
+					<small>
+						<?= $t['cnt'] ?> сообщени<?= $langpack->messages($t['cnt']) ?>.
+						<? if ($t['grouptopic_user_id'] != 0) { ?>Последнее от <span class="topic_inner_link" onmouseover="this.parentNode.parentNode.parentNode.href='<?= $author->lnk ?>'" onmouseout="this.parentNode.parentNode.parentNode.href='/topic<?= $topic_id ?>'"><?= $author->title ?></span>,<? } ?> <span class="topic_date">  <?= $datetime->sdate($t['update']) ?></span>
+						<span class="topic_to_last" onmouseover="this.parentNode.parentNode.parentNode.href='/topic<?= $topic_id ?>?offset=last&scroll=1'" onmouseout="this.parentNode.parentNode.parentNode.href='/topic<?= $topic_id ?>'">&rarr;</span>
+					</small>
+				</div>
+			</a>
+			<?
+		}
+	}
+}
+?>

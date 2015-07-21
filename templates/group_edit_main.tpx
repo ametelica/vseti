@@ -1,0 +1,196 @@
+<?php
+global $new_design, $group, $setting, $group_params;
+if ($new_design) {
+	echo tpx('header_design');
+}
+
+function ge_fld($type) {
+	global $group_params;
+	$r = $group_params[$type];
+	return '<div class="group_edit_label fl_l ta_r">'.$r['name'].':</div>
+<div class="group_edit_labeled fl_l"><a id="privacy_edit_g_'.$type.'" onclick="Privacy.show(this, event, \'g_'.$type.'\')">'.$r['types'][intval($r['val'])].'</a></div>
+<br class="clear" />';
+}
+
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><?=tpx('group_edit_menu')?>
+    
+    <? if($group->user_level >= 3) { ?>
+    	
+    
+<div class="group_edit">
+
+  <div class="msg" id="group_saved_msg"><b>Изменения сохранены.</b><br>Основная информация и настройки сообщества сохранены.</div>
+
+  <div class="group_edit_label fl_l ta_r">Название:</div>
+  <div class="group_edit_field fl_l">
+    <input id="group_edit_name" type="text" class="text" value="<?=$group->title?>" maxlength="48" />
+  </div>
+  <br class="clear" />
+
+  <div class="group_edit_label fl_l ta_r" style="display: none">Адрес страницы:</div>
+  <div class="group_edit_field fl_l" style="display: none">
+    <table id="group_edit_addr_table" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="group_edit_addr_label" onclick="elfocus('group_edit_addr', 0, 0)"><nobr>http://<?=$setting['host']?>/</nobr></td>
+        <td class="group_edit_addr_field"><input id="group_edit_addr" maxlength="32" type="text" class="text group_edit_addr_field" onkeyup="GroupsEdit.checkAddr(1000)" onblur="GroupsEdit.checkAddr()" onfocus="" value="<?=str_replace('/', '', $group->lnk)?>" />
+      </tr>
+    </table>
+  </div>
+  <div id="group_edit_about_addr" class="fl_l"></div>
+  <br class="clear" />
+
+  <div class="" style="display: none">
+    <div class="group_edit_label fl_l ta_r"></div>
+    <div class="group_edit_field fl_l">
+      <input type="hidden" id="public_type" name="public_category" />
+    </div>
+    <br class="clear" />
+  </div>
+
+  <div id="group_edit_psubcategory" style="display: none">
+    <div class="group_edit_label fl_l ta_r"></div>
+    <div class="group_edit_field fl_l">
+      <input type="hidden" id="public_subtype" name="public_subtype" />
+    </div>
+    <br class="clear" />
+  </div>
+
+  <div class="group_edit_label fl_l ta_r">Описание сообщества:</div>
+  <div class="group_edit_field fl_l">
+    <textarea id="group_edit_desc"><?=$group->group_info['group_desc']?></textarea>
+  </div>
+  <br class="clear" />
+
+  <div id="group_edit_subject" style="">
+    <div class="group_edit_label fl_l ta_r">Тематика сообщества:</div>
+    <div class="group_edit_field fl_l">
+      <input type="hidden" id="group_subject" name="group_subject" />
+    </div>
+    <br class="clear" />
+  </div>
+
+  <div class="group_edit_label fl_l ta_r">Веб-сайт:</div>
+  <div class="group_edit_field fl_l">
+    <input type="text" class="text" id="group_website" value="<?=$group->group_info['group_website']?>" style="" />
+  </div>
+  <br class="clear" />
+  
+  <div class="group_edit_label fl_l ta_r">Короткий адрес:</div>
+  <div class="group_edit_field fl_l">
+    http://<?=$setting['host']?>/<input type="text" class="text" id="group_alias" value="<?=$group->group_info['group_alias']?>" style="width: 100px;" <? if($group->group_info['num_members'] < 100) { ?>disabled<? } ?> onchange="cur.checkAlias(<?=$group->oid?>)" />
+    <br><span class="desc" id="group_alias_desc">Специальный адрес доступен для сообществ, в которых более 100 участников.</span>
+  </div>
+   
+  <br class="clear" />
+
+  <div class="group_edit_section" style="display: none">
+    <div class="group_edit_label fl_l ta_r"></div>
+    <div class="group_edit_field fl_l">
+      <input type="hidden" id="event_host" name="event_host" />
+    </div>
+    <br class="clear" />
+  </div>
+
+  <div id="group_edit_contacts" style="display: none">
+
+    <div class="group_edit_label fl_l ta_r"></div>
+    <div class="group_edit_field fl_l">
+      <input type="text" class="text" id="event_phone" value="" />
+    </div>
+    <br class="clear" />
+
+    <div class="group_edit_label fl_l ta_r"></div>
+    <div class="group_edit_field fl_l">
+      <input type="text" class="text" id="event_mail" value="" />
+    </div>
+    <br class="clear" />
+
+  </div>
+
+  <div id="group_edit_contacts_label" style="display: none">
+    <div class="group_edit_label fl_l ta_r">&nbsp;</div>
+    <div class="group_edit_labeled fl_l">
+      <a onclick="show('group_edit_contacts'); hide('group_edit_contacts_label'); elfocus('event_phone');"></a>
+    </div>
+    <br class="clear" />
+  </div>
+
+  <div id="group_edit_start_time" class="group_edit_section" style="display: none">
+  <div class="group_edit_label fl_l ta_r"></div>
+  <div class="group_edit_field fl_l">
+    <div class="fl_l"><input type="hidden" id="group_start_date" name="start_date" value=""/></div>
+    <div class="fl_l group_edit_at"></div>
+    <div class="fl_l"><input type="hidden" id="group_start_time"/></div>
+  </div>
+  <br class="clear" />
+</div>
+
+<div id="group_edit_finish_time" style="display: none">
+  <div class="group_edit_label fl_l ta_r"></div>
+  <div class="group_edit_field fl_l">
+    <div class="fl_l"><input type="hidden" id="group_finish_date" name="finish_date" value=""/></div>
+    <div class="fl_l group_edit_at"></div>
+    <div class="fl_l"><input type="hidden" id="group_finish_time"/></div>
+  </div>
+  <br class="clear" />
+</div>
+
+<div id="group_edit_finish_label" style="display: none">
+  <div class="group_edit_label fl_l ta_r">&nbsp;</div>
+  <div class="group_edit_labeled fl_l">
+    <a onclick="show('group_edit_finish_time'); hide('group_edit_finish_label');"></a>
+  </div>
+  <br class="clear" />
+</div>
+
+<div class="group_edit_label fl_l ta_r">Местоположение:</div>
+<div class="group_edit_labeled fl_l"><a id="group_edit_address_link" onclick="GroupsEdit.editPlace()"><?=($group->group_info['group_city_id'] > 0 ? $group->address() : 'Выбрать город')?></a></div>
+<br class="clear" />
+
+<div id="group_edit_rss" style="display: none">
+  <div class="group_edit_label fl_l ta_r">Импорт RSS:</div>
+  <div class="group_edit_field fl_l">
+    <input type="text" class="text" id="group_rss" placeholder="Укажите адрес RSS-потока" value="" style="" />
+  </div>
+  <br class="clear" />
+</div>
+
+<div class="group_edit_sub_section">
+  <?=ge_fld('wall')?>
+</div>
+
+<?=ge_fld('wiki')?>
+
+<!--<div id="group_edit_twitter" style="display: none">
+  <div class="group_edit_label fl_l ta_r">Экспорт в Twitter:</div>
+  <div class="group_edit_labeled fl_l" id="group_twitter_value"><a onclick="GroupsEdit.startTwitter()">Настроить</a></div>
+  <br class="clear" />
+</div>-->
+
+<?=ge_fld('photos')?>
+<?=ge_fld('video')?>
+<?=ge_fld('audio')?>
+<?=ge_fld('docs')?>
+
+<!--<div class="group_edit_label fl_l ta_r">Документы:</div>
+<div class="group_edit_labeled fl_l"><a id="privacy_edit_g_docs" onclick="Privacy.show(this, event, 'g_docs')">Ограниченные</a></div>
+<br class="clear" />-->
+
+<?=ge_fld('topics')?>
+<?=ge_fld('radio')?>
+<?=ge_fld('access')?>
+
+  <div class="group_edit_label fl_l ta_r">&nbsp;</div>
+  <div class="button_green group_save_button fl_l"><button id="group_save" onclick="GroupsEdit.saveInfo()">Сохранить</button></div>
+  <br class="clear" />
+
+</div><? } else { ?><div id="empty_page" class="clear_fix">
+     <div style='font-size:14px; padding:100px; text-align: center;'>
+        Для доступа к этой странице необходимо быть руководителем группы не ниже уровня <b>Администратор</b>.
+     </div>
+    </div>
+<? } ?></div>
+  </div>
+</div>

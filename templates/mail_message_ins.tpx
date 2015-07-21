@@ -1,0 +1,19 @@
+<?php
+global $pm_id,$datetime,$user_to;
+?><tr class="new_msg" id="mess<?=$pm_id?>" read="1" onmousedown="return mail.fastGo('mail?act=show&id=<?=$pm_id?>', event);" onclick="return checkEvent(event);">
+  <td class="mail_check" onmouseover="mail.checkOver(this, '<?=$pm_id?>')" onmouseout="mail.checkOut(this, '<?=$pm_id?>')" onclick="mail.checkChange(this, '<?=$pm_id?>')" onmousedown="event.cancelBubble = true;"><div></div></td>
+  <td class="mail_photo">
+    <div><a  href="<?=$user_to->lnk?>" onclick="return nav.go(this, event);" onmousedown="event.cancelBubble = true;"><img src="<?=$user_to->user_photo('','b')?>"/></a></div>
+  </td>
+  <td class="mail_from">
+    <div class="name wrapped"><a  href="<?=$user_to->lnk?>" onclick="return nav.go(this, event);" onmousedown="event.cancelBubble = true;"><?=$user_to->user_info['fio']?></a></div>
+    <div class="date"><?=$datetime->sdate($_SERVER['REQUEST_TIME'])?></div>
+  </td>
+  <td class="mail_contents" id="mb<?=$pm_id?>">
+    <div class="mail_topic"><a  href="/mail?act=show&id=<?=$pm_id?>" onclick="return nav.go(this, event);"  ></a></div>
+    <div class="mail_body"><a  href="/mail?act=show&id=<?=$pm_id?>" onclick="return nav.go(this, event);"  ></a></div>
+  </td>
+  <td class="mail_actions" id="ma<?=$pm_id?>">
+    <a href="#" onclick="mail.deleteMsg(<?=$pm_id?>, 0); return false;" onmousedown="event.cancelBubble = true;">Удалить</a>
+  </td>
+</tr>

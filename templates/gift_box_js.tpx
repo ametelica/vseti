@@ -1,0 +1,153 @@
+<?php
+global $show_sections, $params, $mid, $langpack, $user, $gprice, $hash, $title;
+$gifts_html = array();
+foreach($show_sections as $k=>$sect){
+	foreach($sect['gifts'] as $gid){ 
+		
+		if(empty($gprice[$gid]['price'])) continue;
+		$src = $gprice[$gid]['new'] ? '/images/gifts/new/' . sprintf("%03d", $gid) . '_m.png' : '/images/gifts/96/'.$gid.'.png';
+		
+		$gifts_html[$k] .= '<a class="gift_cell fl_l" onmouseover="cur.showGiftPrice(this, \''.$gprice[$gid]['price'].' зайчик'.$langpack->dln($gprice[$gid]['price'],'file').'\')" onmouseout="cur.hideGiftPrice()" onclick="cur.showGift(\''.(empty($gprice[$gid]['new']) ? $gid : sprintf("%03d", $gid)).'\', this, 1, 0, \'\', '.intval($gprice[$gid]['new']).'); return false;"><img class="gift_img png" src="'.$src.'" width="96" height="96" /></a>';
+	}
+}
+?>
+var giftsCont = box.tabContent;
+
+each(geByClass('gifts_section', giftsCont), function(i,v) {v.style.height = Math.min((lastWindowHeight - 235), 402) + 'px';});
+box.setOptions({bodyStyle: 'padding: 0px', width: 663, onHide: function() {
+  removeEvent(ge('gifts_box'));
+  if (nav.objLoc.z == 'giftbox') {
+    delete nav.objLoc.z;
+    nav.setLoc(nav.objLoc);
+  }
+}});
+addEvent(giftsCont, 'scroll', function() {
+});
+
+box.setControlsText('<span id="gift_balance_str">У Вас <b class="votes_balance_nom"><?=$user->credits?> зайчик<?=$langpack->dln($user->credits,'file')?></b>. </span><a href="/payments.php">Получить зайчики &raquo;</a>');
+
+cur.lang = extend(cur.lang || {}, {
+  global_n_votes: ["","%s зайчик","%s зайчика","%s зайчиков"]
+});
+cur.handleMoneyChange = function() {
+  var el = ge('gift_balance_str');
+  if (!el) return;
+  if (intval(vs.balance)) {
+    el.innerHTML = 'У Вас {money}.'.replace('{money}', '<b>' + getLang('global_n_votes', vs.balance) + '</b>') + ' ';
+    show(el);
+  } else {
+    hide(el);
+  }
+};
+cur.changeGiftsSection = function(section) {
+  each(geByClass('gifts_section', giftsCont), function(i,v) {v.innerHTML = ''; hide(v);});
+  ge('gifts_box_'+section).innerHTML = cur.giftsSections[section] || '';
+  show('gifts_box_'+section);
+}
+
+try {
+cur.giftHash = '';
+box.removeButtons().addButton(getLang('global_close'));
+
+var giftUsers = [];
+
+extend(cur, {
+  giftsCont: ge('select_gift'),
+  giftPrice: ge('gift_price'),
+  giftsSections: <?=jenc($gifts_html)?>,
+  privacy: {
+    gift_privacy: [0, 0, []],
+    gift_privacy_types: {
+      '0': 'Виден всем',
+      '1': 'Личный',
+      '2': 'Анонимный'
+    },
+    gift_privacy_help: '\
+<b>Виден всем</b> - Все будут видеть Ваш подарок, сообщение и имя.<br><br>\
+<b>Личный</b> - Все будут видеть Ваш подарок, но только получатель сможет видеть Ваше имя и сообщение.<br><br>\
+<b>Анонимный</b> - Все будут видеть Ваш подарок, но только получатель увидит Ваше сообщение. Никто не увидит Ваше имя.',
+    gift_privacy_help_w: 340
+  },
+  showGift: function(num, obj, price, bonus, tip, nw) {
+    stManager.add(['ui_controls.js', 'ui_controls.css'], function() {
+      cur.sendBoxGift = function() {
+        if (isVisible(subBox.progress)) {
+          return;
+        }
+        var query = {
+          act: 'do_send',
+          mids: <?=$mid?>,
+          type: cur.privacy.gift_privacy[0],
+          number: num,
+          text: ge('gift_text').value,
+          hash: '<?=$hash->get_hash($user->user_info['user_id'],18,'sgf');?>',
+          from: 'profile',
+          need_module: ge('profile_gifts') ? 0 : 1
+        };
+        if (isVisible('gift_receiver_block')) {
+          var mids = cur.uiGiftReceiver.val();
+          if (!mids) {
+            return cur.uiGiftReceiver.showDefaultList();
+          }
+          query.mids = mids;
+        }
+        ajax.post('al_gifts.php', query, {
+          onDone: function(data, text, giftsCnt, giftsModule) {
+            updateMoney(data);
+            subBox.hide();
+            box.hide();
+            text = text.replace('<b>', '<div class="top_result_header">').replace('</b><br>', '</div>');
+            showDoneBox(text, {out: 1500});
+            if (cur.module == 'profile' && cur.oid == query.mids && window.Profile) {
+              if (ge('gifts_module_header') && giftsCnt) {
+                ge('gifts_module_header').innerHTML = giftsCnt;
+                Profile.showNewGift(num);
+              } else if (!ge('profile_gifts') && giftsModule) {
+                var firstModule = geByClass1('module', ge('profile_narrow'));
+                if (firstModule) {
+                  firstModule.parentNode.insertBefore(se(giftsModule), firstModule);
+                }
+              }
+            }
+          },
+          onFail: function(text) {
+            if (text) {
+              var error = ge('gift_error');
+              error.innerHTML = text;
+              show(error);
+            }
+            return true;
+          },
+          showProgress: subBox.showProgress,
+          hideProgress: subBox.hideProgress
+        });
+      };
+      var subBox = showFastBox({width: 450, title: '<?=$title?>'}, "<span id=\"gift_error\" style=\"display: none\">\n  <div class=\"alertmsg\">У Вас недостаточно зайчиков для отправки подарка. <a onclick=\"getVotes();\">Получить зайчики<\/a>.<\/div>\n<\/span>\n<div id=\"gift_loader\" class=\"gift_loader\" align=\"center\"><\/div>\n<div id=\"gift_receiver_block\" style=\"display: none\">\n  <div class=\"gift_label fl_l ta_r\">Получатель:<\/div>\n  <div class=\"gift_labeled fl_l\">\n    <input id=\"gift_receiver\" name=\"gift_receiver\" type=\"hidden\" \/>\n  <\/div>\n<\/div>\n<div id=\"gift_message\" style=\"display: none;\">\n  <div class=\"gift_label fl_l\">Ваше сообщение:<\/div>\n  <div class=\"gift_labeled fl_l\">\n    <textarea class=\"input_text\" id=\"gift_text\" onchange=\"curBox().changed=true;\" name=\"gift_text\" rows=\"3\" onkeyup=\"checkTextLength(250, this, ge('text_box_warn'), false, true); onCtrlEnter(event, cur.sendBoxGift);\"><\/textarea>\n    <div id=\"text_box_warn\"><\/div>\n  <\/div>\n  <br class=\"clear\" \/>\n<\/div>\n<div class=\"gift_label fl_l\">Тип подарка:<\/div>\n<div class=\"gift_labeled fl_l\" style=\"padding: 9px 6px 0 16px; position: relative\">\n  <a id=\"privacy_edit_gift_privacy\" onclick=\"Privacy.show(this, event, 'gift_privacy', [0, 0])\">Виден всем<\/a>\n<\/div>\n<br class=\"clear\" \/>\n<div id=\"gift_tip\"><\/div>", 'Отправить', cur.sendBoxGift, 'Отмена');
+      
+      ge('gift_loader').innerHTML = '<img src="/images/gifts/' + (nw ? 'new/' + num + '_b.png' : '256/' + num + '.jpg') + '" class="png" width="256" height="256" />';
+      subBox.setControlsText("<a id=\"gift_msg_show\" onclick=\"hide(this); show('gift_msg_hide'); show('gift_message'); elfocus('gift_text');\">Добавить сообщение<\/a>\n<a style=\"display:none\" id=\"gift_msg_hide\" onclick=\"hide(this); show('gift_msg_show'); ge('gift_text').value=''; hide('gift_message');\">Скрыть сообщение<\/a>");
+      if (giftUsers && giftUsers.length) {
+        cur.uiGiftReceiver = new Dropdown(ge('gift_receiver'), giftUsers, {
+          introText: 'Начните вводить имя пользователя',
+          noResult: 'Пользователь не найден',
+          placeholder: 'Выберите получателей',
+          multiselect: true,
+          autocomplete: true,
+          selectedItems: '',
+          width: '230px'
+        });
+        show('gift_receiver_block');
+      }
+    });
+  },
+  showGiftPrice: function(el, str) {
+    el.appendChild(cur.giftPrice);
+    val('gift_price_str', str);
+    show(cur.giftPrice);
+  },
+  hideGiftPrice: function() {
+    hide(cur.giftPrice);
+  }
+});
+
+}catch(e){debugLog(e.message);}

@@ -1,0 +1,44 @@
+<?php
+global $owner, $datetime, $user;
+
+$i = 0;
+if (!empty($var['comments'])) {
+	foreach ($var['comments'] as $c) {
+		$edit = ($owner->oid == $user->id or ($owner->oid < 0 and $owner->user_rank > 0) or $c->author_id == $user->id) ? 1 : 0;
+
+		$cuid = $owner->oid . '_' . $c->id;
+		$vuid = $owner->oid . '_' . $c->object_id;
+		$cvid = $owner->id . 'video_' . $c->id . 'review';
+
+		$author = pdata($c->author_id);
+		$video = pdata($vuid, 0, 'video');
+		
+		if(empty($video->load)) continue;
+		
+		//dmp($video);
+		?><div id="review_comment<?= $cuid ?>" onmouseover="wall.replyOver('<?= $cvid ?>')" onmouseout="wall.replyOut('<?= $cvid ?>')"><table class="review_comment <? if ($i == 0) { ?>video_comment_first<? } ?>" cellspacing="0" cellpadding="0"><tr>
+					<td class="review_thumb">
+						<a href="<?= $author->lnk ?>" onclick="return nav.go(this, event);"><img width="50" height="50" src="<?= $author->photo() ?>" /></a>
+					</td><td class="review_comm">
+						<a href="<?= $author->lnk ?>" class="author" onclick="return nav.go(this, event);"><?= $author->title ?></a>
+						<div class="review_commtext"><div id="wpt<?= $cvid ?>"><div class="mv_commtext"><?= $c->text ?></div></div></div>
+						<div class="review_commdata">
+							<span class="fl_l"><?= $datetime->sdate($c->time) ?><!--<span class="sdivide">|</span><a onclick="videoview.commAction('spam', '<?= $cuid ?>', '3a343c0e3e6cb4ddf5', 'review')">Это спам</a>--><? if ($edit) { ?><span class="sdivide">|</span><a onclick="videoview.commAction('delete', '<?= $cuid ?>', '<?= hash_get($cuid . $user->id, 10, 'vdc') ?>', 'review')">Удалить</a><? } ?><!--<span class="sdivide">|</span>--><!--<div class="like_wrap inl_bl mv_review_like" onclick="Wall.like('<?= $cvid ?>', '2def3cf4be61dd23e6'); event.cancelBubble = true;" onmouseover="Wall.likeOver('<?= $cvid ?>')" onmouseout="Wall.likeOut('<?= $cvid ?>')">
+						<span class="like_link fl_l" id="like_link<?= $cvid ?>">Мне нравится</span>
+						<i class="no_likes no_like_hide fl_l" id="like_icon<?= $cvid ?>"></i>
+						<span class="like_count fl_l" id="like_count<?= $cvid ?>"></span>
+					</div>--></span>
+							<div class="fl_r progress" id="review_progress<?= $cuid ?>"></div>
+						</div>
+					</td>
+					<td class="review_video_thumb">
+						<a href="/video<?= $vuid ?>" onclick="return Video.show(event, '<?= $vuid ?>');">
+							<img src="<?= $video->sizes('s') ?>" width="65" />
+						</a>
+					</td></tr></table></div><?
+		$i++;
+	}
+} else {
+	?><div class="video_info_msg">К видеозаписям ещё не было оставлено комментариев.</div><?
+}
+?>

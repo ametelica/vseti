@@ -1,0 +1,79 @@
+<?php
+global $owner, $id;
+
+$mail_js = 'cur.addMailBoxMedia = null;
+cur.decodedHashes = {};
+cur.dec_hash = function(hash) { 
+    (function(_){cur.decodedHashes[_]=(function(__){var ___=ge?\'\':\'___\';for(____=0;____<__.length;++____)___+=__.charAt(__.length-____-1);return geByClass?___:\'___\';})(_.substr(_.length-5)+_.substr(4,_.length-12));})(hash);
+  }
+cur.decodehash = function(hash) {
+  cur.dec_hash(hash);
+  return cur.decodedHashes[hash];
+}
+
+cur.mediaTypes = [["photo","Фотографию"],["video","Видеозапись"],["audio","Аудиозапись"],["doc","Документ"]];
+
+cur.submitBoxMessage = function() {
+  if (isVisible(ge(\'sending_progress\'))) return;
+
+  if (trim(ge(\'write_box_text\').value).length || (cur.addMailBoxMedia && cur.addMailBoxMedia.chosenMedias)) {
+    box.showProgress();
+    var params = {act: \'a_send\', ajax: 1, chas: cur.decodehash(\''.hash_get($owner->id,18,'msg').'\'), to_id: '.$owner->id.', message: ge(\'write_box_text\').value, from: \'box\'};
+
+
+    if (cur.addMailBoxMedia && cur.addMailBoxMedia.chosenMedias) {
+	var media = [];
+	each (cur.addMailBoxMedia.chosenMedias, function (k, v) {
+          if (!v) return;
+          media.push(v[0] + \',\' + v[1]);
+        });
+	
+        params.media = media.join(\';\');
+    }
+    ajax.post(\'al_mail.php\', params, {onDone: function(text) {
+      box.hideProgress();
+      box.hide();
+      showDoneBox(text);
+    }});
+  } else {
+    ge(\'write_box_text\').focus();
+  }
+}
+
+box.removeButtons();
+box.addButton(getLang(\'global_cancel\'), null, \'no\');
+box.addButton(\'Отправить\', cur.submitBoxMessage);
+box.setControlsText(\'<a id="send_msg_to_history" onclick="return cur.writeFullPage(event);" href="/mail?act=show&id='.$id.'&hist=1">Показать историю переписки</a>\');
+
+
+
+cur.writeFullPage = function(e) {
+  if (checkEvent(e)) return true;
+  box.showProgress();
+	
+  var query = {\'0\': \'write'.$owner->user_info['user_id'].'\', act: \'show\', id: '.intval($id).', hist: 1, message: val(\'write_box_text\'), media: \'\'};
+	
+  if (cur.addMailBoxMedia.chosenMedia) {
+    query.media = cur.addMailBoxMedia.chosenMedia.join(\'*\') + \';\' + ((isArray(cur.addMailBoxMedia.chosenMediaData) ? cur.addMailBoxMedia.chosenMediaData.join(\'*\') : cur.addMailBoxMedia.chosenMediaData) || \'\');
+  }
+  nav.go(query, null, {noframe: 1}); 
+  return false;
+}
+setTimeout(function() {
+  ge(\'write_box_text\').focus();
+}, 0);
+
+var tmp = cur.postTo;
+cur.postTo = false;
+
+box.setOptions({onHide: function() { cur.postTo = tmp; }});
+
+stManager.add([\'page.js\', \'page.css\'], function() {
+  cur.addMailBoxMedia = initAddMedia(\'mail_box_add_link\', \'mail_box_added_row\', cur.mediaTypes);
+  cur.addMailBoxMedia.onChange = function() {
+    box.changed = true;
+  }
+});';
+echo $mail_js;
+echo run_video_objects();
+?>

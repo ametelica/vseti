@@ -1,0 +1,22 @@
+<div class="wk_top_margin"></div>
+<div class="wk_page_title_cont">
+<input id="wk_page_title" class="text" onkeyup="wkcur.editor.changed = true;" placeholder="Введите название заметки" value="" />
+</div>
+<div id="wk_top_toolbox_shadow"></div>
+<div id="editor_cont">
+  <textarea id="wke_textarea" class="wk_wiki_text wk_large_cont"></textarea>
+  <div id="wke_cont" class="wk_text wk_wiki_content wk_large_cont clear_fix"></div>
+</div>
+<div id="wk_buttons_cont" class="wk_buttons_cont">
+  <div id="wk_buttons_panel" class="pages_buttons clear_fix">
+    <div class="wk_buttons_panel_shadow"></div>
+    <div class="wk_pages_acts fl_r"></div>
+    <div class="button_blue fl_l"><button class="pages_save" id="wk_layer_save" onclick="WkView.saveInfo();">Сохранить и прикрепить заметку</button></div>
+    <div class="fl_l">
+      <div class="wk_save_info" id="pages_save_info_wysiwyg"></div>
+    </div>
+    <div id="wk_wiki_help" class="fl_r wk_right_setting wk_wiki_help">
+<a onclick="return !showBox('al_pages.php', {act: 'markup_help'}, {stat: ['pages.css']})">Помощь по разметке</a>
+</div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<?php
+	global $oid, $tid, $topic_uid, $user;
+?>Board.initAddPoll('bap');
+box.removeButtons().addButton('Отмена', box.hide, 'no');
+box.addButton('Создать опрос', function() {
+  var question = trim(val('bap_poll_question')), answers = []
+  if (!question) {
+    return elfocus('bap_poll_question');
+  }
+  for (var el = ge('bap_poll_answers').firstChild; el; el = el.nextSibling) {
+    if (!isVisible(el)) break;
+    var answer = trim(val(el));
+    if (answer) {
+      answers.push(answer);
+    }
+  }
+  if (!answers.length) {
+    return elfocus(ge('bap_poll_answers').firstChild);
+  }
+  ajax.post('al_board.php', {
+    act: 'do_create_voting',
+    topic: '<?=$topic_uid?>',
+    question: question,
+    answers: answers,
+    hash: '<?=hash_get($user->id, 16, 'bcp')?>'
+  }, {onDone: Board.votingUpdate, progress: box.progress});
+});
+elfocus('bap_poll_question');

@@ -1,0 +1,27 @@
+<?php
+global $setting,$owner; 
+?>
+<div id="quick_login">
+	<!-- https -->
+  <div><iframe name="quick_login_frame" id="quick_login_frame" class="upload_frame"></iframe></div><form action="http://login.<?=$setting['host']?>/?act=login" id="quick_login_form" class="dgray" name="login" method="POST" target="quick_login_frame">
+    <input type="hidden" value="login" name="act"/>
+    <input type="hidden" value="1" name="q"/>
+    <input type="hidden" value="1" name="al_frame"/>
+    <input type="hidden" value="" id="quick_expire_input" name="expire"/>
+    <input type="hidden" value="" id="quick_captcha_sid" name="captcha_sid"/>
+    <input type="hidden" value="" id="quick_captcha_key" name="captcha_key"/>
+    <input type="hidden" value="<?=$setting['host']?>" name="from_host"/>
+    <input type="hidden" value="<?=$_SERVER['REQUEST_URI']?>" name="to"/>
+    <input type="hidden" value="http" name="from_protocol"/>
+    <input type="hidden" value="752012f09304a01dbb" name="ip_h"/>
+    <div class="label">Логин или e-mail:</div>
+    <div class="labeled"><input type="text" id="quick_email" onfocus="show('quick_expire')" class="text" name="email"/></div>
+    <div class="label">Пароль:</div>
+    <div class="labeled"><input type="password" id="quick_pass" onfocus="show('quick_expire')" class="text" name="password"/></div>
+    <div onclick="checkbox(this);ge('quick_expire_input').value=isChecked(this)?1:'';" id="quick_expire" class="checkbox"><div></div>Не запоминать</div>
+    <input type="submit" class="submit"/>
+  </form>
+  <div class="button_green button_wide" onclick="ge('quick_login_form').submit()"><button id="quick_login_button">Войти</button></div>
+  <div style="display: block;" id="quick_reg_button" class="button_green button_wide"><button onclick="window.location = '/signup.php'">Регистрация</button></div>
+  <div class="clear forgot"><a target="_top" href="/login.php?op=forgot">Забыли пароль?</a></div>
+</div>

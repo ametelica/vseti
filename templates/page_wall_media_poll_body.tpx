@@ -1,0 +1,45 @@
+<?php
+	global $wall, $langpack, $user;
+	$poll = $var['poll'];
+	$post_uid = $var['post_uid'];
+	
+if($poll->can_vote) { ?>
+	<div id="poll_options<?=$post_uid?>" class="page_poll_options">
+		<?
+			//dmp($poll);
+			foreach($poll->answers as $answer) { ?>
+				<div class="page_poll_radio radiobtn" onclick="wall.pollVote(this, '<?=$post_uid?>', {'poll_id':'<?=$poll->id?>','app':-1,'hash':'<?=hash_get($user->id, 16, 'pv')?>','url':'','option_id':<?=$answer['id']?>}, '1');">
+<div></div>
+<span><?=$answer['title']?></span>
+<div class="progress"></div>
+</div>
+			<? } ?>
+	</div>
+	<? } else { ?>
+		<table cellspacing="0" cellpadding="0" width="100%" <? if(!$poll->anonym) { ?>onclick="wall.pollFull(false, '<?=$post_uid?>', event);" style="cursor: pointer;"<? } ?>><?
+			
+			foreach($poll->answers as $answer) {
+			
+			$action = $poll->anonym ? '' : "onmouseover=\"wall.pollOver(this, '" . $post_uid ."', " . $answer['id'] . ")\"";
+			
+			?><tr <?=$action?>><td colspan="2" class="page_poll_text"><?=$answer['title']?></td></tr>
+<tr <?=$action?>>
+  <td class="page_poll_row">
+    <div class="page_poll_percent" style="width: <?=round($answer['cnt']/$poll->max * 100)?>%"></div>
+    <div class="page_poll_row_count"><?=$answer['cnt']?></div>
+  </td>
+  <td class="page_poll_row_percent ta_r"><nobr><b><?=round($answer['cnt']/$poll->total * 100, 1)?>%</b></nobr></td>
+</tr><? } ?></table><? } ?>
+<input id="post_poll_id<?=$post_uid?>" type="hidden" value="<?=$poll->id?>">
+		
+		<div class="page_poll_bottom">
+			<span class="page_poll_total">
+				<? if($poll->total > 0) { ?>
+				Проголосовал<?=$langpack->dln($poll->total, array('', 'о', 'о'))?>
+				<!--<a class="fl_r page_poll_code" onclick="showBox('al_wall.php', extend({act: 'poll_export_box'}, {"poll_id":"139048423","app":-1,"hash":"e5c041737fab4364b6","url":""}));">Получить код</a>-->
+				<b><?=$poll->total?></b> <?=$langpack->dln($poll->total, array('человек', 'человека', 'человек'))?>.
+				<? } else { ?>
+					Пока никто не проголосовал
+				<? } ?>
+			</span>
+		</div>

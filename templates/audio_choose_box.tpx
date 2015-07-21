@@ -1,0 +1,39 @@
+<?php
+global $musiclist, $music_total, $langpack, $on_page, $to_id, $tab;
+?><div class="choose_box audio_search" id="choose_audio">
+<div class="fl_r choose_close">
+  <span id="audio_choose_right_link"><? if($to_id < 0) {
+	if($tab == 'user_audios') {
+		?><a href="" onclick="cur.switchChooseGroupAudios(1); return false;" class="tab_link">К аудиозаписям сообщества</a><span class="divider">|</span><? 
+	} else {
+		?><a href="" onclick="cur.switchChooseGroupAudios(0); return false;" class="tab_link">К моим аудиозаписям</a><span class="divider">|</span><? 
+	}
+}
+?></span><a class="choose_close_link" onclick="curBox().hide();">Закрыть</a>
+</div>
+<div class="choose_header">Прикрепление аудиозаписи</div>
+<div id="audio_attach_search_wrap">
+  <div id="audio_attach_search_cont" class="choose_search_cont">
+    <div id="audio_attach_search" class="search_bar clear_fix">
+      <div class="fl_l">
+        <input placeholder="Поиск" onpaste="cur.updateChooseList(event, this)" onkeyup="cur.updateChooseList(event, this)" id="choose_audio_query" type="text" class="s_search text" value="" />
+      </div>
+      <div class="search_progress fl_l"></div>
+      <div id="choose_query_reset" class="search_reset fl_l" onmouseover="if (isVisible(this)) animate(this, {opacity: 1}, 100)" onmouseout="if (isVisible(this)) animate(this, {opacity: .6}, 100)" onclick="cur.chooseClearSearch(this, event)"></div>
+      <div class="abutton_wrap fl_l">
+        <div class="button_green"><button>по композициям<span class="arrow"></span></button></div>
+      </div>
+    </div>
+    <div class="top_shadow"></div>
+  </div>
+</div>
+
+<div id="choose_audio_content">
+  <div id="choose_audio_rows"><?=tpx('audio_choose_box_rows', array('musiclist' => $musiclist))?></div>
+  <div id="choose_audio_preload_rows" class="choose_preload"></div>
+  <a onclick="cur.audioChooseMore();" id="audio_choose_more" class="choose_more_btn" style="<? if($music_total <= $on_page) {?>display: none;<? } ?>">
+    Показать все <?=$music_total?> аудиозапис<?=$langpack->dln($music_total, 'zap')?>
+  </a>
+</div>
+
+</div>

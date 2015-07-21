@@ -1,0 +1,16 @@
+<?php
+global $votes,$langpack;
+?><div class="apps_paymentbox_cont">
+<div id="apps_paymentbox_error"></div>
+Приложение просит Вас внести <b><?=$votes?></b> зайчик<?=$langpack->votes($votes)?>.<br />
+Указанное количество зайчиков будет списано с Вашего счёта.
+
+<div id="apps_payment_no_votes" class="apps_payment_no_votes">
+  У Вас недостаточно средств для совершения этого действия.<br /><a href="payments.php">Получить зайчики »</a>
+</div>
+<div id="apps_payment_money_to_votes" class="apps_payment_no_votes">
+  <div id="apps_money_to_votes_text"></div>
+  <div style="padding-top: 5px"><a href="payments.php?return=apps" onclick="return cur.addVotes(-1);">Получить зайчики другим способом »</a></div>
+</div>
+<div class="apps_desc">Нажимая «Внести зайчика», Вы признаете, что данное приложение создано сторонними разработчиками и Вы не будете иметь претензий к ВСети при любых последствиях передачи Ваших зайчиков этому приложению.</div>
+</div>

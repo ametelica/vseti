@@ -1,0 +1,69 @@
+if (!cur.graphVars) {
+extend(cur, {
+  graphVars: {
+   isRTL: window.is_rtl,
+   'lang.select_graphs': 'фильтр',
+   'lang.months': 'Январь,Февраль,Март,Апрель,Май,Июнь,Июль,Август,Сентябрь,Октябрь,Ноябрь,Декабрь',
+   'lang.dayMonths': 'Января,Февраля,Марта,Апреля,Мая,Июня,Июля,Августа,Сентября,Октября,Ноября,Декабря',
+   'lang.dateFormats.day_fullmon_year_hour': '{day} {dayMonth} {year}, {hour}:00',
+   'lang.dateFormats.day_fullmon_year_hour_min': '{day} {dayMonth} {year}, {hour}:{min}',
+   'lang.dateFormats.day_fullmon_year': '{day} {month} {year}',
+   'lang.dateFormats.day_mon': '{day} {month}',
+   'lang.dateFormats.day_fullmon': '{day} {month}',
+   'lang.loading': 'Загрузка...',
+   'lang.no_data': 'Отсутствуют входные данные',
+   'lang.data_empty': 'Нет данных',
+   'lang.error_loading': 'Ошибка при загрузке'
+  },
+  initGraphHorizontalMenu: function(graphDivId, nodeIds, defaultNode) {
+    var initMenu = function(graphId) {
+      for(var i in nodeIds) {
+        var clickContext = {clickNode: nodeIds[i], nodeIds: nodeIds, graph: cur.pageGraphs[graphId]};
+        addEvent(nodeIds[i], 'click', cur.onClickGraphHorizontalMenu, null, clickContext);
+        cur.destroy.push(function() {
+          removeEvent(nodeIds[i], 'click', cur.onClickGraphHorizontalMenu, null, clickContext);
+        });
+      }
+      replaceClass(ge(defaultNode).parentNode, 'summary_tab', 'summary_tab_sel');
+    }
+    if (cur.html5graphs) {
+      stManager.add('graph.js', function(){initMenu(graphDivId);});
+    } else {
+      initMenu(graphDivId);
+    }
+  },
+  onClickGraphHorizontalMenu: function(e) {
+    for(var i in e.data.nodeIds) {
+      if(e.data.clickNode == e.data.nodeIds[i]) {
+      	console.log(e.data.graph);
+        try {e.data.graph.loadGraph(i);} catch (e) { console.log(e); }
+      }
+      replaceClass(ge(e.data.nodeIds[i]).parentNode, 'summary_tab_sel', 'summary_tab');
+    }
+    replaceClass(ge(e.data.clickNode).parentNode, 'summary_tab', 'summary_tab_sel');
+    cancelEvent(e);
+  }
+});
+var onGraphKeyUp = function(event) {
+  var insideFlash = false;
+  if (!event.target) {
+    event.target = event.srcElement || document;
+  }
+  each(geByClass('stats_flash_wrap'), function(i, v) {
+    try {
+      v.firstChild.keyUp();
+      if (event.target.id && v.firstChild.id == event.target.id) {
+        insideFlash = true;
+      }
+    } catch(e) {}
+  });
+  if (!insideFlash && window.allowBrowserScroll) {
+    allowBrowserScroll(true);
+  }
+}
+addEvent(document, "mouseup", onGraphKeyUp);
+cur.destroy.push(function() {
+  removeEvent(document, "mouseup", onGraphKeyUp);
+});
+} 
+if (!cur.pageGraphs) cur.pageGraphs = {};

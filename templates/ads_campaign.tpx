@@ -1,0 +1,149 @@
+<?
+global $union_id, $camp_info;
+
+$status_arr = array(
+		0 => 'Остановлена',
+		1 => 'Запущена',
+		3 => 'Запланирована',
+		4 => 'Архивная',
+		7 => 'Запускается..'
+);
+
+//dmp($camp_info);
+
+global $new_design;
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+     <div id="content" class="white_page"> 
+	<div class="tabs t_bar clear_fix">
+	<ul class="t0">
+		<li><a href="ads?act=office" onclick="return nav.go(this, event)">Личный кабинет</a></li>
+		<li class="active_link"><a href="ads?act=office&union_id=<?=$camp_info['union_id']?>"><?=$camp_info['name']?></a></li>
+	</ul>
+	</div>
+      <div id="ads_page">
+        <div id="ads_unions_content">
+					<?
+					if ($camp_info['active'] <> 4) {
+						?>
+						<div id="ads_union_general_info" class="clear_fix">
+							<h2><span id="general_info_header_name_<?= $union_id ?>"><?=$camp_info['name']?></span> <a href="#" onclick="Ads.openUnionsGeneralInfoBox(<?= $union_id ?>, {&quot;union_id&quot;:<?= $union_id ?>,&quot;filter&quot;:&quot;name&quot;,&quot;from_header&quot;:true,&quot;hash&quot;:&quot;75af962ae610dd4890&quot;}); return false;" class="edit_name_link">изменить название</a></h2>
+							<div style="padding: 0 0 0 10px;">
+								<table class="ads_general_info ads_unions_content_label" style="float: left;">
+									<tr class="" id="general_info_row_day_limit" style="">
+										<td class="table_label" style="">Дневной лимит:</td>
+										<td class="table_value "><img id="inline_edit_progress689036770" src="/images/upload.gif" style="display: none;" /><a id="inline_edit_value689036770" href="#" onmouseover="this.removeAttribute('onmouseover');Ads.createInlineEdit(ge(&#39;inline_edit_value689036770&#39;), ge(&#39;inline_edit_progress689036770&#39;), 1, <?= $union_id ?>, &#39;day_limit&#39;, &quot;<?=$camp_info['limit_day_price']?>&quot;, &#39;58c38fb3dd968eb51b&#39;, {&quot;filter&quot;:&quot;day_limit&quot;,&quot;day_limit_max_precision&quot;:0});"><span style="white-space:nowrap;"><?=nf_price($camp_info['limit_day_price'], 'Не задан')?></span></a></td>
+									</tr><tr class="" id="general_info_row_all_limit" style="">
+										<td class="table_label" style="">Общий лимит:</td>
+										<td class="table_value "><img id="inline_edit_progress530565940" src="/images/upload.gif" style="display: none;" /><a id="inline_edit_value530565940" href="#" onmouseover="this.removeAttribute('onmouseover');Ads.createInlineEdit(ge(&#39;inline_edit_value530565940&#39;), ge(&#39;inline_edit_progress530565940&#39;), 1, <?= $union_id ?>, &#39;all_limit&#39;, &quot;<?=$camp_info['limit_price']?>&quot;, &#39;1fef5fc9246d181e93&#39;, {&quot;filter&quot;:&quot;all_limit&quot;,&quot;all_limit_max_precision&quot;:0});"><span style="white-space:nowrap;"><?=nf_price($camp_info['limit_price'], 'Не задан')?></span></a></td>
+									</tr><tr class="" id="general_info_row_status" style="">
+										<td class="table_label" style="">Статус:</td>
+										<td class="table_value "><img id="general_info_status_progress" src="/images/upload.gif" style="display: none;" /><span id="general_info_status_selector_box" style="white-space: nowrap;"><a id="ads_general_info_status_selector" class="dd_link ads_status_link"><?=$status_arr[$camp_info['active']] ?></a></span>&nbsp;<a href="#" onclick="Ads.openHelpBox('statuses', <?= $union_id ?>); return false;" style="white-space: nowrap;">(?)</a></td>
+									</tr><tr class="" id="general_info_row_start_time" style="">
+										<td class="table_label" style="">Дата запуска:</td>
+										
+										<?
+										$date_start = empty($camp_info['time_start']) ? time() : $camp_info['time_start'];
+										$date_start_day = date('j', $date_start);
+										$date_start_month = date('n', $date_start);
+										$date_start_hour = date('G', $date_start);
+										
+										$date_stop = empty($camp_info['time_stop']) ? (time() + 86400) : $camp_info['time_stop'];
+										$date_stop_day = date('j', $date_stop);
+										$date_stop_month = date('n', $date_stop);
+										$date_stop_hour = date('G', $date_stop);
+										?>
+										<td class="table_value "><img id="inline_edit_progress1872368050" src="/images/upload.gif" style="display: none;" /><a id="inline_edit_value1872368050" href="#" onmouseover="this.removeAttribute('onmouseover');Ads.createInlineEdit(ge(&#39;inline_edit_value1872368050&#39;), ge(&#39;inline_edit_progress1872368050&#39;), 1, <?= $union_id ?>, &#39;start_time&#39;, {&quot;month&quot;:<?=$date_stop_month?>,&quot;day&quot;:<?=$date_start_day?>,&quot;hour&quot;:<?=$date_start_hour?>}, &#39;49b2ba62ba9380765a&#39;, {&quot;filter&quot;:&quot;start_time&quot;});"><?=date_limit($camp_info['time_start'])?></a></td>
+									</tr><tr class="" id="general_info_row_stop_time" style="">
+										<td class="table_label" style="">Дата остановки:</td>
+										<td class="table_value "><img id="inline_edit_progress101171005" src="/images/upload.gif" style="display: none;" /><a id="inline_edit_value101171005" href="#" onmouseover="this.removeAttribute('onmouseover');Ads.createInlineEdit(ge(&#39;inline_edit_value101171005&#39;), ge(&#39;inline_edit_progress101171005&#39;), 1, <?= $union_id ?>, &#39;stop_time&#39;, {&quot;month&quot;:<?=$date_stop_month?>,&quot;day&quot;:<?=$date_stop_day?>,&quot;hour&quot;:<?=$date_stop_hour?>}, &#39;cb2105b8313ccc388d&#39;, {&quot;filter&quot;:&quot;stop_time&quot;});"><?=date_limit($camp_info['time_stop'])?></a></td>
+									</tr>
+								</table>
+								
+								<div class="ads_create_button_office">
+									<div class="edit_button_wrap">
+										<a class="button_link" href="/adscreate?parent_id=<?=$camp_info['id']?>">
+											<div class="button_green ">
+												<button>Создать объявление</button>
+											</div>
+										</a>
+									</div>
+								</div>
+								
+							</div>
+
+						<? } else { ?>
+
+							<div class="ads_main_notice">Кампания находится в архиве.</div>
+							<div id="ads_union_general_info" class="clear_fix">
+								<h2>Архивная кампания</h2>
+								<div style="padding: 0 0 0 10px;">
+									<table class="ads_general_info ads_unions_content_label" style="float: left;">
+										<tr class="" id="general_info_row_day_limit" style="">
+											<td class="table_label" style="">Дневной лимит:</td>
+											<td class="table_value "><span style="white-space:nowrap;"><?= empty($camp_info['limit_day_price']) ? 'Не задан' : $camp_info['limit_day_price'] ?></span></td>
+										</tr><tr class="" id="general_info_row_all_limit" style="">
+											<td class="table_label" style="">Общий лимит:</td>
+											<td class="table_value "><span style="white-space:nowrap;"><?= empty($camp_info['limit_price']) ? 'Не задан' : $camp_info['limit_price'] ?></span></td>
+										</tr><tr class="" id="general_info_row_status" style="">
+											<td class="table_label" style="">Статус:</td>
+											<td class="table_value ">Архивное&nbsp;<a href="#" onclick="Ads.openHelpBox('statuses', <?= $union_id ?>); return false;" style="white-space: nowrap;">(?)</a></td>
+										</tr><tr class="" id="general_info_row_start_time" style="">
+											<td class="table_label" style="">Дата запуска:</td>
+											<td class="table_value ">Не задана</td>
+										</tr><tr class="" id="general_info_row_stop_time" style="">
+											<td class="table_label" style="">Дата остановки:</td>
+											<td class="table_value ">Не задана</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+
+
+						<? } ?>
+					</div>
+					<div id="ads_union_children">
+						<h2><!--<a href="/ads?act=office&union_id=<?= $union_id ?>&view=periods" class="fl_r ads_h2_add">К статистике по дням</a>-->Рекламные объявления</h2>
+						<div>
+							<div class="row_div control_label" style="width: 170px;">Период статистики:</div>
+							<div class="row_div" style="margin-left: -3px;"><a id="table_selector" class="dd_link">За всё время</a><img id="union_children_table_progress" src="/images/upload.gif" style="display: none;" /></div>
+						</div>
+
+						<div id="union_children_table">
+							<div id="paginated_table" class="ads_unions_list_p"></div>
+						</div>
+					</div>
+					<div id="ads_union_children_graph">
+						<h2 style="margin-bottom: 15px; ">Статистика</h2>
+
+						<table style="border-collapse: collapse; width: 100%;">
+							<tr>
+								<td class="ads_graph_wrap">
+
+									<div style="">
+										<div id="wrapper_ads_graph_unions" style="width: 600px; height: 385px;" class="stats_flash_wrap">
+											<div id="ads_graph_unions">
+												<div style="padding: 10px; margin: 10px auto; text-align: center"></div>
+											</div>
+										</div>
+									</div>
+								</td>
+								<td id="ads_graph_navigation" style="vertical-align: top; padding: 29px 0 0 20px;">
+									<a href="#" onclick="this.blur(); cur.changeGraph(0); return false;" class="nav nav_selected" id="graph_navigation_0">Переходы</a>
+									<a href="#" onclick="this.blur(); cur.changeGraph(1); return false;" class="nav" id="graph_navigation_1">Показы</a>
+									<a href="#" onclick="this.blur(); cur.changeGraph(2); return false;" class="nav" id="graph_navigation_2">CTR</a>
+									<a href="#" onclick="this.blur(); cur.changeGraph(3); return false;" class="nav" id="graph_navigation_3">Потрачено (руб.)</a>
+								</td>
+							</tr>
+						</table>
+					</div><!--<div id="ads_demography_wrap" style="padding-bottom: 10px; padding-top: 10px;"><h2>Демография</h2><div style="padding-top: 10px;"><div style="padding: 30px; font-size: 12px; color: #777777; text-align: center; line-height: 200%;">Здесь будет отображаться демографическая статистика по переходам и показам,<br>когда система соберёт необходимое количество данных.</div></div></div>-->
+				</div>
+      </div>
+      <div id="ads_page_bottom_info">
+        Если у Вас возникли какие-либо проблемы, обязательно обратитесь в <a href="/support">Техническую поддержку</a>.
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,199 @@
+<?php
+global $app_list,$type,$fresh_apps,$my_requests,$hash,$user,$langpack;
+
+?>
+<div id="apps_wrap">
+ <div id="apps_cat" >
+
+<div id="apps_recent_list" >
+
+<?if(!empty($my_requests)){
+$requests_cnt = count($my_requests); 
+$requests_title = $requests_cnt==1?'У Вас новый запрос в приложении':'У Вас '.$requests_cnt.' нов'.$langpack->dln($requests_cnt,'pvm').' запрос'.$langpack->dln($requests_cnt,'file').' от друзей'; 
+?>
+   <div class="apps_summary">
+    <div id="apps_requests_text" class="summary"><?=$requests_title?></div>
+   </div>
+   <div class="apps_recent_cont clear_fix">  
+  <? 
+  	$i = 0;
+	  foreach($my_requests as $req){
+	  	if($i==3){
+	  		echo '<div id="apps_requests_more">';
+	  	}
+	  	$ap = $req['app'];
+	  	$user_from = $req['user_from'];
+	  	echo '<div class="apps_request_list">
+<div id="apps_request_row_'.$req['id'].'" class="apps_request_row clear_fix">
+<a class="fl_l" href="'.$user_from->lnk.'">
+<img class="apps_recent_img" src="'.$user_from->user_photo().'">
+</a>
+<a class="fl_r" href="'.$ap->lnk.'" onmouseover="Apps.showNotify(this, false, \''.$ap->app_info['app_title'].'\', 5);">
+<img class="apps_recent_img" src="'.$ap->app_photo().'">
+</a>
+<div class="apps_request_info fl_l">
+<div class="apps_request_header">
+<b>
+<a class="mem_link" href="'.$user_from->lnk.'">'.$user_from->user_info['fio'].'</a>
+</b>
+</div>
+'.$req['message'].'
+<div class="apps_request_buttons clear_fix">
+<a class="button_green" onclick="return showApp(event, \''.$ap->app_id.'\', \'1\', 13, \''.$user_from->user_info['user_id'].'\', {request_id: \''.$req['id'].'\''.(empty($req['request_key'])?'':',request_key: \''.html2js($req['request_key']).'\'').'});" href="'.$ap->lnk.'?ref=13&request_id='.$req['id'].(empty($req['request_key'])?'':'&request_key='.$req['request_key']).'">
+<button>Посмотреть</button>
+</a>
+<a onclick="Apps.rejectRequest(this, '.$req['id'].', \''.$hash->get_hash($user->user_info['user_id'].$req['id'],16,'arj').'\')">Удалить</a>
+</div>
+</div>
+</div>
+</div>';
+			$i++;
+	  }
+	  
+	  if($i>3){
+	  	echo '</div><a onclick="hide(this);show(this.previousSibling);" class="apps_r_more">
+  <div id="r_more_text" class="show_more">
+    Показать все запросы
+  </div></a>';
+	  }
+  ?>
+  </div>
+<? } ?>
+
+<?if(!empty($fresh_apps)){?>
+   <div class="apps_summary">
+    <div id="apps_recent_progress" class="fl_r" style="display: none;">
+     <img src="/images/upload.gif" />
+    </div>
+    <div class="summary">Ваши свежие приложения</div>
+   </div>
+   <div class="apps_recent_cont clear_fix">  
+  <? 
+	  foreach($fresh_apps as $r){
+	  	$ap = $r->app_info;
+	  	echo '<table class="apps_recent_row fl_l" ><tr><td class="apps_recent_img_cont" align="center" valign="center">  
+	  <div class="apps_recent_img_h">
+	    <a href="'.$r->lnk.'"><img class="apps_recent_img" src="'.$r->app_photo().'" align="left" /><a>
+	  </div>
+	  </td></tr><tr><td>
+	  <a class="apps_recent_title" href="'.$r->lnk.'">'.strcut($ap['app_title'],11).'</a>
+	  </td></table>';		
+	  }
+  ?>
+  </div>
+<? } ?>
+</div>
+   
+  <div class="apps_subsummary">
+  <div class="summary">
+    Рекомендуемые приложения
+  </div>
+</div>
+
+<?
+$adv_apps_ids = array(52,79,59,14);
+$adv_apps = array();
+foreach($adv_apps_ids as $aid) {
+	if(empty($adv_apps[$aid]))
+		$adv_apps[$aid] = new se_app($user->id, $aid);
+}
+?>
+
+<a class="apps_featured_slide" onmousedown="return Apps.featuredSlide(event);"></a>
+<div class="apps_featured_wrap" id="apps_featured_wrap" onmouseover="Apps.stopFeatured();" onmouseout="Apps.startFeatured();">
+  <div class="apps_featured_inner" id="apps_featured_inner"><?
+
+	foreach($adv_apps_ids as $aid) {
+		$app = $adv_apps[$aid];
+		echo '<a href="'.$app->lnk.'?ref=12" onclick="return showApp(event, '.$app->app_id.', 1, 12);" class="apps_featured_row"><img class="apps_featured_img" width="186" height="116" src="'.$app->app_banner().'" /></a>';
+	}
+	
+	?></div>
+</div>
+<div class="apps_submenu">
+      <div id="apps_submenu_sort" class="apps_cat_sections fl_l">
+
+        <a onclick="return checkEvent(event);" onmousedown="return Apps.switchSort(0);" id="submenu_popular" class="fl_l apps_cat_section apps_section_act">
+        Популярные
+        </a>
+
+        <a onclick="return checkEvent(event);" onmousedown="return Apps.switchSort(1);" id="submenu_new" class="fl_l apps_cat_section ">
+        Новые
+        </a>
+          
+        <a href="/arcade.php" class="fl_l apps_cat_section" >
+        Мини-игры
+        </a> 
+
+        <a onclick="return checkEvent(event);" onmousedown="return Apps.switchSort(2);" id="submenu_recommend" class="fl_l apps_cat_section " style="display: none;">
+        Рекомендации
+        </a>
+
+        <a id="submenu_sort" class="fl_r apps_cat_section" style="display: none;">
+          <img src="/images/upload.gif" />
+        </a>
+
+      </div>
+
+      <div id="apps_submenu_type" class="apps_cat_sections fl_r" style="">
+        <a onclick="return checkEvent(event);" onmousedown="return Apps.switchType(0);" id="submenu_games" class="fl_r apps_cat_section <?=($type==0?'apps_section_act':'')?>">
+          Игры 
+        </a>
+
+        <a onclick="return checkEvent(event);" onmousedown="return Apps.switchType(1);" id="submenu_apps" class="fl_r apps_cat_section <?=($type==1?'apps_section_act':'')?>">
+          Приложения
+        </a>
+
+        <a onclick="return checkEvent(event);" id="submenu_custom" class="fl_r apps_cat_section " style="display: none;">
+          
+        </a>
+      </div>
+
+      <br class="clear">
+     </div>
+   </div>
+   <div>
+
+
+   <div id="apps_subsummary" class="apps_subsummary clear_fix" style="display: none;">
+    <span id="apps_summary" class="summary fl_l">Популярные приложения</span>
+    <div id="apps_summary_progress" class="fl_r apps_progress"><img src="/images/upload.gif" /></div>
+   </div>
+
+    <div id="app_main_panel" class="app_main_panel">
+      <div id="apps_results" class="apps_results clear_fix">
+        
+        <div id="app_rows" class="app_search_list"></div>
+        <div id="app_search_preload" class="app_preload"> 
+        
+        Тут у нас предзагрузка будет, когда приложения перестанут помещаться на страницу ;)
+        
+        </div>
+     </div>
+    </div>
+
+    <div id="app_search_wrap" style="display: none;">
+      <div class="apps_subsummary clear_fix">
+        <span id="app_search_summary" class="summary fl_l">Популярные приложения</span>
+      </div>
+
+
+    </div>
+
+    <div id="app_search_list" class="app_rows"> 
+			<?=tpx('apps_search_rows')?>    
+    </div>
+    <a id="rec_more_link" onclick="Apps.showMoreRecommendations()" class="recommend more" style="display: none;">
+  <div id="rec_show_more_progress" class="progress"></div>
+  <div id="rec_show_more" class="show_more">
+    Показать больше приложений
+  </div>
+</a>
+	<? if(count($app_list)>50) {?>
+	<a id="s_more_link" onclick="Apps.loadRows()" class="apps_more" style="">
+  <div id="s_show_more" class="show_more">
+    Показать больше приложений
+  </div>
+</a>
+	<? } ?>
+  </div></div>

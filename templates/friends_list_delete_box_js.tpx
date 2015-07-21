@@ -1,0 +1,9 @@
+<?php
+global $list_id, $user;
+?>box.removeButtons().addButton('Отмена', box.hide, 'no');
+box.addButton('Удалить список', function() {
+  ajax.post('al_friends.php', {act: 'delete_list', list_id: <?=$list_id?>, hash: '<?=hash_get($user->id . $list_id, 16, 'lr')?>'}, {onDone: function(text) {
+    box.hide();
+    Friends.deleteListClient(<?=$list_id?>);
+  }});
+});

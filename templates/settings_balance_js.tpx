@@ -1,0 +1,15 @@
+stManager.add(["settings.js"], function () {cur.lang = extend(cur.lang || {}, {
+  global_n_votes: ["","%s зайчик","%s зайчика","%s зайчиков"]
+});
+cur.historyOffset = 5;
+cur.handleMoneyChange = function() {
+  var el = ge('balance_str');
+  if (!el) return;
+  el.innerHTML = getLang('global_n_votes', vs.balance);
+  (intval(vs.balance) ? show : hide)('setbal_pass_votes');
+};});
+<?php
+if(!empty($_GET['transfer']))
+	echo "showBox('payments', {act: 'votes_transfer_box'});";
+
+?>

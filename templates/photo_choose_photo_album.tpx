@@ -1,0 +1,58 @@
+<?php
+	global $langpack, $vs_album, $photos_list, $photos_on_page;
+
+	$photos_assign = array(
+		'photos' => $photos_list['data'],
+	);
+
+	$media = $var['media'];
+?><div class="fl_r photos_choose_close">
+  <span id="photos_choose_right_link<?= $vs_album->uid ?>"></span><a class="photos_close_link" onclick="curBox().hide();">Закрыть</a>
+</div>
+
+<div class="photos_choose_header">
+  <span class="photos_choose_header_title inl_bl">
+    Прикрепление фотографии из альбома &laquo;<?=$vs_album->title?>&raquo;
+  </span>
+  <a onclick="cur.togglePhotoUpload(this);" class="photos_title_search inl_bl" style="display: none;">Поиск</a>
+</div>
+<div id="photos_choose_upload_area_wrap<?= $vs_album->uid ?>" class="photos_choose_upload_area_wrap"><div id="photos_choose_upload_area_cont<?= $vs_album->uid ?>" class="photos_choose_upload_area_cont">
+  <div id="photos_choose_upl">
+    <a id="photos_choose_upload_area<?= $vs_album->uid ?>" class="photos_choose_upload_area" title="Отпустите, чтобы начать загрузку." onclick="return cur.uploadPhotos(this, event);">
+      <div class="photos_choose_upload_area_upload">
+        <span id="photos_choose_upload_area_label<?= $vs_album->uid ?>" class="photos_choose_upload_area_label">
+          Загрузить фотографию
+        </span>
+      </div>
+      <div class="photos_choose_upload_area_drop">
+        Отпустите, чтобы начать загрузку.
+      </div>
+    </a>
+    <input id="choose_photo_upload<?= $vs_album->uid ?>" class="choose_photo_upload file" type="file" size="28" onchange="Upload.onFileApiSend(cur.uplId, this.files);" multiple="true" name="photo" style="visibility: hidden; position: absolute;"/>
+  </div>
+  <div id="photos_attach_search_cont" class="choose_search_cont" style="display: none;">
+    <div id="photos_attach_search" class="search_bar clear_fix">
+      <div class="fl_l">
+        <input onpaste="cur.updateChooseList(event, this)" onkeydown="if (event.keyCode == KEY.ESC && this.value) {cur.chooseClearSearch();return cancelEvent(event)}" onkeyup="cur.updateChooseList(event, this)" id="choose_photos_query" type="text" class="s_search text" value="" placeholder="Поиск по фотографиям">
+      </div>
+      <div class="progress photos_choose_progress"></div>
+      <div id="choose_query_reset" class="photos_choose_reset fl_l" onmouseover="if (isVisible(this)) animate(this, {opacity: 1}, 100)" onmouseout="if (isVisible(this)) animate(this, {opacity: 0.6}, 100)" onclick="cur.chooseClearSearch(this, event)"></div>
+    </div>
+  </div>
+  <div class="top_shadow"></div>
+</div></div>
+<div id="photos_choose_wrap<?= $vs_album->uid ?>">
+  
+  <div id="photos_choose_rows<?= $vs_album->uid ?>" class="photos_choose_rows"><?=tpx('photo_choose_photo_rows', $photos_assign)?></div>
+</div>
+<a onclick="cur.photosChooseMore();" id="photos_choose_more<?= $vs_album->uid ?>" class="photos_choose_more" style="<?=$photos_list['total']<=$photos_on_page?'display:none;':''?>">
+Показать все <?=$photos_list['total']?> фотографи<?=$langpack->dln($photos_list['total'],'pht2')?>
+</a>
+<div id="photos_choose_bottom_wrap<?= $vs_album->uid ?>" class="photos_choose_bottom_wrap">
+  <div id="photos_choose_bottom<?= $vs_album->uid ?>" class="photos_choose_bottom">
+    <div class="button_green">
+      <button id="photos_choose_button<?= $vs_album->uid ?>" class="photos_choose_button" onclick="cur.chooseAllSelected()"></button>
+    </div>
+    <a onclick="cur.cancelMultiple();">Отмена</a>
+  </div>
+</div>

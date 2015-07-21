@@ -1,0 +1,36 @@
+<?php
+global $total_friends_online,$friends_online0,$langpack,$owner,$new_design;
+if(empty($new_design)) {
+
+if($total_friends_online > 0) {?>
+<div id="friends_online" class="module">
+ <a class="module_header" href="/friends<?=$owner->id?>?section=online" onclick="return nav.go(this, event)">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r">все</span>
+   Друзья ВСети
+  </div>
+  <div class="p_header_bottom">
+   <?=$total_friends_online?> дру<?=$langpack->dln($total_friends_online,'frn2')?> ВСети
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+  <?=tpx('people_rows',array('users'=>$friends_online0))?>  
+ </div>
+</div>
+<? } 
+} else { ?>
+
+<div id="friends_online" class="module">
+ <a class="module_header" href="/friends?section=online">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r"><?=$total_friends_online?></span>
+   Друзья ВСети
+  </div>
+ 
+ </a>
+ <div class="module_body clear_fix">
+  <?=tpx('people_rows',array('users'=>$friends_online0))?>  
+ </div>
+</div>
+
+<? } ?>

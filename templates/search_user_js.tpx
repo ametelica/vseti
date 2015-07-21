@@ -1,0 +1,692 @@
+<?php
+	global $c, $lang_var;
+
+	$countries = array();
+	$cities = array();
+	$sel_country = '';
+	$sel_city = '';
+	foreach($lang_var['big_country'] as $k => $v) {
+		if($c['country'] == $k) { 
+			$sel_country = array($k, $v);
+		}
+		$countries[] = array($k, $v);
+	}
+	
+	if($c['city'] != 0) {
+		$cities_list = city_list($c['country'], $c['city']);
+		foreach($cities_list as $city) {
+			if($c['city'] == $city['id']) { 
+				$sel_city = array($city['id'], $city['name']);
+			}
+			$cities[] = array($city['id'], $city['name']);
+		}
+	}
+	
+	$city_data = array(
+		'countries' => $countries,
+		'country' => $sel_country,
+		'cities' => $cities,
+		'city' => $sel_city,
+	); 
+	
+	$mil_data = array(
+		'countries' => $countries,
+		'country' => $sel_country
+	);
+
+?>var uiCountry, uiCity;
+var cityFilterSelData = <?=jenc($city_data)?>;
+
+selectsData.setCountries(cityFilterSelData.countries);
+selectsData.setCities(cityFilterSelData.country[0], cityFilterSelData.cities);
+
+uiCity = new CitySelect(ge('city'), ge('cCity'), {
+  show: function(el) {
+    slide_show(el);
+    if (cur.onSearchStep) cur.onSearchStep();
+  },
+  hide: function(el) {
+    slide_hide(el);
+    if (cur.onSearchStep) cur.onSearchStep();
+  },
+  width: 180,
+  city: cityFilterSelData.city,
+  country: cityFilterSelData.country[0],
+  introText: 'Введите название',
+  placeholder: 'Выбор города',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  noResult: 'Городов не найдено',
+  otherCity: 'Другой город',
+  maxItemsShown: function(query_length) {
+    if (query_length > 6) {
+      return 500;
+    } else {
+      return 350;
+    }
+  },
+  onChange: searcher.updResults
+});
+cur.uiCity = uiCity;
+
+uiCountry = new CountrySelect(ge('country'), ge('cCountry'), {
+  show: slide_show,
+  hide: slide_hide,
+  width: 180,
+  country: cityFilterSelData.country,
+  placeholder: 'Выбор страны',
+  placeholderColor: '#777',
+  autocomplete: 1,
+  noDefaultCountry: 1,
+  full_list: '',
+  citySelect: uiCity,
+  onChange: searcher.updResults
+});
+cur.uiCountry = uiCountry;var uiSchCountry, uiSchCity, uiSchool, uiSchYear, uiSchClass;
+var schoolFilterSelData = {"country":"","city":"","school":"","school_class":0};
+
+uiSchYear = new Dropdown(ge('schYear'), [[0,"Год выпуска"],"2021","2020","2019","2018","2017","2016","2015","2014","2013","2012","2011","2010","2009","2008","2007","2006","2005","2004","2003","2002","2001","2000","1999","1998","1997","1996","1995","1994","1993","1992","1991","1990","1989","1988","1987","1986","1985","1984","1983","1982","1981","1980","1979","1978","1977","1976","1975","1974","1973","1972","1971","1970","1969","1968","1967","1966","1965","1964","1963","1962","1961","1960","1959","1958","1957","1956","1955","1954","1953","1952","1951","1950","1949","1948","1947","1946"], {
+  width: 180,
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '',
+  onChange: searcher.updResults
+});
+uiSchClass = new ClassSelect(ge('schClass'), ge('cSchClass'), {
+  show: slide_show,
+  hide: slide_hide,
+  width: 180,
+  placeholder: 'Выбор класса',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  country: schoolFilterSelData.country[0],
+  school: schoolFilterSelData.school,
+  school_class: schoolFilterSelData.school_class,
+  onChange: searcher.updResults
+});
+uiSchool = new SchoolHintSelect(ge('school'), ge('cSchool'), {
+  show: slide_show,
+  hide: slide_hide,
+  width: 180,
+  school: schoolFilterSelData.school,
+  city: schoolFilterSelData.city[0],
+  introText: 'Введите название',
+  disabledText: 'Выберите регион',
+  introCountryText: 'Выберите страну',
+  placeholder: 'Выбор школы',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  noResult: 'Ничего не найдено',
+  disableOnHide: true,
+  forceEnableCustom: -1,
+  classSelect: uiSchClass,
+  schoolYearSelect: uiUniYear,
+  onChange: function(value) {
+    if (intval(value)) {
+      slide_show('cSchYear');
+    } else {
+      slide_hide('cSchYear');
+      uiSchYear.val(0);
+    }
+   searcher.updResults();
+  }
+});
+if (cur.uiCountry) extend(cur.uiCountry.options, {
+  schoolSelect: uiSchool,
+  classSelect: uiSchClass
+});
+if (cur.uiCity) extend(cur.uiCity.options, {
+  schoolSelect: uiSchool,
+  classSelect: uiSchClass
+});
+
+legacyPlaceholderSetup('school_spec');
+addEvent('school_spec', 'change keydown', searcher.onInputChange);var uiUniCountry, uiUniCity, uiUniversity, uiFaculty, uiChair, uiUniYear, uiEduStatus, uiEduForm;
+var uniFilterSelData = {"country":"","city":"","university":0,"faculties":{"university":0,"completed_faculties":1,"faculties":[]},"faculty":0,"chairs":{"faculty":0,"completed_chairs":1,"chairs":[]},"chair":0,"form":0,"status":0};
+
+selectsData.setUniversityInfo(uniFilterSelData.university, uniFilterSelData.faculties);
+selectsData.setFacultyInfo(uniFilterSelData.faculty, uniFilterSelData.chairs);
+
+uiUniYear = new Dropdown(ge('uniYear'), [[0,"Год выпуска"],"2021","2020","2019","2018","2017","2016","2015","2014","2013","2012","2011","2010","2009","2008","2007","2006","2005","2004","2003","2002","2001","2000","1999","1998","1997","1996","1995","1994","1993","1992","1991","1990","1989","1988","1987","1986","1985","1984","1983","1982","1981","1980","1979","1978","1977","1976","1975","1974","1973","1972","1971","1970","1969","1968","1967","1966","1965","1964","1963","1962","1961","1960","1959","1958","1957","1956","1955","1954","1953","1952","1951","1950","1949","1948","1947","1946"], {
+  width: 180,
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '',
+  onChange: searcher.updResults
+});
+uiEduForm = new EducationFormSelect(ge('edu_form'), ge('cEduForm'), {
+  show: slide_show,
+  hide: slide_hide,
+  multiselect: false,
+  visible: uniFilterSelData.form,
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  country: uniFilterSelData.country[0],
+  university: uniFilterSelData.university,
+  edu_form: uniFilterSelData.form,
+  placeholder: 'Форма обучения',
+  width: 180,
+  onChange: searcher.updResults
+});
+uiEduStatus = new EducationStatusSelect(ge('edu_status'), ge('cEduStatus'), {
+  show: slide_show,
+  hide: slide_hide,
+  multiselect: false,
+  visible: uniFilterSelData.status,
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  country: uniFilterSelData.country[0],
+  university: uniFilterSelData.university,
+  edu_status: uniFilterSelData.status,
+  placeholder: 'Выбор статуса',
+  width: 180,
+  onChange: searcher.updResults
+});
+uiChair = new ChairSelect(ge('chair'), ge('cChair'), {
+  show: slide_show,
+  hide: slide_hide,
+  width: 180,
+  chair: uniFilterSelData.chair,
+  faculty: uniFilterSelData.faculty,
+  placeholder: 'Выбор кафедры',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  forceEnableCustom: -1,
+  onChange: searcher.updResults
+});
+uiFaculty = new FacultySelect(ge('faculty'), ge('cFaculty'), {
+  show: slide_show,
+  hide: slide_hide,
+  width: 180,
+  faculty: uniFilterSelData.faculty,
+  university: uniFilterSelData.university,
+  placeholder: 'Выбор факультета',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  forceEnableCustom: -1,
+  chairSelect: uiChair,
+  onChange: searcher.updResults
+});
+uiUniversity = new UniversityHintSelect(ge('university'), ge('cUniversity'), {
+  show: slide_show,
+  hide: slide_hide,
+  width: 180,
+  showMax: 30,
+  university: uniFilterSelData.university,
+  country: uniFilterSelData.country[0],
+  city: uniFilterSelData.city[0],
+  introText: 'Введите название',
+  placeholder: 'Выбор университета',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  noResult: 'Ничего не найдено',
+  // forceEnableCustom: -1,
+  alwaysVisible: 1,
+  facultySelect: uiFaculty,
+  eduFormSelect: uiEduForm,
+  eduStatusSelect: uiEduStatus,
+  uniYearSelect: uiUniYear,
+  onChange: function(value) {
+    if (intval(value)) {
+      slide_show('cUniYear');
+    } else {
+      slide_hide('cUniYear');
+    }
+   searcher.updResults();
+  }
+});
+if (cur.uiCountry) extend(cur.uiCountry.options, {
+  universitySelect: uiUniversity,
+  eduFormSelect: uiEduForm,
+  eduStatusSelect: uiEduStatus
+});
+if (cur.uiCity) extend(cur.uiCity.options, {
+  universitySelect: uiUniversity
+});function getAgeFromData(max) {
+  max = parseInt(max);
+  if (!max > 0) max = 80;
+  return getRangeData(14, max, 1, 'от ', 'От');
+}
+function getAgeToData(min) {
+  min = parseInt(min);
+  if (!min > 0) min = 14;
+  return getRangeData(min, 80, 1, 'до ', 'До');
+}
+
+function getRangeData(min, max, step, prefix, label) {
+ if (min > max) return false;
+ var ret = [[0, label]];
+ if (step < 0) {
+   for (var i = max; i >= min; i += step)
+     ret.push([i, prefix + i]);
+ } else if (step > 0) {
+   for (var i = min; i <= max; i += step)
+     ret.push([i, prefix + i]);
+ }
+ return ret;
+}
+
+var uiAgeFrom, uiAgeTo;
+
+uiAgeFrom = new Dropdown(ge('ageFrom'), getAgeFromData(''), {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  width: 85,
+  selectedItem: '',
+  onChange: function(value){
+    uiAgeTo.setData(getAgeToData(value));
+   searcher.updResults();
+  }
+});
+
+uiAgeTo = new Dropdown(ge('ageTo'), getAgeToData(''), {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  width: 85,
+  selectedItem: '',
+  onChange: function(value){
+    uiAgeFrom.setData(getAgeFromData(value));
+   searcher.updResults();
+  }
+});window.radioBtns['sex'] = {
+  els: Array.prototype.slice.apply(geByClass('radiobtn', ge('cSex'))),
+  val: 0
+}
+cur.onSexChanged = function(value) {
+  ge('c[sex]').value = value;
+  var selectedStatuses = cur.uiStatuses.val();
+  var statusesData = (value == 1) ? cur.fmStatuses : cur.mStatuses;
+  cur.uiStatuses.setData(statusesData);
+  if (selectedStatuses) {
+    cur.uiStatuses.clear();
+    var arr = selectedStatuses.split(',');
+    for (var i = 0; i < arr.length; i++) {
+      cur.uiStatuses.selectItem(arr[i]);
+    }
+  }
+  searcher.updResults();
+}
+
+var uiStatuses;
+
+var mStatuses = [
+  [0, 'Выбор статуса'],
+  [1, 'Не женат'],
+  [2, 'Встречается'],
+  [3, 'Помолвлен'],
+  [4, 'Женат'],
+  [7, 'Влюблён'],
+  [5, 'Всё сложно'],
+  [6, 'В активном поиске']
+];
+cur.mStatuses = mStatuses;
+
+var fmStatuses = [
+  [0, 'Выбор статуса'],
+  [1, 'Не замужем'],
+  [2, 'Встречается'],
+  [3, 'Помолвлена'],
+  [4, 'Замужем'],
+  [7, 'Влюблена'],
+  [5, 'Всё сложно'],
+  [6, 'В активном поиске']
+];
+cur.fmStatuses = fmStatuses;
+
+uiStatuses = new Dropdown(ge('status'),
+  '<?=(empty($c['sex']) ? '' : intval($c['sex']))?>' == '1' ? fmStatuses : mStatuses, {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '<?=(empty($c['status']) ? '' : intval($c['status']))?>',
+  width: 180,
+  onChange: searcher.updResults
+});
+cur.uiStatuses = uiStatuses;
+
+var onlineCB = new Checkbox(ge('online'), {
+  width: 180,
+  label: 'сейчас на сайте',
+  onChange: searcher.updResults
+});
+var photoCB = new Checkbox(ge('photo'), {
+  width: 180,
+  label: 'с фотографией',
+  onChange: searcher.updResults
+});
+setStyle(photoCB.container, {paddingTop: '5px'});var uiPersonalPriority, uiPeoplePriority, uiSmoking, uiAlcohol;
+
+
+
+<? /*
+var lifePriorityData = [
+  [0, 'Главное в жизни'],
+  [1, 'Семья и дети'],
+  [2, 'Карьера и деньги'],
+  [3, 'Развлечения и отдых'],
+  [4, 'Наука и исследования'],
+  [5, 'Совершенствование мира'],
+  [6, 'Саморазвитие'],
+  [7, 'Красота и искусство'],
+  [8, 'Слава и влияние']
+];
+var peoplePriorityData = [
+  [0, 'Главное в людях'],
+  [1, 'Ум и креативность'],
+  [2, 'Доброта и честность'],
+  [3, 'Красота и здоровье'],
+  [4, 'Власть и богатство'],
+  [5, 'Смелость и упорство'],
+  [6, 'Юмор и жизнелюбие']
+];
+var smokingData = [
+  [0, 'Отношение к курению'],
+  [1, 'Резко негативное'],
+  [2, 'Негативное'],
+  [3, 'Компромиссное'],
+  [4, 'Нейтральное'],
+  [5, 'Положительное']
+];
+var alcoholData = [
+  [0, 'Отношение к алкоголю'],
+  [1, 'Резко негативное'],
+  [2, 'Негативное'],
+  [3, 'Компромиссное'],
+  [4, 'Нейтральное'],
+  [5, 'Положительное']
+];
+
+uiPersonalPriority = new Dropdown(ge('personal_priority'), lifePriorityData, {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '',
+  width: 180,
+  onChange: searcher.updResults
+});
+uiPeoplePriority = new Dropdown(ge('important_in_others'), peoplePriorityData, {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '',
+  width: 180,
+  onChange: searcher.updResults
+});
+uiSmoking = new Dropdown(ge('smoking'), smokingData, {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '',
+  width: 180,
+  onChange: searcher.updResults
+});
+uiAlcohol = new Dropdown(ge('alcohol'), alcoholData, {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '',
+  width: 180,
+  onChange: searcher.updResults
+});
+
+legacyPlaceholderSetup('religion');
+legacyPlaceholderSetup('interests');
+addEvent('religion', 'change keydown', searcher.onInputChange);
+var uiAddrCountry, uiAddrCity, uiDistrict, uiStation, uiStreet, uiHouse, uiPlace;
+var addrFilterSelData = {"countries":[[3,"<b>Беларусь<\/b>"],[1,"Россия"],[2,"Украина"],[4,"Казахстан"],[5,"Азербайджан"],[6,"Армения"],[7,"Грузия"],[8,"Израиль"],[9,"США"],[65,"Германия"],[11,"Кыргызстан"],[12,"Латвия"],[13,"Литва"],[14,"Эстония"],[15,"Молдова"],[16,"Таджикистан"],[17,"Туркменистан"],[18,"Узбекистан"],[19,"Австралия"],[20,"Австрия"],[21,"Албания"],[22,"Алжир"],[23,"Американское Самоа"],[24,"Ангилья"],[25,"Ангола"],[26,"Андорра"],[27,"Антигуа и Барбуда"],[28,"Аргентина"],[29,"Аруба"],[30,"Афганистан"],[31,"Багамы"],[32,"Бангладеш"],[33,"Барбадос"],[34,"Бахрейн"],[35,"Белиз"],[36,"Бельгия"],[37,"Бенин"],[38,"Бермуды"],[39,"Болгария"],[40,"Боливия"],[235,"Бонайре, Синт-Эстатиус и Саба"],[41,"Босния и Герцеговина"],[42,"Ботсвана"],[43,"Бразилия"],[44,"Бруней-Даруссалам"],[45,"Буркина-Фасо"],[46,"Бурунди"],[47,"Бутан"],[48,"Вануату"],[233,"Ватикан"],[49,"Великобритания"],[50,"Венгрия"],[51,"Венесуэла"],[52,"Виргинские острова, Британские"],[53,"Виргинские острова, США"],[54,"Восточный Тимор"],[55,"Вьетнам"],[56,"Габон"],[57,"Гаити"],[58,"Гайана"],[59,"Гамбия"],[60,"Гана"],[61,"Гваделупа"],[62,"Гватемала"],[63,"Гвинея"],[64,"Гвинея-Бисау"],[66,"Гибралтар"],[67,"Гондурас"],[68,"Гонконг"],[69,"Гренада"],[70,"Гренландия"],[71,"Греция"],[72,"Гуам"],[73,"Дания"],[231,"Джибути"],[74,"Доминика"],[75,"Доминиканская Республика"],[76,"Египет"],[77,"Замбия"],[78,"Западная Сахара"],[79,"Зимбабве"],[80,"Индия"],[81,"Индонезия"],[82,"Иордания"],[83,"Ирак"],[84,"Иран"],[85,"Ирландия"],[86,"Исландия"],[87,"Испания"],[88,"Италия"],[89,"Йемен"],[90,"Кабо-Верде"],[91,"Камбоджа"],[92,"Камерун"],[10,"Канада"],[93,"Катар"],[94,"Кения"],[95,"Кипр"],[96,"Кирибати"],[97,"Китай"],[98,"Колумбия"],[99,"Коморы"],[100,"Конго"],[101,"Конго, демократическая республика"],[102,"Коста-Рика"],[103,"Кот д`Ивуар"],[104,"Куба"],[105,"Кувейт"],[138,"Кюрасао"],[106,"Лаос"],[107,"Лесото"],[108,"Либерия"],[109,"Ливан"],[110,"Ливия"],[111,"Лихтенштейн"],[112,"Люксембург"],[113,"Маврикий"],[114,"Мавритания"],[115,"Мадагаскар"],[116,"Макао"],[117,"Македония"],[118,"Малави"],[119,"Малайзия"],[120,"Мали"],[121,"Мальдивы"],[122,"Мальта"],[123,"Марокко"],[124,"Мартиника"],[125,"Маршалловы Острова"],[126,"Мексика"],[127,"Микронезия, федеративные штаты"],[128,"Мозамбик"],[129,"Монако"],[130,"Монголия"],[131,"Монтсеррат"],[132,"Мьянма"],[133,"Намибия"],[134,"Науру"],[135,"Непал"],[136,"Нигер"],[137,"Нигерия"],[139,"Нидерланды"],[140,"Никарагуа"],[141,"Ниуэ"],[142,"Новая Зеландия"],[143,"Новая Каледония"],[144,"Норвегия"],[145,"Объединенные Арабские Эмираты"],[146,"Оман"],[147,"Остров Мэн"],[148,"Остров Норфолк"],[149,"Острова Кайман"],[150,"Острова Кука"],[151,"Острова Теркс и Кайкос"],[152,"Пакистан"],[153,"Палау"],[154,"Палестинская автономия"],[155,"Панама"],[156,"Папуа - Новая Гвинея"],[157,"Парагвай"],[158,"Перу"],[159,"Питкерн"],[160,"Польша"],[161,"Португалия"],[162,"Пуэрто-Рико"],[163,"Реюньон"],[164,"Руанда"],[165,"Румыния"],[166,"Сальвадор"],[167,"Самоа"],[168,"Сан-Марино"],[169,"Сан-Томе и Принсипи"],[170,"Саудовская Аравия"],[171,"Свазиленд"],[172,"Святая Елена"],[173,"Северная Корея"],[174,"Северные Марианские острова"],[175,"Сейшелы"],[176,"Сенегал"],[177,"Сент-Винсент"],[178,"Сент-Китс и Невис"],[179,"Сент-Люсия"],[180,"Сент-Пьер и Микелон"],[181,"Сербия"],[182,"Сингапур"],[234,"Синт-Мартен"],[183,"Сирийская Арабская Республика"],[184,"Словакия"],[185,"Словения"],[186,"Соломоновы Острова"],[187,"Сомали"],[188,"Судан"],[189,"Суринам"],[190,"Сьерра-Леоне"],[191,"Таиланд"],[192,"Тайвань"],[193,"Танзания"],[194,"Того"],[195,"Токелау"],[196,"Тонга"],[197,"Тринидад и Тобаго"],[198,"Тувалу"],[199,"Тунис"],[200,"Турция"],[201,"Уганда"],[202,"Уоллис и Футуна"],[203,"Уругвай"],[204,"Фарерские острова"],[205,"Фиджи"],[206,"Филиппины"],[207,"Финляндия"],[208,"Фолклендские острова"],[209,"Франция"],[210,"Французская Гвиана"],[211,"Французская Полинезия"],[212,"Хорватия"],[213,"Центрально-Африканская Республика"],[214,"Чад"],[230,"Черногория"],[215,"Чехия"],[216,"Чили"],[217,"Швейцария"],[218,"Швеция"],[219,"Шпицберген и Ян Майен"],[220,"Шри-Ланка"],[221,"Эквадор"],[222,"Экваториальная Гвинея"],[223,"Эритрея"],[224,"Эфиопия"],[226,"Южная Корея"],[227,"Южно-Африканская Республика"],[232,"Южный Судан"],[228,"Ямайка"],[229,"Япония"]],"country":"","cities":[],"city":"","city_info":{"city":0,"completed_streets":1,"completed_schools":1,"completed_universities":1,"stations":[],"districts":[]},"district":0,"station":null,"street_val":[""],"street":null,"house":[""],"place":[""]};
+
+selectsData.setCountries(addrFilterSelData.countries);
+selectsData.setCities(addrFilterSelData.country[0], addrFilterSelData.cities);
+selectsData.setCityInfo(addrFilterSelData.city[0], addrFilterSelData.city_info);
+
+uiPlace = new PlaceSelect(ge('place'), ge('cPlace'), {
+  multiselect: true,
+  show: slide_show,
+  hide: slide_hide,
+  width: 150,
+  minHeight: 250,
+  place: addrFilterSelData.place,
+  street: addrFilterSelData.street,
+  city: addrFilterSelData.city[0],
+  placeholder: 'Выбор места',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  introText: 'Введите название места',
+  noResult: 'Ничего не найдено',
+  forceEnableCustom: -1,
+  onChange: searcher.updResults
+});
+uiHouse = new HouseSelect(ge('house'), ge('cHouse'), {
+  multiselect: true,
+  show: slide_show,
+  hide: slide_hide,
+  width: 150,
+  minHeight: 250,
+  house: addrFilterSelData.house,
+  street: addrFilterSelData.street,
+  placeholder: 'Выбор дома',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  introText: 'Введите номер дома',
+  noResult: 'Ничего не найдено',
+  forceEnableCustom: -1,
+  onChange: searcher.updResults
+});
+uiStreet = new StreetSelect(ge('street'), ge('cStreet'), {
+  multiselect: true,
+  show: slide_show,
+  hide: slide_hide,
+  width: 150,
+  minHeight: 250,
+  street: addrFilterSelData.street_val,
+  city: addrFilterSelData.city[0],
+  introText: 'Введите название',
+  placeholder: 'Выбор улицы',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  noResult: 'Улиц не найдено',
+  placeSelect: uiPlace,
+  houseSelect: uiHouse,
+  forceEnableCustom: -1,
+  onChange: searcher.updResults
+});
+uiStation = new StationSelect(ge('station'), ge('cStation'), {
+  multiselect: true,
+  width: 150,
+  station: addrFilterSelData.station,
+  city: addrFilterSelData.city[0],
+  placeholder: 'Выбор станции',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  onChange: searcher.updResults
+});
+uiDistrict = new DistrictSelect(ge('district'), ge('cDistrict'), {
+  width: 150,
+  district: addrFilterSelData.district,
+  city: addrFilterSelData.city[0],
+  placeholder: 'Выбор района',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  onChange: searcher.updResults
+});
+uiAddrCity = new CitySelect(ge('addrCity'), ge('cAddrCity'), {
+  show: slide_show,
+  hide: slide_hide,
+  width: 150,
+  introText: 'Введите название',
+  placeholder: 'Выбор города',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  noResult: 'Городов не найдено',
+  otherCity: 'Другой город',
+  city: addrFilterSelData.city,
+  country: addrFilterSelData.country[0],
+  districtSelect: uiDistrict,
+  stationSelect: uiStation,
+  streetSelect: uiStreet,
+  placeSelect: uiPlace,
+  onChange: searcher.updResults
+});
+uiAddrCountry = new CountrySelect(ge('addrCountry'), ge('cAddrCountry'), {
+  show: slide_show,
+  hide: slide_hide,
+  width: 180,
+  country: addrFilterSelData.country,
+  placeholder: 'Выбор страны',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  autocomplete: 1,
+  noDefaultCountry: 1,
+  full_list: 'Другие страны',
+  citySelect: uiAddrCity,
+  onChange: searcher.updResults
+});
+
+window.updateMapAddressLocal = function() {
+  var mapAddressElements = {
+    country:  uiAddrCountry.selectedItems(),
+    city:     uiAddrCity.selectedItems(),
+    district: uiDistrict.selectedItems(),
+    station:  uiStation.selectedItems(),
+    street:   uiStreet.selectedItems(),
+    house:    uiHouse.selectedItems()
+  };
+  window.mapAddress = getMapAddress(mapAddressElements);
+};
+
+
+
+onDomReady(function() { if (window.updateMap) updateMap(); });
+  legacyPlaceholderSetup('company');
+  legacyPlaceholderSetup('position');
+  addEvent('company', 'blur', searcher.updResults);
+  addEvent('company', 'keydown', function(event) {
+    if (event.keyCode == KEY.ENTER) searcher.updResults(event);
+  });
+  addEvent('position', 'blur', searcher.updResults);
+  addEvent('position', 'keydown', function(event) {
+    if (event.keyCode == KEY.ENTER) searcher.updResults(event);
+  });var uiMilCountry, uiMilUnit, uiMilYearFrom;
+  
+  
+var milFiltersel_data = <?=jenc($mil_data)?>;
+
+
+selectsData.setCountries(milFiltersel_data.countries);
+
+uiMilCountry = new CountrySelect(ge('milCountry'), ge('cMilCountry'), {
+  show: slide_show,
+  hide: slide_hide,
+  width: 180,
+  country: milFiltersel_data.country,
+  placeholder: 'Выбор страны',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  autocomplete: 1,
+  noDefaultCountry: 1,
+  full_list: 'Другие страны',
+  onChange: function(value) {
+    uiMilUnit.clear();
+    if (intval(value)) {
+      uiMilUnit.setURL('select_ajax.php?act=a_get_units&country=' + value);
+      slide_show(ge('cMilUnit'));
+    } else {
+      slide_hide(ge('cMilUnit'));
+    }
+   searcher.updResults();
+  }
+});
+
+
+uiMilUnit = new Selector(ge('milUnit'), 'select_ajax.php?act=a_get_units&country=' + encodeURIComponent(milFiltersel_data.country ? milFiltersel_data.country[0] : 0), {
+  width: 180,
+  minHeight: 250,
+  multiselect: false,
+  dropdown: false,
+  introText: 'Введите название',
+  placeholder: 'Выбор части',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  noResult: 'Ничего не найдено',
+  selectedItems: "",
+  onChange: searcher.updResults
+});
+
+uiMilYear = new Dropdown(ge('milYearFrom'), [[0,"Год начала службы"],"2014","2013","2012","2011","2010","2009","2008","2007","2006","2005","2004","2003","2002","2001","2000","1999","1998","1997","1996","1995","1994","1993","1992","1991","1990","1989","1988","1987","1986","1985","1984","1983","1982","1981","1980","1979","1978","1977","1976","1975","1974","1973","1972","1971","1970","1969","1968","1967","1966","1965","1964","1963","1962","1961","1960","1959","1958","1957","1956","1955","1954","1953","1952","1951","1950","1949","1948","1947","1946","1945"], {
+  width: 180,
+  selectedItems: '',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  onChange: searcher.updResults
+});
+<? */ ?> 
+new Checkbox(ge('name'), {
+  width: 180,
+  label: 'только в именах',
+  onChange: searcher.updResults
+});
+
+legacyPlaceholderSetup('hometown');
+addEvent('hometown', 'change keydown', searcher.onInputChange);
+
+var uiBYear, uiBMonth, uiBDay;
+
+function getDays(month, year) {
+  var ret = [[0, 'День рождения']], days = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], daysCount = 31;
+
+  if (month == '2' && year % 4 == 0) {
+    daysCount = 29;
+  } else if (month && days[month]){
+    daysCount = days[month];
+  }
+  for (var i = 1; i <= daysCount; i++) {
+    ret.push(i);
+  }
+  return ret;
+}
+
+var years = [[0, 'Год рождения']];
+for (var i = 2000; i >= 1901; i--) {
+  years.push(i);
+}
+var monthes = [[0, 'Месяц рождения'], [1, 'Январь'], [2, 'Февраль'], [3, 'Март'], [4, 'Апрель'], [5, 'Май'], [6, 'Июнь'], [7, 'Июль'], [8, 'Август'], [9, 'Сентябрь'], [10, 'Октябрь'], [11, 'Ноябрь'], [12, 'Декабрь']];
+
+uiBYear = new Dropdown(ge('bYear'), years, {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  width: 180,
+  height: 170,
+  selectedItem: '',
+  onChange: function(value) {
+    uiBDay.setData(getDays(uiBMonth.val(), value));
+   searcher.updResults();
+  }
+});
+uiBMonth = new Dropdown(ge('bMonth'), monthes, {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  width: 180,
+  height: 170,
+  selectedItem: '',
+  onChange: function(value) {
+    uiBDay.setData(getDays(value, uiBYear.val()));
+   searcher.updResults();
+  }
+});
+uiBDay = new Dropdown(ge('bDay'), getDays('', ''), {
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  width: 180,
+  height: 170,
+  selectedItem: '',
+  onChange: function(value) {
+   searcher.updResults();
+  }
+});
+<? /* ?> 
+var langsData = [[0,"Выбор языка"],[-1,"Русский"],[1,"Українська"],[2,"Беларуская (тарашкевiца)"],[3,"English"]];
+
+uiLangs = new Dropdown(ge('lang'), langsData, {
+  selectedItems: '',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  width: 180,
+  onChange: searcher.updResults
+});
+*/
+?>

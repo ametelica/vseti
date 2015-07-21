@@ -1,0 +1,130 @@
+<?php
+    global $setting, $path_css, $path_js, $xhost, $app, $user, $hash;
+    $h = $hash->get_hash($user->id.$app->app_id,16,'oauth');
+//dmp($app);
+    //echo base64_decode('aHR0cDovL29hdXRoLnZrLmNvbS9vYXV0aC9hdXRob3JpemU/Y2xpZW50X2lkPTIxMzEyMzMmcmVkaXJlY3RfdXJpPWNsb3NlLmh0bWwmcmVzcG9uc2VfdHlwZT10b2tlbiZzY29wZT0wJnN0YXRlPSZkaXNwbGF5PXBvcHVw');
+//echo base64_encode('http://vseti.by/oauth/authorize?client_id=2131233&redirect_uri=close.html&response_type=token&scope=0&state=&display=popup');
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>ВСети | Вход</title>
+<link rel="stylesheet" type="text/css" href="<?=$path_css?>/al/common.css?87" />
+<!--[if lte IE 6]><style type="text/css" media="screen">/* <![CDATA[ */ @import url(<?=$path_css?>/al/ie6.css?2); /* ]]> */</style><![endif]-->
+<!--[if IE 7]><style type="text/css" media="screen">/* <![CDATA[ */ @import url(<?=$path_css?>/al/ie7.css?2); /* ]]> */</style><![endif]-->
+<link type="text/css" rel="stylesheet" href="<?=$path_css?>/oauth_popup.css?9"></link>
+<script type="text/javascript" language="javascript" src="<?=$path_js?>/common.js"></script>
+<script type="text/javascript" language="javascript">
+// <![CDATA[
+  function allow() {
+    var addr = '';
+/*
+    if (isChecked(ge('allow_notifications'))) {
+      addr = '&notify=1';
+    }
+*/
+    location.href = "http://oauth.<?=$setting['host']?>/grant_access?hash=<?=$h?>&client_id=<?=$app->app_id?>&settings=0&redirect_uri=close.html&response_type=token&state=&token_type=0"+addr;
+    return false;
+  }
+
+  function cancel() {
+    location.href = "http://oauth.<?=$setting['host']?>/grant_access?hash=<?=$h?>&client_id=<?=$app->app_id?>&settings=0&redirect_uri=close.html&response_type=token&cancel=1&state=&token_type=0";
+    return false;
+  }
+
+  function login() {
+    ge('login_submit').submit();
+  }  
+  function doResize() {
+    var box = ge('box');
+    setTimeout(function() {
+      window.resizeTo(620, box.offsetHeight + 190);
+    }, 100);
+    window.resizeTo(620, box.offsetHeight + 190);
+    window.moveTo(Math.floor((screen.width - 620) / 2), Math.floor((screen.height - box.offsetHeight - 190) / 2));
+  }
+  
+  if (parent && parent != window) {
+    location.href = "http://oauth.<?=$setting['host']?>/blank.html";
+  }
+  
+// ]]>
+</script>
+</head>
+</html>
+<body onload="doResize();" class="VS1">
+<form method="POST" id="login_submit" action="http://login.<?=$setting['host']?>/?act=login&soft=1">
+<table class="container" cellspacing="0" cellpadding="0"><tr><td class="head">
+  <a href="http://<?=$setting['host']?>" target="_blank" class="logo"></a><div class="auth_items"></div>
+</td></tr><td>
+
+<? if($user->user_exists){ 
+    ?>
+
+<div id="box" class="box">
+  <h1>Получение доступа к ВСети</h1>
+  <div class="info">
+    
+    <div class="app_info">
+      <img src="<?=$app->app_photo()?>" width="75"/>
+    </div>
+    <div class="info_line">Приложение <b><a href="http://<?=$setting['host']?>/app<?=$app->app_id?>" target="_blank"><?=$app->app_info['app_title']?></a></b> запрашивает доступ к Вашему аккаунту.</div>
+    <div class="items">
+        <? echo tpx('apps_rights'); ?>
+    </div>
+  </div>
+</div>
+</td></tr><tr><td class="bottom_buttons">
+  <div class="button_gray fl_r"><button id="install_cancel" onclick="return cancel();">Отмена</button></div>
+  <div class="button_green fl_r"><button id="install_allow" onclick="return allow();">Разрешить</button></div>
+  <br class="clear" />
+</td>
+
+<? } else { ?>
+
+<div id="box" class="box box_login">
+<h1>Вход в систему</h1>
+<div class="info">
+<div class="info_line">Приложение <b><a href="http://<?=$setting['host']?>/app<?=$app->app_id?>" target="_blank"><?=$app->app_info['app_title']?></a></b> запрашивает доступ к Вашему аккаунту.</div>
+
+<? if(rq('m','r',1)==4) { ?>
+<div style="border: 1px solid #E89B88; background-color: #FFEFE8; padding: 8px 11px; margin-bottom: 15px;">Указан неверный логин или пароль.</div>
+<? } ?>
+
+<input type="hidden" name="q" value="1">
+<input type="hidden" name="ip_h" value="0db2ed996c2a6a85df" />
+<input type="hidden" name="from_host" value="oauth.<?=$setting['host']?>">
+<input type="hidden" name="from_protocol" value="http">
+<input type="hidden" name="to" value="<?=base64_encode('http://oauth.'.$setting['host'].'/authorize?client_id='.$app->app_id.'&redirect_uri=close.html&response_type=token&scope=0&state=&display=popup')?>">
+<input type="hidden" id="expire" name="expire" value="0">
+
+<table class="login">
+<tr>
+<td class="label">Логин или e-mail:</td>
+<td><input type="text" name="email" value="<?=(!empty($_GET['email']) and is_email_address($_GET['email']))?$_GET['email']:''?>"></td>
+</tr>
+<tr>
+<td class="label">Пароль:</td>
+<td><input type="password" name="password" onkeydown></td>
+</tr>
+
+<tr>
+<td class="label"></td>
+<td><div class="checkbox fl_l" id="expire_checkbox" onclick="checkbox(this); ge('expire').value = (isChecked('expire_checkbox')) ? 1 : 0;"><div></div>Чужой компьютер</div></td>
+</tr>
+</table>
+<input type="submit" name="submit" style="display: none;">
+</div>
+</div>
+</td></tr><tr><td class="bottom_buttons">
+  <div class="button_gray fl_r"><button id="install_cancel" type="reset" onclick="return cancel();">Отмена</button></div>
+  <div class="button_green fl_r"><button id="install_allow" type="submit" onclick="return login();">Войти</button></div>
+  <br class="clear" />
+</td>
+<? } ?>
+
+</tr></table>
+</form>
+</body>
+</html>

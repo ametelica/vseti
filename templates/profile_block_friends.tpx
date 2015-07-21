@@ -1,0 +1,18 @@
+<?php
+global $total_friends,$tabs_show,$friends0,$langpack,$owner,$user,$new_design;
+if($total_friends > 0) {?>
+<div class="module">
+ <a class="module_header" href="/friends<?=$owner->id?>" onclick="return nav.go(this, event)">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r"><? if($new_design) { echo nf($total_friends); } else { ?>все<? } ?></span>
+   <? echo $user->is_me($owner)?'Мои друзья':'Друзья'; ?>
+  </div>
+  <div class="p_header_bottom">
+   <?=$total_friends?> дру<?=$langpack->dln($total_friends,'frn2')?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+  <?=tpx('people_rows', array('users'=>$friends0))?>
+ </div>
+</div>
+<? } ?>

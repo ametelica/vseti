@@ -1,0 +1,15 @@
+<div id="gray_bar"></div>
+<div id="footer_wrap" class="fl_r dgray" style="width: 861px;">
+ <div id="bottom_nav">
+  <a href="/blog.php">блог</a>&nbsp;&nbsp;
+  <a href="http://vseti.by/support">помощь</a>&nbsp;&nbsp;
+  <a href="/help.php?page=terms">правила</a>&nbsp;&nbsp;
+  <a href="/ads">реклама</a>&nbsp;&nbsp;
+  <a href="/help.php?page=authors">о сайте</a>&nbsp;&nbsp;
+  <a href="/dev.php">разработчикам</a>&nbsp;&nbsp;    
+ </div>
+</div><!--/footer_wrap-->
+<div class="clear"></div>
+</div><!--/page_layout-->
+</div><!--/scroll_fix-->
+</div><!--/simply_div-->

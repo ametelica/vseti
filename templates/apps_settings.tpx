@@ -1,0 +1,208 @@
+<?php
+global $my_apps,$my_ext_sites,$langpack,$user,$hash;
+$my_apps_cnt = count($my_apps);
+$edit_apps_cnt = count($edit_apps);
+$ext_sites_cnt = count($my_ext_sites);
+
+$total_apps = $my_apps_cnt+$edit_apps_cnt+$ext_sites_cnt;
+
+if($my_apps_cnt>0){
+	$title = $my_apps_cnt.' приложени'.$langpack->dln($my_apps_cnt,'inv'); 
+} else {
+	$title = 'Нет приложений';
+}
+
+?>
+<div id="apps_wrap">
+ <div class="apps_summary clear_fix" style="">
+  <span id="apps_summary" class="summary fl_l"><?=$title?></span>
+  <div id="apps_summary_progress" class="fl_r apps_progress"><img src="/images/upload.gif" /></div>
+ </div>
+ 
+ <div id="apps_results" class="apps_results clear_fix">
+  <div id="app_rows" class="app_rows">
+<?
+
+//dmp($my_apps);
+
+//
+if($my_apps_cnt>0){
+
+foreach($my_apps as $ap){
+	$ai = $ap->app_info;
+	echo '<div id="app'.$ap->app_id.'"><div class="app_settings_row ">
+ <table cellspacing="0" border="0">
+  <tr>
+   <td class="app_icon" >
+    <div class="app_subicon">
+    <a href="'.$ap->lnk.'" onclick="return nav.go(this, event)"><img src="/images/icons/app_icon.gif"/></a>
+    </div>
+   </td>
+   <td class="app_info">
+      <div class="app_name">
+       <a href="'.$ap->lnk.'"  onclick="return nav.go(this, event)">'.$ai['app_title'].'</a>
+      </div>
+   </td>
+   <td class="app_options">
+    <a href=\'#\' onclick=\'Apps.showAppSettings('.$ap->app_id.', 0, true); return false;\'>Настроить</a><span class="divider">|</span><a href="#" onclick="Apps.removeApp('.$ap->app_id.', \''.$hash->get_hash($ap->app_id.$user,16,'ap').'\'); return false">Убрать</a>
+   </td>
+  </tr>
+ </table>
+
+</div></div>';
+}
+
+} elseif($total_apps==0) {
+?>
+<div id="no_apps" class="app_msg">У Вас пока нет ничего такого, что можно было бы настроить</div>
+<?	
+}
+?>  
+  </div>
+  <a id="more_link" onclick="Apps.showSettingsRows(0)" class="more" style="display: none;">
+    <div id="show_more" class="show_more">
+      Показать больше приложений
+    </div>
+  </a>
+  
+<? 
+if($ext_sites_cnt >0){    
+?> 
+<div id="app_site_results">
+    <div id="app_site_wrap" class="app_settings_wrap">
+      <div id="app_site_summary" class="app_settings_summary"><?=$ext_sites_cnt?> внешни<?=$langpack->dln($ext_sites_cnt,'ext')?> сайт<?=$langpack->dln($ext_sites_cnt,'file')?></div>
+    </div>
+    <div id="app_site_list">
+<?
+
+foreach($my_ext_sites as $ap){
+    //dmp($ap);
+	$ai = $ap->app_info;
+	echo '<div id="app'.$ap->app_id.'"><div class="app_settings_row ">
+ <table cellspacing="0" border="0">
+  <tr>
+   <td class="app_icon" >
+    <div class="app_subicon">
+    <a href="'.$ap->lnk.'" onclick="return nav.go(this, event)"><img src="/images/icons/app_icon.gif"/></a>
+    </div>
+   </td>
+   <td class="app_info">
+      <div class="app_name">
+       <a href="'.$ap->lnk.'" onclick="return nav.go(this, event)">'.$ai['app_title'].'</a>
+      </div>
+   </td>
+   <td class="app_options">
+    <a href=\'#\' onclick=\'Apps.showAppSettings('.$ap->app_id.', 0, true); return false;\'>Настроить</a>';
+    if($ai['app_user_id']!=$user->id and !$ap->is_admin){
+        echo '<span class="divider">|</span><a href="#" onclick="Apps.removeApp('.$ap->app_id.', \''.$hash->get_hash($ap->app_id.$user,16,'ap').'\'); return false">Убрать</a>';
+    }
+    echo '
+   </td>
+  </tr>
+ </table>
+
+</div></div>';
+}
+
+/*
+<div id="app1885779"><div class="app_settings_row ">
+ <table cellspacing="0" border="0">
+  <tr>
+   <td class="app_icon" >
+    <div class="app_subicon">
+
+    <a href="away.php?to=http%3A%2F%2Fconnect.ua" target="_blank" onclick="return goAway('http://connect.ua')"><img src="/images/icons/app_icon.gif"/></a>
+    </div>
+   </td>
+   <td class="app_info">
+      <div class="app_name">
+       <a href="away.php?to=http%3A%2F%2Fconnect.ua" target="_blank" onclick="return goAway('http://connect.ua')" >Социальная сеть Коннект</a>
+      </div>
+   </td>
+
+   <td class="app_options">
+    <a href='#' onclick='Apps.showAppSettings(1885779, 0, true); return false;'>Настроить</a><span class="divider">|</span><a href="#" onclick="Apps.removeApp(1885779, 'bab3d1c753e8414938'); return false">Убрать</a>
+   </td>
+  </tr>
+ </table>
+</div></div>
+<div id="app2223728"><div class="app_settings_row last">
+ <table cellspacing="0" border="0">
+
+  <tr>
+   <td class="app_icon" >
+    <div class="app_subicon">
+    <a href="away.php?to=http%3A%2F%2Fvitebsk.ws" target="_blank" onclick="return goAway('http://vitebsk.ws')"><img src="/images/icons/app_icon.gif"/></a>
+    </div>
+   </td>
+   <td class="app_info">
+      <div class="app_name">
+       <a href="away.php?to=http%3A%2F%2Fvitebsk.ws" target="_blank" onclick="return goAway('http://vitebsk.ws')" >Витебский молодёжный портал</a>
+
+      </div>
+   </td>
+
+   <td class="app_options">
+    <a href='#' onclick='Apps.showAppSettings(2223728, 0, true); return false;'>Настроить</a>
+   </td>
+  </tr>
+ </table>
+</div></div>
+*/
+?>
+
+  </div>
+  </div> 
+ 
+  <a id="site_more_link" onclick="Apps.showSettingsRows(1)" class="more" style="display: none;">
+    <div id="site_show_more_progress" class="progress"></div>
+    <div id="site_show_more" class="show_more">
+      Показать больше приложений
+    </div>
+  </a>  
+
+<? } ?>
+
+<? if($edit_apps_cnt>0){ ?>
+  
+  <div id="app_edit_results">
+    <div id="app_edit_wrap" class="app_settings_wrap">
+      <div id="app_edit_summary" class="app_settings_summary">Администрируемые приложения</div>
+    </div>
+    <div id="app_edit_list">
+      <div id="app2223728"><div class="app_settings_row last">
+ <table cellspacing="0" border="0">
+  <tr>
+   <td class="app_icon" >
+
+    <div class="app_subicon">
+    <a href="away.php?to=http%3A%2F%2Fvitebsk.ws" target="_blank" onclick="return goAway('http://vitebsk.ws')"><img src="/images/icons/app_icon.gif"/></a>
+    </div>
+   </td>
+   <td class="app_info">
+      <div class="app_name">
+       <a href="away.php?to=http%3A%2F%2Fvitebsk.ws" target="_blank" onclick="return goAway('http://vitebsk.ws')" >Витебский молодёжный портал</a>
+      </div>
+
+   </td>
+
+   <td class="app_options">
+    <a href='editapp?id=2223728' onclick='return nav.go(this, event);'>Редактировать</a>
+   </td>
+  </tr>
+ </table>
+</div></div>
+
+    </div>
+
+  </div>
+  
+  <a id="edit_more_link" onclick="Apps.showSettingsRows(3)" class="more" style="display: none;">
+    <div id="edit_show_more_progress" class="progress"></div>
+    <div id="edit_show_more" class="show_more">
+      Показать больше приложений
+    </div>
+  </a>
+<? } ?>  
+ </div>
+</div>

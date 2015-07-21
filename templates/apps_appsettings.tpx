@@ -1,0 +1,40 @@
+<?php
+global $app, $user;
+?>
+<div class="apps_user_info">
+<div id="apps_settings_error">
+</div>
+<a onclick="Apps.deleteApp(<?=$app->app_id?>, false, this);" class="apps_info_app_act fl_r">Удалить приложение</a>
+<h4>Настройки</h4>
+<div class="apps_sett_section">
+  <div id="app_settings_1" class="checkbox <?=chfln($app->app_info['app_user_settings'],0)?'on':''?>" onclick="checkbox(this);"><div></div>Разрешить приложению присылать Вам уведомления</div>
+    <?/* =tpx('apps_rights_set')*/ ?>
+  <div id="app_settings_256" class="checkbox <?=chfln($app->app_info['app_user_settings'],8)?'on':''?>" onclick="checkbox(this); Apps.saveSettings(<?=$app->app_info['app_id']?>, '<?=hash_get($app->app_id.$user->user_info['user_id'],16,'ap')?>', true);"><div></div>Выводить ссылку на приложение в меню слева</div>
+</div>
+<? if($app->app_info['app_can_pay'] == 1){ ?>
+<h4 style="margin-top: 20px;">Ваш личный счет в этом приложении</h4>
+<div class="apps_sett_section">
+<table class="apps_edit_vites_sett" cellpadding="0" cellspacing="0">
+<tr><td class="app_sett_pay_label ta_l">Текущий баланс:</td>
+<td id="app_new_votes"><?=$app->app_info['app_user_votes']?></td></tr>
+<tr><td class="app_sett_pay_label ta_l">Пополнить баланс на:</td>
+<td style="width:150px">
+<input type="text" name="add" id="app_pay_add" value="0" onkeyup="Apps.recountAddVotes(this)" class="text" maxlength="8" style="width:40px; margin-right:10px;"><a href="payments.php?return=apps" id="add_votes">зайчиков</a>
+</td></tr>
+<tr><td class="app_sett_pay_label ta_l">Уменьшить баланс на:</td>
+<td style="width:150px">
+<input type="text" name="withdraw" id="app_pay_withdraw" value="0" onkeyup="Apps.recountWithdrawVotes(this)" class="text" maxlength="8" style="width:40px; margin-right:10px;"><a href="payments.php?return=apps" id="withdraw_votes">зайчиков</a>
+</td></tr>
+</table>
+</div>
+<? } ?>
+<h4>Права приложения</h4>
+<div class="apps_sett_section">
+ <?=tpx('apps_rights')?> 
+</div>
+<div class="apps_line"></div>
+<img id="apps_settings_progress" class="fl_l" src="images/upload.gif" />
+<div class="button_gray fl_r"><button onclick="Apps.showSettings(ge('apps_show_settings'));">Отмена</button></div>
+<div class="button_green fl_r"><button onclick="Apps.saveSettings(<?=$app->app_info['app_id']?>, '<?=hash_get($app->app_id.$user->user_info['user_id'],16,'ap')?>');">Сохранить</button></div>
+<br class="clear" />
+</div>

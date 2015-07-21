@@ -1,0 +1,54 @@
+<?php
+global $friends, $user, $from, $friends_lists, $checked;
+
+$selected = array();
+if(!empty($checked)) {
+	foreach ($checked as $id) {
+		$selected[$id] = 1;
+	}
+}
+
+?>cur.flistShown = 60;
+cur.flistSelectedCnt = <?=intval(count($checked))?>;
+cur.flistTooltip = '';
+cur.limitTooltip = 'Вы выбрали максимальное количество пользователей.';
+extend(cur, []);
+box.setOptions({bodyStyle: 'padding: 0px', width: 550});
+lang = extend(window.lang || {}, {
+  'friends_enter_friend_name': 'Начните вводить имя друга',
+  'friends_no_user_selected': 'Вы не выбрали ни одного пользователя.'
+});
+<?php
+	$arr = array();
+	foreach($friends as $f){
+		if(!$f->user_exists) continue;
+		$arr[] = array(
+			$f->id,
+			$f->user_info['fio'],
+			$f->user_photo(),
+			($from == 'list') ? $friends_lists[$f->id] : 1,
+			"'".$f->user_info['user_alias']."'"
+		);
+	}
+	
+	if($from == 'list') {
+		$button = 'Сохранить';
+		$hash = hash_get($user->id, 32, 'frnd');
+	} else {
+		$button = 'Пригласить';
+		$hash = hash_get($user->id, 12, 'apinv');
+	}
+?>
+Privacy.flistBox(box, <?=jenc($arr)?>, <?=jenc($selected)?>, "<table class=\"flist_cell no_select\" onmousedown=\"return Privacy.flistSelect(%id%, this, event);\"><tr>\n<td class=\"flist_item_img\"><img align=\"center\" src=\"%photo%\"\/><\/td>\n<td><div class=\"flist_item_name\">%name%<\/div><\/td>\n<td class=\"flist_item_act\"><div class=\"flist_item_action\"><\/div><\/td>\n<\/tr><\/table>", '<?=$button?>', '<?=$hash?>');
+
+setTimeout(function() {
+  cur.flistSearch = ge('flist_search');
+  placeholderSetup(cur.flistSearch, {back: true});
+  cur.flistSearch.focus();
+
+  var listName = ge('flist_list_name');
+  if (isVisible(listName)) {
+    placeholderSetup(listName, {back: true});
+    elfocus(listName, 0, listName.value.length);
+  }  
+}, 10);

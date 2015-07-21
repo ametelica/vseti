@@ -1,0 +1,4 @@
+<?php
+global $owner;
+?>
+showBackLink('<?=$owner->lnk?>', '<?=$owner->title?>');

@@ -1,0 +1,4 @@
+<?php
+global $user, $uplink, $size, $aid;
+?>
+AdsEdit.initUploadPhotoBox(box, '<?=$uplink['link']?>', {"act":"ads_add","mid":<?=$user->id?>,"size":"<?=$size?>","hash":"<?=$uplink['hash']?>","rhash":"<?=$uplink['rhash']?>","photo_hash":"11ceac5760","vs":1,"upldr":1,"aid":<?=$aid?>}, {"file_name":"file","file_size_limit":5242880,"file_types_description":"Image files (*.jpg, *.png, *.gif)","file_types":"*.jpg;*.JPG;*.png;*.PNG;*.gif;*.GIF","accept":"image\/*","type":"photo","max_attempts":2,"noFlash":1,"server":"<?=$uplink['server']?>","error":1,"error_hash":"8b9a666b475638a223ac82c80957ee4c","check_hash":"f94b55fffdb775c121e4a327b3650521","check_rhash":"c1423744e94d8c18a8491ed0e2db144b","custom_hash":"ads_photo","lang":{"button_browse":"Выбрать файл","cannot_upload_title":"Ошибка","cannot_upload_text":"Загрузка изображений в данный момент недоступна. Попробуйте повторить операцию позже."}});

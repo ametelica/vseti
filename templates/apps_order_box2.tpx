@@ -1,0 +1,84 @@
+<?php
+	global $order_response, $user, $langpack;
+?>
+<div id="payments_box" class="payments_box_app_order">
+  <div id="payments_box_summary" class="clear_fix">
+    <a id="payments_box_close_lnk" class="fl_r" onclick="curBox().hide();">Закрыть</a>
+    <? if(isset($order_response['photo_url'])) { ?><img class="payments_summary_phumb" src="<?=$order_response['photo_url']?>" /><? } ?>
+    <div class="payments_summary_cont"><strong><?=$order_response['title']?></strong><br/>Стоимость: <b><?=$order_response['price']?> зайчик<?=$langpack->dln($order_response['price'],'file')?></b><br/>Ваш текущий баланс: <b><?=$user->credits?> зайчик<?=$langpack->dln($user->credits,'file')?></b></div>
+  </div>
+  <div id="payments_box_error" class="error"></div>
+  <div id="payments_getvotes_other" style="display: none;"></div>
+  <div id="payments_getvotes_wrap">
+    <div id="payments_getvotes_method">
+      <div class="payments_getvotes_order_descr"><? if($user->credits >= $order_response['price']) { ?>С Вашего счёта будет списано <b><?=$order_response['price']?> зайчик<?=$langpack->dln($order_response['price'],'file')?></b>.</div><small>Все приложения создаются <b>сторонними разработчиками</b>. Оплачивая услугу, Вы признаете, что не будете иметь претензий к ВСети в связи с любыми последствиями передачи зайчиков.</small><? } else { ?> На Вашем счету <b>не хватает <?= $order_response['price']-$user->credits ?> зайчик<?=$langpack->dln($order_response['price']-$user->credits, 'file')?></b>.</div><? } ?>
+      <p id="payments_about_votes"><b>Зайчики</b> – это универсальная валюта для всех приложений ВСети.<br>Кроме этого, зайчиками можно оплатить подарки ВСети.</p>
+    </div>
+    <div id="payments_getvotes_cont"></div>
+    <div id="payments_getvotes_phone">
+      <p id="payments_getvotes_phone_msg">Пожалуйста, укажите <b>номер телефона</b> для оплаты через SMS:</p>
+      <table class="payments_tform">
+        <tr style="height: 34px;">
+          <td class="label">Страна:</td>
+          <td class="labeled">
+            <input type="hidden" id="phone_country" name="phone_country" />
+          </td>
+        </tr>
+        <tr>
+          <td class="label">Номер телефона:</td>
+          <td class="labeled">
+            <table id="payments_phone_table" cellspacing="0" cellpadding="0"><tr>
+              <td id="payments_phone_prefix"><nobr></nobr></td>
+              <td class="payments_phone_field">
+                <input id="phone" class="text" type="text" onkeydown="if (event.keyCode==13) { cur.paymentsSaveSmsPhone(); }" />
+              </td>
+            </tr></table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div id="payments_getvotes_confirm">
+      <p id="payments_getvotes_confirm_msg"></p>
+      <table class="payments_tform">
+        <tr id="payments_box_confcode_wrap">
+          <td class="label">Код подтверждения:</td>
+          <td class="labeled">
+            <input id="confcode" class="text" type="text" onkeydown="if (event.keyCode==13) { cur.paymentsSmsSendCode(); }" />
+          </td>
+        </tr>
+        <tr>
+          <td class="label">Количество зайчиков:</td>
+          <td id="payments_box_votes_num"></td>
+        </tr>
+        <tr>
+          <td class="label">Сумма оплаты:</td>
+          <td id="payments_box_amount"></td>
+        </tr>
+        <tr id="payments_getvotes_confirm_comm_wrap">
+          <td class="label"></td>
+          <td id="payments_getvotes_confirm_comm"></td>
+        </tr>
+      </table>
+    </div>
+    <div id="payments_getvotes_waiting">
+      <div id="payments_getvotes_waiting_msg"></div>
+      <div>Если в течение <b>24 часов</b> зайчики не поступят на Ваш счёт, Вы можете обратиться в {link}поддержку{/link}.</div>
+      <div id="payments_getvotes_waiting_comm"></div>
+    </div>
+    <div id="payments_getvotes_terminals">
+      
+    </div>
+    <div id="payments_getvotes_ps">
+      
+    </div>
+  </div>
+  <div id="payments_box_progress" style="display: none;">
+    <img src="/images/progress7.gif" />
+    <div id="payments_box_progress_msg_wrap"><span id="payments_box_progress_msg">Ожидаем завершения оплаты..</span> <a herf="#" onclick="cur.paymentsShowTypes(); return false;">Отмена</a></div>
+  </div>
+  <div id="payments_getvotes_buttons">
+    <div class="button_green"><button id="payments_getvotes_submit" onclick="window.location = '/payments.php'">Получить зайчики</button></div>
+    <div id="payments_getvotes_back" class="button_cancel inl_bl"></div>
+  </div>
+  <form id="paymentSystemsForm" method="post" accept-charset="windows-1251"></form>
+</div>

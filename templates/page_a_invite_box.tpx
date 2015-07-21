@@ -1,0 +1,30 @@
+<?php
+global $user, $group, $friends, $hash;
+?>
+<div id="page_members_box" class="page_members_box">
+<?
+if(!empty($friends)){
+	foreach($friends as $f){
+		if(!$f['user']->user_exists) continue;
+	echo '<div class="member_row clear_fix" id="member_row'.$f['user']->id.'">
+  <a href="/id'.$f['user']->id.'" class="photo fl_l"><img src="'.$f['user']->user_photo('','c').'" /></a>
+  <div class="member_info fl_l">
+    <a href="'.$f['user']->lnk.'">'.$f['user']->user_info['fio'].'</a><br />
+    <b></b>
+  </div>
+  <div class="actions fl_r">
+<a href="" onclick="return page.inviteToGroup('.$group->id.', '.$f['user']->id.', '.$f['invited'].', \''.$hash->get_hash($f['user']->id.$group->id.$user->id,18,'invg').'\');">'.($f['invited']?'Отменить приглашение':'Выслать приглашение').'</a><? } ?></div>
+  <div class="fl_l" id="res'.$f['user']->id.'"></div>
+</div>';
+	}
+}
+?>
+</div><!>cur.lang = extend(cur.lang, {
+  friends_send_event_invite: 'Выслать приглашение',
+  friends_cancel_event_invite: 'Отменить приглашение',
+});
+<? /*
+box.setControlsText('<a href="/friends?act=invite&group_id=1" onclick="return nav.go(this,event)">Пригласить друзей из полного списка</a>');
+*/ ?>
+
+ge('page_members_box').style.height = '380px';

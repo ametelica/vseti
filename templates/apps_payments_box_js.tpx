@@ -1,0 +1,62 @@
+<?php
+global $votes,$hash,$user,$app;
+?>
+var votes = <?=$votes?>;
+var payLang = {"global_n_votes":["","%s зайчик","%s зайчика","%s зайчиков"],"global_money_amount":["","%s рубль","%s рубля","%s рублей"]};
+
+cur.addVotes = function(other) {
+  votes = parseInt(votes || ge('votes_to_add').value);
+  if (!votes) {
+    return ge('votes_to_add').focus();
+  }
+  box.showProgress();
+  hide('apps_paymentbox_error');
+  
+  ajax.post('al_apps.php', {act: 'a_add_votes', aid: <?=intval($app->app_id)?>, hash: '<?=$hash->get_hash($app->app_id.$user->user_info['user_id'].$votes,16,'apv')?>', votes: votes, _not_from_money: (other == -1 ? 1 : 0)}, {
+    onDone: function(balance, resultCoins, title, text) {
+    	//alert('testing');
+      box.hideProgress();
+      updateMoney(balance);
+      cur.app.balanceUpdated(resultCoins);
+      box.hide();
+      setTimeout(showFastBox(title, text).hide, 2000);
+    },
+    onFail: function(text) {
+      box.hideProgress();
+      if (!text) {
+        return true;
+      }
+      ge('apps_paymentbox_error').innerHTML = text;
+      show('apps_paymentbox_error');
+      return true;
+    }
+  });
+  return false;
+}
+
+if (!votes) {
+  ge('votes_to_add').focus();
+}
+
+cur.paymentVotesLang = function(obj) {
+  var curVotes = obj.value || 0;
+  ge('votes_to_add_flex').innerHTML = langNumeric(curVotes, votes_flex);
+  var balance = parseInt(vs.balance);
+  if (balance >= curVotes) {
+    hide('apps_payment_no_votes');
+    hide('apps_payment_money_to_votes');
+  } else if ((balance + Math.floor(vs.money / 6700)) >= curVotes) {
+    var v = langNumeric(curVotes - balance, payLang['global_n_votes']);
+    var m = langNumeric(parseInt((curVotes - balance) * 6700 / 10) / 100, payLang['global_money_amount']);
+    ge('apps_money_to_votes_text').innerHTML = 'С рублёвого счёта будет списано {money} за {votes}.'.replace('{money}', '<b>' + m + '</b>').replace('{votes}', '<b>' + v + '</b>');
+    show('apps_payment_money_to_votes');
+    hide('apps_payment_no_votes');
+  } else {
+    show('apps_payment_no_votes');
+    hide('apps_payment_money_to_votes');
+  }
+}
+
+box.removeButtons();
+box.addButton(box_cancel, box.hide, 'no');
+box.addButton('Внести зайчика', cur.addVotes, 'yes');

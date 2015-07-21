@@ -1,0 +1,14 @@
+<div id="wrap2">
+ <div id="wrap1">
+  <div id="content">
+   <div class="message_page">
+    <div class="title">Ошибка</div>
+     <div class="body">
+      Ошибка доступа
+      <div class="button_green"><button id="msg_back_button">Назад</button></div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>

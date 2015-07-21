@@ -1,0 +1,69 @@
+<?php
+    global $group, $admins, $langpack, $xhost, $new_design;
+    
+    $header_start_tag = ($group->user_level > 0 ? '<a href="/groups.php?act=people&gid='.$group->id.'#section=1" class="module_header">' : '<span class="module_header">');
+    $header_end_tag = ($group->user_level > 0 ? '</a>' : '</span>');
+?>
+<div class="module clear page_list_module" id="group_leaders">
+    <?=$header_start_tag?>
+  <div class="header_top clear_fix">
+    <span class="right_link fl_r"  onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href=''"></span>
+    Руководство
+  </div>
+  <div class="p_header_bottom">
+    <span class="fl_r"></span>
+    <? echo $total_admins = count($admins); ?> руководител<?=$langpack->dln($total_admins, 'gst')?>
+  </div>
+<?=$header_end_tag?>
+  <div class="module_body clear_fix">
+<?
+
+	//dmp($admins);
+    $n = 0;
+    foreach($admins as $adm) {
+      $admin = pdata($adm['u']);
+      $admin_data = $group->admins[$adm['u']];
+
+      if($admin_data['c'] == 0) continue;
+?>
+      <div class="line_cell clear_fix">
+        <div class="fl_l thumb">
+            <a href="<?=$admin->lnk?>" onclick="return nav.go(this, event)"><img src="<?=$admin->user_photo()?>" /></a>
+        </div>
+        <div class="fl_l desc_info">
+            <div class="people_name"><a href="<?=$admin->lnk?>" onclick="return nav.go(this, event)"><?=$admin->user_info['fio']?></a></div>
+            <div class="people_extra"><?
+		$extra = array();
+		$extra_data_keys = array('s', 'p', 'm');
+
+		foreach($extra_data_keys as $k) {
+			if($adm[$k] != '') {
+				$extra[] = $adm[$k];
+			}
+		}
+		if(!empty($extra)) 
+			echo join('<br />', $extra);
+		?></div>
+        </div>
+    </div>
+<?      
+			$n++;
+    }
+    
+    if($n == 0) {
+    	echo '<div class="fallback">Состав руководства засекречен</div>';
+    }
+?>    
+  </div>
+</div>
+
+<? if ($group->group_info['group_quality']>0) { ?>
+	<div style="margin: 20px <? if($new_design) { ?>6<? } else { ?>5<? } ?>0px;">
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0" width="100" height="100">
+      <param name="movie" value="<?=$xhost?>swf/quality<?=$group->group_info['group_quality']?>.swf">
+      <param name="quality" value="high">
+      <param name="wmode" value="transparent" />
+      <embed src="<?=$xhost?>swf/quality<?=$group->group_info['group_quality']?>.swf" quality="high" pluginspage="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" type="application/x-shockwave-flash" width="100" height="100" wmode="transparent"></embed>
+</object>
+</div>
+<? } ?>

@@ -1,0 +1,35 @@
+<?php
+global $group, $langpack, $is_group_private, $poll, $new_design;
+if ($group->group_info['show_board'] > 0) {
+    ?>
+    <?= tpx('page_vote')?>
+    <div id="group_wide_topics" class="module">
+        <div class=" clear topics_module" id="group_topics">
+            <a href="/board-<?= $group->id ?>" class="module_header">
+                <div class="header_top clear_fix">
+                    <span class="right_link fl_r"  onmouseover="this.parentNode.parentNode.href='/board-<?= $group->id ?>'" onmouseout="this.parentNode.parentNode.href='/board-<?= $group->id ?>'"><? if($new_design and $group->group_info['html_board_cnt'] > 0) echo $group->group_info['html_board_cnt'] .' '. $langpack->dln($group->group_info['html_board_cnt'], _e('gr_topics_cnt'))  ?></span>
+                    <?=_e('gr_board')?>
+                </div>
+                <? if ($group->group_info['html_board_cnt'] > 0 and !$is_group_private) { ?>
+                    <div class="p_header_bottom">
+                        <span class="fl_r"></span>
+                        <?= $group->group_info['html_board_cnt'] ?> <?= $langpack->dln($group->group_info['html_board_cnt'], _e('gr_topics_cnt')) ?>
+                    </div>
+                <? } ?>
+            </a>
+            <div class="module_body clear_fix">
+                <?
+                if (!$is_group_private) {
+                    if ($group->group_info['html_board_cnt'] > 0)
+                        echo tpx('group_block_topics_body', array('topics'=>$group->group_info['html_board']));
+                    else {
+                        echo '<div class="fallback">'._e('gr_topics_none').' <a href="/board' . $group->oid . '?act=create">'._e('gr_topics_create').'</a></div>';
+                    }
+                } else {
+                    echo '<div class="fallback">'._e('gr_topics_deny').'</div>';
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+<? } ?>

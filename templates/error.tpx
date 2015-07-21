@@ -1,0 +1,26 @@
+<?
+global $new_design;
+echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+   <div id="content" class="white_page">
+    <div id="empty_page" class="clear_fix">
+    <table class="error_table">
+    	<tr> 
+    		<td>
+    			<img src="images/<?=empty($var['image']) ? 'ban' : $var['image']?>.png" />
+    		</td>
+    		<td>
+    
+		<b><?=$var['error_message']?></b>
+		<? if(!empty($var['error_text'])) {?>
+		  <div style="line-height:16px; text-align: left; margin-top: 30px;">
+		  <?=$var['error_text']?>
+		  </div>
+  	<? } ?>
+   </td></tr></table>
+  </div>
+ </div>
+</div>
+</div>

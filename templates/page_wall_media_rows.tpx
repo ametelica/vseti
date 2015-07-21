@@ -1,0 +1,60 @@
+<?php
+
+echo '<div class="page_post_sized_thumbs clear_fix" style="width: '.$var['width'].'px; height: '.$var['height'].'px;">';
+
+foreach($var['thumbs'] as $t) {
+
+	$m = array($t['image']['src'], $t['image']['width'], $t['image']['height']);
+	//dmp($m);
+
+	$mt = 0;
+	$ml = 0;
+	
+	$ratio_img = $m[1] / $m[2];
+	$ratio_frame = $t['width'] / $t['height'];
+	if($ratio_frame < $ratio_img) {
+		$h = $t['height'];
+		$w = round($h * $ratio_img);
+		$ml = round(($w - $t['width']) / 2);
+	} else {
+		$w = $t['width'];
+		$h = round($w / $ratio_img);
+		$mt = round(($h - $t['height']) / 2);
+	}
+		
+	if(!empty($t['orig']['vid'])) {
+		$vuid = $t['orig']['owner_id'] . '_' . $t['orig']['vid'];
+		
+		//dmp($t);
+		
+		echo '<a class="page_post_thumb_wrap page_post_thumb_video '.(empty($t['lastColumn'])?'':' page_post_thumb_last_column').(empty($t['lastRow'])?'':' page_post_thumb_last_row').' fl_l" style="width: '.$t['width'].'px; height: '.$t['height'].'px;" onclick="return showVideo(\''.$vuid.'\', \'d9852ba7e0dd862bc4\', {autoplay: 1, queue: 1}, event);" href="/'.$t['id'].'?list=d9852ba7e0dd862bc4">
+<div class="page_post_video_duration">'.$t['orig']['dur'].'</div>
+<img class="page_post_thumb_sized_photo" width="'.$w.'" height="'.$h.'" style="'.( $ml ? 'margin-left: -'.$ml.'px;' : '').( $mt ? 'margin-top: -'.$ml.'px;' : '').'" src="'.$m[0].'">
+</a>';
+	} elseif(!empty($t['orig']['aid'])) {
+
+		$aoid = $t['orig']['oid'] . '_' . $t['orig']['aid'];
+
+
+		echo '<a class="page_post_thumb_unsized page_post_thumb_album  '.(empty($t['lastColumn'])?'':' page_post_thumb_last_column').(empty($t['lastRow'])?'':' page_post_thumb_last_row').' fl_l" style="width: '.$t['width'].'px; height: '.$t['height'].'px; background-image: url('.$t['image']['src'].'); background-size: cover;" onclick="return nav.change({z: \'album'.$aoid.'\'}, event)" onmouseout="wall.albumCoverOut(this, \''.$aoid.'\');" onmouseover="wall.albumCoverOver(this, \''.$aoid.'\');" href="/album'.$aoid.'"><div class="wall_album_caption" style="margin-top: '.($t['height']-22).'px; width: '.$t['width'].'px;">
+<div class="wall_album_title_wrap clear_fix">
+<div class="wall_album_title fl_l ta_l" style="width: '.($t['width']-60).'px;">'.$t['orig']['title'].'</div>
+<div class="wall_album_count fl_r">'.$t['orig']['files'].'</div>
+</div>
+<div class="wall_album_description">'.$t['orig']['desc'].'</div>
+</div></a>';
+		//dmp($t);
+	} else {
+		$x = $t['orig']['sizes']['x'];
+		$x_pats = explode('/', $x[0]);
+		$opts = array('temp' => array('base' => join('/', array_slice($x_pats, 0, 4)) . '/', 'x_' => array( join('/', array_slice($x_pats, 4)), $x[1], $x[2])));
+		$opts = str_replace('"', '&quot;', jenc($opts));
+	
+		echo '<a class="page_post_thumb_wrap'.(empty($t['lastColumn'])?'':' page_post_thumb_last_column').(empty($t['lastRow'])?'':' page_post_thumb_last_row').' fl_l" style="width: '.$t['width'].'px; height: '.$t['height'].'px;" onclick="cancelEvent(event); return showPhoto(\''.$t['orig']['owner_id'].'_'.$t['orig']['pid'].'\', \''.$t['orig']['post_id'].'\', '.$opts.', event)" href="/'.$t['id'].'">
+<img class="page_post_thumb_sized_photo" width="'.$w.'" height="'.$h.'" style="'.( $ml ? 'margin-left: -'.$ml.'px;' : '').( $mt ? 'margin-top: -'.$ml.'px;' : '').'" src="'.$m[0].'">
+</a>';
+	}
+}
+
+echo '</div>';
+?>

@@ -1,0 +1,4 @@
+  <div id="place_maps" class="place_map">
+    <div id="place_map_yandex" class="place_map"></div>
+    <div id="place_map_google" class="place_map"></div>
+  </div>

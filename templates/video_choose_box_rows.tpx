@@ -1,0 +1,37 @@
+<?php
+global $from, $user;
+
+if(count($var['videolist']) > 0) {
+	foreach($var['videolist'] as $v) {
+		
+		$sizes = $v->sizes();
+		$opt = array(
+				'thumb' => $sizes['m'][0],
+				'editable' => array(
+						'sizes' => $sizes,
+						'duration' => $v->dur_sec
+				)
+
+		);
+		
+		if($from == 'video_add') {
+			$onclick = "return cur.chooseVideoAdd('".$v->uid."', '".hash_get($user->id, 16, 'vid')."');";
+		} else {
+			$onclick = "return cur.chooseMedia('video', '".$v->uid."', ".str_replace('"','&quot;', jenc($opt)).")";
+		}
+		
+		
+		?><div id="video_cont<?=$v->uid?>" class="video_row_cont"><div class="video_row_inner_cont"><a href="/video<?=$v->uid?>" class="video_row_relative" id="video_row<?=$v->uid?>" onmouseover="Video.rowOver(this);" onmouseout="Video.rowOut(this)" onclick="<?=$onclick?>">
+    <div class="video_row_info_line"><div class="video_raw_info_name"><?=$v->title?></div><div class="video_row_duration"><?=$v->dur?></div></div>
+    <div class="video_image_div" style="background-image: url('<?=$sizes['l'][0]?>');"></div>
+  </a></div>
+</div><?
+	}
+} else {
+	if(!empty($var['search'])) {
+		echo '<div class="choose_no_rows">По запросу <b>'.$var['search'].'</b> не найдено ни одной видеозаписи</div>';
+	} elseif(empty($var['preload'])) {
+		echo '<div class="choose_no_rows">Нет видеозаписей</div>';
+	}
+}
+?>

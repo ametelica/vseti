@@ -1,0 +1,10 @@
+<div class="stats_head">История платежей</div>
+<div class="clear_fix" style="margin-top: -6px;">
+  <div class="fl_r">
+    <input type="text" id="user_filter" placeholder="ID пользователя" class="text app_pay_filter" />
+  </div>
+</div>
+<div id="app_user_cont" style="margin-bottom: 20px;">
+  <?=tpx('apps_block_paylog_rows',$var)?>
+</div>
+<br class="clear">

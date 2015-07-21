@@ -1,0 +1,45 @@
+<?php
+global $datetime, $setting, $user, $langpack;
+//foreach()
+//dmp($var);
+
+echo '<div class="video_x_page">';
+$i = 1;
+foreach($var as $v) {
+		//dmp($v);
+	//foreach($var['video'] as $v) {
+		$vu = $v['uvideo_info'];
+		$vuid = $vu['vu_user_id'] . '_' . $vu['vu_id'];
+		$vu['video_thumb'] = str_replace('.jpg', 'b.jpg', $vu['video_thumb']);
+		$dur = floor($vu['vu_duration'] / 60) . ':' . str_pad(($vu['vu_duration'] % 60), 2, 0, STR_PAD_LEFT);
+		?><div class="fl_l page_album_row" onmouseover="page.albumOver(this, '<?=$vuid?>');" onmouseout="page.albumOut(this, '<?=$vuid?>', true);">
+<a class="img_link" href="/video<?=$vuid?>" onclick="return showVideo('<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>', '', {autoplay: 1}, event)">
+<img class="page_photo_thumb_big" src="<?=$vu['video_thumb']?>">
+<div class="page_album_title_wrap" style="margin-top: 129px;">
+<div class="clear_fix" style="margin: 0px">
+<div class="page_album_title fl_l" title="<?=strcut($vu['vu_title'], 80)?>"><?=strcut($vu['vu_title'], 80)?></div>
+<div class="page_album_camera fl_r"><?=$dur?></div>
+</div>
+<div class="page_album_description"><?=$vu['vu_desc']?></div>
+</div>
+</a>
+<a class="bg"></a>
+</div><? 
+	/*
+<div class="video_entry">
+ <a onclick="return showVideo('<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>', '', {autoplay: 1}, event)" href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>">
+  <img class="video" src="<?=$vu['video_thumb']?>"></a>
+  <a class="title" onclick="return showVideo('<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>', '', {autoplay: 1}, event)" href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>"><?=strcut($vu['vu_title'],80)?></a>
+<small><?=$datetime->sdate($vu['vu_date'])?></small>
+<a class="comments" href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>#comments"><?=$vu['vu_totalcomments']?> комментари<?=$langpack->dln($vu['vu_totalcomments'],'com')?></a>
+  </div>
+	 */
+	
+	if($i % 3 == 0 and $i < 12) {
+		echo '</div><div class="video_x_page">';
+	}
+	$i++;
+}
+echo '</div>';
+
+?>

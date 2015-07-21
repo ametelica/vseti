@@ -1,0 +1,179 @@
+<?php
+global $events_array, $event_dates, $langpack, $smenu, $xhost, $act, $new_design; 
+
+if($new_design) { 
+
+echo tpx('header_design');
+?>
+
+<div id="wrap2">
+ <div id="wrap1">
+  <div id="content">
+   <div id="main" class="table affiche">
+    <div class="table_row">
+<?	
+
+$total = count($events_array)-1;
+$img_max = $total<10?$total:10;
+$img_cnt = 0;
+$rand_events = array();
+$rand_eid = array();
+
+if($total>0){
+	for($i=0;$i<50 and $img_cnt<$img_max;$i++){
+		$eid = mt_rand(0,$total);
+		if(empty($rand_eid) or !in_array($eid,$rand_eid)) {
+			$rand_eid[] = $eid;
+			$rand_events[] = $events_array[$eid];
+			$img_cnt++;
+		}
+	}
+}		
+?>
+
+<div class="col_left dgray">
+	<h2>Случайные афиши</h2>
+	<? foreach($rand_events as $e) { ?>
+			<a href="<?=$e->lnk?>"><img src="<?=$e->group_photo()?>" align="left" style="margin-top: 10px; width: 195px;"/></a>
+	<? } ?>	
+</div>
+
+
+	<div class="col_right">
+
+
+<? 
+$max_days = 30;
+$days = 0;
+foreach($event_dates as $date_txt => $date_events) {    
+	if(++$days>=$max_days) break;
+?>
+	<div class="section">
+		<h2><?=$date_txt?></h2>
+<?
+	$i = 0;
+	$ah = 200;
+	$day_events = count($date_events);
+	
+	//dmp($date_events);
+	$tmp = array();
+	foreach($date_events as $eid) {
+		$tmp[] = $events_array[$eid];
+	
+	}
+	
+	echo tpx('start_list_events', array('events' => $tmp));
+
+ ?>
+		<br class="clear">
+	</div> 
+<?
+}
+?>
+	</div>
+</div>
+   
+    
+    
+   </div>
+  </div>
+ </div>
+</div>
+	   
+
+
+
+<? } else { ?>
+<div id="wrap2">
+ <div id="wrap1">
+  <div id="content" style="background: #bad8f2 url(<?=$xhost?>images/start_bg.jpg) no-repeat;">
+   <div id="main">
+	 <div id="start_menu"><?=start_menu($smenu, $act)?></div>	
+<?	
+
+$total = count($events_array)-1;
+$img_max = $total<10?$total:10;
+$img_cnt = 0;
+$rand_events = array();
+$rand_eid = array();
+
+if($total>0){
+	for($i=0;$i<50 and $img_cnt<$img_max;$i++){
+		$eid = mt_rand(0,$total);
+		if(empty($rand_eid) or !in_array($eid,$rand_eid)) {
+			$rand_eid[] = $eid;
+			$rand_events[] = $events_array[$eid];
+			$img_cnt++;
+		}
+	}
+}		
+?>
+   
+<div class="rightColumn2" style="height: 100%;">
+ <div class="pb bc2">
+  <div class="pbt">
+	 <div><h2>Случайные афиши</h2></div>
+  </div>
+	<div class="c">
+	 <div class="whenOpen">
+	  <div class="flexBox clearFix aPad">
+<? foreach($rand_events as $e) { ?>
+			<a href="<?=$e->lnk?>"><img src="<?=$e->group_photo()?>" align="left" style="margin-bottom: 5px;"/></a>
+<? } ?>			   
+	  </div>  
+   </div>
+  </div>
+ </div>
+    	
+    </div>
+    
+    <div class="rightColumn" style="width: 600px;">
+<? 
+$max_days = 30;
+$days = 0;
+foreach($event_dates as $date_txt => $date_events) {    
+	if(++$days>=$max_days) break;
+?>
+
+<div class="pb bc6">
+ <div class="pbt">
+  <div><h2><?=$date_txt?></h2></div>
+ </div>
+ <div class="c">
+  <div class="whenOpen">
+   <div class="flexBox clearFix bPad">
+<?
+	$i = 0;
+	$day_events = count($date_events);
+	
+	foreach($date_events as $eid) { 
+		$e = $events_array[$eid];
+?>
+    <div class="bPad" style="width: <?=$day_events==1?580:275?>px; float: left; <? if($i%2==1) {?>padding-left: 10px; border-left: silver 1px solid;<?}?> <? if($i>1) {?>margin-top: 5px; border-top: silver 1px solid;<?}?>">
+     <a href="<?=$e->lnk?>"><img src="<?=$e->group_photo()?>" width="<?=$day_events==1?2:1?>00" align="left" style="margin-right: 5px;"/></a>
+     <a href="<?=$e->lnk?>"><strong><?=$e->group_info['group_title']?></strong></a>
+       <p style="text-align: justify;"><?=str_replace("<br />\r\n<br />",'<br />',nl2br(strcut($e->group_info['group_desc'],$day_events==1?800:300)))?></p> 
+       <small style="color: gray;"><?=$e->group_info['begin_txt']?>
+       <span class="divide">|</span>
+       <?=$e->group_info['group_address']?>
+       <span class="divide">|</span>
+       <?=$e->group_info['num_members']?> участник<?=$langpack->dln($e->group_info['num_members'],'file')?></small>
+    </div>
+<? 
+		$i++;
+} 
+?>
+   </div>  
+  </div>
+ </div>
+</div>
+<?	
+} 
+?>    
+    </div>
+    
+    <br class="clear">   
+   </div>
+  </div>
+ </div>
+</div><? } ?>

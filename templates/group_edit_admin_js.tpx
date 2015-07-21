@@ -1,0 +1,27 @@
+<?php
+global $user1, $user, $group, $remove;
+
+$member_info = $group->member_data($user1);
+$adm_level = intval($member_info[6]);
+if($adm_level < 1) $adm_level = 1;
+if($remove) $adm_level = 0;
+
+?>box.setOptions({bodyStyle: 'padding: 14px 15px'});
+box.removeButtons().addButton('Отмена', box.hide, 'no');
+if (0) {
+  box.addButton('Назначить руководителем', searchActions.uDoneAdmin.pbind(<?=$user1->id?>, '<?=hash_get($user->id . $user1->id, 16, 'aadm')?>'));
+} else {
+  box.addButton('<?= $remove ? 'Разжаловать руководителя' : 'Назначить руководителем' ?>' , GroupsEdit.uDoneAdmin.pbind(<?=$user1->id?>, '<?=hash_get($user->id . $user1->id, 16, 'aadm')?>'));
+}
+extend(cur, {
+  notSureAdmin: '<div class="gedit_admin_warn">Вы собираетесь назначить <a href="<?=$user1->lnk?>" class="mem_link"><?=$user1->title?></a> <b>администратором</b>.<br>Он сможет <b>назначать</b> и <b>удалять</b> любых других администраторов и получит полный контроль над сообществом.<br><br>Если Вы не знаете этого пользователя лично и не доверяете ему полностью, мы рекомендуем вернуться назад и назначить его <b>редактором</b>.<br><br>Редакторы обладают <b>достаточными</b> полномочиями для ведения сообщества, но смогут причинить гораздо <b>меньше вреда</b>, если окажутся неблагонадежными.</div>',
+  lang: extend(cur.lang || {}, {
+    groups_admin_do_add: 'Назначить администратором',
+    groups_admin_warning_title: 'Внимание&#33;',
+    global_back: 'Назад'
+  })
+});
+radioBtns['admlevel'] = {
+  els: geByClass('radiobtn', ge('gedit_admbox_admin_info')),
+  val: <?=$adm_level?>
+};

@@ -1,0 +1,153 @@
+<?php
+global $user;
+?>
+extend(cur, {"friends":[],"friends_sel":"","user_limit":100,"user_limit_err_msg":"Вы можете отправлять не более 100 зайчиков в день.","transfer_hash":"<?=hash_get($user->id,16,'vt',1)?>"}, {
+  linkCache: {},
+  transferGetUser: function(url) {
+    var onComplete = function(newUser) {
+      box.hideProgress();
+      hide('payments_box_error');
+
+      var usersList = cur.uiTransferTo.currentList;
+      var userExists = false;
+      for (var i = 0; i < usersList.length; i++) {
+        if (usersList[i][0] == newUser[0]) {
+          userExists = true;
+        }
+      }
+
+      if (!userExists) {
+        usersList.push(newUser);
+        cur.uiTransferTo.setData(usersList);
+      }
+
+      cur.uiTransferTo.selectItem(newUser[0]);
+      cur.user_limit = newUser[4];
+      cur.user_limit_err_msg = newUser[6];
+      ge('limit_message').innerHTML = newUser[5];
+
+      cur.linkCache[url] = newUser;
+      elfocus('transfer_amount');
+    }
+
+    if (!trim(url).length) { return; }
+    if (cur.linkCache[url] != undefined) {
+      onComplete(cur.linkCache[url]);
+    } else {
+      box.showProgress();
+      ajax.post('al_payments.php', {act: 'a_votes_transfer_get_person', page: url}, {
+        onDone: onComplete,
+        onFail: function(text) {
+          cur.transferShowBoxError(text);
+          return true;
+        }
+      });
+    }
+  },
+  transferCheckUserAmount: function(to) {
+    box.showProgress();
+    hide('payments_box_error');
+    ajax.post('al_payments.php', {act: 'a_votes_transfer_check', transfer_to: to}, {
+      onDone: function(data) {
+        box.hideProgress();
+        cur.user_limit = data[0];
+        cur.user_limit_err_msg = data[2];
+        ge('limit_message').innerHTML = data[1];
+        elfocus('transfer_amount');
+      },
+      onFail: function(text) {
+        cur.transferShowBoxError(text);
+        return true;
+      }
+    });
+  },
+  transferSend: function() {
+    hide('payments_box_error');
+    var params = {
+      act: 'a_votes_transfer_send',
+      transfer_to: cur.uiTransferTo.val(),
+      transfer_amount: intval(val('transfer_amount')),
+      transfer_comment: trim(val('transfer_comment')),
+      hash: cur.transfer_hash
+    }
+    if (params.transfer_to == 0 || params.transfer_to == -1) {
+      cur.transferShowBoxError('Пожалуйста, выберите получателя.');
+      cur.uiTransferTo.focus();
+      return;
+    }
+    if (params.transfer_amount <= 0) {
+      notaBene('transfer_amount');
+      return;
+    }
+    if (cur.user_limit <= 0 || params.transfer_amount > cur.user_limit) {
+      cur.transferShowBoxError(cur.user_limit_err_msg);
+      return;
+    }
+    box.showProgress();
+    ajax.post('al_payments.php', params, {
+      onDone: function(msg, history) {
+        box.hide();
+        showDoneBox(msg, {out: 4000});
+
+        var tbl = ge('settings_votes_history');
+        if (tbl && tbl.parentNode) {
+          tbl.parentNode.parentNode.replaceChild(se(history), tbl.parentNode);
+          cur.historyOffset = 5;
+        }
+      },
+      onFail: function(text) {
+        if (text) {
+          cur.transferShowBoxError(text);
+        }
+        box.hideProgress();
+        return true;
+      }
+    });
+  },
+
+  transferShowBoxError: function(msg) {
+    ge('payments_box_error').innerHTML = msg;
+    show('payments_box_error');
+    box.hideProgress();
+  },
+  transferCleanAmount: function(o) {
+    var v = o.value.replace(/[^0-9]/g, "");
+    if (o.value != v) o.value = v;
+  },
+});
+
+cur.uiTransferTo = Dropdown(ge('transfer_to'), cur.friends, {
+  width: 230,
+  introText: 'Введите ID получателя',
+  noResult: '',
+  placeholder: 'Выберите получателя',
+  placeholderColored: true,
+  multiselect: false,
+  enableCustom: true,
+  autocomplete: true,
+  selectedItems: cur.friends_sel,
+  imageId: 'transfer_to_photo',
+  onChange: function(val) {
+    var transfer_to = cur.uiTransferTo.val_full();
+    if (!transfer_to[0] || transfer_to[1] == 'Выберите получателя') {
+      return;
+    } else if (transfer_to[0] == -1) {
+      for (var i = 0; i < cur.uiTransferTo.currentList.length; i++) {
+        var user = cur.uiTransferTo.currentList[i];
+        if (user[1] == transfer_to[1]) {
+          cur.uiTransferTo.selectItem(user[0]);
+          cur.transferCheckUserAmount(user[0]);
+          return;
+        }
+      }
+
+      cur.transferGetUser(transfer_to[1]);
+    } else {
+      cur.transferCheckUserAmount(transfer_to[0]);
+    }
+  }
+});
+cur.destroy.push(cur.uiTransferTo.destroy.bind(cur.uiTransferTo));
+
+box.setOptions({width: 500, bodyStyle: 'padding: 0;'});
+box.setButtons('Передать зайчика', cur.transferSend, getLang('global_cancel'));

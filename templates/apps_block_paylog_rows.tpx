@@ -1,0 +1,30 @@
+<?php
+	global $app;
+?>
+<table id="app_payments_table" cellspacing="0" cellpadding="0" class="wk_table">
+<tbody><tr>
+  <th style="width:300px">Пользователь</th>
+  <th>зайчики</th>
+  <th style="width:155px; padding: 1px 5px 2px;"><div class="app_time_label">Время</div><?
+  	
+  	if(count($var['payments'])>19)
+  		echo '<div class="app_r_arr"><a href="/editapp?id='.$app->app_id.'&section=stats&sub=pay" onclick="cur.getAppTransactions('.($var['offset']+20).', 0); return false;">&#8594;</a></div>';
+  		
+  	if($var['offset']>0) 
+  		echo '<div class="app_l_arr"><a href="/editapp?id='.$app->app_id.'&section=stats&sub=pay" onclick="cur.getAppTransactions('.($var['offset']-20).', 0); return false;">&#8592;</a></div>';
+  
+  ?></th>
+</tr>
+<?
+global $datetime;
+foreach($var['payments'] as $v){
+	$author = pdata(empty($v['uid_from']) ? $v['uid_to'] : $v['uid_from']);
+	echo '<tr>
+  <td><a class="mem_link" href="' . $author->lnk . '" onclick="return cur.getAppTransactions(0, 0, ' . $author->id . ')">' . $author->title . '</a></td>
+  <td><span class="app_coins_pos">&nbsp;' . (empty($v['uid_from']) ? '-' : '') . $v['votes'] . '</span></td>
+  <td>' . $datetime->sdate($v['date']) . '</td>
+</tr>';	
+}
+?>
+</tbody>
+</table>

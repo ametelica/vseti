@@ -1,0 +1,18 @@
+<?php
+global $group, $members1, $langpack, $total_members1, $new_design;
+?>
+<div class="module clear people_module" id="group_followers">
+    <a href="/search?c[section]=people&basic=1&c[group]=<?=$group->id?>&c[member_status]=1" class="module_header" onclick="return nav.go(this, event)">
+    <div class="header_top clear_fix">
+        <span class="right_link fl_r"><? if($new_design) echo nf($total_members1); ?></span>
+        Участники
+    </div>
+    <div class="p_header_bottom">
+        <span class="fl_r"></span>
+        <?=$total_members1?> <?=$langpack->humans($total_members1)?>
+    </div>
+    </a>
+    <div class="module_body clear_fix">
+        <?=tpx('people_rows',array('users'=>$members1))?>
+    </div>
+</div>

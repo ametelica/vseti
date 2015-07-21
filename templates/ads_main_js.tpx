@@ -1,0 +1,671 @@
+<?php
+/*
+1600560983 - кабинет пользователя
+1000719453 - кампания "Мои объявления"
+*/
+global $union_info, $union_id, $ads, $user;
+
+
+if($union_info['union_type'] == 'ad') {
+	$info = $ads->ad_info_db(0, $union_info['union_ads_id']);
+	$info = end($info);
+	//$active = $info['active'];
+} else {
+	$info = $ads->adc_info_db($union_id);
+}
+/*
+dmp($info);
+dmp($union_id);
+dmp($union_info);
+die();
+*/
+
+//dmp($campaign_arr);
+/*
+$campaign_arr = array(
+		10 => array("Кампания 1","off",10000,0,0.00,"$=100*$7/$8",0,0),
+		20 => array("Кампания 2","off",20000,0,0.00,"$=100*$7/$8",0,0)
+);
+*/
+?>
+
+	cur.lang = extend({}, cur.lang , {"ads_active_ads_found":["","Найдено %s активное объявление","Найдено %s активных объявления","Найдено %s активных объявлений"],
+		"ads_active_ads_total":["", "В кампании %s активное объявление", "В кампании %s активных объявления", "В кампании %s активных объявлений"],
+		"ads_active_campaigns_found":["", "Найдена %s активная кампания", "Найдены %s активные кампании", "Найдено %s активных кампаний"],
+		"ads_active_campaigns_total":["", "У Вас %s активная кампания",	"У Вас %s активные кампании",	"У Вас %s активных кампаний"],
+		"ads_active_clients_found":["",	"Найден %s активный клиент", "Найдено %s активных клиента", "Найдено %s активных клиентов"],
+		"ads_active_clients_total":["", "У Вас %s активный клиент",	"У Вас %s активных клиента", "У Вас %s активных клиентов"],
+		"ads_archive_box_action":"Архивировать",
+		"ads_archive_box_ad_complete":"Объявление перенесено в архив.",
+		"ads_archive_box_ad_title":"Архивирование объявления",
+		"ads_archive_box_ad_warning":"Вы можете заархивировать объявление — оно будет <b>остановлено<\/b> и не будет выводиться в общем списке.<br><br>Вы сможете просмотреть статистику таких объявлений, выбрав в меню кампании фильтр «Показывать архивные объявления». Снова запустить архивное объявление или <b>отменить архивацию<\/b> будет <b>невозможно<\/b>.",
+		"ads_archive_box_campaign_complete":"Кампания перенесена в архив.",
+		"ads_archive_box_campaign_title":"Архивирование кампании",
+		"ads_archive_box_campaign_warning":"Вы можете заархивировать кампанию — она будет <b>остановлена<\/b> вместе со всеми объявлениями и не будет выводиться в общем списке.<br><br>Вы сможете просмотреть статистику таких кампаний, выбрав в меню личного кабинета фильтр «Показывать архивные кампании». Запустить архивную кампанию и объявления в ней, или <b>отменить архивацию<\/b> будет <b>невозможно<\/b>.",
+		"ads_archive_box_client_complete":"Клиент помещён в архив.",
+		"ads_archive_box_client_title":"Архивирование клиента",
+		"ads_archive_box_client_warning":"Все кампании и объявления, относящиеся к клиенту, будут <b>остановлены<\/b> и не будут выводиться в общем списке.<br><br>Вы сможете просмотреть статистику таких клиентов, выбрав в меню фильтр «Показывать архивных клиентов». <b>Отменить архивацию<\/b> будет <b>невозможно<\/b>.",
+		"ads_archived_ads_found":["","Найдено %s архивное объявление","Найдено %s архивных объявления","Найдено %s архивных объявлений"],
+		"ads_archived_ads_total":["","В кампании %s архивное объявление","В кампании %s архивных объявления","В кампании %s архивных объявлений"],
+		"ads_archived_campaigns_found":["","Найдена %s архивная кампания","Найдены %s архивные кампании","Найдено %s архивных кампаний"],
+		"ads_archived_campaigns_total":["","У Вас %s архивная кампания","У Вас %s архивные кампании","У Вас %s архивных кампаний"],
+		"ads_archived_clients_found":["","Найден %s архивный клиент","Найдено %s архивных клиента","Найдено %s архивных клиентов"],
+		"ads_archived_clients_total":["","У Вас %s архивный клиент","У Вас %s архивных клиента","У Вас %s архивных клиентов"],
+		"ads_budget_box_fill_reqs":"Заполнить реквизиты",
+		"ads_budget_box_make_invoice":"Выставить счёт",
+		"ads_budget_box_make_payment":"Пополнить",
+		"ads_budget_box_payment_legal_money":"Через безналичный перевод",
+		"ads_budget_box_payment_type_user_money":"С личного счёта",
+		"ads_cant_start_ad_box_title":"Невозможно запустить объявление",
+		"ads_create_box_create":"Создать",
+		"ads_disable_office_box_button":null,"ads_disable_office_box_title":null,"ads_disable_office_confirm_message":null,"ads_edit_admin_box_select_admin_type_placeholder":"Выбор клиентов",
+		"ads_edit_admin_box_title_add":"Добавление пользователя",
+		"ads_edit_admin_box_title_edit":"Изменение прав пользователя",
+		"ads_edit_admin_box_title_remove":"Удаление пользователя",
+		"ads_edit_admin_box_type_admin":"Администратор",
+		"ads_edit_admin_box_type_client":"Клиент",
+		"ads_edit_admin_box_type_viewer":"Наблюдатель",
+		"ads_edit_admin_box_user_added_title":"Пользователь добавлен",
+		"ads_edit_admin_no_user_link":"Укажите ссылку на страницу пользователя.",
+		"ads_error_bonus_activation_box_title":"Невозможно активировать купон",
+		"ads_error_box_title":"Ошибка",
+		"ads_error_budget_box_integer":"Введите целое число рублей.",
+		"ads_error_budget_box_integer_or_equal":"Введите целое число рублей или сумму остатка на счёте.",
+		"ads_error_budget_box_invalid_value":"Недопустимый формат.",
+		"ads_error_budget_box_invoice_money_min":"Вы не можете выставить счёт меньше чем на 100 рублей.",
+		"ads_error_budget_box_money_min":"Вы не можете перевести меньше 100 рублей.",
+		"ads_error_budget_box_no_money":"У Вас недостаточно денег на счёте.",
+		"ads_error_budget_box_no_money_with_link":"У Вас недостаточно денег на счёте. {link}Пополнить баланс.{\/link}",
+		"ads_error_budget_box_no_value":"Введите сумму для перевода.",
+		"ads_error_budget_box_no_votes":"У Вас недостаточно голосов для перевода. {link}Получить голоса{\/link}.",
+		"ads_error_budget_box_votes_min":"Вы не можете перевести меньше 10 голосов.",
+		"ads_error_budget_box_integer_votes":"Введите целое число голосов.",
+		"ads_error_campaign_name_no_value":"Введите название рекламной кампании.",
+		"ads_error_client_name_no_value":"Введите название клиента.",
+		"ads_error_cost_per_click_invalid_value":"Недопустимый формат.",
+		"ads_error_cost_per_click_max_value":"Максимальная цена за переход - {money}.",
+		"ads_error_cost_per_click_min_value":"Минимальная цена за переход - {money}.",
+		"ads_error_cost_per_click_no_value":"Введите цену за переход.",
+		"ads_error_cost_per_views_invalid_value":"Недопустимый формат.",
+		"ads_error_cost_per_views_max_value":"Максимальная цена за 1000 показов - {money}.",
+		"ads_error_cost_per_views_min_value":"Минимальная цена за 1000 показов - {money}.",
+		"ads_error_edit_admin_box_no_client":"Укажите клиента к которому Вы хотите предоставить доступ.",
+		"ads_error_edit_admin_box_no_clients":"Укажите клиентов, к которым Вы хотите предоставить доступ.",
+		"ads_error_export_stat_invalid_period":"Указанная конечная дата сбора статистики раньше начальной.",
+		"ads_error_export_stat_no_campaigns_selected":"Не выбрано ни одной кампании.",
+		"ads_error_export_stat_period_no_data":"За заданный промежуток времени не было запущенных объявлений.",
+		"ads_error_limit_integer_value":"Введите целое число рублей.",
+		"ads_error_limit_invalid_value":"Недопустимый формат.",
+		"ads_error_limit_large_value":"Задан слишком большой лимит.",
+		"ads_error_limit_min_value":"Минимальный лимит - {money}.",
+		"ads_error_limit_no_value":"Введите лимит.",
+		"ads_error_reqs_inn_found":"Найдены реквизиты компании с указанным ИНН. Компания пока не закреплена ни за одним рекламным кабинетом. {link}Подставить реквизиты.{\/link}",
+		"ads_error_reqs_inn_free":"ИНН свободен. Пожалуйста, укажите остальные реквизиты.",
+		"ads_error_reqs_inn_will_fix":"Компания будет закреплена за этим рекламным кабинетом.",
+		"ads_error_text":"Ошибка.",
+		"ads_error_unexpected_error_try_later":"Произошла непредвиденная ошибка. Попробуйте позже.",
+		"ads_error_unknown_error":"Неизвестная ошибка.",
+		"ads_export_stat_error_box_title_no_data":"Нет данных",
+		"ads_get_export_export_to_file":"Экспортировать в файл",
+		"ads_inline_edit_remove_limit":"Убрать лимит",
+		"ads_inline_edit_remove_start_time":"Убрать дату запуска",
+		"ads_inline_edit_remove_stop_time":"Убрать дату остановки",
+		"ads_new_office_type_agency":null,"ads_new_office_type_legal":null,"ads_new_office_type_user":null,"ads_no_active_ads":"В кампании нет активных объявлений",
+		"ads_no_active_ads_found":"Не найдено ни одного активного объявления с таким названием",
+		"ads_no_active_campaigns":"У Вас нет активных кампаний",
+		"ads_no_active_campaigns_found":"Не найдено ни одной активной кампании с таким названием",
+		"ads_no_active_clients":"У Вас нет активных клиентов",
+		"ads_no_active_clients_found":"Не найдено ни одного активного клиента с таким названием",
+		"ads_no_archived_ads":"В кампании нет архивных объявлений",
+		"ads_no_archived_ads_found":"Не найдено ни одного архивного объявления с таким названием",
+		"ads_no_archived_campaigns":"У Вас нет архивных кампаний",
+		"ads_no_archived_campaigns_found":"Не найдено ни одной архивной кампании с таким названием",
+		"ads_no_archived_clients":"У Вас нет архивных клиентов",
+		"ads_no_archived_clients_found":"Не найдено ни одного архивного клиента с таким названием",
+		"ads_no_money_limit":"Не задан",
+		"ads_no_planned_ads":"В кампании нет запланированных объявлений",
+		"ads_no_planned_ads_found":"Не найдено ни одного запланированного объявления с таким названием",
+		"ads_no_planned_campaigns":"У Вас нет запланированных кампаний",
+		"ads_no_planned_campaigns_found":"Не найдено ни одной запланированной кампании с таким названием",
+		"ads_no_running_ads":"В кампании нет запущенных объявлений",
+		"ads_no_running_ads_found":"Не найдено ни одного запущенного объявления с таким названием",
+		"ads_no_running_campaigns":"У Вас нет запущенных кампаний",
+		"ads_no_running_campaigns_found":"Не найдено ни одной запущенной кампании с таким названием",
+		"ads_no_stopped_ads":"В кампании нет остановленных объявлений",
+		"ads_no_stopped_ads_found":"Не найдено ни одного остановленного объявления с таким названием",
+		"ads_no_stopped_campaigns":"У Вас нет остановленных кампаний",
+		"ads_no_stopped_campaigns_found":"Не найдено ни одной остановленной кампании с таким названием",
+		"ads_paginated_table_footer_total":"Всего",
+		"ads_paginated_table_no_data":"Нет данных",
+		"ads_paginated_table_no_entries":"Нет записей",
+		"ads_paginated_table_search":"Поиск",
+		"ads_paginated_table_show_20":"20 записей",
+		"ads_paginated_table_show_50":"50 записей",
+		"ads_paginated_table_show_all":"Все записи",
+		"ads_paginated_table_shown_filter_label":"Показаны:",
+		"ads_paginated_table_shown_from_to_new":"Выводятся записи с {from} по {to}",
+		"ads_paginated_table_shown_total":"(всего {total})",
+		"ads_paginated_table_show_num_label":"Показывать на странице:",
+		"ads_planned_ads_found":["","Найдено %s запланированное объявление","Найдено %s запланированных объявления","Найдено %s запланированных объявлений"],
+		"ads_planned_ads_total":["","В кампании %s запланированное объявление","В кампании %s запланированных объявления","В кампании %s запланированных объявлений"],
+		"ads_planned_campaigns_found":["","Найдена %s запланированная кампания","Найдены %s запланированные кампании","Найдено %s запланированных кампаний"],
+		"ads_planned_campaigns_total":["","У Вас %s запланированная кампания","У Вас %s запланированные кампании","У Вас %s запланированных кампаний"],
+		"ads_register_bonus_user_enter":"Войти",
+		"ads_register_bonus_user_enter_box_title":"Вход",
+		"ads_register_bonus_user_register":"Зарегистрироваться",
+		"ads_register_bonus_user_register_box_title":"Регистрация",
+		"ads_reqs_box_non_resident":"Нерезидент",
+		"ads_reqs_box_resident":"Резидент",
+		"ads_reqs_info_edit_reqs":"Изменить реквизиты",
+		"ads_reqs_info_show_reqs":"Показать реквизиты",
+		"ads_running_ads_found":["","Найдено %s запущенное объявление","Найдено %s запущенных объявления","Найдено %s запущенных объявлений"],
+		"ads_running_ads_total":["","В кампании %s запущенное объявление","В кампании %s запущенных объявления","В кампании %s запущенных объявлений"],
+		"ads_running_campaigns_found":["","Найдена %s запущенная кампания","Найдены %s запущенные кампании","Найдено %s запущенных кампаний"],
+		"ads_running_campaigns_total":["","У Вас %s запущенная кампания","У Вас %s запущенные кампании","У Вас %s запущенных кампаний"],
+		"ads_status_do_archive":"Архивировать",
+		"ads_status_do_disable":"Остановить",
+		"ads_status_do_enable":"Запустить",
+		"ads_stopped_ads_found":["","Найдено %s остановленное объявление","Найдено %s остановленных объявления","Найдено %s остановленных объявлений"],
+		"ads_stopped_ads_total":["","В кампании %s остановленное объявление","В кампании %s остановленных объявления","В кампании %s остановленных объявлений"],
+		"ads_stopped_campaigns_found":["","Найдена %s остановленная кампания","Найдены %s остановленные кампании","Найдено %s остановленных кампаний"],
+		"ads_stopped_campaigns_total":["","У Вас %s остановленная кампания","У Вас %s остановленные кампании","У Вас %s остановленных кампаний"],
+		"ads_jan":"января",
+		"ads_feb":"февраля",
+		"ads_mar":"марта",
+		"ads_apr":"апреля",
+		"ads_may":"мая",
+		"ads_jun":"июня",
+		"ads_jul":"июля",
+		"ads_aug":"августа",
+		"ads_sep":"сентября",
+		"ads_oct":"октября",
+		"ads_nov":"ноября",
+		"ads_dec":"декабря",
+		"global_money_amount_rub":["","%s рубль","%s рубля","%s рублей"],
+		"global_money_amount_rub_fixed":null,"global_money_amount_rub_short":["","%s руб.","%s руб.","%s руб."],
+		"global_money_amount_rub_text":["","рубль","рубля","рублей"],
+		"global_money_amount_votes_text":["","голос","голоса","голосов"],
+		"login_wrong_email_pwd":"Указан неверный логин или пароль.",
+		"reg0_login_is_taken":null,"reg_sex_not_set":null,"select_city_not_found":"Город не найден",
+		"select_city_not_selected":"- Не выбран -",
+		"select_city_other_city":"- Другой -",
+		"select_city_select":"Введите название",
+		"ads_payments_payment_type_legal":"Я хочу зачислять средства через безналичный расчёт.",
+		"ads_payments_payment_type_not_legal":"Я хочу зачислять средства через банковские карты, платёжные системы или терминалы.",
+		"ads_payments_legal_sum_with_fee":["","На Ваш счёт будет зачислен <b>%s<\/b> рубль","На Ваш счёт будут зачислены <b>%s<\/b> рубля","На Ваш счёт будет зачислено <b>%s<\/b> рублей"],
+		"ads_settings_email_notification_budget":"Пополнение бюджета",
+		"ads_settings_email_notification_approve":"Одобрение объявления",
+		"ads_settings_email_notification_disapprove":"Отклонение объявления",
+		"ads_settings_email_notifications_saved":"Изменения сохранены.",
+		"ads_settings_email_notifications_not_saved":"Возникли проблемы при сохранении. Попробуйте позже.",
+		"ads_edit_admin_box_access_type_all":"Доступ ко всем клиентам",
+		"ads_edit_admin_box_admin_clients_all_disabled_text":"Все клиенты",
+		"ads_export_stat_data_title_campaigns":"Выбор кампаний для экспорта",
+		"ads_export_stat_data_title_clients":"Выбор клиентов для экспорта"});
+
+	cur.uiGeneralInfoStatus;
+	cur.isChangeStatusLocked = false;
+
+	cur.onChangeUnionStatus = function(event) {
+		var index = event.currentTarget.index;
+
+		var unionType = '<?=$union_info['union_type']?>'
+		var unionId = <?=$union_id?>;
+		var hashDelete = '<?=hash_get($user->id . $union_id, 18, 'ca')?>';
+
+		if (index == 'archived') {
+			Ads.openDeleteUnionBox(unionType, unionId, hashDelete, lockCurUnionChangeStatus, unlockCurUnionChangeStatus, updateDeletedStatus);
+			return;
+		}
+
+		if (!lockCurUnionChangeStatus()) {
+			return;
+		}
+
+		var ajaxParams = {};
+		ajaxParams.union_id = unionId;
+		ajaxParams.hash = '246eca129241b16772';
+
+		ajaxParams.enable = ((index == 'on') ? 1 : 0);
+
+		ajax.post('/ads?act=a_union_change_status', ajaxParams, {onDone: onRequestComplete, onFail: onRequestComplete});
+
+		function onRequestComplete(response) {
+			console.log(response);
+		
+			unlockCurUnionChangeStatus();
+			if (!isObject(response) || response.error) {
+				if (!isObject(response)) {
+					tryErrorBox(getLang('ads_error_unexpected_error_try_later'));
+				} else {
+					tryErrorBox(response.error);
+				}
+				return true;
+			}
+			
+			
+
+			if (1) {
+				if (response && response.status) {
+					ge('ads_general_info_status_selector').innerHTML = response.status;
+					cur.uiGeneralInfoStatus.setOptions({title: response.status});
+				}
+			} else {
+				nav.reload();
+			}
+			return true;
+		}
+
+		function updateDeletedStatus(status, status_class) {
+			ge('general_info_status_selector_box').innerHTML = status;
+			nav.reload();
+		}
+
+		function lockCurUnionChangeStatus() {
+			if (cur.isChangeStatusLocked) {
+				return false;
+			}
+			cur.isChangeStatusLocked = true;
+			hide('general_info_status_selector_box');
+			show('general_info_status_progress');
+			return true;
+		}
+
+		function unlockCurUnionChangeStatus() {
+			cur.isChangeStatusLocked = false;
+			hide('general_info_status_progress')
+			show('general_info_status_selector_box');
+		}
+
+		function tryErrorBox(message) {
+			showFastBox(getLang('ads_cant_start_ad_box_title'), message);
+		}
+	}
+
+	onDomReady(function() {
+		if (<?=$info['active'] != 4 ? 1 : 0?>) {
+			var menuParams = {};
+			menuParams.target = ge('ads_general_info_status_selector');
+			menuParams.onSelect = cur.onChangeUnionStatus;
+			menuParams.showHover = false;
+			if (1) {
+				menuParams.updateTarget = false;
+			}
+			cur.uiGeneralInfoStatus = new DropdownMenu([{"l":"Запущена","i":"on"},{"l":"Остановлена","i":"off"},{"l":"Архивная","i":"archived"}], menuParams);
+		}
+  
+		var disapprovedMessage = ge('disapproved_message');
+		var disapprovedMessageComment = geByClass('ads_warning_light', disapprovedMessage);
+		if (disapprovedMessage && !hasClass(disapprovedMessage, 'no_color')) {
+			animate(disapprovedMessage, {backgroundColor: '#F6F7F9', borderColor: '#D8DFEA'}, 6000);
+			if (disapprovedMessageComment && disapprovedMessageComment.length > 0) {
+				disapprovedMessageComment = disapprovedMessageComment[0];
+				animate(disapprovedMessageComment, {backgroundColor: '#FFFFFF', borderColor: '#D8DFEA'}, 6000);
+			}
+		}
+
+		var officeDisabledMessage = ge('office_disabled_message');
+		if (officeDisabledMessage) {
+			animate(officeDisabledMessage, {backgroundColor: '#F6F7F9', borderColor: '#D8DFEA'}, 6000);
+		}
+	});
+	cur.curTableIndex = '0';
+	cur.curTableSort  = 'default_r';
+	cur.curTableDeleted = false;
+	cur.tables = {};
+	cur.tablesQueue = [];
+	cur.tablesQueueMaxSize = 20;
+
+	cur.tableUnionTypeForDelete = 'campaign';
+
+	cur.invalidateTablesCache = function() {
+		cur.tables = {};
+		cur.tablesQueue = [];
+	}
+
+	onDomReady(function() {
+		<?
+		$months = array (
+			'01' => "январь",
+			'02' => "февраль",
+			'03' => "март",
+			'04' => "апрель",
+			'05' => "май",
+			'06' => "июнь",
+			'07' => "июль",
+			'08' => "август",
+			'09' => "сентябрь",
+			'10' => "октябрь",
+			'11' => "ноябрь",
+			'12' => "декабрь"
+		);
+		$yesterday = $_SERVER['REQUEST_TIME'] - 86400;
+		$yestermonth = mktime (0, 0, 0, date("n") - 1, 1, date("Y"));
+		?>
+		var tableVariants = [{"i":"0","l":"За всё время"},{"i":<?=date('Ymd')?>,"l":"За сегодня"},{"i":<?=date('Ymd', $yesterday)?>,"l":"За вчера"},{"i":<?=date('Ym')?>,"l":"За <?=$months[date('m')]?>"},{"i":<?=date('Ym', $yestermonth)?>,"l":"За <?=$months[date('m', $yestermonth)]?>"}];
+		var uiTableSelector;
+
+	uiTableSelector = new DropdownMenu(tableVariants, {
+      target: ge('table_selector'),
+      onSelect: onTableChange
+    }
+  );
+
+		function onTableChange(event) {
+			var newIndex = event.currentTarget.index;
+
+			var selector = ge('table_selector')
+			var lastLabel = selector.innerHTML;
+
+			function onDone() {
+			}
+			function onFail() {
+				selector.innerHTML = lastLabel;
+				uiTableSelector.setOptions({title: lastLabel});
+			}
+
+			cur.changeTable(newIndex, false, onDone, onFail);
+		}
+	});
+
+	cur.changeTableDeleted = function(event) {
+		var newTableIndex = event.data.item.i;
+		var newTableDeleted = (newTableIndex == 4);
+		if (newTableDeleted == cur.curTableDeleted) {
+			return true;
+		}
+		cur.curTableDeleted = newTableDeleted;
+
+		var onDone = (function() {
+			var newTableIndexToUpdate = ((newTableIndex != -1) ? newTableIndex : undefined);
+			return function() {
+				var paginatedTable = ge('paginated_table').tableObj;
+				paginatedTable.setFilterType(newTableIndexToUpdate);
+			}
+		})();
+
+		var paginatedTable = ge('paginated_table').tableObj;
+		delete paginatedTable.contentDep;
+		cur.invalidateTablesCache();
+		paginatedTable.topControl.filterDd.hide();
+
+		setTimeout(function() {
+			cur.changeTable(false, false, onDone, function() {});
+		}, 1);
+		return false;
+	}
+
+	cur.changeTable = function(newIndex, newSort, onDone, onFail) {
+
+		if (((newIndex === false) || (newIndex == cur.curTableIndex)) && (newSort !== false)) {
+			if (newSort == cur.curTableSort) {
+				newSort += '_r';
+			} else if ((newSort + '_r' != cur.curTableSort) && (newSort != 'name')) {
+				newSort += '_r';
+			}
+		}
+
+		if (newIndex === false) {
+			newIndex = cur.curTableIndex;
+		}
+		if (newSort === false) {
+			newSort = cur.curTableSort;
+		}
+
+		var spreadTableData = function(table) {
+			if (!table.contentDep) return;
+			for (var i in table.contentDep) {
+				if (!table.contentDep[i]) continue;
+				for (var j = 0; j < table.options.columnClasses.length; j++) {
+					switch (table.options.columnClasses[j]) {
+						case 'column_status_view':
+						case 'column_all_limit_view':
+						case 'column_month_limit_view':
+						case 'column_day_limit_view':
+						case 'column_cpc_view':
+							for (var k = 0; k < table.content.data.length; k++) {
+								if (k >= table.contentDep[i].data.length) break;
+								if (table.contentDep[i].data[k][j] != table.content.data[k][j]) {
+									table.contentDep[i].data[k][j] = table.content.data[k][j];
+								}
+							}
+							break;
+					}
+				}
+			}
+		}
+
+		var newTableKey = newIndex + '_' + newSort;
+		var oldTableKey = cur.curTableIndex + '_' + cur.curTableSort;
+		var pt = ge('paginated_table').tableObj;
+		if (!pt.contentDep) {
+			pt.contentDep = {oldTableKey: pt.content};
+		}
+
+		if (pt.contentDep && pt.contentDep[newTableKey]) {
+			spreadTableData(pt);
+			var curSort = pt._curSortOrder;
+			var curFilter = pt._curFilter;
+			var curSearchString = pt._curSearchString;
+			var curPage = pt.curPage;
+			pt.setContent(pt.contentDep[newTableKey]);
+			pt.applyData();
+			pt._initSearchHashes();
+			if (curFilter !== undefined) pt.setFilterType(curFilter);
+			if (curSort !== undefined) pt.setSortingOrder(curSort[0], curSort[1]);
+			if (curSearchString !== undefined) pt._onSearchStringChange(curSearchString);
+			pt.goToPage(curPage);
+		} else {
+			var ajaxParams = {};
+			ajaxParams.union_id = <?=$union_id?>;
+			ajaxParams.period_key = newIndex;
+			ajaxParams.sort_key = newSort;
+			if (0) {
+				ajaxParams.view = 'periods';
+			}
+			if (cur.curTableDeleted) {
+				ajaxParams.deleted = 1;
+			}
+
+			lockTableRequest();
+
+			ajax.post('/ads?act=a_unions_table', ajaxParams, {onDone: onRequestComplete, onFail: onRequestComplete});
+		}
+
+		function lockTableRequest() {
+			show('union_children_table_progress');
+		}
+		function unlockTableRequest() {
+			hide('union_children_table_progress')
+		}
+
+		function onRequestComplete(response) {
+			unlockTableRequest();
+			// Plain response here
+			try {
+				response = eval('(' + response + ')');
+			} catch (e) {
+				response = '';
+			}
+			if (!isObject(response) || response.error || !response.content || !response.options) {
+				debugLog('Error server');
+				if (onFail) onFail();
+				return true;
+			}
+
+			pt.contentDep = {};
+			cur.tablesQueue.push(newTableKey);
+
+			var isOk = false;
+			try {
+				spreadTableData(pt);
+				var curSort = pt._curSortOrder;
+				var curFilter = pt._curFilter;
+				var curSearchString = pt._curSearchString;
+				var curPage = pt.curPage;
+
+				if (response.options.filter && response.options.filter.types) {
+					for (var i in response.options.filter.types) {
+						if (response.options.filter.types[i][2]) {
+							response.options.filter.types[i][2] = eval('(' + response.options.filter.types[i][2] + ')');
+						}
+					}
+				}
+				response.options = Ads.addOfficeFormatFunctions(response.options);
+				pt.setOptions(response.options);
+				pt.setContent(response.content);
+				pt.applyData();
+				pt._initSearchHashes();
+				if (curFilter !== undefined) pt.setFilterType(curFilter);
+				if (curSort !== undefined) pt.setSortingOrder(curSort[0], curSort[1]);
+				if (curSearchString !== undefined) pt._onSearchStringChange(curSearchString);
+				pt.goToPage(curPage);
+				isOk = true;
+			} catch (e) {
+				debugLog('Error js');
+				pt.contentDep[newTableKey] = undefined;
+			}
+			if (isOk) {
+				if (onDone) onDone();
+			} else {
+				if (onFail) onFail();
+			}
+			return true;
+		}
+
+		cur.curTableIndex = newIndex;
+		cur.curTableSort = newSort;
+		//debugLog('cur.curTableIndex = ' + cur.curTableIndex + ', cur.curTableSort = ' + cur.curTableSort);
+	}
+
+	onDomReady(function(){
+<?
+
+echo 'var options = '.jenc(union_table_options($union_id)).';';
+echo 'var content = '.jenc(union_table_content($union_id)).';';
+
+?>																									
+
+		if (options.filter && options.filter.types)
+			for (var i in options.filter.types) {
+				if (options.filter.types[i][2]) {
+					options.filter.types[i][2] = eval('(' + options.filter.types[i][2] + ')');
+				}
+		}
+		Ads.createOfficePaginatedTable(ge('paginated_table'), options, content);
+  
+	});window.maxCostPerClickPrecision = 0;
+	if (!cur.graphVars) {
+		extend(cur, {
+			graphVars: {
+				isRTL: window.is_rtl,
+				'lang.select_graphs': 'фильтр',
+				'lang.months': 'Январь,Февраль,Март,Апрель,Май,Июнь,Июль,Август,Сентябрь,Октябрь,Ноябрь,Декабрь',
+				'lang.dayMonths': 'Января,Февраля,Марта,Апреля,Мая,Июня,Июля,Августа,Сентября,Октября,Ноября,Декабря',
+				'lang.dateFormats.day_fullmon_year_hour': '{day} {dayMonth} {year}, {hour}:00',
+				'lang.dateFormats.day_fullmon_year_hour_min': '{day} {dayMonth} {year}, {hour}:{min}',
+				'lang.dateFormats.day_fullmon_year': '{day} {month} {year}',
+				'lang.dateFormats.day_mon': '{day} {month}',
+				'lang.dateFormats.day_fullmon': '{day} {month}',
+				'lang.loading': 'Загрузка...',
+				'lang.no_data': 'Отсутствуют входные данные',
+				'lang.data_empty': 'Нет данных',
+				'lang.error_loading': 'Ошибка при загрузке',
+				'lang.bad_browser': 'Для отображения графика статистики Вам необходимо {link}обновить браузер{/link}. '
+			},
+			initGraphHorizontalMenu: function(graphDivId, nodeIds, defaultNode) {
+				var initMenu = function(graphId) {
+					for(var i in nodeIds) {
+						var clickContext = {clickNode: nodeIds[i], nodeIds: nodeIds, graph: cur.pageGraphs[graphId]};
+						addEvent(nodeIds[i], 'click', cur.onClickGraphHorizontalMenu, null, clickContext);
+						cur.destroy.push(function() {
+							removeEvent(nodeIds[i], 'click', cur.onClickGraphHorizontalMenu, null, clickContext);
+						});
+					}
+					replaceClass(ge(defaultNode).parentNode, 'summary_tab', 'summary_tab_sel');
+				}
+				if (cur.html5graphs) {
+					stManager.add('graph.js', function(){initMenu(graphDivId);});
+				} else {
+					initMenu(graphDivId);
+				}
+			},
+			onClickGraphHorizontalMenu: function(e) {
+				for(var i in e.data.nodeIds) {
+					if (e.data.nodeIds[i].nodeType != 1) {
+						continue;
+					}
+					if(e.data.clickNode == e.data.nodeIds[i]) {
+						try {e.data.graph.loadGraph(i);} catch (e) {}
+					}
+					replaceClass(ge(e.data.nodeIds[i]).parentNode, 'summary_tab_sel', 'summary_tab');
+				}
+				replaceClass(ge(e.data.clickNode).parentNode, 'summary_tab', 'summary_tab_sel');
+				cancelEvent(e);
+			}
+		});
+	}if (!cur.pageGraphs) cur.pageGraphs = {};
+	/*
+	var flashVars = {"multiple":true,"isRTL":false,"time_offset":-180.000000,"lang.loading":"Загрузка...","lang.no_data":"Отсутствуют входные данные","lang.data_empty":"Нет данных","lang.error_loading":"Ошибка при загрузке","lang.bad_browser":"Для отображения графика статистики Вам необходимо {link}обновить браузер{\/link}. ","lang.dateFormats.day_fullmon_year_hour":"{day} {dayMonth} {year}, {hour}:00","lang.dateFormats.day_fullmon_year_hour_min":"{day} {dayMonth} {year}, {hour}:{min}","lang.dateFormats.day_fullmon_year":"{day} {month} {year}","lang.dateFormats.day_fullmon":"{day} {month}","lang.dateFormats.day_mon":"{day} {month}","lang.months":"Январь,Февраль,Март,Апрель,Май,Июнь,Июль,Август,Сентябрь,Октябрь,Ноябрь,Декабрь","lang.dayMonths":"Января,Февраля,Марта,Апреля,Мая,Июня,Июля,Августа,Сентября,Октября,Ноября,Декабря","graphdata":"[]"};
+
+[[{\"c\":16720403,\"f\":0,\"name\":\"Мои объявления\",\"a\":1,\"d\":[[1352797200,24,\"\",\"24\"],[1352883600,125,\"\",\"125\"]]}],[{\"c\":16720403,\"f\":0,\"name\":\"Мои объявления\",\"a\":1,\"d\":[[1352797200,61879,\"\",\"61 879\"],[1352883600,377916,\"\",\"377 916\"]]}],[{\"c\":16720403,\"f\":0,\"name\":\"Мои объявления\",\"a\":1,\"d\":[[1352797200,0.038,\"\",\"0.038\"],[1352883600,0.033,\"\",\"0.033\"]]}],[{\"c\":16720403,\"f\":0,\"name\":\"Мои объявления\",\"a\":1,\"d\":[[1352797200,96.24,\"\",\"96.24\"],[1352883600,501.2,\"\",\"501.2\"]]}]]
+	*/
+	
+	<? 
+		if($union_info['union_type'] == 'ad') {
+			$graphdata = $ads->graph_data(0, $union_info['union_ads_id']);
+		} elseif($union_info['union_type'] == 'campaign') {
+			$graphdata = $ads->graph_data($union_info['union_ads_id'], 0);
+		} else {
+			$graphdata = $ads->graph_data(0, 0);
+		}
+	?>
+
+	var flashVars = {"multiple":true,"isRTL":false,"time_offset":-180.000000,"lang.loading":"Загрузка...","lang.no_data":"Отсутствуют входные данные","lang.data_empty":"Нет данных","lang.error_loading":"Ошибка при загрузке","lang.bad_browser":"Для отображения графика статистики Вам необходимо {link}обновить браузер{\/link}. ","lang.dateFormats.day_fullmon_year_hour":"{day} {dayMonth} {year}, {hour}:00","lang.dateFormats.day_fullmon_year_hour_min":"{day} {dayMonth} {year}, {hour}:{min}","lang.dateFormats.day_fullmon_year":"{day} {month} {year}","lang.dateFormats.day_fullmon":"{day} {month}","lang.dateFormats.day_mon":"{day} {month}","lang.months":"Январь,Февраль,Март,Апрель,Май,Июнь,Июль,Август,Сентябрь,Октябрь,Ноябрь,Декабрь","lang.dayMonths":"Января,Февраля,Марта,Апреля,Мая,Июня,Июля,Августа,Сентября,Октября,Ноября,Декабря","graphdata":"<?=str_replace('"', '\"', jenc($graphdata))?>"};
+	
+	flashVars.div_id = 'ads_graph_unions';
+	var canv = ce('canvas');
+	var canvasSupport = !!canv.getContext && (typeof canv.getContext('2d').fillText == 'function');
+
+	cur.html5graphs = true;
+	if (!cur.graphDatas) cur.graphDatas = [];
+	if (!cur.graphUrls) cur.graphUrls = [];
+	if (!cur.graphParams) cur.graphParams = [];
+	cur.graphDatas['ads_graph_unions'] = flashVars.graphdata;
+	cur.graphUrls['ads_graph_unions'] = flashVars.graphurl;
+	cur.graphParams['ads_graph_unions'] = flashVars;
+	ge('wrapper_ads_graph_unions').style.height = 'auto';
+	stManager.add('graph.js',function(){
+		if (!window.checkGraphLoaded) {
+			window.checkGraphLoaded = function(callbackId, graphWrapperId, width, height) {
+				if (window.Graph) {
+					cur.pageGraphs[callbackId] = new window.Graph(graphWrapperId, cur.graphUrls[callbackId] ? cur.graphUrls[callbackId] : eval(cur.graphDatas[callbackId]), cur.graphParams[callbackId], width, height);
+				} else {
+					setTimeout(function(){checkGraphLoaded(callbackId);}, 100);
+				}
+			}
+		}
+		checkGraphLoaded('ads_graph_unions', 'wrapper_ads_graph_unions', 600, 385);
+	});cur.curGraphIndex = '0';
+
+	cur.changeGraph = function(newIndex) {
+		if (cur.curGraphIndex == newIndex) {
+			return;
+		}
+
+		var newElem  = ge('graph_navigation_' + newIndex);
+		var prevElem = ge('graph_navigation_' + cur.curGraphIndex);
+		newElem.className = 'nav nav_selected';
+		prevElem.className = 'nav';
+
+		try {
+			if (1) {  // Have graph
+				cur.pageGraphs['ads_graph_unions'].loadGraph(newIndex);
+			}
+		} catch(e) {}
+		cur.curGraphIndex = newIndex;
+	}
+
+	cur.unionsLimits = <?=$ads->limits()?>;
+
+	Ads.init();

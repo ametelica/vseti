@@ -1,0 +1,33 @@
+<?php
+global $total_our_friends, $tabs_show, $our_friends0, $langpack, $owner;
+if($total_our_friends > 0 and !empty($our_friends0)) {?>
+<div id="friends" class="module">
+ <a class="module_header" href="/friends?section=common&id=<?=$owner?>" onclick="return nav.go(this, event)">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r">все</span>
+   Общие друзья
+  </div>
+  <div class="p_header_bottom">
+   <?=$total_our_friends?> дру<?=$langpack->dln($total_our_friends,'frn2')?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+  <?=tpx('people_rows',array('users'=>$our_friends0))?>
+  <!--<div class="people_row">
+   <? foreach($our_friends as $friend) { ?>
+   <div class="fl_l people_cell">
+    <a class="ava" onclick="return nav.go(this, event)" href="<?=$friend->lnk?>">
+     <img width="50" height="50" src="<?=$friend->user_photo()?>" />
+    </a>
+    <div class="name_field">
+     <a onclick="return nav.go(this, event)" href="<?=$friend->lnk?>">
+      <?=$friend->user_info['name']?><br>
+      <small><?=$friend->user_info['lastname']?></small>
+     </a>
+    </div>
+   </div>
+   <? } ?>
+  </div>-->
+ </div>
+</div>
+<? } ?>

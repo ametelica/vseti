@@ -1,0 +1,15 @@
+<?php
+global $section;
+?><div class="fave_module <? if($section != $var['module_id']){ ?>unshown<? } ?>" id="<?=$var['module_id']?>">
+  <div class="summary_wrap ">
+    <div class="summary"><?=$var['subject']?></div>
+  </div>
+  <div class="fave_<?=$var['module_id']?>_not_found unshown" id="not_found_<?=$var['module_id']?>"></div>
+  <div id="users_content"><?=$var['content']?><div id="fave_rows_next_<?=$var['module_id']?>"></div></div>
+  <a id="show_more_link_<?=$var['module_id']?>" onclick="return Fave.showMore('<?=$var['module_id']?>');" class="clear fave_more_link" style="<? if($var['more']) { ?>display: block;<? } ?>">
+    <div id="show_more_progress_<?=$var['module_id']?>" class="fave_show_more_progress progress"></div>
+    <div id="show_more_<?=$var['module_id']?>">Показать еще</div>
+  </a>
+  <div id="fave_all_shown_<?=$var['module_id']?>" class="fave_all_shown" style=""></div>
+  <div id="fave_list_empty_<?=$var['module_id']?>" class="fave_list_empty" style=""></div>
+</div>

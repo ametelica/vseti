@@ -1,0 +1,207 @@
+<?php
+global $section,$total_pm,$langpack,$filter,$act,$pm,$datetime,$code,$m,$nnm,$history,$new_design;
+
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+	
+    <div id="content" class="white_page">    
+	<div id="main_mail">
+
+  <div id="mail_top_msg_wrap"><?
+  if($code==1){
+  	$nnm = new NameProcessor();
+  	$name_dat = $nnm->firstName($nnm->gcaseDat,$m['pm_user']->user_info['name'],$m['pm_user']->user_info['sex']);
+  	echo '<div id="mail_top_msg"><div><b>Сообщение отправлено</b>.<br><a href="mail?act=show&id='.$m['pm_id'].'" onclick="return nav.go(this);">Ваше сообщение</a> отправлено <a class="mem_link" href="'.$m['pm_user']->lnk.'">'.$name_dat.'</a>.</div></div>';
+  } elseif($code==2) {
+  	echo '<div id="mail_top_msg"><div><b>Сообщение удалено</b></div></div>';
+  }
+  ?></div>
+  <div class="tabs t_bar clear_fix">
+  <ul id="mail_tabs" class="t0">
+    <li id="tab_inbox" class="<?=($act=='' and $section=='inbox')?'active_link':''?>" style="">
+  <a onmousedown="return mail.fastGo(this.href, event);" onclick="return checkEvent(event);" href="/mail?section=inbox"><b class="tl1"><b></b></b><b class="tl2"></b>
+   <b class="tab_word">Полученные</b>
+  </a>
+</li><li id="tab_outbox" class="<?=($act=='' and $section=='outbox')?'active_link':''?>" style="">
+  <a onmousedown="return mail.fastGo(this.href, event);" onclick="return checkEvent(event);" href="/mail?section=outbox"><b class="tl1"><b></b></b><b class="tl2"></b>
+
+   <b class="tab_word">Отправленные</b>
+  </a>
+</li><li id="tab_outbox" class="<?=($act=='' and $section=='peer')?'active_link':''?>" style="">
+  <a onmousedown="return mail.fastGo(this.href, event);" onclick="return checkEvent(event);" href="/mail?section=peer"><b class="tl1"><b></b></b><b class="tl2"></b>
+   <b class="tab_word">Диалоги</b>
+  </a>
+</li>
+
+<!--<li id="tab_spam" class="" style="display: block;">
+  <a onmousedown="return mail.fastGo(this.href, event);" onclick="return checkEvent(event);" href="/mail?section=spam"><b class="tl1"><b></b></b><b class="tl2"></b>
+   <b class="tab_word">Спам <span id="mail_unread_spam_count">(<b>14</b>)</span></b>
+  </a>
+</li>
+
+    <li id="tab_search" class="">
+      <a onclick="return false;" href="/mail"><b class="tl1"><b></b></b><b class="tl2"></b>
+       <b class="tab_word">Найденные сообщения</b>
+      </a>
+    </li>-->
+    
+    <li id="tab_msg" class="<?=$act=='show'?'active_link':''?>">
+      <a onclick="return false;" href="/mail"><b class="tl1"><b></b></b><b class="tl2"></b>
+       <b class="tab_word">Просмотр сообщения</b>
+      </a>
+    </li>
+    <li id="tab_write" class="<?=$act=='write'?'active_link':''?>">
+      <a onclick="return false;" href="/mail?act=write"><b class="tl1"><b></b></b><b class="tl2"></b>
+       <b class="tab_word">Новое сообщение</b>
+      </a>
+    </li>
+    <!--<li class="t_r" id="mail_write" style="">
+      <a href="mail?act=write">Написать сообщение</a>
+    </li>-->
+  </ul>
+</div>
+  <div id="mail_content">
+<? if ($act=='') {
+	 if($section!='peer') {
+	?>  
+  <div id="mail_bar" class="clear_fix bar">
+  <!--<div id="mail_bar_search" class="fl_r">
+    <input onkeydown="if (event.keyCode == 10 || event.keyCode == 13) this.blur();" onblur="mail.switchSection('search');" placeholder="Поиск сообщений" id="s_search" type="text" class="text" value="" />
+  </div>-->
+  <div id="mail_bar_select" class="fl_l" style="">
+
+   <span>Выделить:&nbsp;</span> <a href="#" onclick="return mail.toggleAll();">все</a>, <a href="#" onclick="return mail.selectRead();">прочитанные</a>, <a href="#" onclick="return mail.selectUnread();">новые</a>
+  </div>
+  <div id="mail_bar_act" class="fl_r"><div class="button_green fl_l"><button onclick="mail.markMsgs('del', this);">Удалить</button></div><? if($section=='inbox') {?><div class="button_green fl_l"><button onclick="mail.markMsgs('read', this);">Отметить как прочитанные</button></div><div class="button_green fl_l"><button onclick="mail.markMsgs('new', this);">Отметить как новые</button></div><? } ?></div>
+</div>
+<? } ?>
+<div class="summary_wrap clear_fix">
+  <div id="mail_summary_progress" class="fl_r"><img src="/images/upload.gif" /></div>
+  <div id="summary" class="summary">
+  
+<?
+	if($section=='inbox'){
+		if($filter=='new') {
+			$summary = 'У Вас '.nf($total_pm).' непрочитанн'.$langpack->dln($total_pm,'pvt').' сообщени'.$langpack->dln($total_pm,'inv');
+		} else {
+			$summary = 'Вы получили '.nf($total_pm).' сообщени'.$langpack->dln($total_pm,'inv');
+		}
+		echo '<span class="fl_r" id="mail_summary_right"><a href="#" onclick="mail.setFilter(\'new\'); return false">Показать непрочитанные</a></span>';
+	} elseif($section=='outbox') {
+		$summary = 'Вы отправили '.nf($total_pm).' сообщени'.$langpack->dln($total_pm,'inv');
+	} else {
+		$summary = 'У Вас '.($total_pm==0?'нет':nf($total_pm)).' диалог'.$langpack->dln($total_pm,'file');
+	}
+?>  
+  <span id="mail_summary"><?=$summary?></span>
+  </div>
+</div>
+<div id="mail_rows">
+<table id="mail_rows_t" cellpadding="0" cellspacing="0"><?=tpx('mail_rows')?></table>
+</div><a id="show_more_link" onclick="return mail.showMore();" class="clear more_link">
+  <div id="show_more_progress" class="progress"></div>
+  <div id="show_more">Показать больше <?=$section=='peer'?'диалогов':'сообщений'?></div>
+</a>
+<? } elseif($act=='show') { 
+	//$m = $pm[0];
+?>
+	
+<div class="mail_message">
+  <div class="mail_envelope_wrap">
+    <div class="mail_envelope" id="mail_envelope">
+      <table cellpadding="0" cellspacing="0">
+        <tr><td class="mail_envelope_photo_cell">
+        <div class="mail_envelope_photo">
+          <a href="<?=$m['pm_user']->lnk?>" onclick="return nav.go(this, event);" id="to_url">
+            <img src="<?=$m['pm_user']->user_photo('','b')?>" id="to_image">
+          </a>
+        </div>
+        <div class="mail_envelope_online"><?=$m['pm_user']->user_info['online']==1?'ВСети':''?></div>
+        </td><td>
+          <h4>
+            <div id="mail_envelope_actions" class="fl_r">
+              <a href="#" onclick="return mail.actShowMsg('delete', <?=$m['pm_id']?>)">удалить</a><!--<span class="divider">|</span><a href="#" onclick="return mail.actShowMsg('report_spam', <?=$m['pm_id']?>);">это спам</a>-->
+
+            </div>
+            <a class="mem_link" href="<?=$m['pm_user']->lnk?>"><?=$m['pm_user']->user_info['fio']?></a>
+          </h4>
+          <div class="mail_envelope_time"><?=$datetime->sdate($m['pm_date'])?></div>
+
+          <!--div class="mail_envelope_topic"></div-->
+          <div class="mail_envelope_body wall_module wrapped" style="width: 285px;"><?=nl2br($m['pm_body'])?>
+		<?=tpx('mail_media_block', array('pm' => $m))?>
+	  </div>
+        </td></tr>
+
+      </table>
+      <div class="mail_envelope_form">
+        <textarea id="mail_reply_field"  onkeypress="onCtrlEnter(event, mail.doPost);" onkeyup="checkTextLength(3000, this, ge('mail_text_warn'))"></textarea>
+        <div id="mail_text_warn"></div>
+      </div>
+      <div id="mail_media_preview" class="media_preview clear_fix"></div>
+
+      <div class="mail_envelope_controls clear_fix">
+        <div class="button_green fl_l"><button id="mail_send" onclick="mail.doPost();">Ответить</button></div>
+
+        <div id="mail_add_row" class="fl_r"><span class="add_media_lnk link" id="mail_add_link">Прикрепить</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="mail_envelope_shadow"></div>
+</div>
+<div id="mail_history"><?=$history?></div>
+</div>
+<? } elseif($act == 'write') { 
+global $to_user;
+?>
+
+<div class="mail_message">
+  <div class="mail_envelope_wrap">
+    <div class="mail_envelope" id="mail_envelope">
+      <table cellpadding="0" cellspacing="0">
+        <tr><td class="mail_envelope_photo_cell">
+        <div class="mail_envelope_photo">
+          <a href="<?=$to_user->lnk?>" onclick="return nav.go(this, event);" id="to_url">
+            <img src="<?=$to_user->user_photo('','b')?>" id="to_image">
+          </a>
+        </div>
+        <div class="mail_envelope_online"><?=$to_user->user_info['online']==1?'ВСети':''?></div>
+        </td><td>
+          <h4>
+            <div id="mail_envelope_actions" class="fl_r">
+              <a href="#" onclick="return mail.actShowMsg('delete', <?=$m['pm_id']?>)">удалить</a><!--<span class="divider">|</span><a href="#" onclick="return mail.actShowMsg('report_spam', <?=$m['pm_id']?>);">это спам</a>-->
+
+            </div>
+            <a class="mem_link" href="<?=$to_user->lnk?>"><?=$to_user->user_info['fio']?></a>
+          </h4>
+          <div class="mail_envelope_time"><?=$datetime->sdate(time())?></div>
+        </td></tr>
+
+      </table>
+      <div class="mail_envelope_form">
+        <textarea id="mail_reply_field"  onkeypress="onCtrlEnter(event, mail.doPost);" onkeyup="checkTextLength(3000, this, ge('mail_text_warn'))"></textarea>
+        <div id="mail_text_warn"></div>
+      </div>
+      <div id="mail_media_preview" class="media_preview clear_fix"></div>
+
+      <div class="mail_envelope_controls clear_fix">
+        <div class="button_green fl_l"><button id="mail_send" onclick="mail.doPost();">Отправить</button></div>
+
+        <div class="fl_r"><span class="add_media_lnk link" id="mail_add_link" style="display: none;">Прикрепить</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="mail_envelope_shadow"></div>
+</div>
+<div id="mail_history"><?=$history?></div>
+</div>
+
+
+<? } ?>
+</div>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,576 @@
+<?php
+global $qfunc,$api; 
+
+class api_func {
+	var $name; //isAppUser  
+	var $vk;	
+	var $desc; //возвращает информацию о том, установил ли пользователь данное приложение.
+	var $desc_full; //Данный метод возвращает информацию о том...
+	var $result;
+	var $example;
+	var $params = array();  
+	var $errors = array();
+	var $see2;
+	var $access; 
+	
+	function __construct($name,$desc,$desc_full,$params,$errors,$vk=0,$result='',$example=null,$see2=null,$access=0){
+		$this->name = $name;
+		$this->desc = $desc;
+		$this->desc_full = $desc_full;
+		$this->params = $params;
+		$this->errors = $errors;
+		$this->vk = $vk;
+		$this->result = $result;
+		$this->example = $example;
+		$this->see2 = $see2;
+		$this->access = $access;
+	}
+	
+	function info(){
+		$html = '<a  class="wikiVsLink" href="dev.php?act=man&qfunc='.$this->name.'">'.$this->name.'</a> - '.$this->desc.'';
+		return $html;
+	}
+	
+	function info_full(){
+		global $api;
+		$html = '<h4 class="wk_header">'.$this->name.'</h4>
+			<p>'.$this->desc_full.'</p>';
+			
+		if($this->access>0){
+			$html .= '<p><blockquote>Для вызова этого метода Ваше приложение должно иметь права с битовой маской, содержащей <b>'.$this->access.'</b>.</blockquote></p>';
+		}	
+
+		$html .= '<h4 class="wk_header">Параметры</h4>';
+		
+		if(!empty($this->params)){
+			$html .= '<br /><table class="wk_table" cellspacing="0" cellpadding="0"><tr><th>Название</th><th>Обязательный</th><th>Описание</th></tr>'; 
+			foreach($this->params as $param){
+				$html .= '<tr><td><center>'.$param->name.'</center></td><td>'.($param->req?'<center>Да</center>':'').'</td><td>'.$param->desc.'</td></tr>';
+			}
+			$html .= '</table>';
+		} else {
+			$html .= '<p>У этого метода нет параметров</p>';
+		}
+		
+		$html .= '<h4 class="wk_header">Результат</h4><p>'.$this->result.'</p>';
+		
+		if(strstr($this->name,'secure')!==false) {
+			$html .= '<blockquote>Данный метод доступен только с <b>серверной стороны</b>.</blockquote><br />';
+		}
+		
+		$html .= '<h4 class="wk_header">Пример ответа</h4><p><blockquote><pre>'.jenc($this->example).'</pre></blockquote></p>';
+		
+		$html .= '<h4 class="wk_header">Коды ошибок</h4><br />';
+		$html .= '<table class="wk_table" cellspacing="0" cellpadding="0"><tr><th><center>Код ошибки</center></th><th><center>Описание</center></th></tr>';
+		foreach($this->errors as $error_code){
+			$html .= '<tr><td><center>'.$error_code.'</center></td><td>'.$api->error_msg_arr[$error_code].'</td></tr>';			
+		}
+		$html .= '</table>';
+		
+		if(!empty($this->see2)){
+			$html .= '<h4 class="wk_header">См. также</h4><p>';
+			foreach($this->see2 as $s){
+				$html .= '<a class="wikiVsLink" href="?act=man&qfunc='.$s.'">'.$s.'</a><br />';
+			}
+			$html .= '</p>'; 
+		}
+		
+		/*
+		$html .= '<h3 class="wk_header">Тест-драйв</h3>';
+		$html .= test_form($this->name);
+		*/
+		return $html;
+	}
+}
+
+class af_param {
+	var $name;
+	var $req;
+	var $desc;
+	function __construct($name,$desc,$req){
+		$this->name = $name;
+		$this->desc = $desc;
+		$this->req = $req;
+	}
+}
+
+$api_func = array();
+
+$api_func['isAppUser'] = new api_func(
+	'isAppUser',
+	'установил ли пользователь данное приложение',
+	'Данный метод возвращает информацию о том, установил пользователь приложение или нет.',
+	array(
+		new af_param('uid','ID пользователя. По умолчанию ID текущего пользователя.',0)
+	), 
+	array(1,2,4,5,6),	1,
+	'Метод возвращает <b>1</b> в случае, если пользователь установил у себя данное приложение, иначе <b>0</b>.',
+	array('response'=>1)
+);
+
+$api_func['friends.get'] = new api_func(
+	'friends.get',
+	'список id друзей пользователя.',
+	'Возвращает список идентификаторов друзей пользователя или расширенную информацию о друзьях пользователя (при использовании параметра fields).',
+	array(
+		new af_param('uid','ID пользователя, для которого необходимо получить список друзей. По умолчанию ID текущего пользователя.',0),
+		new af_param('fields','перечисленные через запятую поля анкет, необходимые для получения. Доступные значения: uid, first_name, last_name, alias, country, sex, bdate (birthdate), photo, photo_medium, photo_big, verified, verified_phone, online.',0),
+	),
+	array(1,2,4,5,6,7),
+	0,
+	'Без использовании параметра fields возвращает список идентификаторов (id) друзей текущего пользователя. При использовании параметра fields возвращает информацию о друзьях пользователя в виде набора массива объектов, каждый из которых может иметь поля uid, first_name, last_name, alias, country, sex, bdate, photo, photo_medium, photo_big, verified, verified_phone, online.',
+	array('response'=>array(array('uid'=>16,'first_name'=>'Александр','last_name'=>'Метелица','photo'=>'http://cs1.vseti.by/u16/c0_2357.jpg','online'=>1),array('uid'=>1,'first_name'=>'Алексей','last_name'=>'Савик','photo'=>'http://cs1.vseti.by/u1/c0_3178.jpg','online'=>1))),
+	0,2
+);
+
+
+$api_func['friends.getAppUsers'] = new api_func(
+	'friends.getAppUsers',
+	'друзья, установившие приложение',
+	'Возвращает список идентификаторов друзей текущего пользователя, которые установили данное приложение. ',
+	0,
+	array(1,2,4,5,6),
+	0,
+	'Возвращает список идентификаторов (id) друзей текущего пользователя, установивших приложение.',
+	array('response'=>array(1,16,29)),
+	0,2
+);
+
+$api_func['friends.getOnline'] = new api_func(
+	'friends.getOnline',
+	'друзья пользователя сейчас в онлайне',
+	'Возвращает список идентификаторов находящихся на сайте друзей текущего пользователя.',
+	array(
+		new af_param('uid','ID пользователя, для которого необходимо получить список друзей, находящихся сейчас на сайте. По умолчанию ID текущего пользователя.',0),
+	),
+	array(1,2,4,5,6,7,170),
+	1,
+	'В случае успеха возвращает список идентификаторов id друзей, находяшихся сейчас на сайте, у пользователя с идентификатором uid.',
+	array('response'=>array(1,16)),	
+	0,2
+);
+
+$api_func['getProfiles'] = new api_func(
+	'getProfiles',
+	'информация о пользователях',
+	'Возвращает расширенную информацию о пользователях.',
+	array(
+		new af_param('uids','перечисленные через запятую ID пользователей или их короткие имена (screen_name). Максимум 1000 пользователей.',1),
+		new af_param('fields','перечисленные через запятую поля анкет, необходимые для получения. Доступные значения: uid, first_name, last_name, sex, bdate (birthdate), photo, photo_medium, photo_big, verified, verified_phone, online. ',0)
+		
+	),array(1,2,4,5,6,113),0,
+	'Возвращает информацию о пользователях в виде набора массива объектов, каждый из которых может иметь поля uid, first_name, last_name, sex, bdate (birthdate), photo, photo_medium, photo_big, verified (подтверждён e-mail), verified_phone (подтверждён телефон), online.<br /><br />
+Значения uid, first_name и last_name возвращаются всегда, вне зависимости от выбранных полей и их количества. ',
+	array('response'=>array(array('uid'=>16,'first_name'=>'Александр','last_name'=>'Метелица','photo'=>'http://cs1.vseti.by/u16/c0_2357.jpg','online'=>1),array('uid'=>1,'first_name'=>'Алексей','last_name'=>'Савик','photo'=>'http://cs1.vseti.by/u1/c0_3178.jpg','online'=>1)))
+);
+
+$api_func['getUserBalance'] = new api_func(
+	'getUserBalance',
+	'баланс текущего пользователя в данном приложении',
+	'Возвращает баланс текущего пользователя на счету приложения в зайчиках. Отличается от метода <a  class="wikiVsLink" href="?act=man&qfunc=secure.getBalance">secure.getBalance</a> тем, что не требует безопасного соединения с сервером API.',
+	0, array(1,2,4,5,6,500), 0, 
+	'Возвращает целое число - количество зайчиков, которые есть на балансе текущего пользователя в приложении.',
+	array('response'=>5),
+	array('secure.getAppBalance','secure.getBalance')
+);
+
+
+$api_func['getUserSettings'] = new api_func(
+	'getUserSettings',
+	'возвращает настройки приложения пользователя',
+	'Получает настройки пользователя в данном приложении.',
+	array(
+		new af_param('uid','ID пользователя. По умолчанию ID текущего пользователя. ',0),
+	), 
+	array(1,2,4,5,6), 1,
+	'Возвращает битовую маску настроек текущего пользователя в данном приложени. Например, если метод возвращает 3, это означает, что пользователь разрешил отправлять ему уведомления и получать список его друзей.',
+	array('response'=>3)
+);
+
+
+$api_func['secure.sendNotification'] = new api_func(
+	'secure.sendNotification',
+	'отправляет уведомление пользователю',
+	'Отправляет уведомление пользователю. Если последний раз пользователь заходил в приложение более чем месяц назад, то оповещение не будет отправлено.',
+	array(
+		new af_param('timestamp','UNIX-time сервера.',1),
+		new af_param('random','случайное число для обеспечения уникальности запроса ',1),
+		new af_param('uids','перечисленные через запятую ID пользователей, которым отправляется уведомление (максимум 100 штук).',1),
+		new af_param('message','текст уведомления, который следует передавать в кодировке UTF-8 (максимум 254 символа).',1),
+	),
+	array(1,2,4,5,6,113,120),
+	1,
+	'Возвращает перечисленные через запятую ID пользователей, которым было успешно отправлено уведомление.',
+	array('response'=>'1,16,29')
+);
+
+$api_func['secure.getAppBalance'] = new api_func(
+	'secure.getAppBalance',
+	'платежный баланс приложения',
+	'Возвращает платежный баланс на счету приложения в зайчиках.',
+	array(
+		new af_param('timestamp','UNIX-time сервера.',1),
+		new af_param('random','случайное число для обеспечения уникальности запроса ',1),
+	),
+	array(1,2,4,6,8,500),
+	1,
+	'Возвращает количество зайчиков, которые есть на счету приложения.',
+	array('response'=>'7'),
+	array('secure.getBalance','getUserBalance')	
+);
+
+$api_func['secure.withdrawVotes'] = new api_func(
+	'secure.withdrawVotes',
+	'списывает зайчика на счет приложения',
+	'Списывает зайчика со счета пользователя на счет приложения.',
+	array(
+		new af_param('timestamp','UNIX-time сервера.',1),
+		new af_param('random','случайное число для обеспечения уникальности запроса ',1),
+		new af_param('uid','ID пользователя',1),
+		new af_param('votes','количество списываемых с пользователя зайчиков',1),
+		new af_param('test_mode','включает тестовый режим при котором зайчика не снимаются',0),
+	),
+	array(1,2,4,6,8,113,150,151,500,502),
+	1,
+	'Возвращает количество зайчиков, которые были переведены с личного счета пользователя в приложении на счет приложения.',
+	array('response'=>'7'),
+	array('secure.addVotes','secure.transferVotes','secure.getAppBalance','secure.getBalance')
+);
+
+$api_func['secure.getBalance'] = new api_func(
+	'secure.getBalance',
+	'баланс пользователя на счету приложения',
+	'Возвращает баланс пользователя на счету приложения или на сайте.',
+	array(
+		new af_param('timestamp','UNIX-time сервера.',1),
+		new af_param('random','случайное число для обеспечения уникальности запроса ',1),
+		new af_param('uid','ID пользователя',1),
+		new af_param('personal','если равно 1 - вернёт баланс пользователя на сайте',0),
+	),
+	array(1,2,4,6,8,52,113,500),
+	1,
+	'Возвращает количество зайчиков, которые есть на балансе пользователя в приложении или на сайте.',
+	array('response'=>'7'),
+	array('secure.getAppBalance','getUserBalance')
+);
+
+$api_func['secure.addRating'] = new api_func(
+	'secure.addRating',
+	'поднимает пользователю рейтинг',
+	'Поднимает пользователю рейтинг от имени приложения.<br />Если зайчика были зачислены на счёт приложения и затем переведены в рейтинг - то автор приложения получает не стандартные 50%, согласно <a class="wikiVsLink" href="/dev.php?p=model">партнёрской модели</a>, а 20% от привлечённых средств. Это означает, что администраторы приложения фактически могут продавать рейтинг пользователям <b>на 20% дешевле</b>, чем это делает ВСети.<br /><br />
+	Пример: приложение заработало 200 зайчиков за месяц, 100 из них остались на балансе приложения, а ещё 100 были зачислены в рейтинг разным пользователям от имени приложения. Разработчик приложения получает 50+20=70 зайчиков.',
+	array(
+		new af_param('timestamp','UNIX-time сервера.',1),
+		new af_param('random','случайное число для обеспечения уникальности запроса ',1),
+		new af_param('uid','ID пользователя',1),
+		new af_param('rate','количество баллов рейтинга, которое следует добавить.',1),
+		new af_param('message','текст, прикрепляемый при повышению рейтинга. Максимальный размер - 512 символов. Кодировка - UTF-8.',0),
+		
+	),
+	array(1,2,4,5,6,8,100,113,147),
+	0,
+	'В случае успеха возвращает количество добавленных баллов.<br /><br />Хроника добавлений рейтинга приложением может быть получена методом <a class="wikiVsLink" href="?act=man&qfunc=secure.getTransactionsHistory">secure.getTransactionsHistory</a>, который возвращает в том числе и количество зайчиков, потраченное на рейтинг пользователей. ',
+	array('response'=>array('rating_added'=>2)),
+	array('secure.getTransactionsHistory')
+);
+
+
+$api_func['secure.getTransactionsHistory'] = new api_func(
+	'secure.getTransactionsHistory',
+	'история транзакций внутри приложения',
+	'Выводит историю транзакций по переводу зайчиков между пользователями и приложением.',
+	array(
+		new af_param('timestamp','UNIX-time сервера.',1),
+		new af_param('random','случайное число для обеспечения уникальности запроса ',1),
+		new af_param('type','Тип возвращаемых транзакций.<br />
+0 – все транзакции<br />
+1 – транзакции типа "пользователь → приложение"<br />
+2 – транзакции типа "приложение → пользователь"<br />
+3 – транзакции типа "пользователь → пользователь"<br />
+По умолчанию 0. ',0),
+		new af_param('uid_from','фильтр по ID пользователя, с баланса которого снимались зайчики',0),
+		new af_param('uid_to','фильтр по ID пользователя, на баланс которого начислялись зайчики',0),
+		new af_param('date_from','фильтр по дате начала. Задается в виде UNIX-time. ',0),
+		new af_param('date_to','фильтр по дате окончания. Задается в виде UNIX-time. ',0),
+		new af_param('limit','количество возвращаемых записей. По умолчанию 1000. ',0),
+	),
+	array(1,2,4,6,8,152,153,154,155,156,500),
+	1,
+	'Возвращает список транзакций, отсортированных по убыванию даты и отфильтрованных с помощью параметров type, uid_from, uid_to, date_from, date_to, limit.',
+	array('response'=>array(array('id'=>12136,'uid_from'=>16,'uid_to'=>0,'votes'=>50,'date'=>1343421339),array('id'=>12137,'uid_from'=>0,'uid_to'=>16,'votes'=>25,'date'=>1343421345))),
+	array('secure.addVotes','secure.withdrawVotes','secure.getAppBalance','secure.getBalance')
+);
+
+$api_func['photos.getAlbums'] = new api_func(
+	'photos.getAlbums',
+	'возвращает список альбомов пользователя',
+	'Возвращает список альбомов пользователя.',
+	array(
+		new af_param('uid','ID пользователя, которому принадлежат альбомы. По умолчанию – ID текущего пользователя.',0),
+		new af_param('aids','перечисленные через запятую ID альбомов.',0),
+		new af_param('need_covers','<b>1</b> - будет возвращено дополнительное поле <b>thumb_src</b>. По умолчанию поле <b>thumb_src</b> не возвращается. ',0),
+	),
+	array(1,2,4,5,6,7),
+	0,
+	'Возвращает информацию об альбомах пользователях в виде массива объектов, каждый из которых имеет поля aid, thumb_id, owner_id, title, description, created, updated, size, privacy. Если был указан параметр need_covers, среди полей будет также thumb_src - ссылка на изображение обложки альбома.',
+	array('response'=>array(array('aid'=>12136,'thumb_id'=>461,'owner_id'=>16,'title'=>'Название','description'=>'Описание','created'=>1343421339,'updated'=>1343421339,'size'=>3,'privacy'=>0))),
+	0,4
+);
+
+
+$api_func['photos.get'] = new api_func(
+	'photos.get',
+	'возвращает список фотографий в альбоме',
+	'Возвращает список фотографий в альбоме.',
+	array(
+		new af_param('uid','ID пользователя, которому принадлежит альбом с фотографиями.',1),
+		new af_param('gid','перечисленные через запятую ID альбомов.',1),
+		new af_param('aid','ID альбома с фотографиями',1),
+		new af_param('pids','перечисленные через запятую ID фотографий',0),
+		new af_param('limit','количество фотографий, которое нужно вернуть. (по умолчанию – <b>все фотографии</b>) ',0),
+		new af_param('offset','смещение, необходимое для выборки определенного подмножества фотографий. ',0),
+	),
+	array(1,2,4,5,6,7),
+	0,
+	'Возвращает информацию об альбомах пользователях в виде массива объектов, каждый из которых имеет поля aid, thumb_id, owner_id, title, description, created, updated, size, privacy. Если был указан параметр need_covers, среди полей будет также thumb_src - ссылка на изображение обложки альбома.',
+	array('response'=>array(array('id' => 'photo16_103084', 'pid' => 103084, 'aid' => "3163",'owner_id' => 16, 'src' => 'http://cs1.vseti.by/u16/3163/m_103084.jpg','src_big' => 'http://cs1.vseti.by/u16/3163/x_103084.jpg','created' => 1233578717),array('id' => 'photo16_339764', 'pid' => 339764, 'aid' => 3163,'owner_id' => 16, 'src' => 'http://cs1.vseti.by/u16/3163/m_339764.jpg','src_big' => 'http://cs1.vseti.by/u16/3163/x_339764.jpg','created' => 1246771690))),
+	0,4
+);
+
+$api_func['photos.createAlbum'] = new api_func(
+	'photos.createAlbum',
+	'создает пустой альбом для фотографий',
+	'Создает пустой альбом для фотографий.',
+	array(
+		new af_param('title','название альбома',1),
+		new af_param('privacy','уровень доступа к альбому. Значения: 0 – все пользователи, 1 – только друзья, 2 – друзья и друзья друзей, 3 - только я',0),
+		new af_param('comment_privacy','уровень доступа к комментированию альбома. Значения: 0 – все пользователи, 1 – только друзья, 2 – друзья и друзья друзей, 3 - только я',0),
+		new af_param('description','текст описания альбома',0),
+	),
+	array(1,2,4,6,7,119),
+	0,
+	'Возвращает объект альбома с полями aid, thumb_id, owner_id, title, description, created, updated, size, privacy.',
+	array('response'=>array(array('aid'=>12136,'thumb_id'=>0,'owner_id'=>16,'title'=>'Новый альбом','description'=>'Описание','created'=>1343421339,'updated'=>1343421339,'size'=>0,'privacy'=>3))),
+	array('photos.editAlbum'),4
+);
+
+
+$api_func['photos.getById'] = new api_func(
+	'photos.getById',
+	'возвращает информацию о фотографиях',
+	'Возвращает информацию о фотографиях по их идентификаторам.',
+	array(
+		new af_param('photos','перечисленные через запятую идентификаторы, которые представляют собой идущие через знак подчеркивания id пользователей, разместивших фотографии, и id самих фотографий. Чтобы получить информацию о фотографии в альбоме группы, вместо id пользователя следует указать -id группы. <blockquote>Пример значения photos: <br /><b>16_12234,photo29_55734,-495_2303</b>.</blockquote>',1)
+	),
+	array(1,2,4,6,7,200),
+	0,
+	'Возвращает информацию о фотографиях в виде массива объектов, каждый из которых имеет поля pid, aid, owner_id, src, src_big, created.',
+	array('response'=>array(array('id' => 'photo16_103084', 'pid' => 103084, 'aid' => "3163",'owner_id' => 16, 'src' => 'http://cs1.vseti.by/u16/3163/m_103084.jpg','src_big' => 'http://cs1.vseti.by/u16/3163/x_103084.jpg','created' => 1233578717),array('id' => 'photo16_339764', 'pid' => 339764, 'aid' => 3163,'owner_id' => 16, 'src' => 'http://cs1.vseti.by/u16/3163/m_339764.jpg','src_big' => 'http://cs1.vseti.by/u16/3163/x_339764.jpg','created' => 1246771690))),
+	0,4
+);
+
+
+$api_func['photos.getUploadServer'] = new api_func(
+	'photos.getUploadServer',
+	'возвращает адрес сервера для загрузки фотографии',
+	'Возвращает адрес сервера для <a href="/dev.php?p=upload">загрузки фотографий</a>. После успешной загрузки фотография может быть сохранена с помощью метода <a class="wikiVsLink" href="?act=man&qfunc=photos.save">photos.save</a>. ',
+	array(
+		new af_param('aid','ID альбома, в который необходимо загрузить фотографии.',1)
+	),
+	array(1,2,4,5,6,7,114,200,300),
+	0,
+	'Возвращает объект с полями upload_url и aid.',
+	array('response'=>array('upload_url' => 'http://cs1.vseti.by/upload.php?act=do_add_m&api=1&aid=1&mid=16&hash=8381ee5a385eb65dd6c9244c555425b&rhash=8a34f0b0827881c58e443b02aa0057d0&shash=vt9d5akn39i5v288lo3puhil97',  'aid' => 14567)),
+	array('photos.save'),4
+);
+
+
+$api_func['photos.save'] = new api_func(
+	'photos.save',
+	'сохраняет фотографии после успешной загрузки',
+	'Сохраняет фотографии после успешной загрузки.',
+	array(
+		new af_param('aid','ID альбома, в который необходимо загрузить фотографии.',1),
+		new af_param('server','параметр, возвращаемый в результате загрузки фотографий на сервер.',1),
+		new af_param('photos_list','параметр, возвращаемый в результате загрузки фотографий на сервер.',1),
+		new af_param('hash','параметр, возвращаемый в результате загрузки фотографий на сервер.',1),
+		new af_param('caption','Описание фотографии.',0)
+	),
+	array(1,2,4,5,6,7,114,118,121,122,200,300),
+	0,
+	'Возвращает массив объектов с загруженными фотографиями, каждый из которых имеет поля id, pid, aid, owner_id, src, src_big, created.',
+	array('response'=>array(array('id'=>'photo16_11291', 'pid'=>'11291', 'aid' => '14567', 'owner_id' => '16', 'src' => 'http://cs1.vseti.local/u16/1/m_63.jpg', 'src_big' => 'http://cs1.vseti.local/u16/1/x_63.jpg', 'created' => 1354650908))),
+	array('photos.getUploadServer'),4
+);
+
+$api_func['wall.post'] = new api_func(
+	'wall.post',
+	'добавляет запись на стену',
+	'Публикует новую запись на <u>своей</u> стене. Метод используется в <a href="/dev.php?p=iframe">javascript API</a>.<br /><br /> Не требует дополнительных прав доступа для приложения, но необходимо согласие пользователя на добавление сообщения, которое он увидит во всплывающем окне. <h2 class="wk_header">Пример использования</h2> <blockquote><b>VS.api(\'wall.post\', {\'owner_id\': owner_id, \'message\': msg, \'attachments\': attachments}, function(d){});</b></blockquote>',
+	array(
+		new af_param('message','текст сообщения (является обязательным, если не задан параметр <b>attachments</b>)',0),
+		new af_param('attachments','список объектов, приложенных к записи и разделённых символом ",". Поле attachments представляется в формате:<br /><blockquote><b>&#60;type&#62;&#60;owner_id&#62;_&#60;media_id&#62;,&#60;type&#62;&#60;owner_id&#62;_&#60;media_id&#62;</b></blockquote><br />
+			<b>&#60;type&#62;</b> - тип медиа-приложения:<blockquote><b>photo</b> - фотография <br/>
+ <b>video</b> - видеозапись <br/>
+ <b>audio</b> - аудиозапись</blockquote> <br/>
+ <b>&#60;owner_id&#62;</b> - идентификатор владельца медиа-приложения <br/>
+ <b>&#60;media_id&#62;</b> - идентификатор медиа-приложения. <br/>
+ <br/>
+ Например:<blockquote><b>photo16_1363,photo1_2234</b> </blockquote> <br/>
+ <br/>
+ Параметр является обязательным, если не задан параметр <b>message</b>',0),
+	),
+	array(1,2,4,5,6,7,100,10007),
+	0,
+	'В случае успеха возвращает идентификатор созданной записи. ',
+	array('response'=>array('post_id' => '318')),
+	0,0
+);
+
+$api_func['groups.isMember'] = new api_func(
+	'groups.isMember',
+	'является ли пользователь участником группы',
+	'Возвращает информацию о том является ли пользователь участником заданной группы',
+	array(
+		new af_param('gid','ID группы. ',1),
+		new af_param('uid','ID пользователя. По умолчанию ID текущего пользователя.',0),
+		new af_param('extended','1 - вернуть ответ в расширенной форме, 0 - возвращать ответ в сокращённой форме <b>(по умолчанию)</b>',0),
+	),
+	array(7,113,125,203),
+	0,
+	'Возвращает <b>1</b> в случае, если пользователь uid является участником группы с идентификатором gid, иначе <b>0</b>.</p><h2 class="wk_header">Результат, при использовании параметра extended</h2><p>Возвращает объект содержащий поля: 
+<ul class="listing">
+<li><span class="l"><b>member&nbsp;</b>–&nbsp;является ли пользователь участником сообщества <br>
+ </span></li>
+<li><span class="l"><b>request </b>–&nbsp;имеются не одобренные заявки на добавление в группу</span></li>
+<li><span class="l"><b>invitation</b> – приглашён ли пользователь в группу или встречу</li></ul>',
+	array('response'=>1),
+	0,0
+);
+
+/*
+$api_func[''] = new api_func(
+	'getUserBalance',
+	'возвращает баланс текущего пользователя в данном приложении',
+	'Возвращает баланс текущего пользователя на счету приложения в зайчиках. Отличается от метода secure.getBalance тем, что не требует безопасного соединения с сервером API.',
+	0,
+	array(1,2,4,5,6,113),
+	0
+);
+ */
+
+
+$func_cat = array(
+	'users' => array(
+		'name'=>'Пользователи',
+		'func'=>array(
+			'isAppUser',
+			'getProfiles',
+			'getUserBalance',
+			'getUserSettings'
+		),
+	),
+	'friends' => array(
+		'name'=>'Друзья',
+		'func'=>array(
+			'friends.get',	
+			'friends.getAppUsers',
+			'friends.getOnline'
+		),
+	),
+	'secure' => array(
+		'name'=> 'Серверные методы',
+		'func'=>array(
+			'secure.sendNotification',
+			'secure.withdrawVotes',
+			'secure.getAppBalance',
+			'secure.getBalance',
+			'secure.getTransactionsHistory',
+			'secure.addRating'
+		),
+	),
+	'photos' => array(
+		'name'=> 'Фотоальбомы',
+		'func'=>array(
+			'photos.getAlbums',
+			'photos.get',
+			'photos.createAlbum',
+			'photos.getById',
+			'photos.getUploadServer',
+			'photos.save',
+		),
+	),
+	'wall' => array(
+		'name' => 'Стена',
+		'func' => array(
+			'wall.post',
+		),
+	),
+	'groups' => array(
+		'name' => 'Группы',
+		'func' => array(
+			'groups.isMember',
+		),
+	)
+		
+);
+
+if(empty($qfunc)){
+	$html .= '<h2>Справочник функций</h2>';
+	$html .= '<p>Справочник содержит список методов API и подробную информацию об их использовании.</p>';
+	foreach($func_cat as $k=>$v){
+		$html .= '<h2 class="wk_header">'.$v['name'].'</h2><p>';
+		foreach($v['func'] as $fname){
+			if(isset($api_func[$fname])){
+				$html .= $api_func[$fname]->info().'<br />';
+			} else {
+				$html .= $fname.'<br>';
+			}
+		}
+		$html .= '</p>';
+	}
+} elseif(isset($api_func[$qfunc])){
+	//$html .= '<h3 class="wk_header">'.in_lnk('act=index','Главная').' &raquo; '.in_lnk('act=man','Справочник функций').' &raquo; '.$qfunc.'</h3>';
+	$html .= '<div class="left_col">'.$api_func[$qfunc]->info_full().'</div>';
+	
+	$html_right = '';
+	foreach($func_cat as $k=>$v){
+		$html_right .= '<h2 class="wk_header">'.$v['name'].'</h2><p>';
+		foreach($v['func'] as $fname){
+			if(isset($api_func[$fname])){
+				if($qfunc==$fname) {
+					$html_right .= '<b><a  class="wikiVsLink" href="?act=man&qfunc='.$api_func[$fname]->name.'">'.$api_func[$fname]->name.'</a></b><br />';
+				} else { 
+					$html_right .= '<a  class="wikiVsLink" href="?act=man&qfunc='.$api_func[$fname]->name.'">'.$api_func[$fname]->name.'</a><br />';
+				}
+			} else {
+				$html_right .= $fname.'<br>';
+			}
+				
+		}
+		$html_right .= '</p>';
+	}
+	
+} else {
+	//$html .= '<h3 class="wk_header">'.in_lnk('act=index','Главная').' &raquo; '.in_lnk('act=man','Справочник функций').' &raquo; Ошибка</h3>';
+	$html .= '<p>Ошибка. Функция не найдена.</p>';
+}
+
+
+global $new_design;
+
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+   <div id="content" class="white_page ">
+   <div class="dev_page fl_l">
+		<?=$html?>
+   </div>
+	 <div id="right_panel">
+		<?=$html_right?>
+	 </div>
+	<br class="clear"> 
+ </div><!--/content-->
+</div><!--/wrap1-->
+</div><!--/wrap2-->

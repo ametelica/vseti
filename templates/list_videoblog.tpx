@@ -1,0 +1,20 @@
+<?php
+global $datetime,$langpack,$setting;
+
+foreach($var['video'] as $v){
+	$vu = $v['uvideo_info'];
+?>
+<div class="vRow" style="width: 180px; float: left; height: 180px;">
+ <a onclick="return showVideo('<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>', '', {autoplay: 1}, event)" href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>">
+  <div>
+   <div><img src="<?=$vu['video_thumb']?>" /></div>
+  </div>
+  </a>
+  <p style=""><a href="<?=$v['author']->lnk?>" onclick="return nav.go(this, event)"><?=$v['author']->user_info['fio']?></a> - <a onclick="return showVideo('<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>', '', {autoplay: 1}, event)" href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>"><?=strcut($vu['vu_title'],80)?></a>
+  <br>
+  <small><?=$datetime->cdate($setting['setting_dateformat'], $datetime->timezone($vu['vu_date']))?><span class="divide">|</span><a href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>#comments"><?=$vu['vu_totalcomments']?> комментари<?=$langpack->dln($vu['vu_totalcomments'],'com')?></a></small>
+   </p>
+  </div>
+<? 
+	}
+?>

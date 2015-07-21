@@ -1,0 +1,234 @@
+<?php
+global $to_id;
+?>box.setOptions({hideButtons: true, title: false, width: 644, bodyStyle: 'padding: 0px; border: 0px;'});
+placeholderSetup('choose_audio_query', {back: true});
+var loading = false, objMore = ge('audio_choose_more'),
+    searchBar = ge('audio_attach_search'), searchBarWrap = ge('audio_attach_search_wrap'),
+    searchCont = ge('audio_attach_search_cont'), audioContent = ge('choose_audio_content'),
+    audioRows = ge('choose_audio_rows'), preloadRows = ge('choose_audio_preload_rows'),
+    chooseBack = false, offset = 100, count = 126
+    alWikiEditor = 0, blacklist = 0, performer = false;
+val('choose_audio_query', '');
+if (ge('choose_audio_query')) {
+  elfocus('choose_audio_query');
+  addClass(audioRows, 'light');
+}
+cur.chooseAudioQuery = '';
+cur.chooseAudioPerformerSearch = function(performer) {
+  ge('choose_audio_query').setValue(performer);
+  elfocus('choose_audio_query');
+  cur.chooseAudioQuery = '';
+  toggleClass(ge('choose_query_reset'), 'shown', !!performer);
+  cur.searchAttachTypeChanged({target: {index: 1}});
+  cur.chooseAudioSearch();
+  return false;
+}
+cur.chooseClearSearch = function(el) {
+  setStyle(el, {opacity: .6});
+  removeClass(el, 'shown');
+  ge('choose_audio_query').setValue('');
+  cur.chooseAudioQuery = '';
+  offset = 0;
+  preloadRows.innerHTML = '';
+  elfocus(ge('choose_audio_query'));
+  cur.audioChooseSearch();
+}
+cur.updateChooseList = function(e, obj) {
+  if (e && (e.keyCode == 10 || e.keyCode == 13) || cur.forceNoAutoComplete) {
+    delete cur.forceNoAutoComplete
+    delete cur.autoComplete;
+  } else {
+    cur.autoComplete = 1;
+  }
+  clearTimeout(this.filterTimeout);
+  this.filterTimeout = setTimeout((function() {
+    var str = trim(obj.value);
+    if (str == cur.chooseAudioQuery && cur.autoComplete && !cur.ignoreEqual) {
+      return;
+    }
+    toggleClass(ge('choose_query_reset'), 'shown', !!str);
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout((function() {
+      cur.chooseAudioSearch();
+    }).bind(this), 300);
+  }).bind(this), 10);
+}
+cur.chooseAudioSearch = function() {
+  var query = ge('choose_audio_query');
+  cur.chooseAudioQuery = query.getValue();
+  offset = 0;
+  preloadRows.innerHTML = '';
+  cur.audioChooseSearch();
+  return false;
+}
+cur.chooseAudioScroll = function() {
+  var st = boxLayerWrap.scrollTop, mx = 200, vis = cur.lSTLWas || (st > mx), o = 0;
+  cur.lSTL.style.marginTop = st + 'px';
+  if (!vis) {
+    if (cur.lSTLShown !== 0) {
+      hide(cur.lSTL);
+      cur.lSTLShown = 0;
+    }
+  } else {
+    if (cur.lSTLShown !== 1) {
+      show(cur.lSTL);
+      cur.lSTLShown = 1;
+    }
+    if (cur.lSTLWas && st > 500) {
+      cur.lSTLWas = 0;
+    }
+    if (st > mx) {
+      o = (st - mx) / mx;
+      if (cur.lSTLWasSet) {
+        cur.lSTLWasSet = 0;
+        val(domLC(cur.lSTL), getLang('global_to_top'));
+        removeClass(domLC(cur.lSTL), 'down');
+      }
+    } else {
+      o = (mx - st) / mx;
+      if (cur.lSTLWas) {
+        if (!cur.lSTLWasSet) {
+          cur.lSTLWasSet = 1;
+          val(domLC(cur.lSTL), '');
+          addClass(domLC(cur.lSTL), 'down');
+        }
+      }
+    }
+  }
+  setStyle(cur.lSTL, {opacity: Math.min(Math.max(o, 0), 1)});
+
+  var pos = getXY(searchBarWrap)[1], h = getSize(searchBar)[1];
+  toggleClass(searchCont, 'fixed', pos < scrollGetY());
+  setStyle(audioContent, {marginTop: (pos < scrollGetY() ? h : 0)});
+  var bt = lastWindowHeight;
+  if (isVisible(objMore) && (bt > getXY(objMore, true)[1] - (browser.msie6 ? 0 : scrollGetY()) - bt)) {
+    objMore.click();
+  }
+}
+cur.switchChooseGroupAudios = function(group) {
+  cur.chooseAudioGroup = !!group;
+  ge('choose_audio_query').setValue('');
+  cur.chooseAudioQuery = '';
+  offset = 0;
+  preloadRows.innerHTML = '';
+  cur.audioChooseSearch();
+}
+cur.audioChooseSearch = function() {
+  if (loading) return false;
+  loading = true;
+  var params = {one_page: 1, q: cur.chooseAudioQuery, al_wiki_editor: alWikiEditor, blacklist: blacklist, performer: performer, auto_complete: cur.autoComplete};
+  if (cur.chooseAudioGroup) {
+    params.tab = 'group_audios';
+  }
+  extend(params, {act: 'a_choose_audio_box', to_id: '<?=$to_id?>', offset: offset});
+  if (!offset) {
+    animate(boxLayerWrap, {scrollTop: 0}, 200);
+    addClass(ge('choose_audio'), 'loading');
+  }
+  ajax.post('audio', params, {
+    onDone: function(rows, preload, newOffset, newCount, moreLabel, rightLink) {
+      if (params.offset) {
+        var el = ce('div', {innerHTML: rows});
+        while (el.firstChild) {
+          audioRows.appendChild(el.firstChild);
+        }
+      } else {
+        audioRows.innerHTML = rows;
+      }
+      var _a = window.audioPlayer;
+      if (_a && _a.showCurrentTrack) _a.showCurrentTrack();
+      preloadRows.innerHTML = preload || '';
+      offset = newOffset;
+      count = newCount;
+      ge('audio_choose_right_link').innerHTML = rightLink || '';
+      objMore.innerHTML = moreLabel || '';
+      toggle(objMore, !!moreLabel);
+      loading = false;
+      removeClass(ge('choose_audio'), 'loading');
+    },
+    onFail: function() {
+      if (chooseBack) objMore.innerHTML = chooseBack;
+      loading = false;
+      removeClass(ge('choose_audio'), 'loading');
+    }
+  });
+}
+cur.audioChooseMore = function() {
+  if (preloadRows.firstChild) {
+    while (preloadRows.firstChild) {
+      audioRows.appendChild(preloadRows.firstChild);
+    }
+    if (offset >= count) {
+      hide(objMore);
+    }
+    return;
+  }
+  chooseBack = objMore.innerHTML;
+  objMore.innerHTML = '<img width="32" height="8" src="/images/upload'+(window.devicePixelRatio >= 2 ? '_2x' : '')+'.gif">';
+  cur.audioChooseSearch();
+}
+var searchTypes = [{i: 0, l: 'по композициям'}, {i: 1, l: 'по исполнителям'}],
+    searchBtn = geByTag1('button', ge('audio_attach_search'));
+cur.searchAttachTypeChanged = function(event) {
+  var i = event.target.index || 0;
+  if (!searchTypes[i] || !searchTypes[i].l) {
+    i = 0;
+  }
+  performer = i;
+  var text = searchTypes[i].l + '<span class="arrow"></span>';
+  cur.searchAttachTypeMenu.header.innerHTML = '<div>'+text+'</div>';
+  searchBtn.innerHTML = text;
+  if (cur.chooseAudioQuery) {
+    offset = 0;
+    preloadRows.innerHTML = '';
+    cur.audioChooseSearch();
+  }
+}
+cur.searchAttachTypeMenu = new DropdownMenu(searchTypes, {
+  target: searchBtn,
+  containerClass: 'dd_menu_stype_act choose',
+  updateTarget: false,
+  offsetLeft: 0,
+  offsetTop: 0,
+  showHover: false,
+  fadeSpeed: 0,
+  onSelect: cur.searchAttachTypeChanged
+});
+var _a = window.audioPlayer;
+if (_a && _a.showCurrentTrack) _a.showCurrentTrack();
+
+cur.lSTLDown = function(e) {
+  e = e || window.event;
+  if (checkEvent(e)) return;
+
+  if (!__afterFocus) {
+    var to = 0, st = boxLayerWrap.scrollTop;
+    if (cur.lSTLWasSet && cur.lSTLWas) {
+      to = cur.lSTLWas;
+      cur.lSTLWas = 0;
+    } else {
+      cur.lSTLWas = st;
+    }
+    boxLayerWrap.scrollTop = to;
+  }
+  return cancelEvent(e);
+}
+if (cur.lSTL) re(cur.lSTL);
+extend(cur, {
+  lSTL: boxLayerWrap.appendChild(ce('div', {id: 'layer_stl', innerHTML: '<div id="layer_stl_bg" class="fixed"></div><div id="layer_stl_cl"></div><nobr id="layer_stl_text" class="fixed">' + getLang('global_to_top') + '</nobr>', el: box.bodyNode, onclick: cancelEvent, onmousedown: cur.lSTLDown, sc: cur.chooseVideoScroll})),
+  lSTLShown: 0,
+  lSTLWas: 0,
+  lSTLWasSet: 0
+});
+setTimeout(onBodyResize, 0);
+
+box.setOptions({onClean: function() {
+  removeEvent(boxLayerWrap, 'scroll', cur.chooseAudioScroll);
+  removeEvent(ge('choose_audio_query'), 'blur', removeClass.pbind(audioRows, 'light'));
+  removeEvent(ge('choose_audio_query'), 'focus', addClass.pbind(audioRows, 'light'));
+  re(cur.lSTL);
+}});
+addEvent(boxLayerWrap, 'scroll', cur.chooseAudioScroll);
+addEvent(ge('choose_audio_query'), 'blur', removeClass.pbind(audioRows, 'light'));
+addEvent(ge('choose_audio_query'), 'focus', addClass.pbind(audioRows, 'light'));
+setStyle(audioRows, {minHeight: getSize(audioRows)[1] - 30});

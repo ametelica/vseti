@@ -1,0 +1,68 @@
+var graphdata = '<?=$var['data']?>';
+
+if (browser.flash >= 9 && 0) {
+	var vars = clone(cur.graphVars);
+	vars.graphdata = graphdata;
+	vars.div_id = '<?=$var['name']?>';
+	vars.multiple = '1';
+	extend(vars, []);
+	if (vars.show_minutes) vars['lang.dateFormats.day_fullmon_year_hour'] = vars['lang.dateFormats.day_fullmon_year_hour_min'];
+	var opts={
+	  url: '/swf/graph.swf',
+	  id: '<?=$var['name']?>',
+	  width: '100%',
+	  height: '100%'
+	}
+	var params={
+	  allowscriptaccess: 'always',
+	  wmode: 'opaque'
+	}
+	renderFlash(ge('wrapper_<?=$var['name']?>'), opts, params, vars);
+	cur.pageGraphs['<?=$var['name']?>'] = ge('<?=$var['name']?>');
+} else {
+	var canv = ce('canvas');
+  var canvasSupport = !!canv.getContext && (typeof canv.getContext('2d').fillText == 'function');
+  if (canvasSupport) {
+    cur.html5graphs = true;
+    if (!cur.graphDatas) cur.graphDatas = [];
+    if (!cur.graphUrls) cur.graphUrls = [];
+    if (!cur.graphParams) cur.graphParams = [];
+    cur.graphDatas['<?=$var['name']?>'] = graphdata;
+    cur.graphUrls['<?=$var['name']?>'] = '';
+    cur.graphParams['<?=$var['name']?>'] = {multiple: '1' == '1'};
+    ge('wrapper_<?=$var['name']?>').style.height = 'auto';
+    stManager.add('graph.js',function(){
+      if (!window.checkGraphLoaded) {
+        window.checkGraphLoaded = function(callbackId) {
+          if (window.Graph) {
+            cur.pageGraphs[callbackId] = new window.Graph(callbackId, cur.graphUrls[callbackId] ? cur.graphUrls[callbackId] : eval(cur.graphDatas[callbackId]), cur.graphParams[callbackId]);
+          } else {
+            setTimeout(function(){checkGraphLoaded(callbackId);}, 100);
+          }
+        }
+      }
+      checkGraphLoaded('<?=$var['name']?>');
+    });
+  } else {
+    if (!cur.flashNeededShown) {
+      var message = getLang('stats_you_need_flash').split('{flash_player}').join('<a href="http://get.adobe.com/flash/">Flash Player</a>');
+      showFastBox({title: getLang('stats_need_flash_title')}, message, getLang('share_go'), function() {
+        document.location = 'http://get.adobe.com/flash/';
+      }, getLang('global_cancel'));
+    }
+    cur.flashNeededShown = true;
+  }
+}
+
+<?
+if(!empty($var['tabs'])){
+	$tab_act = '';
+	$tab_ids = array();
+	foreach($var['tabs'] as $tab){
+		if(!empty($tab['active'])) $tab_act = $tab['id'];
+		$tab_ids[] = $tab['id'];	 
+	}
+	if($tab_act=='') $tab_act = $tab_ids[0];  
+	echo 'cur.initGraphHorizontalMenu(\''.$var['name'].'\', ["'.join('","',$tab_ids).'"], \''.$tab_act.'\');';
+}
+?>

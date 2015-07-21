@@ -1,0 +1,47 @@
+<?php
+global $group, $in_fave, $user, $new_design;
+
+if($group->user_rank>=0 and empty($var['only_admins'])) {
+    if($group->user_rank > 0) {
+	
+        echo '<a href="'.$group->lnk.'?act=edit">Управление сообществом</a>';
+	
+		if($group->user_level > 1) { // Фото может изменить Редактор
+        	echo '<a href="/groups.php?act=photo&gid='.$group->id.'">Изменить фотографию</a>';
+		}
+        
+        echo '<a href="/ads">Рекламировать сообщество</a>';
+    }
+    
+    if($group->group_info['group_privacy'] == 0 or $group->user_rank > 0) {
+        echo '<a href="#" onclick="return Groups.showInviteBox(event, ' . $group->id . ')">Пригласить друзей</a>';
+    }
+    
+    echo '<a href="/stats.php?gid=' . $group->id . '">Статистика сообщества</a>';
+    
+   	if($user->id == $group->group_info['group_user_id']) {
+    	echo '<a href="/groups.php?act=delete_group&gid=' . $group->id . '&hash=' . hash_get($group->id . $user->id, 16, 'gdel') . '">Удалить группу</a>';
+    }
+}
+
+if(empty($new_design)) {
+	echo '<a onclick="Groups.toggleFave(this, \'' . hash_get($user->id . $group->id, '18', 'fave') . '\', ' . ($in_fave == 1 ? 0 : 1) . ', event);"><div class="progress fl_r"></div><span>' . ($in_fave == 1 ? 'Удалить из закладок' : 'Добавить в закладки') . '</span></a>';
+}
+
+if($user->hr('group_close')) {
+    echo '<a href="#" style="color: red" onClick="var text=prompt(\'Причина закрытия?\',\'Закрыто до выяснения обстоятельств\'); if(text!=null) {window.location = \'/admin.php?act=group_close&id='.$group->id.'&cc=\'+escape(text); return false;} else {return false;}">ЗАКРЫТЬ ГРУППУ</a>';
+}
+
+if($user->id == 16 or $user->id == 1){
+    if($group->group_info['group_quality']!='2') {
+        echo '<a href="/admin.php?act=make_qual&val=2&id='.$group->id.'" style="color: red" onClick="if (confirm(\'Точно отличная?\')) {return true;} else {return false;}">Отличная группа</a>';
+    }
+    if($group->group_info['group_quality']!='1') {
+        echo '<a href="/admin.php?act=make_qual&val=1&id='.$group->id.'" style="color: red" onClick="if (confirm(\'Точно хорошая?\')) {return true;} else {return false;}">Хорошая группа</a>';
+    }
+    if($group->group_info['group_quality']!='0') {
+        echo '<a href="/admin.php?act=make_qual&val=0&id='.$group->id.'" style="color: red" onClick="if (confirm(\'Точно убрать?\')) {return true;} else {return false;}">Убрать отметку</a>';
+    }
+    echo '<a href="/gd.php?g='.$group->id.'" style="color: red" onClick="if (confirm(\'Серьёзно удалить?\')) {return true;} else {return false;}">УДАЛИТЬ ГРУППУ</a>';
+}
+?>  

@@ -1,0 +1,79 @@
+<?php
+global $path_css,$path_js,$hash,$user,$langpack;
+echo tpx('header_css');
+?>
+<style>
+#content p {
+	font-size: 14px;
+	text-align: justify;
+}
+
+#content h4{
+	font-size: 15px;
+}
+
+#content h1{
+	border-bottom: 1px solid #E8EBEE;
+  color: #368E3A;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  padding: 0 0 3px;
+  margin-bottom: 10px;
+}
+</style>
+
+<script src="<?=$path_js?>/common.js"></script>
+<link rel="stylesheet" href="<?=$path_css?>/al/common.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/rustyle.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/al/page.css" type="text/css" />
+<?
+echo tpx('header_func');
+?>
+<div id="page_body" class="fl_r">
+ <div id="header_wrap2">
+  <div id="header_wrap1">
+   <div id="header" style="">
+    <h1 id="title">
+     <a href="/start.php">Главная</a> &raquo; Уважометр
+    </h1>
+   </div>
+  </div>
+ </div>
+
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content">
+		
+		<div style="width: 550px; float: left;">
+		
+		<h1>Измеритель уважения</h1>
+		 <p>Как известно, количество друзей в профиле далеко не всегда говорит о том, сколько их на самом деле у пользователя, и какие они. Друзья в социальной сети - это люди, которым не безразлична Ваша жизнь, которые поддерживают связь, интересуются новостями, поздравляют по праздникам. Некоторые показатели вполне измеримы, поэтому мы попробовали сделать "уважометр", который находит определяет "рейтинг уважения" пользователя по тому, сколько у него друзей и подарков от них.</p>
+		 <p>Разумеется, этот показатель тоже может не отражать настоящего положения дел, но если Вы проводите много времени на сайте и по Вашему мнению у Вас много друзей, а показатели почему-то не радуют, возможно - это повод задуматься.</p> 
+		
+		</div>
+		<div style="width: 250px; float: right;">
+		<?
+			$gifts_total = $user->profile_info['html_gifts_cnt'];
+			$total_friends = $user->usersetting_info['total_friends'];
+		?>
+		
+		 <h1>Ваш показатель</h1>
+		 <p>У Вас <?=$total_friends?> дру<?=$langpack->dln($total_friends,'frn2')?> и <?=$gifts_total?> подар<?=$langpack->gifts($gifts_total)?> <br />
+<? if ($total_friends>0) { ?>		 
+		 Ваш показатель: <?=$gifts_total?>/<?=$total_friends?>*100=<b><?=round($gifts_total/$total_friends*100)?></b>
+<? } else { 
+?>	
+		Без друзей - невозможно рассчитать показатель
+<?
+}?>
+		 </p>
+		</div>
+		
+   </div><!--/content-->
+  </div><!--/wrap1-->
+ </div><!--/wrap2-->
+</div><!--/page_body-->
+<?
+echo tpx('footer');
+?>

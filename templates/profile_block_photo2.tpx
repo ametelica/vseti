@@ -1,0 +1,179 @@
+<?php
+global $owner,$xhost,$user,$rate,$is_friend,$is_fan,$in_fave,$error_header,$good_face;
+
+?><div class="user_ava_wrap"><?
+
+?><div class="ava_actions other_acts" id="ava_actions">
+	<? if($user->is_me($owner)) { ?>
+	<a onclick="Profile.newPhoto();"><span class="fl_l new_photo"></span><span>Загрузить новую фотографию</span></a>
+	<? if($owner->user_info['user_photo'] != '') { ?>
+        <a onclick="Profile.editPhoto();"><span class="fl_l edit_small"></span><span>Изменить уменьшенную копию</span></a>
+	<a onclick="Profile.deletePhoto()"><span class="fl_l delete_photo"></span><span>Удалить фотографию</span></a>
+	<? } } else { ?>
+	<a href="#" class="bad" onclick="return Profile.like(-1, '<?=hash_get($user->id.$owner->id.'-1', 16, 'lk')?>')">Не очень</a>
+	<a href="#" class="good" onclick="return Profile.like(1, '<?=hash_get($user->id.$owner->id.'1', 16, 'lk')?>')">Нравится</a>
+	<? } ?>
+</div>
+
+<?
+if($owner->user_info['user_photo'] != '' and empty($error_header)) {
+
+// Новая ширина 
+
+$photo_w = 230;
+$photo_h = $owner->user_info['user_photo_h'] * ($photo_w / $owner->user_info['user_photo_w']);
+$photo_src = $owner->user_photo("",'a');
+
+if ($owner->user_info['user_ava_effect'] > 0) {
+	echo  '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://pdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" id="lecteur" style="position: absolute" height="' . $photo_h . '" width="' . $photo_w . '"><param name="wmode" value="transparent"><param name="movie" value="' . $xhost . 'images/effects/eff_' . $owner->user_info['user_ava_effect'] . '.swf"><param name="allowScriptAccess" value="never"><embed allowscriptaccess="never" type="application/x-shockwave-flash" src="' . $xhost . 'images/effects/eff_' . $owner->user_info['user_ava_effect'] . '.swf" wmode="transparent" height="' . $photo_h . '" width="' . $photo_w . '"></object>';
+}
+
+
+
+?>
+
+<img src="<?=$photo_src?>" width="<?=$photo_w?>" height="<?=$photo_h?>" alt="" style="display: block;"/><? } else { 
+	$owner->user_info['user_photo'] = '';
+?>
+<img src="/images/<?=($owner->user_info['user_sex']==1?'1':'2')?>a.png" width="230" height="267" alt="" style="display: block;" /><? } 
+
+?></div><?
+
+if($user->user_exists == 1 and empty($error_header)) {
+	if($user->is_me($owner)) {
+?><div id="profile_actions"><? if($owner->user_info['user_video']!='') { ?>
+<? } ?><!-- <a href="#" onclick="return Profile.showFans(event);">Мои подписчики</a> --><?
+		if($owner->user_info['user_photo'] != '' or 1) {
+?><a onclick="return Profile.otherActs(this)" class="other_acts_link"><span class="other">Редактировать страницу</span></a>
+<div id="profile_other_acts" class="other_acts" onmouseout="Profile.hideOther(500)" onmouseover="Profile.otherActs()">
+  <table cellspacing="0" cellpadding="0">
+    <tr>
+      <td class="side_shadow"><div></div></td>
+      <td>
+        <div class="header" onclick="Profile.hideOther(-1)"><div><span>Редактировать страницу</span></div></div>
+        <div class="actions">
+	<a href="/profileEdit.php"><span class="fl_l edit_info"></span><span>Изменить информацию</span></a>
+	<? if(empty($owner->user_info['user_photo'])) { ?><a onclick="Profile.newPhoto();"><span class="fl_l edit_info from_webcam"></span><span>Загрузить фотографию</span></a><? } ?>
+</div>
+	
+		
+        <div class="shadow1"></div>
+        <div class="shadow2"></div>
+      </td>
+      <td class="side_shadow"><div></div></td>
+    </tr>
+  </table>
+</div>
+
+<? if(($owner->user_info['user_kr_rate']>0 or $owner->user_info['user_kr_qrate']>0) and $owner->user_info['user_id']!=75506) {?>
+<? } ?>
+</div>
+
+<? } else { ?>
+<a onclick="Profile.newPhoto();">Загрузить фотографию</a></div>
+<? } ?>
+
+<? } else {  ?>
+<div id="profile_actions">
+
+<a onclick="return Profile.otherActs(this)"><span class="other">Другие действия</span></a>
+
+<div id="profile_other_acts" class="other_acts" onmouseout="Profile.hideOther(500)" onmouseover="Profile.otherActs()">
+  <table cellpadding="0" cellspacing="0">
+    <tbody><tr>
+      <td class="side_shadow"><div></div></td>
+      <td>
+        <div class="header" onclick="Profile.hideOther(-1)"><div><span>Другие действия</span></div></div>
+        <div class="actions">
+	<a href="gifts.php?to=<?=$owner->user_info['user_id']?>" onclick="return 	Profile.showGiftBox(event);"><span>Отправить <?=$owner->user_info['user_name_dat']?> подарок</span></a>
+        <? if($is_friend) { ?>
+        <a onclick="showBox('al_friends.php', {act: 'remove_box', mid: <?=$owner->user_info['user_id']?>})"><span>Убрать из друзей</span></a>
+        <? } ?>
+        <a onclick="Profile.toggleFave(this, '<?=hash_get($owner->user_info['user_id'],18,'fv')?>', <?=($in_fave>0?0:1)?>, event);"><div class="progress fl_r"></div><span><? if($in_fave) { ?>Удалить из закладок<? } else { ?>Добавить в закладки<? } ?></span></a>
+        	<a onclick="return !showBox('reports.php', {act: 'a_report_user_box', oid: <?=$owner->id?>}, {params: {width: 410}, cache: 1}, event);"><span>Пожаловаться на страницу</span></a>
+        
+		<? if($user->hr('user_delete')) {?>
+		<a href="/admin.php?act=user_delete&id=<?=$owner->user_info['user_id']?>" style="color: red">УДАЛИТЬ ЮЗЕРА</a>
+		<? if($good_face == -1) { ?><a href="/admin.php?act=good_face&id=<?=$owner->id?>" style="color: green">ХОРОШИЙ АВАТАР</a><? } ?>
+		<? if($good_face == 1) { ?><a href="/admin.php?act=bad_face&id=<?=$owner->id?>" style="color: red">ПЛОХОЙ АВАТАР</a><? } ?>
+		<? } ?>
+		
+		<? if ($user->hr('user_kr_ban') and $owner->user_info['user_questions'] != -1) { ?>
+		<a href="#" onclick="var text=prompt('Причина закрытия?','Закрыто до выяснения обстоятельств'); if(text!=null) {window.location = '/admin.php?act=user_kr_ban&amp;id=<?=$owner->user_info['user_id']?>&amp;cc='+escape(text); return false;} else {return false;}" style="color: red">ВЫГНАТЬ ИЗ КР</a>
+		<? } ?>
+		
+		<? if($user->hr('user_kr_unban') and $owner->user_info['user_questions'] == -1) {?>
+		<a href="/admin.php?act=user_kr_unban&id=<?=$owner->user_info['user_id']?>" style="color: green">ВEРНУТЬ В КР</a>
+		<? } ?>
+		
+		<? if($user->hr('user_kr_unban') and $owner->user_info['user_questions'] >=0 and $owner->user_info['user_questions'] < 1) {?>
+		<a href="/admin.php?act=user_kr_access&id=<?=$owner->user_info['user_id']?>&access=1" style="color: green">КР - доступ на ответы</a>
+		<? } ?>
+		
+		<? if($user->hr('user_kr_unban') and $owner->user_info['user_questions'] >=0 and $owner->user_info['user_questions'] < 2) {?>
+		<a href="/admin.php?act=user_kr_access&id=<?=$owner->user_info['user_id']?>&access=2" style="color: green">КР - доступ на вопросы</a>
+		<? } ?>
+		
+		<? if($user->hr('full')) { ?>
+		<a href="/vlada.php?act=user_info&uid=<?=$owner->user_info['user_id']?>" target="_blank">информация</a>
+		<a href="/mail.php?uid=<?=$owner->user_info['user_id']?>&out=1&st=0" target="_blank">личные сообщения</a>
+		<a href="/uenter.php?u=<?=$owner->user_info['user_id']?>" style="color: orange">зайти из под юзера</a>
+		<? } ?>
+
+        </div>
+        <div class="shadow1"></div>
+        <div class="shadow2"></div>
+      </td>
+      <td class="side_shadow"><div></div></td>
+    </tr>
+  </tbody></table>
+</div>
+
+ <a href="write<?=$owner->user_info['user_id']?>" onclick="return showWriteMessageBox(event, <?=$owner->user_info['user_id']?>)">Отправить <?=$owner->user_info['user_name_dat']?> сообщение</a>
+<? if(!$is_friend) { ?>
+ <a onclick="Profile.addFriendBox()">Добавить в друзья</a>
+ <!-- <a onclick="profile.toggleFan(this, '<?=hash_get($user->user_info['user_id'].$owner->user_info['user_id'],16,'bf')?>', 1, event)"><div class="progress fl_r"></div><span><? if($is_fan) { ?>Отписаться от обновлений<? } else { ?>Подписаться на обновления<? } ?></span></a>-->
+<? } ?>
+
+</div>
+
+<? } 
+if($user->is_me($owner)) {
+?>
+<a class="module_header" href="/rate.php" onclick="return Profile.showRate()"><? } else { ?><a onclick="Profile.showVoteBox()" class="module_header">
+<? } ?>
+<div class="header_top clear_fix">
+Рейтинг
+</div>
+<div class="rate_line stage0" >
+ <div class="rate_text"><?=$rate['text']?></div>
+ <div>
+  <div class="rate_left fl_l" style="width: <?=$rate['width_left']?>px; background: url(<?=$xhost?>images/rating2.png) 100% -<?=($rate['level']+1)*28?>px no-repeat;"></div>
+  <div class="rate_right fl_r" style="width: <?=$rate['width_right']?>px;"></div>
+ </div>
+</div>
+</a>
+<? if($user->is_me($owner) and $user->user_info['user_rate'] < 30) { ?>
+<span class="rate_info">Целиком заполенная анкета даёт 100% рейтинга. Кликните по полоске, чтобы узнать подробнее.</span><br>
+<br />
+<?	
+}
+} elseif($user->user_exists == 1) {
+?>
+<div id="profile_actions">
+<? if($is_friend) { ?>
+  <a onclick="showBox('al_friends.php', {act: 'remove_box', mid: <?=$owner->user_info['user_id']?>})"><span>Убрать из друзей</span></a>
+<? } 
+
+if($user->hr('user_delete')){ ?>
+	<a href="/admin.php?act=user_restore&id=<?=$owner->user_info['user_id']?>" style="color: green">Восстановить</a>
+<? }
+
+if($user->hr('user_kr_ban') or $user->hr('user_delete') or $user->hr('user_del_view')){	?>
+  <a href="/id<?=$owner->user_info['user_id']?>?ignore=1" style="color: green">Просмотреть страницу</a><?
+}
+?>
+</div>
+<?
+}
+?>

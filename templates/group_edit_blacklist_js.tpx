@@ -1,0 +1,37 @@
+<?php
+global $group, $black_list;
+?>var msg = ge('group_bl_msg');
+if (isVisible(msg)) {
+  msg.style.backgroundColor = '#F4EBBD';
+  animate(msg, {backgroundColor: '#F9F6E7'}, 2000);
+}
+elfocus('group_bl_search');
+extend(cur, {
+  _back: {
+    text: 'Чёрный список',
+    show: [elfocus.pbind('group_bl_search'), GroupsEdit.initScroll, GroupsEdit.setActive.pbind(GroupsEdit.getsect())],
+    hide: [GroupsEdit.deinitScroll]
+  },
+  gid: <?=$group->id?>,
+  hash: '<?=hash_get($group->oid, 18, 'block')?>',
+  count: <?=intval(count($black_list))?>,
+  offset: 25,
+  moreParams: {act: 'blacklist'},
+  moreLink: 'group_users_more',
+  showMore: GroupsEdit.load,
+  lang: extend(cur.lang || {}, {
+    groups_delete_from_list: 'Удалить из списка',
+    groups_return_to_bl: 'Вернуть в список',
+    groups_X_banned_members: ["","В сообществе %s заблокированный пользователь","В сообществе %s заблокированных пользователя","В сообществе %s заблокированных пользователей"],
+    group_no_banned_users: 'Нет ни одного заблокированного пользователя'
+  })
+});
+
+if (vs.version) {
+  addEvent(window, 'load', GroupsEdit.initScroll);
+} else {
+  GroupsEdit.initScroll();
+}
+
+var preload = [50,""];
+ajax.preload(nav.objLoc[0], extend({offset: cur.offset, part: 1}, cur.moreParams), preload);

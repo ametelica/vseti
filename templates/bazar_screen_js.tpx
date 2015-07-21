@@ -1,0 +1,24 @@
+<?php
+	global $item, $pid;
+	
+	$images = array();
+	$cur_image = 0;
+	$i = 0;
+	foreach($item->get('screenshots') as $k => $image) {
+		if($pid == $k) $cur_image = $i;
+		$images[] = $item->screenshot($image, 'x');
+		$i++;
+	}
+
+?>box.setOptions({bodyStyle: 'padding: 20px;', width: 649});
+cur.bazarCurrentImage = <?=$cur_image?>;
+cur.bazarImages = <?=jenc($images)?>;
+
+cur.bazarNextImage = function() {
+	if((cur.bazarCurrentImage + 1) >= cur.bazarImages.length) {
+		cur.bazarCurrentImage = 0;
+	} else {
+		cur.bazarCurrentImage++;
+	}
+	ge('bazar_image').src = cur.bazarImages[cur.bazarCurrentImage];
+}

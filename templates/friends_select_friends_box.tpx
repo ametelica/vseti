@@ -1,0 +1,50 @@
+<?php
+global $friends, $from, $list_name, $checked, $list_id;
+
+if(trim($list_name) == '') $list_name = 'Новый список';
+?>
+<div class="flist_search_cont <? if($from == 'list' and $list_id < 26) {?>flist_two_cols<? } ?>">
+<div id="flist_helper"></div>
+<input id="flist_list_name" class="text" value="<?=$list_name?>" placeholder="Введите название списка" />
+<a id="flist_search_reset" onclick="Privacy.flistSearch(false, event);" onmouseover="setStyle(this, {opacity: 1});" onmouseout="setStyle(this, {opacity: 0.6});"></a>
+<input onkeydown="Privacy.flistSearch(this, event);" id="flist_search" class="text" placeholder="Начните вводить имя друга" />
+</div>
+<div id="flist_cont">
+<div id="flist_right_col" class="flist_col">
+  <div id="flist_right_inner">
+    <div class="summary_wrap"><div class="summary" id="flist_sel_summary">Друзья в списке</div></div>
+    <div class="flist_info no_select" id="flist_info" style="<? if(!empty($checked)) { ?>display: none;<? } ?>">Вы можете выбрать друзей в списке слева.</div>
+    <div id="flist_sel_list" class="flist_list_items"><?
+		
+		if(!empty($checked)) {
+			foreach($friends as $f){
+				if(!$f->user_exists or !in_array($f->id, $checked)) continue;
+				echo '<div id="flist_sel_cell'.$f->id.'"><table class="flist_cell no_select" cellspacing="0" cellpadding="0" onmousedown="return Privacy.flistSelect('.$f->id.', this, event);"><tr>
+<td class="flist_item_img"><img align="center" src="'.$f->user_photo().'"/></td>
+<td><div class="flist_item_name">'.$f->title.'</div></td>
+<td class="flist_item_act"><div class="flist_item_action"></div></td>
+</tr></table></div>';
+			}
+		}
+		?> 
+    </div>
+  </div>
+</div>
+<div id="flist_scroll_wrap">
+  <div class="flist_col flist_left_col">
+    <div class="summary_wrap"><div class="summary">Ваши друзья</div></div>
+    <div id="flist_all_list" class="flist_list_items">
+<?
+			foreach($friends as $f){
+				if(!$f->user_exists or (!empty($checked) and in_array($f->id, $checked))) continue;
+				echo '<div id="flist_cell'.$f->id.'"><table class="flist_cell no_select" onmousedown="return Privacy.flistSelect('.$f->id.', this, event);"><tr>
+<td class="flist_item_img"><img align="center" src="'.$f->user_photo().'"/></td>
+<td><div class="flist_item_name">'.$f->user_info['fio'].'</div></td>
+<td class="flist_item_act"><div class="flist_item_action"></div></td>
+</tr></table></div>';
+			}
+?>
+    </div>
+  </div>
+</div>
+</div>

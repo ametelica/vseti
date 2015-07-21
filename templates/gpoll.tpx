@@ -1,0 +1,149 @@
+<?php
+global $new_design, $tab2, $groups, $tab2, $vote_objects, $max_votes, $voted, $user, $can_vote;
+if($new_design) echo tpx('header_design');
+
+$tabs = array(
+	'terms' => 'Условия',
+	'social' => 'Социальные',
+	'creative' => 'Творчество',
+	'fun' => 'Развлечения',
+);
+
+?>
+<style>
+.group_list_row {
+	margin-bottom: 10px;
+	position: relative;
+}
+.group_row_info {
+	width: 576px;
+}
+.vote_perc {
+	height: 30px;
+	background: #76B046;
+	width: 50%;
+}
+.vote_cnt {
+    color: #76B046;
+    font-size: 29px;
+    font-weight: bold;
+    padding-top: 22px;
+    position: absolute;
+    right: 10px;
+    text-align: center;
+    top: 10px;
+    width: 106px;
+}
+.ainol {
+	width: 400px;
+	height: 187px;
+	background: url(/images/ainol.png) no-repeat;
+	margin: 60px auto 20px;
+	text-align: center;
+	padding-top: 124px;
+	text-shadow: 1px 1px 1px black;
+}
+.vote_bar {
+	height: 30px;
+	width: 580px;
+	background: rgba(200,200,200,.5);
+	position: absolute;
+	bottom: 10px;
+	line-height: 26px;
+	text-align: center;
+}
+.vote_button {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+}
+.group_row_labeled, .group_row_status_wrap {
+	width: auto;
+}
+#main_panel {
+	float: none;
+	width: auto;
+}
+</style>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+      <div class="t_bar clear_fix">
+	  <ul class="t0">
+		<?
+			foreach($tabs as $k => $v) {
+				echo '<li '.($tab2 == $k ? 'class="active_link"' : '').'><a href="/gpoll.php?tab='.$k.'" onclick="return nav.go(this, event)">
+        <b class="tab_word">'.$v.'</b>
+      </a>
+    </li>';
+			}
+		?>
+	  </ul>
+      </div>
+	<div id="main_panel2">
+	<? if(!$can_vote) { ?>
+		<div class="message">Голосование окончено! Всем спасибо за участие!</div>
+	<? } ?>
+
+	<? if($tab2 == 'terms') { ?>
+		
+			<h4>Конкурс</h4>
+			Мы предлагаем проголосовать пользователям за группу в каждой номинации: "Социальная", "Творчество" и "Развлечения". Для избежания накруток, право голоса имеют только те пользователи, кто <b>подтвердил свой телефонный номер</b>.<br /><br />
+
+			Победители будут поддержаны рекламой и награждены Android-планшетами. Голосование завершится 25 ноября 2013, в 18:00.<br /><br />
+
+			<a href="http://vseti.by/club157572">Здесь можно обсудить ход конкурса</a>
+			<?
+				echo '<div class="ainol"><span style="font-size: 16px; color: white">До окончания голосования осталось:<br /> <span id="bxxt1" >-</span></span></div><center>* Один из главных призов, планшет Ainol Novo 7 Legend</center>';
+
+?>
+			
+		
+	<? } ?>
+	<? if($tab2 == 'social') { ?>
+		<!--<p>Сообщества, посвящённые актуальным социальным вопросам</p>-->
+		<div id="groups_list_content" class=""></div>
+	<? } ?>
+
+	<? if(!empty($groups[$tab2])) { 
+		foreach($vote_objects as $g) {
+			//dmp($g);
+
+			$votes_pers = round($g->group_info['votes']/$max_votes * 100) ;
+			?>
+
+			<div class="group_list_row clear_fix">
+					<div class="fl_l group_row_photo">
+<a href="<?=$g->lnk?>">
+<img class="groups_row_img" src="<?=$g->photo('b')?>">
+</a>
+</div>
+
+<div class="group_row_info fl_l">
+<div class="group_row_labeled">
+<a href="<?=$g->lnk?>">
+<b><?=strcut($g->title, 64)?></b>
+</a>
+</div>
+<div class="group_row_labeled"><?=strcut(ChopText(strip_tags($g->group_info['group_desc']), 40), 170)?></div>
+
+<div class="vote_bar"><? if($voted) { ?><div class="vote_perc" style="width: <?=$votes_pers?>%"></div><? } else { ?>Проголосуйте, чтобы увидеть результаты<? } ?></div>
+</div>
+
+<div class="vote_cnt"><?=$voted ? $g->group_info['votes'] : '' ?></div>
+<? if($can_vote) { ?>
+<div class="button_green vote_button">
+<button onclick="gvote(<?=$g->group_info['group_id']?>, '<?=hash_get($user->id . $g->group_info['group_id'], 18, 'asd')?>')">Голосовать</button>
+</div>
+<? } ?>
+
+
+			</div>
+<?
+		}
+	} ?>
+
+	</div>
+    </div>
+  </div>
+</div>

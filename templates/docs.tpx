@@ -1,0 +1,49 @@
+<?php
+
+global $new_design, $docs, $user, $owner, $langpack, $can_edit;
+if($new_design) echo tpx('header_design');
+
+if($owner->oid < 0) {
+	$summary = $docs['total'] > 0 ? $docs['total'] . ' документ' . $langpack->dln($docs['total'], 'file') : 'Пока нет ни одного документа';
+	$can_edit = $owner->user_level > 1;
+} else {
+	$summary = 'У ' . ($user->is_me($owner) ? 'Вас' : $owner->user_info['user_name_gen']) . ($docs['total'] > 0 ? ' ' . $docs['total'] . ' документ' . $langpack->dln($docs['total'], 'file') : ' пока нет ни одного документа');
+	$can_edit = $user->is_me($owner);
+}
+
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><div id="docs_search_bar" class="docs_search_bar">
+<div id="invite_button" class="fl_r button_green">
+	<? if($can_edit) { ?><button onclick="Docs.addDocBox()">Добавить документ</button><? } ?>
+</div>
+  <div class="docs_loading_bar"></div>
+  <div id="docs_reset" class="docs_reset" onmouseover="setStyle(this, {opacity: 1});" onmouseout="setStyle(this, {opacity: 0.6});" onclick="Docs.updateList(event, false);"></div>
+  <input type="hidden" id="docs_search" onkeydown="Docs.updateListSoon(event, this);" onpaste="Docs.updateList(event, this);" oncut="Docs.updateList(event, this);" onfocus="addClass(ge('docs_list_cont'), 'docs_search_focus');" onblur="removeClass(ge('docs_list_cont'), 'docs_search_focus');" />
+</div>
+<div class="summary_wrap"><div id="docs_summary" class="summary"><?=$summary?></div></div>
+<table class="docs_layout" cellspacing="0" cellpaddings="0" width="100%">
+<tr>
+<td id="docs_list_cont" class="docs_list">
+<div id="docs_list"><?=tpx('doc_rows', array('list' => $docs['data']))?></div>
+<div id="docs_search_summary_cont" class="summary_wrap"><div id="docs_search_summary" class="summary"></div></div>
+<div id="docs_search_list"></div>
+<div id="show_more" class="show_more" style="display: none;">
+  <a onclick="Docs.showMore(true)" class="docs_more">
+    <div id="docs_more_progress" class="progress"></div>
+    <div id="docs_more_text">
+      Показать ещё
+    </div>
+  </a>
+</div>
+<div id="page_end"></div>
+</td>
+<!--<td class="docs_side_panel">
+<div id="docs_side_filter">
+<div id="docs_section_all" class="side_filter cur_section" onmousedown="return nav.change({section:'all'});" onmouseover="addClass(this, 'side_filter_over');" onmouseout="removeClass(this, 'side_filter_over');">Все документы</div><div id="docs_section_sent" class="side_filter" onmousedown="return nav.change({section:'sent'});" onmouseover="addClass(this, 'side_filter_over');" onmouseout="removeClass(this, 'side_filter_over');">Отправленные</div>
+</div>
+</td>-->
+</tr>
+</table></div>
+  </div>
+</div>

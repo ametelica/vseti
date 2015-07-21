@@ -1,0 +1,77 @@
+<?php
+	global $board, $posts, $limit, $topic_id, $topic, $user, $post_id, $topic_open, $poll, $scroll, $offset;
+	$preload = array($posts['total'], $limit * 2);
+	if($posts['total'] <= $limit) {
+		$preload[] = '';
+	} else {
+		$preload[] = tpx('board_topic_rows', array('posts' => array_slice($posts['comments'], $limit, $limit)));
+	}
+	$preload[] = array();
+	
+	if(!empty($poll)) {
+		echo tpx('board_poll_block_js');
+	}
+?>
+showBackLink('<?=$board->owner->lnk?>', '<?=$board->owner->title?>');
+cur.lang = extend(cur.lang || {}, {
+  board_msgs_in_topic: ["","В теме %s сообщение","В теме %s сообщения","В теме %s сообщений"],
+  board_no_msgs_in_topic: 'В теме нет сообщений',
+  board_new_topic_title: 'Новое название темы:',
+  board_edit_topic: 'Редактирование темы',
+  board_sure_delete_topic: 'Вы уверены, что хотите удалить эту тему?',
+
+  board_create_voting: 'Прикрепить опрос',
+  voting_sure_del_quiz: 'Вы уверены, что хотите удалить опрос?',
+  voting_settings: 'Настройки опроса',
+  dont_attach: 'Не прикреплять',
+  board_add_attach: 'Прикрепить',
+
+  attachments_limit: ["","Одна запись не может содержать более %s вложения.","Одна запись не может содержать более %s вложений.","Одна запись не может содержать более %s вложений."]
+});
+var bottom = <?=($scroll ? 'true' : 'false')?>;
+var st = '<? if($post_id > 0) echo 'post' . $board->oid . '_' . $post_id; ?>';
+if (st) {
+  st = ge(st);
+}
+if (st) {
+  bottom = getXY(st)[1];
+  st.style.backgroundColor = 'rgba(107, 160, 63, 0.3)';
+  //animate(st, {backgroundColor: '#EDF1F5'}, 200, animate.pbind(st, {backgroundColor: '#FFF'}, 5000));
+}
+
+Board.initTopic({
+	start: <?=intval($offset)?>,
+	offset: <?=intval($limit)?>,
+	count: <?=intval($posts['total'])?>,
+	limit: 4096,
+	perpage: <?=intval($limit)?>,
+	topic: '<?=$topic_id?>',
+	owner: <?=intval($board->oid)?>,
+	hash: '<?=hash_get($user->id, 12, 'btp')?>',
+	url: '/topic<?=$topic_id?>',
+	bottom: bottom,
+	privacy: {
+		"topic_action":[0,0,[]],
+		"topic_action_types":<? if($topic['aid'] == $user->id or $board->can_edit) { echo jenc($board->topic_actions($topic)); } else { ?>[]<? } ?>,
+		"topic_action_lists":[]
+	},
+	canreply: '<?=$topic_open?>',
+	names: <?=jenc(mem_links($posts['user_ids'], ', '))?>,
+	media: [["photo","Фотографию"],["video","Видеозапись"],["audio","Аудиозапись"],["doc","Документ"]],
+	updates: {
+	"queue":{"key":"3SjJYcS4k8PwFp1E8eIXWj0k7ADnw42AbnwB5a4gUGb9fAFG8wrHkLMB","ts":"1772578632"},
+	"skin":{
+		"post":"<div id=\"post%post_raw%\" class=\"bp_post\" onmouseover=\"wall.replyOver('%owner_id%topic_%post_id%')\" onmouseout=\"wall.replyOut('%owner_id%topic_%post_id%')\"><table class=\"bp_table\" cellspacing=\"0\" cellpadding=\"0\"><tr>\n  <td class=\"bp_thumb_td\">\n    <a class=\"bp_thumb\" href=\"%link%\" onclick=\"return nav.go(this, event)\"><img width=\"50\" src=\"%photo%\" \/><\/a>%online%\n  <\/td>\n  <td class=\"bp_info\">\n    <div class=\"bp_author_wrap\"><a class=\"bp_author\" href=\"%link%\" onclick=\"return nav.go(this, event)\">%name%<\/a><\/div>\n    <div id=\"bp_data%post_raw%\">%text%%media%<\/div>\n    <div class=\"bp_bottom clear_fix\">\n      <div class=\"bp_edited_by\"><\/div>\n      <div class=\"like_wrap fl_r\" onclick=\"wall.like('%owner_id%topic_comment%post_id%', '1400224317_3314f2f5bcd409f4ab'); event.cancelBubble = true;\" onmouseover=\"wall.likeOver('%owner_id%topic_comment%post_id%')\" onmouseout=\"wall.likeOut('%owner_id%topic_comment%post_id%')\">\n  <span class=\"like_link fl_l\" id=\"like_link%owner_id%topic_comment%post_id%\">Мне нравится<\/span>\n  <i class=\"no_likes fl_l\" id=\"like_icon%owner_id%topic_comment%post_id%\"><\/i>\n  <span class=\"like_count fl_l\" id=\"like_count%owner_id%topic_comment%post_id%\"><\/span>\n<\/div>\n      <div class=\"fl_l\"><a class=\"bp_date\" href=\"\/topic%topic_raw%?post=%post_id%\" onclick=\"return nav.go(this, event)\">%date%<\/a>%actions%<\/div>\n      <div class=\"fl_l progress bp_progress\"><\/div>\n    <\/div>\n  <\/td>\n<\/tr><\/table><\/div>",
+  		"sep":"<span class=\"divide\">|<\/span>",
+  		"act_edit":"<a onclick=\"Board.editPost(%post_id%)\">Редактировать<\/a>",
+  		"act_delete":"<a onclick=\"Board.deletePost(%post_id%)\">Удалить<\/a>",
+  		"act_report":"<a onclick=\"Board.reportPost(%post_id%)\">Это спам<\/a>",
+  		"act_reply":"<a onmousedown=\"return cancelEvent(event)\" onclick=\"Board.replyPost(%post_id%, %post_uid%)\">Ответить<\/a>",
+  		"title":<?=jenc($topic['body'])?>
+  	},
+	"admin_level":0,
+	"date_format":"сегодня в {hour}:{minute}",
+	"time_system":false,"qversion":1}
+ }, <?=jenc($preload)?>);
+
+//elfocus('board_q');

@@ -1,0 +1,22 @@
+<?php
+//TODO сделать новости в группах
+global $group;
+if $group->group_info['show_news']==1 and ($group->group_info.group_news!= '' or $group->user_rank > 0)}
+<div class="flexOpen" id="recentNews">
+   <div class="bOpen">
+    <div class="flexHeader clearFix" onclick="return collapseBox('recentNews', this, 0.90, 0.50, true)" onfocus="blur()">
+     <div><h2>{if $group->group_info.group_news_title!=''}{$group->group_info.group_news_title}{else}{$group_main23}{/if}</h2></div>
+	{if $group->user_rank > 0}
+     <div class="flexEdit">
+      <a href="/pages.php?o=-{$group->group_info.group_id}" onclick="event.cancelBubble = true;">{$group_main21}</a>
+     </div>
+     {/if}
+    </div>
+   </div>
+   <div class="c">
+    <div class="flexBox clearFix">
+     <div class="dataWrap"><div class="wikiText">{$group->group_info.group_news}</div></div>
+    </div>
+   </div>
+  </div>
+{/if}

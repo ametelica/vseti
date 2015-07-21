@@ -1,0 +1,28 @@
+<?php
+global $albums_total, $albums_html, $user, $owner, $langpack;
+if($albums_total > 0 or $user->is_me($owner)){
+?>
+<div class="module clear album_module" id="profile_albums">
+ <a href="/albums<?=$owner->id?>" class="module_header" onclick="return nav.go(this, event)">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/albums<?=$owner->id?>'"><?=nf($albums_total)?></span>
+    Фотоальбомы
+  </div>
+  <div class="p_header_bottom">
+   <span class="fl_r">Все</span>
+   <? echo $albums_total>0?$albums_total.' альбом'.$langpack->dln($albums_total,'file'):'Нет альбомов' ?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+  <?
+  if($albums_total > 0) {
+  	echo $albums_html;
+  } else { 
+		?><div class="fallback"><a href="/photos.php?act=new">Добавить</a> новый альбом</div><?
+	}
+  ?>
+ </div>
+</div>	
+<?	
+}
+?>

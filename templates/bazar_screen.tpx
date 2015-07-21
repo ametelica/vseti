@@ -1,0 +1,5 @@
+<?php
+global $item;
+
+echo '<center><img id="bazar_image" src="' . $item->screenshot(rq('pid'), 'x') . '" onclick="cur.bazarNextImage()" /></center>';
+?>

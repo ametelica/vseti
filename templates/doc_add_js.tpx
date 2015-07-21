@@ -1,0 +1,273 @@
+<?php
+global $uplink, $user, $doc, $oid;
+
+if(!empty($doc)) { ?>
+box.setOptions({bodyStyle: 'padding: 16px 14px 20px 14px;'});
+box.removeButtons();
+box.addButton('Отмена', box.hide, 'no');
+box.addButton('Сохранить', function() {
+  ajax.post('docs.php', {
+    act: 'a_edit_doc',
+    hash: '<?=hash_get($user->id . $doc->owner_id . $doc->id, 12, 'edoc')?>',
+    oid: <?=intval($doc->owner_id)?>,
+    did: <?=intval($doc->id)?>,
+    title: ge('docs_title_text').value,
+    tags: ge('docs_tags_text').value,
+    type: window.radioBtns['docs_file_type'].val
+  }, {
+    onDone: function(res, val) {
+      if (res == '1') {
+        var changed = false;
+        for (var i in cur.docs) {
+          var doc = cur.docs[i];
+          var obj = ge('docs_file_<?=intval($doc->owner_id)?>_<?=intval($doc->id)?>');
+          if (doc[0] == <?=intval($doc->id)?> && doc[4] == <?=intval($doc->owner_id)?> && obj) {
+            doc[2] = val[0];
+            doc[6] = val[1];
+            obj.innerHTML = Docs.getDocHTML(doc);
+            changed = true;
+          }
+        }
+        box.hide();
+        if (changed) {
+          Docs.indexDocs();
+        }
+      } else {
+        notaBene('docs_'+res+'_text');
+      }
+    },
+    showProgress: box.showProgress,
+    hideProgress: box.hideProgress
+  });
+}, 'yes');box.setOptions({bodyStyle: 'position: relative'});
+
+<?
+
+// Скрипты для загрузки нового документа
+} else {
+?>cur.uploadedDocData = {
+  file: ''
+}
+
+cur.saveUploadedDoc = function() {
+  ajax.post('docs.php', extend(cur.uploadedDocData, {
+    act: 'a_save_doc',
+    title: val('docs_title_text'),
+    type: window.radioBtns['docs_file_type'].val,
+    tags: val('docs_tags_text')
+  }), {
+    onDone: function(res) {
+      box.hide();
+      if (cur.module != 'docs' && cur.oid) {
+        nav.go('/docs?oid=' + cur.oid, false, {onDone: function() {
+          cur.__phinputs = cur.__phinputs || [];
+          globalHistoryDestroy(nav.objLoc[0]);
+        }});
+      } else if (window.Docs) {
+        Docs.addDoc(res);
+      } else {
+        nav.reload();
+      }
+    },
+    onFail: function(text) {
+      ge('docs_upload_error').innerHTML = text;
+      show('docs_upload_error');
+      return true;
+    },
+    showProgress: box.showProgress,
+    hideProgress: box.hideProgress
+  });
+};
+
+if (cur.uploadedDocData.file) {
+  var data = (cur.uploadedDocData.file || '').split('|');
+  val('docs_title_text', data[5] || 'Документ');
+  box.removeButtons();
+  box.addButton('Отмена', box.hide, 'no');
+  box.addButton('Сохранить', cur.saveUploadedDoc, 'yes');
+}
+var uploadObj = Upload.init('docs_upload_cont', '<?=$uplink['link']?>', {"act":"add_doc","aid":0,"gid":<?=$oid < 0 ? -$oid : 0?>,"mid":<?=$user->id?>,"hash":"<?=$uplink['hash']?>","rhash":"<?=$uplink['rhash']?>","vs":1,"upldr":1}, {
+  file_name: 'file',
+
+  file_size_limit: 1024*1024*50, // 50Mb
+  file_types_description: 'Documents',
+  file_types: '*.*;',
+
+  lang: {"button_browse":"Выбрать файл","switch_mode":"Если у Вас возникли проблемы с загрузкой файла, Вы можете воспользоваться {link}стандартным{\/link} загрузчиком.","cannot_upload_title":"Ошибка","cannot_upload_text":"Загрузка документов в данный момент недоступна. Попробуйте повторить операцию позже."},
+
+  onUploadStart: function(i, res) {
+    if (Upload.types[i] == 'form') {
+      show(box.progress);
+    }
+    ge('docs_upload_error').innerHTML = 'Не удалось загрузить файл. Файл не должен быть исполняемым, а его размер не должен превышать 50 Мб.';
+    hide('docs_upload_error');
+    curBox().changed = true;
+  },
+  onUploadComplete: function(i, res) {
+    var obj;
+    try {
+      obj = eval('(' + res + ')');
+    } catch(e) {
+      obj = q2ajx(res);
+    }
+    cur.uploadedDocData = obj;
+    var data = (obj.file || '').split('|');
+
+    var ext = (data[5] || '').toLowerCase();
+
+    val('docs_title_text', data[5] || 'Документ');
+    if (data.length < 3) {
+      hide(box.progress);
+      var errCont = ge('docs_upload_error');
+      if (obj && obj.error == 'wrong_arch_file') {
+        errCont.innerHTML = 'Архив содержит недопустимый файл.';
+      } else {
+        errCont.innerHTML = 'Не удалось загрузить файл. Файл не должен быть исполняемым, а его размер не должен превышать 50 Мб.';
+      }
+      show(errCont);
+      Upload.embed(i);
+      return false;
+    }
+    hide('docs_add_box');
+    show('docs_save_box');
+    hide(box.progress);
+    box.removeButtons();
+    box.addButton('Отмена', box.hide, 'no');
+    box.addButton('Сохранить', cur.saveUploadedDoc, 'yes');
+  },
+
+  onUploadProgress: function(i, bytesLoaded, bytesTotal) {
+    if (!ge('form'+i+'_progress')) {
+      var obj = Upload.obj[i], objHeight = getSize(obj)[1], tm = objHeight / 2 + 10;
+      var node = obj.firstChild;
+      while (node) {
+        if (node.nodeType == 1) {
+          if (node.id == 'uploader'+i && browser.msie) {
+            setStyle(node, {position: 'relative', left: '-5000px'});
+          } else {
+            setStyle(node, {visibility: 'hidden'});
+          }
+        }
+        node = node.nextSibling;
+      }
+      obj.appendChild(ce('div', {innerHTML: '<div class="docs_progress_wrap">\
+        <div id="form' + i + '_progress" class="docs_progress" style="width: 0%;"></div>\
+      </div></div>'}, {height: tm + 'px', marginTop: -tm + 'px'}));
+    }
+    var percent = intval(bytesLoaded / bytesTotal * 100);
+    setStyle(ge('form' + i + '_progress'), {width: percent + '%'});
+  },
+
+  onUploadError: function(i, result) {
+    hide(box.progress);
+    var errCont = ge('docs_upload_error');
+    errCont.innerHTML = 'Не удалось загрузить файл. Файл не должен быть исполняемым, а его размер не должен превышать 50 Мб.';
+    show(errCont);
+    Upload.embed(i);
+  },
+
+  clear: 1,
+  type: 'doc',
+  max_attempts: 1,
+  server: <?=$user->user_info['user_cs']?>,
+  error: 1,
+  error_hash: '84568a7f564e0d19cbf40aa5f44e9147',
+  dropbox: 'docs_dropbox'
+});
+box.setOptions({bodyStyle: 'position: relative'});
+
+<? } ?>
+
+cur.tagsDD = new TagsDD('docs_tags_text', {
+  width: 378,
+  placeholder: 'Введите метку',
+  url: 'docs.php',
+  params: {
+    act: 'a_suggestion',
+    type: 'default'
+  }
+});
+
+window.radioBtns = window.radioBtns || {};
+var r = window.radioBtns['docs_file_type'] = {
+  els: {
+    0: ge('docs_file_type_0'),
+    2: ge('docs_file_type_2'),
+    3: ge('docs_file_type_3'),
+    4: ge('docs_file_type_4')
+  },
+  val: <?=empty($doc) ? 0 : intval($doc->type)?>
+};
+cur.docTags = {};
+cur.docTags[r.val] = cur.tagsDD.tags;
+cur.docChangeType = function(num, start) {
+    if (num == r.val && !start) return true;
+    var tags = cur.docTags[num];
+    cur.docTags[r.val] = cur.tagsDD.tags;
+    if (num == 2) { // uni
+      cur.tagsDD.setData({
+        steps: [{
+          placeholder: 'Название учебного заведения',
+          params: {
+            act: 'a_suggestion',
+            type: 'uni'
+          }
+        },{
+          placeholder: 'Название предмета',
+          params: {
+            act: 'a_suggestion',
+            type: 'uni_subj'
+          }
+        },{
+          placeholder: 'Тип работы',
+          params: {
+            act: 'a_suggestion',
+            type: 'uni_kind'
+          }
+        },{
+          placeholder: 'Введите курс или семестр',
+          params: {
+            act: 'a_suggestion',
+            type: 'uni_course'
+          }
+        }],
+        tags: tags || [],
+        params: {
+          act: 'a_suggestion',
+          type: 'uni_def'
+        }
+      });
+    } else if (num == 3) {
+      cur.tagsDD.setData({
+        steps: [{
+          placeholder: 'Укажите автора',
+          params: {
+            act: 'a_suggestion',
+            type: 'lit_author'
+          }
+        },{
+          placeholder: 'Введите жанр или тип произведения',
+          params: {
+            act: 'a_suggestion',
+            type: 'lit_genre'
+          }
+        }],
+        tags: tags || [],
+        params: {
+          act: 'a_suggestion',
+          type: 'lit'
+        }
+      });
+    } else {
+      cur.tagsDD.setData({
+        steps: [],
+        tags: tags || false ,
+        params: {
+          act: 'a_suggestion',
+          type: 'default'
+        }
+      });
+    }
+  return radiobtn(ge('docs_file_type_'+num), num, 'docs_file_type');
+}
+cur.docChangeType(r.val, true);

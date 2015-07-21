@@ -1,0 +1,30 @@
+<?php
+global $on_page, $total, $owner;
+?><div class="fans_box">
+  <a class="fl_r tb_close" onclick="curBox().hide()">Закрыть</a>
+  <div class="tb_title" id="tb_title<?=$tb_id?>">Подписчики <?=$owner->user_info['user_name_gen']?> (<?=$total?>)</div>
+  <div class="tb_tabs_wrap" id="tb_tabs_wrap<?=$tb_id?>">
+    <div id="tb_tabs<?=$tb_id?>"><div class="tb_tabs clear_fix" class="clear_fix">
+      <div class="progress fl_r tb_prg" id="tb_<?=$tb_id?>_prg"></div><div class="fl_l summary_tab">
+  <a class="summary_tab2" id="tbt_<?=$tb_id?>_idols" onmousedown="curBox().tbTab('idols')">
+    <div class="summary_tab3">
+      <nobr>Интересные страницы</nobr>
+    </div>
+  </a>
+</div><div class="fl_l summary_tab_sel">
+  <a class="summary_tab2" id="tbt_<?=$tb_id?>_fans" onmousedown="curBox().tbTab('fans')">
+    <div class="summary_tab3">
+      <nobr>Подписчики</nobr>
+    </div>
+  </a>
+</div><div id="fans_idol_search" class="fl_r" style="display: none">
+  <div id="fans_reset_search" onclick="FansBox.resetSearch()"></div>
+  <input type="text" class="text" id="fans_idol_search_inp" placeholder="Поиск" onkeyup="FansBox.moreIdols(false)" onfocus="addClass(ge('fans_rowsidols'), 'fans_search_focused')" onblur="removeClass(ge('fans_rowsidols'), 'fans_search_focused')" />
+</div>
+    </div><div class="tb_tabs_sh"></div></div>
+  </div>
+  <div class="unshown" id="tb_<?=$tb_id?>_idols"></div><div id="tb_<?=$tb_id?>_fans"><div class="fans_rows" id="fans_rowsfans"><?=tpx('fans_box_rows', $var)?>	
+		</div>
+		<a class="fans_more_link" id="fans_more_linkfans" onclick="FansBox.more()" <? if($total <= $on_page) { ?>style="display: none;"<? } ?>>Показать всех подписчиков</a>
+<div class="fans_more_prg" id="fans_more_prgfans"></div></div>
+</div>

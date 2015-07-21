@@ -1,0 +1,146 @@
+<?php
+global $hotnews, $allnews, $active_users, $smenu, $xhost, $act, $new_design;
+
+
+if($new_design) { 
+echo tpx('header_design');
+
+global $rubrics, $rubric_names;
+
+?>
+
+<style>
+.start_news .rubric {
+	width: 275px;
+	float: left;
+	margin-right: 15px;
+}
+.start_news .rubric .list_news a {
+	display: block;
+	padding: 9px 0;
+	border-bottom: gray 1px solid;
+}
+.start_news .rubric .list_news a table {
+	border-collapse: collapse;
+}
+.start_news .rubric .list_news a table td {
+	padding: 0px;
+}
+.start_news .rubric .rubric_name {
+	background: rgba(26,26,26,.6);
+	margin: 10px 0 5px;
+	color: white;
+	font-weight: bold;
+	padding: 3px 5px;
+}
+</style>
+<div id="wrap2">
+ <div id="wrap1">
+  <div id="content">
+   <div id="main" class="table start_news">
+   
+<div class="table_row">
+<div class="col_left dgray">
+	<h2><!--Случайные афиши--></h2>
+</div>
+<div class="col_right">
+<?
+	$rubrics_cnt = array();
+	foreach($rubrics as $rid => $news) {
+		$rubrics_cnt[$rid] = count($news);
+	}
+	
+	arsort($rubrics_cnt);
+	//dmp($rubrics_cnt);
+	
+	foreach($rubrics_cnt as $rid => $cnt) {
+		$news = $rubrics[$rid];
+		echo '<div class="rubric"><div class="rubric_name">'.$rubric_names[$rid].'</div><div class="list_news">';
+		foreach($news as $nid => $n) {
+			echo '<a class="clear_fix" href="'.$n['lnk'].'" target="_blank"><table><tr>'.(empty($n['img']) ? '' : '<td>'.$n['img'].'</td>').'<td>'.$n['title'].'</td></tr></table></a>';
+		}
+		echo '</div></div>';
+	}
+?>
+</div>
+</div>
+    
+   </div>
+  </div>
+  </div>
+</div>
+
+
+<? } else { ?>
+<div id="wrap2">
+ <div id="wrap1">
+  <div id="content" style="background: #bad8f2 url(<?=$xhost?>images/start_bg.jpg) no-repeat;">
+   <div id="main">
+   	
+	<div id="start_menu"><?=start_menu($smenu, $act)?></div>
+   	
+    <div class="rightColumn2">
+     <div class="pb bc3">
+      <div class="pbt">
+       <div><h2>Активные читатели</h2></div>
+      </div>
+    
+      <div class="c">
+       <div class="bp5">
+        <ul class="notes_titles">
+<? foreach($active_users as $au) {
+	echo '<li class="navina src5"><a href="'.$au['user']->lnk.'">'.$au['user']->user_info['fio'].' ('.$au['cnt'].')</a></li>';
+} ?>        
+       </ul>
+     </div>
+    </div>
+    </div>
+   </div><!-- /rightColumn2 -->
+   
+   <div class="leftColumn2">
+   </div><!-- /leftColumn2 -->
+  
+   <div class="leftColumn" style="clear: left">
+       <div class="pb bc2">
+        <div class="pbt">
+         <div><h2>Самые кликабельные</h2></div>
+       </div>
+       <div class="c">
+       <div class="whenOpen">
+   <div class="flexBox clearFix bPad">
+    <?=tpx('list_news',array('news'=>$hotnews))?>
+   </div>  
+  </div><!-- whenOpen -->
+    </div>
+    </div>
+    
+   </div><!-- /leftColumn -->
+   
+   
+   <div class="rightColumn" style="float: left">
+   
+    <div class="pb bc6">
+       
+        <div class="pbt">
+         <div><h2>Свежие новости</h2></div>
+       </div>
+    
+       <div class="c">
+       
+       <div class="whenOpen">
+   
+   <div class="flexBox clearFix bPad">
+   <?=tpx('list_news',array('news'=>$allnews))?>
+   </div>  
+  </div><!-- whenOpen -->
+    </div>
+    </div>
+   
+   
+   </div><!-- /rightColumn -->
+   <br class="clear">   
+   </div>
+  </div>
+ </div>
+</div>
+<? } ?>

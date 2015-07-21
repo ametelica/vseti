@@ -1,0 +1,40 @@
+<?php
+	global $search;
+?><table id="search_table" class="search_table">
+  <tr>
+    <td id="results" class="results highlight video_results">
+    	<?=$var['result']?>
+    </td>
+    <td id="filters_td" class="filters">
+      <div id="search_filters">
+        
+  <form id="filter_form" name="filter_form">
+    <input type="hidden" id="q" name="c[q]" value="<?=$search?>" />
+    <input type="hidden" id="section" name="c[section]" value="video" />
+    <input type="hidden" id="c[sort]" name="c[sort]" value="2" /><div id="video_hd_filters">
+  <div class="filter_main">
+    Качество
+  </div>
+  <div class="inner_filter" id="events_filter">
+    <input type="hidden" name="c[hd]" id="hd" value="0" />
+  </div>
+</div><div class="noselect clear_fix filter_main " onselectstart="return false">
+  <div class="text fl_l">Длительность</div>
+</div><input type="hidden" id="c[length]" name="c[length]" value="" /><div class="inner_filter">
+  <div id="cLength" class="control">
+    <div class="radiobtn on" onclick="cur.onLengthChanged(this, 0);"><div></div>Любые</div>
+    <div class="radiobtn " onclick="cur.onLengthChanged(this, 1);"><div></div>Короткие</div>
+    <div class="radiobtn " onclick="cur.onLengthChanged(this, 2);"><div></div>Длинные</div>
+  </div>
+</div><div class="noselect clear_fix filter_shut" onclick="searcher.toggleFilter(this, 'extra_filter');" onselectstart="return false" style="display: none;">
+  <div class="text fl_l">Безопасный поиск</div>
+  <div class="arrow fl_l"><div class="arrow_back"></div></div>
+</div><div style="display: none;" class="inner_filter" id="extra_filter">
+  <input type="hidden" name="c[adult]" id="adult" value="0" />
+  <input type="hidden" name="no_adult" id="no_adult" value="1" />
+</div>
+  </form>
+      </div>
+    </td>
+  </tr>
+</table>

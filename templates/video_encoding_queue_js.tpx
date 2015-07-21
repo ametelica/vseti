@@ -1,0 +1,1 @@
+showBackLink('/start.php?act=video', 'Видео');

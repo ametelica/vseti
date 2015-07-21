@@ -1,0 +1,56 @@
+<?php
+global $datetime, $setting, $comment_time, $post_source, $post_id, $user;
+$comment = $var['comment'];
+$now = $_SERVER['REQUEST_TIME'];
+
+// Приватность
+
+if($comment['privacy'] > 0 and $comment['aid'] != $user->id) {
+	$owner = pdata($comment['oid']);
+	if($comment['oid'] > 0) {
+		$owner->privacy_load();
+							//$privacy_profile = $owner->chk_access($user, $owner->privacy_info['privacy_profile']['src']);
+		$privacy_wall = $owner->privacy_info['privacy_wall']['src'];
+		$privacy = $owner->chk_access($user, $privacy_wall);
+		
+		if(!$privacy) $comment['delete'] = 2;
+	} else {
+		$privacy = 1;
+	}
+}
+
+//dmp($comment);
+
+if(empty($comment['delete'])) {
+	if(!empty($comment['full'])){
+		if(!empty($var['show_full'])) {
+			$page_text = ChopText(nl2br($comment['full']));
+		} else {
+			$page_text = '<span>'.ChopText(nl2br($comment['body'])).'<br></span><a class="wall_post_more" onclick="hide(this, this.previousSibling);show(this.nextSibling);return false;">Показать полностью...</a><span style="display: none">'.ChopText(nl2br($comment['full'])).'</span>';
+		}
+	} else {
+		$page_text = ChopText(nl2br($comment['body']));
+	}
+} else {
+	if($comment['delete'] == 2) {
+		$page_text = '<div class="error">Исходное сообщение недоступно из-за настроек приватности</div>';
+	} else {
+		$page_text = '<div class="error">Исходное сообщение удалено</div>';
+	}
+}
+
+//echo '<pre>'.print_r($comment, true).'</pre>';
+
+?><div class="wall_<?=empty($var['reply']) ? 'post' : 'reply' ?>_text"><?= $page_text ?></div><?
+if(empty($comment['delete'])) {
+	if ($comment['media'] != '') {
+		echo tpx('wall_media_block', $comment);
+	}
+
+	// подпись собщения                    
+	if (!empty($comment['opt']['s'])) {
+		$author_user = pdata($comment['opt']['o']);
+		echo '<div class="wall_signed"><a class="wall_signed_by" href="' . $author_user->lnk . '" onclick="return nav.go(this, event)">' . $author_user->title . '</a></div>';
+	}
+}
+?>

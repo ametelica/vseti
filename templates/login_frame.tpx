@@ -1,0 +1,81 @@
+<?php
+global $path_js,$path_css,$setting,$user,$spage,$langpack,$znav, $global_lang_num;
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru" id="vseti">
+<head>
+<link href="/favicon.png" rel="shortcut icon">
+<title><?=$spage->title?></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- Счастья, радости, добра Вам и Вашим близким! 
+эти слова разлетаются по Беларуси по 7-10 млн. в сутки,
+и не важно что Вы их не видите на странице -->
+<script type="text/javascript" src="/al_loader.php?act=nav&v=4658"></script>
+
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var pp_gemius_identifier = new String('nSBAq3dR61ArGT_2Ie_DkJbBDtYIiE8neyj.yOwbU2v.B7');
+var pp_gemius_hitcollector = 'gaby1.hit.gemius.pl';
+//--><!]]>
+</script>
+<script type="text/javascript" src="<?=$path_js?>/xgemius.js"></script>
+
+<script type="text/javascript">
+var new_design = 1;
+var vs = {
+  al: parseInt('3') || 4,
+  id: <?=$user->id?>,
+  new_design: <?=intval($new_design)?>,
+  intnat: '' ? true : false,
+  host: '<?=$setting['host']?>',
+  lang: <?=$global_lang_num?>,
+  rtl: parseInt('') || 0,
+  version: 4658,
+  zero: false,
+  contlen: 136663,
+  loginscheme: 'http',
+  ip_h: '5572072ca4639acd63',
+  navPrefix: '/'
+}
+
+window.locDomain = vs.host.match(/[a-zA-Z]+\.[a-zA-Z]+\.?$/)[0];
+var _ua = navigator.userAgent.toLowerCase();
+if (/opera/i.test(_ua) || !/msie 6/i.test(_ua) || document.domain != locDomain) document.domain = locDomain;
+var ___htest = (location.toString().match(/#(.*)/) || {})[1] || '';
+if (vs.al != 1 && ___htest.length && ___htest.substr(0, 1) == vs.navPrefix) {
+  if (vs.al != 3 || vs.navPrefix != '!') {
+    location.replace(location.protocol + '//' + location.host + '/' + ___htest.replace(/^(\/|!)/, ''));
+  }
+}
+<?=$spage->static_js();?>
+var lastWindowHeight = 0;
+</script>
+<?=$spage->static_html();?>
+</head>
+
+<body onresize="onBodyResize()" class="is_rtl"><div id="system_msg" class="fixed"></div><div id="utils"></div><div id="layer_bg" class="fixed"></div><div id="layer_wrap" class="scroll_fix_wrap fixed"><div id="layer"></div></div><div id="box_layer_bg" class="fixed"></div><div id="box_layer_wrap" class="scroll_fix_wrap fixed"><div id="box_layer"><div id="box_loader"><div class="loader"></div><div class="back"></div></div></div></div><div id="stl_left"></div><div id="stl_side"></div> 
+<script type="text/javascript">domStarted();</script>
+<div class="scroll_fix_wrap" id="page_wrap">
+	 
+<?=$var['html']?>
+
+<div id="login_footer">
+	<a href="/help.php?page=authors">О нас</a>
+	<a href="/dev.php">Разработчикам</a>
+	<a href="/blog.php">Блог</a>
+	<a href="/help.php?page=adv">Реклама</a>
+	<a href="http://m.vseti.by">Мобильная версия</a>
+	<a target="_blank" href="https://play.google.com/store/apps/details?id=com.vsetiby.vs
+">Android-приложение</a>
+</div>
+
+</div><!--/page_wrap-->
+<noindex>
+<script type="text/javascript">
+<?=$var['js']?>
+<? if(!empty($var['json'])) { ?>
+handlePageParams(<?=jenc($var['json'])?>);
+<? } ?>
+</script>
+</body>
+</html>

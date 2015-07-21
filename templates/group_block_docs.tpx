@@ -1,0 +1,38 @@
+<?php
+global $group, $langpack, $is_group_private;
+
+if($group->group_info['show_docs'] > 0 and !$is_group_private) {
+if($group->group_info['html_docs_cnt'] > 0 or $group->user_level > 1) {
+?>
+<div class="module clear page_list_module" id="group_links">
+    <a href="/docs-<?=$group->id?>" class="module_header">
+  <div class="header_top clear_fix">
+    <span class="right_link fl_r"><?=$group->group_info['html_docs_cnt']?></span>
+    Документы
+  </div>
+  <div class="p_header_bottom">
+    <span class="fl_r"></span>
+    <?=$group->group_info['html_docs_cnt']?> документ<?=$langpack->dln($group->group_info['html_docs_cnt'], 'file')?>
+  </div>
+</a>
+  <div class="module_body clear_fix">
+      <? 
+    if($group->group_info['html_docs_cnt']>0) {
+    foreach($group->group_info['html_docs'] as $d) { ?>
+<div class="page_doc">
+<div class="page_doc_cont">
+<a class="page_doc_name" target="_blank" href="<?=$d['lnk']?>"><?=strcut($d['title'], 50)?></a>
+<br>
+<div class="page_doc_date"><?=$d['info']?></div>
+</div>
+</div>
+<? } } else {
+		?><a class="page_module_upload" onclick="!checkEvent(event) && !cancelEvent(event) && showBox('docs.php', {act: 'add_box', oid: cur.oid}, {stat: ['docs.css'], params: {width: 410, bodyStyle: 'padding: 0px; position: relative;', dark: 1}});" href="/docs-<?=$group->id?>">
+<span class="page_docs_upload_label">Добавить документ</span>
+</a><?
+	} ?>
+
+  </div>
+</div>
+<? }
+} ?>

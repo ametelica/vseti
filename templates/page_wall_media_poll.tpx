@@ -1,0 +1,17 @@
+<?php
+	global $wall, $langpack;
+	$poll = new se_poll2($var['oid'], $var['id']); 
+	$post_uid = $var['oid'] . '_' . $var['post_id'];
+	
+	//dmp($var);
+	//dmp($wall);
+	
+?><div class="page_media_poll_wrap">
+	<div class="page_media_poll_title clear_fix">
+		<span class="fl_r page_media_poll_desc"><?=$poll->anonym ? 'Анонимное' : 'Открытое'?> голосование</span>
+			<?=$poll->title?>
+	</div>
+	<div id="post_poll<?=$post_uid?>" class="page_media_poll">
+		<?=tpx('page_wall_media_poll_body', array('poll' => $poll, 'post_uid' => $post_uid))?>
+	</div>
+</div>

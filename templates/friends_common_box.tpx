@@ -1,0 +1,1 @@
+<div id="common_friends_box" class="common_friends_box"><?=tpx('friends_common_box_rows', $var)?></div>

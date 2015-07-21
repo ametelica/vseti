@@ -1,0 +1,13 @@
+<?
+global $new_design, $user;
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+ <div id="wrap1">
+  <div id="content" class="white_page" style="padding-top: 50px;">
+   <div class="message">Ваш IP: <?=$user->ip?><br />
+ВСети считает, что Вы <?=($user->byfly?'':'НЕ')?> из Беларуси<br />
+   </div>
+  </div>
+ </div>
+</div>

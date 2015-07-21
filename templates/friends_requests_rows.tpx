@@ -1,0 +1,56 @@
+<?php
+global $langpack, $user;
+$i = 0;
+foreach ($var['friends']['users'] as $fid) {
+	$friend = pdata($fid);
+	$suid = $user->id . '_' . $fid;
+	?>
+	<div <? if ($var['no_deny']) { ?>id="suggestion<?=$suid?>"<? } ?> class="user_block <? if ($i == 0) { ?>user_block_first<? } ?> common request clear_fix">
+		<? if ($var['no_deny']) { ?>
+			<div class="fl_r">
+				<div class="delete_row">
+					<div id="delete_row<?=$suid?>" onmouseout="Friends.deactiveDeleteRow('<?=$suid?>')" onmouseover="Friends.activeDeleteRow('<?=$suid?>', 'Больше не показывать')" onclick="Friends.deleteRow('<?=$suid?>', '<?=hash_get($suid, 16, 'comm')?>');" style="background-color: rgb(255, 255, 255);"></div>
+				</div>
+			</div>
+		<? } ?>
+	  <div class="friends_bigph_wrap fl_l" onmouseover="Friends.bigphOver(this, <?= $friend->id ?>)">
+	    <a class="img" href="<?= $friend->lnk ?>" onclick="return nav.go(this, event);"><img class="friends_photo_img" src="<?= $friend->photo('b') ?>" /></a>
+	  </div>
+	  <div class="info_no_actions fl_l">
+	    <div class="friends_field"><a href="<?= $friend->lnk ?>" onclick="return nav.go(this, event);"><b><?= $friend->title ?></b></a></div>
+			<div class="friends_field"><?= empty($var['friends']['messages'][$fid]) ? '' : $var['friends']['messages'][$fid] ?></div>
+			<? if ($friend->user_info['online']) { ?><div class="online">ВСети</div><? } ?>
+			<?
+			if (!empty($var['friends']['common_friends'][$friend->id])) {
+				echo tpx('friends_common_block', array('friend' => $friend, 'common' => $var['friends']['common_friends'][$friend->id]));
+			}
+			?>
+	    <div class="controls clear_fix"><div id="request_controls_<?= $friend->id ?>"><div class="button_green fl_l"><button id="accept_request_<?= $friend->id ?>" onclick="Friends.acceptRequest(<?= $friend->id ?>, '<?= hash_get($user->id, 32, 'frnd') ?>', this)">Добавить в друзья</button></div>
+	<? if (!$var['no_deny']) { ?><a class="deny_request fl_l" id="deny_request_<?= $friend->id ?>" onclick="Friends.declineRequest(<?= $friend->id ?>, '<?= hash_get($friend->id . $user->id, 32, 'frnd') ?>', false, 0)">Оставить в подписчиках</a><a class="deny_request fl_l" id="deny_request_<?= $friend->id ?>" onclick="Friends.declineRequest(<?= $friend->id ?>, '<?= hash_get($friend->id . $user->id, 32, 'frnd') ?>', false, 1)"><?= $friend->user_info['sex'] == '1' ? 'Сударыня' : 'Сударь' ?>, вы навязчивы</a><? } ?></div></div>
+	  </div>
+	</div>
+	<?
+	$i++;
+} /* ?>
+
+
+  <div class="user_block common  clear_fix"id="suggestion4803497_1677095" onmouseover="Friends.rowOver('4803497_1677095')" onmouseout="Friends.rowOut('4803497_1677095')">
+  <div class="fl_r">
+  <div class="delete_row">
+  <div id="delete_row4803497_1677095" onclick="Friends.deleteRow('4803497_1677095', 'bce308e244c1ed2f2b');" onmouseover="Friends.activeDeleteRow('4803497_1677095', 'Больше не показывать')" onmouseout="Friends.deactiveDeleteRow('4803497_1677095')"></div>
+  </div>
+  </div>
+  <div class="friends_bigph_wrap fl_l" onmouseover="Friends.bigphOver(this, 1677095)">
+  <a class="img" href="/v.butsko" onclick="return nav.go(this, event);"><img class="friends_photo_img" src="https://pp.vk.me/c5217/u1677095/d_e5d53d37.jpg" /></a>
+  </div>
+  <div class="info_no_actions fl_l">
+  <div class="friends_field"><a href="/v.butsko" onclick="return nav.go(this, event);"><b>Василий Бутько</b></a></div>
+  <div class="friends_field">ВГУ им. Машерова (бывш. ВГПИ) &#39;02</div>
+
+
+  <div class="common_friends_label">У Вас с Василием <a onclick="return Friends.showCommonBox(event, 1677095, '4198185252200b42fb');" href="/friends?filter=common&id=1677095">10 общих друзей</a></div><div class="common_friends"><a href="/antipragmatic" title="Виолетта Гончарова"><img width="32" src="https://pp.vk.me/c409624/v409624321/4a0d/_qK4RUXE1RU.jpg"/></a><a href="/inha_m" title="Инга Макеева"><img width="32" src="https://pp.vk.me/c323529/v323529889/b977/5bnciuHEzPM.jpg"/></a><a href="/kuleshou" title="Александр Кулешов"><img width="32" src="https://pp.vk.me/c319018/v319018613/3c8f/k2QCykBRIt8.jpg"/></a><a href="/id3639686" title="Максим Шеин"><img width="32" src="https://pp.vk.me/c323326/v323326686/64ce/0oxYugHicd0.jpg"/></a><br class="clear" /></div>
+  <div class="controls clear_fix"><div id="request_controls_1677095"><div class="button_blue fl_l"><button id="accept_request_1677095" onclick="Friends.acceptRequest(1677095, '65b180e614d726f160', this)">Добавить в друзья</button></div>
+  <a class="deny_request fl_l" id="deny_request_1677095" onclick="Friends.declineRequest(1677095, 'bce308e244c1ed2f2b')">Оставить в подписчиках</a></div></div>
+  </div>
+  </div><? */
+?>

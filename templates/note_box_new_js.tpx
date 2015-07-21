@@ -1,0 +1,50 @@
+<?php 
+global $user;
+
+?>wkcur.editor = new WkEditor('wke_cont', {
+  source: ge('wke_textarea'),
+  buttons: {
+    bold: [0, 0, 'Жирный'],
+    italic: [0, -20, 'Курсивный'],
+    left: [0, -80, 'Выровнять по левому краю'],
+    center: [0, -100, 'Выровнять по центру'],
+    right: [0, -120, 'Выровнять по правому краю'],
+    list: [0, -140, 'Маркированный список', 'Элемент списка'],
+    h1: [0, -180, 'Добавить заголовок', 'Введите текст заголовка'],
+    h2: [0, -200, 'Добавить подзаголовок', 'Введите текст заголовка'],
+    h3: [0, -220, 'Добавить подзаголовок второго уровня', 'Введите текст заголовка'],
+    blockquote: [0, -360, 'Добавить цитату', 'Текст цитаты'],
+    url: [0, -300, 'Добавить ссылку', 'Удалить ссылку'],
+    image: [0, -240, 'Добавить фотографию'],
+    video: [0, -260, 'Добавить видеозапись'],
+    audio: [0, -280, 'Добавить аудиозапись']
+  },
+  mode: [0, -340, 'Режим wiki-разметки', 'Визуальный режим редактирования'],
+  lang: {
+    too_long: 'Страница слишком длинная. Пожалуйста, сократите её.'
+  },
+  onPlainToggle: function(on) {
+    if (on) {
+      show('wk_wiki_help');
+    } else {
+      hide('wk_wiki_help');
+    }
+  },
+  onSwitchMode: function() {
+    WkView.onScroll(false, true);
+  },
+  note: '<?=$user->id?>',
+  oid: <?=$user->id?>,
+  isLayer: true,
+  onChange: window.WkView ? WkView.onChange : false
+});
+wkcur.newEditor = true;
+
+wkcur.pageTitle = ge('wk_page_title');
+if (wkcur.pageTitle) {
+  placeholderSetup(wkcur.pageTitle, {back: true});
+  wkcur.pageTitle.focus();
+}
+setTimeout(function() {
+  wkcur.editor.checkFocus();
+}, 0);

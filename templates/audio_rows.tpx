@@ -1,0 +1,62 @@
+<?php
+global $setting, $user, $owner;
+
+//dmp($var);
+
+$add_hash = hash_get($user->id, 12, 'adda');
+
+if (isset($var['musiclist'])) {
+	$musiclist = $var['musiclist'];
+} else {
+	global $musiclist;
+}
+
+if (!empty($musiclist) or !empty($var['search'])) {
+	foreach ($musiclist as $m) {
+		$muid = $m[0] . '_' . $m[1];
+		?><div class="audio  fl_l" id="audio<?= $muid ?>" onmouseover="addClass(this, 'over');" onmouseout="removeClass(this, 'over');">
+		  <a name="<?= $muid ?>"></a>
+		  <div class="area clear_fix" onclick="if (cur.cancelClick){ cur.cancelClick = false; return false;} playAudioNew('<?= $muid ?>')">
+		    <div class="play_btn fl_l">
+		      <div class="play_btn_wrap"><div class="play_new" id="play<?= $muid ?>"></div></div>
+		      <input type="hidden" id="audio_info<?= $muid ?>" value="<?= $m[2] ?>,<?= $m[3] ?>" />
+		    </div>
+		    <div class="info fl_l">
+		      <div class="title_wrap fl_l" onmouseover="setTitle(this);"><b><a href="/search?c[q]=<?= urlencode($m[5]) ?>&c[section]=audio&c[performer]=1" onclick="if (checkEvent(event)) { event.cancelBubble = true; return}; Audio.selectPerformer(event, '<?= $m['music_artist'] ?>'); return false"><?= $m[5] ?></a></b> &ndash; <span class="title"><?= empty($m[7]) ? $m[6] : "<a href=\"\" onclick=\"Audio.showLyrics('" . $muid . "','" . $m[7] . "',0); return cancelEvent(event);\">" . $m[6] . "</a>" ?></span><span class="user" onclick="cur.cancelClick = true;"></span></div>
+		      <div class="actions">
+						<? if (($user->is_me($owner) or ($owner->oid < 0 and $owner->user_rank > 0)) and empty($var['search'])) { ?>
+			        <div class="audio_remove_wrap fl_r" onmouseover="Audio.rowActive(this, 'Удалить аудиозапись', [9, 5, 0]);" onmouseout="Audio.rowInactive(this);" onclick="Audio.deleteAudio('<?= $muid ?>'); return cancelEvent(event)" id="remove<?= $muid ?>">
+								<div class="audio_remove"></div>
+							</div><div class="audio_edit_wrap fl_r" onmouseover="Audio.rowActive(this, 'Редактировать аудиозапись', [9, 5, 0]);" onmouseout="Audio.rowInactive(this);" onclick="Audio.editAudio('<?= $muid ?>', event);">
+								<div class="audio_edit"></div>
+							</div>
+						<? } elseif ($owner->oid < 0 and $owner->user_rank > 0) { ?>
+							<div class="audio_add_wrap fl_r" onclick="Audio.addShareAudio(this, <?= $m[1] ?>, <?= $m[0] ?>, '<?= $add_hash ?>', 1, 0); return cancelEvent(event);" onmouseout="Audio.rowInactive(this);" onmouseover="Audio.rowActive(this, 'Добавить в аудиозаписи сообщества', [9, 5, 0]);" style="opacity: 0.4;">
+								<div class="audio_add"></div></div>
+						<? } elseif($m[9]) { ?>
+							<div class="audio_add_wrap fl_r" onclick="Audio.addShareAudio(this, <?= $m[1] ?>, <?= $m[0] ?>, '<?= $add_hash ?>', 0, 0); return cancelEvent(event);" onmouseout="Audio.rowInactive(this);" onmouseover="Audio.rowActive(this, 'Добавить в мои аудиозаписи', [9, 5, 0]);"><div class="audio_add"></div></div>
+						<? } ?>
+						<div class="audio_download_wrap fl_r" onmouseover="Audio.rowActive(this, 'Скачать аудиозапись', [9, 5, 0]);" onmouseout="Audio.rowInactive(this);" onclick="Audio.downloadAudio('<?= $muid ?>'); return cancelEvent(event)" id="download<?= $muid ?>">
+								<div class="audio_download"></div>
+							</div>
+		      </div>
+		      <div class="duration fl_r"><?= $m[4] ?></div>
+		    </div>
+		  </div>
+		  <div id="lyrics<?= $muid ?>" class="lyrics" nosorthandle="1"></div>
+		</div><?
+			}
+		} else {
+			global $album_id;
+			
+			if($album_id > 0) {
+				$msg = 'В альбоме ещё нет аудиозаписей.';
+			} elseif($user->is_me($owner)) {
+				$msg = 'У Вас ещё нет аудиозаписей.';
+			} else {
+				$msg = 'У пользователя ещё нет аудиозаписей.';
+			}
+
+			echo '<div id="not_found" class="info_msg">'.$msg.'</div>';
+		}
+?>

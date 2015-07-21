@@ -1,0 +1,30 @@
+<?php
+global $group, $langpack;
+if($group->group_info['show_audio'] > 0 and ($group->group_info['html_audio_cnt']>0 or $group->user_rank>0)) {
+?>
+<div class="module clear audios_module" id="group_audios">
+<a href="/audios-<?=$group->id?>" onclick="return nav.go(this, event)" class="module_header">
+    <div class="header_top clear_fix">
+        <span class="right_link fl_r"><?=$group->group_info['html_audio_cnt']?></span>
+        Аудиозаписи
+    </div>
+<? if($group->group_info['html_audio_cnt']>0) { ?>
+  <div class="p_header_bottom">
+    <span class="fl_r"></span>
+    <?=$group->group_info['html_audio_cnt']?> аудиозапис<?=$langpack->dln($group->group_info['html_audio_cnt'],'zap')?>
+  </div>
+<? } ?>
+</a>
+  <div class="module_body clear_fix">
+<?
+    if($group->group_info['html_audio_cnt'] > 0) {
+			echo tpx('group_block_audio_body',array('audio'=>$group->group_info['html_audio']));
+		} else {
+        echo '<div class="fallback">В группе нет <a href="/audio.php?act=new&gid='.$group->id.'">ни единой</a> аудиозаписи.</div>';
+        }
+?>
+  </div>
+</div>
+<?
+}
+?>

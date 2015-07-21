@@ -1,0 +1,156 @@
+<?php
+global $owner, $user, $on_page, $section, $friendlists, $friends, 
+				$total_online, $total_friends, $total_requests, $total_common, $section_total, $total_fans,
+				$langpack;
+
+$nnm = new NameProcessor();
+
+$edit = $user->is_me($owner);
+$who = $edit ? 'Вас' : $owner->user_info['user_name_gen'];
+$who_ins = $edit ? 'Вас' : $nnm->firstName($nnm->gcaseIns, $owner->profile_info['name'], $owner->profile_info['sex']);
+ 
+?>
+showBackLink('<?=$owner->lnk?>', '<?=$owner->title?>');
+Friends.init({
+  friendsList: {},
+  shownFriends: <?=($section_total > $on_page ? $on_page : $section_total)?>,
+  friendsPerPage: <?=$on_page?>,
+  sectionCount: <?=$section_total?>,
+  section: "<?=$section?>",
+  summaryLang: {"all":["","У <?=$who?> %s друг","У <?=$who?> %s друга","У <?=$who?> %s друзей"],"all_no":"Ни одного друга не найдено","online":["","У <?=$who?> %s друг ВСети","У <?=$who?> %s друга ВСети","У <?=$who?> %s друзей ВСети"],"online_no":"Ни одного друга не найдено","phonebook":["","%s друг указал телефон","%s друга указали телефон","%s друзей указали телефон"],"phonebook_no":"Ни одного друга не найдено","requests":["","%s человек подал заявку на добавление Вас в друзья","%s человека подали заявку на добавление Вас в друзья","%s человек подали заявку на добавление Вас в друзья"],"all_requests":["","%s человек подписался на Ваши обновления","%s человека подписались на Ваши обновления","%s человек подписались на Ваши обновления"],"out_requests":["","Вы подали заявку и подписались на %s человека","Вы подали заявку и подписались на %s человек","Вы подали заявку и подписались на %s человек"],"search":["","Найден %s друг","Найдено %s друга","Найдено %s друзей"],"search_no":"Ни одного друга не найдено","members":null,"members_no":"В группе нет неприглашенных участников","list":["","В списке %s друг","В списке %s друга","В списке %s друзей"],"list_no":"Список пуст","pub_list":["","В публичном списке %s друг","В публичном списке %s друга","В публичном списке %s друзей"],"pub_list_no":"Список пуст","suggestions":"Показаны люди, которых Вы можете знать","remove_all_requests":"Удалить все заявки","subscribe_all_requests":"Перевести все заявки в подписчиков","recent":"Недавно добавленные друзья","list_edit":"Редактировать список","list_start_edit":"Наполнить список","list_delete":"Удалить список","import":"Возможные друзья, найденные через поиск друзей","to_users_page":"<a href=\"<?=$owner->lnk?>\">К странице <?=$owner->user_info['user_name_gen']?><\/a>","not_found_filter":"По заданным параметрам не найден ни один друг.<br>{link}Сбросить фильтр{\/link}","not_found":"Ни одного друга не найдено.","list_not_found_filter":"Не найдено ни одного друга в данном списке.<br>{link}Сбросить фильтр{\/link}","list_not_found":"<? if($edit) { ?>{link}Добавить друзей в список »{\/link}<? } else {?>Список пуст<? } ?>","friends_sort_by_date":"Сортировать по дате добавления","friends_sort_by_common":"Сортировать по количеству общих друзей","friends_sugg_summary":["","Вам советуют добавить в друзья %s человека","Вам советуют добавить в друзья %s человек","Вам советуют добавить в друзья %s человек"],"global_write_msg":"Написать сообщение","friends_add_act":"Добавить в друзья","friends_add_cancel":"Отменить заявку в друзья","friends_gift_act":"Отправить подарок"<? if(!$user->is_me($owner)) { ?>,"common":["У Вас с <?=$who_ins?> ","У Вас с <?=$who_ins?> %s общий друг","У Вас с <?=$who_ins?> %s общих друга","У Вас с <?=$who_ins?> %s общих друзей"]<? } ?>,"requests_title":"Заявки в друзья"},
+  publicLists: {"28":"Лучшие друзья","29":"Родственники","27":"Коллеги","25":"Друзья по вузу","26":"Друзья по школе"},
+  userLists: <?=jenc($friendlists)?>,
+  universities: {"258":"МГУЛ","98434":"МГЭИ (бывш. ГЭНИ)","94448":"БГУИР (бывш. МРТИ)","2":"МГУ","330":"РНИМУ (бывш. РГМУ) им. Н.И. Пирогова","97185":"БГПУ им. М. Танка","408":"НовГУ","39329":"ВГУ им. Машерова (бывш. ВГПИ)"},
+  secData: {"members":{"preload":1},"requests":{"preload":1},"all_requests":{"preload":1},"out_requests":{"preload":0}},
+  commonCount: <?=$total_common?>,
+  requestsCount: <?=$total_requests?>,
+  suggCount: 0,
+  suggRev: 0,
+  allRequestsCount: <?=$total_fans?>,
+  allFriendsCount: <?=$total_friends?>,
+  outRequestsCount: 0,
+  htitles: {"all":"Друзья <?=$owner->user_info['user_name_gen']?> | <?=$total_friends?> друзей","online":"Друзья <?=$owner->user_info['user_name_gen']?> | <?=$total_online?> дру<?=$langpack->dln($total_online, 'frn2')?> ВСети","common":"Друзья <?=$owner->user_info['user_name_gen']?>","requests":"Друзья <?=$owner->user_info['user_name_gen']?> | <?=$total_requests?> заяв<?=$langpack->dln($total_requests,'ord')?> на добавление","all_requests":"Друзья <?=$owner->user_info['user_name_gen']?> | <?=$total_fans?> заявок на добавление","out_requests":"Друзья <?=$owner->user_info['user_name_gen']?> | <?=$total_out?> заявка на добавление"},
+  userHash: "<?=hash_get($user->id, 16, 'frnd')?>",
+  oid: <?=$owner->id?>,
+  gid: 0,
+  silent: 1,
+  importCount: 0,
+  newSystem: 1
+}, function(friend, type, first) {
+var info = [], onl = '', stat = '';
+if (type == 'phonebook') {
+  var phone = friend[friend.length - 1];
+  if (phone[0]) {
+    info.push('<div class="friends_field">',phone[0],'</div>');
+  }
+  if (phone[1]) {
+    info.push('<div class="friends_field">',phone[1],'</div>');
+  }
+}
+if (intval(friend[4])) {
+  onl = langSex(friend[3], window.global_online);
+  if (friend[4] != 1) {
+    onl += '<b class="mob_onl friends_mob_onl" onmouseover="mobileOnlineTip(this, {mid: ' + friend[0] + '})" onclick="mobilePromo()"></b>';
+  }
+  onl = '<div class="online">'+onl+'</div>';
+}
+if (friend[10] != '') {
+	
+	stat = '<div class="online">' + friend[10] + '</div>';
+}
+var university = userLists = '';
+/*
+friend[8] = intval(friend[8]);
+var university = friend[8], userLists = '';
+if (friend[8] && type != 'phonebook') { // universities
+  university = cur.universities[friend[8]] || '';
+  if (friend[9] && friend[9] != '0') {
+    university += ' &#39;' + friend[9];
+  }
+  if (university) {
+    university = '<div class="friends_field">'+university+'</div>';
+  }
+}
+*/
+userLists = ['<div id="lists',friend[0],'" class="lists clear_fix">',
+            Friends.getLists(friend[6]),'</div>'].join('');
+var acts = (friend[6] || nav.objLoc.group_id) ? ['<div class="actions fl_r">', '<a href="write', friend[0], '" onclick="return showWriteMessageBox(event, ', friend[0], ')" class="friends_act">Написать сообщение</a>', '<a href="/friends?id=', friend[0], '" class="friends_act">Просмотреть друзей</a>', <? if($edit) { ?>'<a onclick="return Friends.deleteFriend(event, ',friend[0],', this)" class="friends_act">Убрать из друзей</a>', '<a class="lists_select friends_act" onclick="return Friends.ddShow(',friend[0],', this, event)">Настроить списки</a>', <? } ?>'</div>'] : ['<div class="actions fl_r"><!--<a class="friends_act" onmousedown="Friends.restoreFriend(this, ', friend[0], ')">Вернуть в друзья</a>-->Удалён</div>'], mouseEvents = intval(friend[7]) ? (' onmouseover="Friends.bigphOver(this, ' + friend[0] + ', ' + friend[7] + ')"') : '';
+
+
+return ['<div class="user_block', first || '',' clear_fix" id="user_block', friend[0], '">\
+  <div class="friends_bigph_wrap fl_l"', mouseEvents, '>\
+    <a class="img" href="', friend[2], '" onclick="return nav.go(this, event);"><img class="friends_photo_img" src="', friend['1'], '" /></a>\
+  </div>\
+  <div class="info fl_l">\
+    <div class="friends_field"><a href="', friend[2], '" onclick="return nav.go(this, event);"><b>', friend[5], '</b></a></div>\
+    ',university,'\
+    ', info.join('') , onl, stat, userLists ,'\
+  </div>', acts.join(''), '<div class="fl_l" id="res', friend[0], '"></div></div>'];
+}, function(friend, type, first) {
+var info = '', onl = '', stat = '';
+if (intval(friend[4]) ) {
+  onl = langSex(friend[3], window.global_online);
+  if (friend[4] != 1) {
+    onl += '<b class="mob_onl friends_mob_onl" onmouseover="mobileOnlineTip(this, {mid: ' + friend[0] + '})" onclick="mobilePromo()"></b>';
+  }
+  onl = '<div class="online">'+onl+'</div>';
+}
+if (friend[10] != '') {
+	stat = '<div class="online">' + friend[10] + '</div>';
+}
+var request_info = friend[friend.length-1];
+var style = (request_info[5]) ? 'request' : '';
+var acts = [], dontShow = [], contrs = [], mouseEvents = intval(friend[7]) ? (' onmouseover="Friends.bigphOver(this, ' + friend[0] + ', ' + friend[7] + ')"') : '';
+if (type == 'suggestions') {
+  acts = [' id="suggestion<?=$owner->id?>_', friend[0], '" onmouseover="Friends.rowOver(\'<?=$owner->id?>_', friend[0], '\')" onmouseout="Friends.rowOut(\'<?=$owner->id?>_', friend[0], '\')"'];
+  dontShow = ['<div class="fl_r">\
+    <div class="delete_row">\
+      <div id="delete_row<?=$owner->id?>_', friend[0], '" onclick="Friends.deleteRow(\'<?=$owner->id?>_', friend[0], '\', \'', request_info[1], '\');" onmouseover="Friends.activeDeleteRow(\'<?=$owner->id?>_', friend[0], '\', \'Больше не показывать\')" onmouseout="Friends.deactiveDeleteRow(\'<?=$owner->id?>_', friend[0], '\')"></div>\
+    </div>\
+  </div>'];
+}
+if (type == 'sugg_requests') {
+  contrs = ['\
+<div class="button_green fl_l"><button id="accept_request_',friend[0],'" onclick="Friends.acceptRequest(',friend[0],', \'',request_info[0],'\', this)">Добавить в друзья</button></div>\
+<a class="deny_request fl_l" id="deny_request_',friend[0],'" onclick="Friends.hideSuggestion(',friend[0],', \'',request_info[1],'\', this)">Скрыть</a>\
+  '];
+  style = 'request';
+} else if (type == 'out_requests') {
+  contrs = ['\
+<div class="button_green fl_l"><button id="deny_request_',friend[0],'" onclick="Friends.declineRequest(',friend[0],', \'',request_info[1],'\', this, 0)">Отменить заявку и отписаться</button></div>\
+  '];
+} else {
+  contrs = ['\
+<div class="button_green fl_l"><button id="accept_request_',friend[0],'" onclick="Friends.acceptRequest(',friend[0],', \'',request_info[0],'\', this)">Добавить в друзья</button></div>\
+<a class="deny_request fl_l" id="deny_request_',friend[0],'" onclick="Friends.declineRequest(',friend[0],', \'',request_info[1],'\', 0)">Оставить в подписчиках</a><a class="deny_request fl_l" id="deny_request_',friend[0],'" onclick="Friends.declineRequest(',friend[0],', \'',request_info[1],'\', this, 1)">',(friend[3] == 1 ? 'Сударыня' : 'Сударь'),', вы навязчивы</a>\
+  '];
+}
+return ['<div class="user_block',(first || ''),' common ', style, ' clear_fix"', acts.join(''), '>\
+  ', dontShow.join(''), '\
+  <div class="friends_bigph_wrap fl_l"', mouseEvents, '>\
+    <a class="img" href="', friend[2], '" onclick="return nav.go(this, event);"><img class="friends_photo_img" src="', request_info['2'], '" /></a>\
+  </div>\
+  <div class="info_no_actions fl_l">\
+    <div class="friends_field"><a href="',friend[2],'" onclick="return nav.go(this, event);"><b>',friend[5],'</b></a></div>',
+    request_info[3], request_info[6], onl, stat, request_info[4], '\
+    <div class="controls clear_fix"><div id="request_controls_',friend[0],'">', contrs.join(''), '</div></div>\
+  </div>\
+</div>'];
+});
+cur.fhfunc = function(h) {
+	$('#main_table').css('height', h + 'px' );
+};
+cur.backLang = 'Список друзей';
+window.lang = extend(window.lang || {}, {
+  global_photo_full_size: 'Увеличить'
+});
+Friends.initFilters({
+  cities: [[0,"Выбор города"]],
+  citiesPl: 'Выбор города',
+  ageFrom: 14,
+  ageTo: 80,
+  langAgeFrom: 'от',
+  langAgeTo: 'до',
+  langAgeFromEmpty: 'От',
+  langAgeToEmpty: 'До'
+});

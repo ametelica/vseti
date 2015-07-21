@@ -1,0 +1,144 @@
+<?php
+global $group, $langpack, $members, $friends_in, $total_friends_in, $admins, $error_header, $user, $new_design, $in_fave, $new_design;
+
+if (!empty($new_design)) {
+
+	echo tpx('header_design');
+	?>
+	<div id="wrap2">
+		<div id="wrap1">
+			<div id="content">
+				<div id="group_wrap">
+					<div id="group_ava" class="dgray <? if(!empty($group->group_info['group_photo'])) { echo 'have_img'; echo '" style="height: '.$group->group_info['group_photo_h'].'px;'; } ?>">
+						<?
+						if(!empty($group->group_info['group_photo'])) {
+							if($group->user_rank > 0 and $group->user_level > 1) {
+							echo '<div class="edit_ava ">
+								<a href="#" onclick="Page.ownerCrop(); return false;">Изменить миниатюру</a>
+<a href="/groups.php?act=photo&gid='.$group->group_info['group_id'].'">Изменить фотографию</a></div>';
+							} 
+							echo '<div class="group_ava_wrap"><img src="'.$group->photo('a').'" style="display: block" /></div>';
+						}
+						echo tpx('group_block_title');
+						echo '<a id="fave_link" onclick="Groups.toggleFave(this, \'' . hash_get($user->id . $group->id, '18', 'fave') . '\', ' . ($in_fave == 1 ? 0 : 1) . ', event);"><div class="progress fl_r"></div><span>' . ($in_fave == 1 ? 'Удалить из закладок' : 'Добавить в закладки') . '</span></a>';
+						?>
+
+					</div>
+					<div id="group">
+						<div id="group_row">
+							<? if (empty($error_header)) { ?>                
+							<div class="narrow_column <? if(empty($new_design)) { ?>fl_l<? } ?> dgray" id="group_narrow">
+								<?
+								echo tpx('group_block_photo');
+								echo tpx('group_block_members');
+								echo tpx('group_block_albums');
+								echo tpx('group_block_video');
+								echo tpx('group_block_audio');
+								echo tpx('group_block_docs');
+
+								echo tpx('group_block_events');
+								echo tpx('group_block_radio');
+								echo tpx('group_block_links');
+								echo '<div id="group_narrow_topics"></div>';
+								echo tpx('group_block_admins');
+
+								/*
+								  if($group->id==65478 or $group->id==146543){
+								  echo '<object width="200" height="623" classid=\'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\' codebase=\'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0\' id=\'mymoviename\'>
+								  <param name=\'movie\' value=\'http://'.($user->byfly==0?'v':'').'cs1.vseti.by/u129369/a14slav.swf\'>
+								  <param name=\'quality\' value=\'high\'>
+								  <param name=\'bgcolor\' value=\'#ffffff\'>
+								  <embed src=\'http://'.($user->byfly==0?'v':'').'cs1.vseti.by/u129369/a14slav.swf\' width=\'200\' height=\'623\' quality=\'high\' bgcolor=\'#ffffff\' name=\'Flash Movie\' type=\'application/x-shockwave-flash\' pluginspage=\'http://www.macromedia.com/go/getflashplayer\'>
+								  </embed>
+								  </object>';
+								  }
+								 * 
+								 */
+								?>
+							</div>
+							<div class="wide_column" id="group_wide">
+								<?
+								echo tpx('group_block_info');
+								echo tpx('group_block_fixed_post');
+								echo '<div id="resize_blocks">';
+								echo tpx('group_block_topics');
+								//echo '<br class="clear" />';
+								echo '</div>';
+								echo tpx('group_block_comments');
+								?>
+							</div>
+							<br class="clear" />
+						</div>
+						<?
+					} else {
+
+						echo '<div class="error" style="font-size: 14px;">' . $error_message . '</div>';
+					}
+					?>        
+				</div> </div>
+			</div>
+		</div>
+	</div>
+	<?
+} else {
+
+	// Старый дизайн
+	?>
+	<div id="wrap2">
+		<div id="wrap1">
+			<div id="content">
+				<div id="group">
+
+						<? if (empty($error_header)) { ?>                
+						<div class="narrow_column2 fl_l" id="group_narrow2" style="margin-right:10px;">
+							<?
+							echo tpx('group_block_albums');
+							if ($total_friends_in > 0)
+								echo tpx('group_block_friends');
+							echo tpx('group_block_members');
+
+							if ($group->id == 65478 or $group->id == 146543) {
+								echo '<object width="200" height="623" classid=\'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\' codebase=\'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0\' id=\'mymoviename\'> 
+      <param name=\'movie\' value=\'http://' . ($user->byfly == 0 ? 'v' : '') . 'cs1.vseti.by/u129369/a14slav.swf\'>  
+      <param name=\'quality\' value=\'high\'> 
+      <param name=\'bgcolor\' value=\'#ffffff\'> 
+      <embed src=\'http://' . ($user->byfly == 0 ? 'v' : '') . 'cs1.vseti.by/u129369/a14slav.swf\' width=\'200\' height=\'623\' quality=\'high\' bgcolor=\'#ffffff\' name=\'Flash Movie\' type=\'application/x-shockwave-flash\' pluginspage=\'http://www.macromedia.com/go/getflashplayer\'> 
+      </embed> 
+    </object>';
+							}
+							?>
+						</div>
+						<div class="narrow_column fl_r" id="group_narrow">
+							<?
+							echo tpx('group_block_photo');
+							echo vs_ads5();
+							echo tpx('group_block_video');
+							echo tpx('group_block_radio');
+							echo tpx('group_block_links');
+							echo tpx('group_block_events');
+							echo '<div id="group_narrow_topics"></div>';
+							echo tpx('group_block_admins');
+							?>
+						</div>
+						<div class="wide_column fl_l" id="group_wide">
+							<?
+							echo tpx('group_block_title');
+							echo tpx('group_block_info');
+							echo tpx('group_block_fixed_post');
+							echo tpx('group_block_topics');
+							echo tpx('group_block_audio');
+							echo tpx('group_block_comments')
+							?>
+						</div>
+						<br class="clear" />
+					</div>
+					<?
+				} else {
+
+					echo '<div class="error" style="font-size: 14px;">' . $error_message . '</div>';
+				}
+				?>        
+			</div>
+		</div>
+	</div>
+<? } ?>

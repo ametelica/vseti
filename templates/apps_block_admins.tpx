@@ -1,0 +1,25 @@
+<?php
+	global $app,$db;
+	$admins = $app->app_admins();
+	$admins = $db->join_users($admins,'','');
+	
+	foreach($admins as $a){
+		if(empty($a->user_info['user_id'])) continue;
+
+		echo '<div id="admin_row'.$a->user_info['user_id'].'" class="app_admin_row">
+  <table><tr>
+    <td class="img"><a href="'.$a->lnk.'/"><img src="'.$a->user_photo().'" width="50"/></a></td>
+    <td class="info">
+      <a class="mem_link" href="'.$a->lnk.'">'.$a->user_info['fio'].'</a><br/>
+      <span class="actions"><span style="color:#777;font-weight:normal;">'.($app->app_info['app_user_id']==$a->user_info['user_id']?'Главный администратор'.((count($admins)>1 and $app->user_id==$app->app_info['app_user_id'])?' <span id="app_change_admin">(<a onclick="AppsEdit.changeAdmin();">изменить</a>)</span>':''):'<a onclick="AppsEdit.deleteAdmin('.$app->app_id.', '.$a->user_info['user_id'].');">удалить</a><span class="app_promote_admin" style="display: none;">
+<span class="divider">|</span>
+<a onclick="AppsEdit.promoteAdmin('.$app->app_id.', '.$a->user_info['user_id'].');">назначить главным администратором</a>
+</span>').'</span></span>
+    </td>
+    <td class="details">
+      
+    </td>
+  </tr></table>
+</div>';	
+	}
+?>

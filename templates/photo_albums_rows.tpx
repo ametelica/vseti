@@ -1,0 +1,37 @@
+<?php
+$i = 0;
+foreach ($var['albums'] as $album) {
+	//dmp($album);
+	if (isset($var['limit']) and $i >= $var['limit'])
+		break;
+	$src = $album->cover('x');
+	?><div class="photo_row" id="album<?= $album->uid ?>" onmouseover="photos.thumbOver(this, '<?= $album->uid ?>');" onmouseout="photos.thumbOut(this, '<?= $album->uid ?>', true);"><div class="cont">
+			<a href="/<?= $album->lnk() ?>" ontouchstart="event.cancelBubble = true;" onclick="if (cur.cancelClick) return (cur.cancelClick = false); return nav.go(this, event)" class="img_link ">
+				<img src="<?= $src ?>"/>
+				<? if($var['edit']) { ?><div class="photo_album_info" title="Редактировать альбом" onmouseout="photos.thumbOut(this, '<?= $album->uid ?>'); this.parentNode.href='/<?= $album->lnk() ?>'" onmouseover="photos.thumbOver(this, '<?= $album->uid ?>', true); this.parentNode.href='/<?= $album->lnk() ?>?act=edit'">
+					<div class="photo_album_info_back" style="opacity: 0;"></div>
+					<div class="photo_album_info_cont" style="opacity: 0;"> </div>
+				</div><? } ?>
+				<div class="photo_album_title">
+					<div class="clear_fix" style="margin: 0px">
+						<div class="ge_photos_album fl_l" title="<?= $album->title ?>"><?= $album->title ?></div>
+						<?
+						if(!empty($album->privacy)) {
+							$privacy_text = user_privacy_levels($album->privacy, '', 0);
+							
+							$str_privacy = str_replace("'", "\'", '<div class="header" onmouseover="photos.thumbOver(ge(\'album'.$album->uid.'\'), \''.$album->uid.'\')" onmouseout="photos.thumbOut(ge(\'album'.$album->uid.'\'), \''.$album->uid.'\', true)"><div class="like_head_wrap">Доступен '.(empty($privacy_text['add']) ? $privacy_text['text'] : $privacy_text['add']).'</div></div>');
+							$str_privacy = htmlspecialchars($str_privacy);
+							?>
+							<div class="ge_album_privacy fl_l" onmouseover="showTooltip(this, {content: '<?=$str_privacy?>', slide: 10, hidedt: 150, shift: [65, 11, 0], className: 'rich like_tt add_photo'})">&nbsp;</div>
+						<?}
+						?>
+						<div class="camera fl_r"><?= $album->files ?></div>
+					</div>
+					<div class="description"><?= $album->desc ?></div>
+				</div>
+			</a>
+		</div><a class="bg"></a>
+	</div><? 
+	$i++;
+}
+?>

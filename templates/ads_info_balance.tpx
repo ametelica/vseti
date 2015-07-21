@@ -1,0 +1,37 @@
+<?php
+global $langpack, $user, $ad_balance;
+?>
+<div class="ads_help_section section_wrap">
+	<div class="header">Конвертация баланса</div>
+
+	<div class="user_settings">
+		
+		<div id="settings_panel" class="clear_fix">  <div class="settings_panel">
+			<div class="setbal_section">
+				Основная электронная валюта сайта - <a href="/payments.php">зайчики</a>. Но для удобства работы с рекламным кабинетом используются <strong>белорусские рубли (BYR)</strong>. Их можно потратить только на рекламный кабинет, а получают их через обмен зайчиков. Обмен работает только в одну сторону, пожалуйста будьте внимательны при планировании бюджета кампании.
+				<div class="setbal_row_wrap clear_fix">
+					<div class="setbal_label fl_l ta_r">На Вашем счёте:</div>
+					<div class="setbal_labeled_text fl_l"><b id="balance_str" class="votes_balance_nom"><?= $user->credits ?> зайчик<?= $langpack->dln($user->credits, 'file') ?></b> / <b id="balance_money_str"><?= nf($ad_balance)?> рубл<?= $langpack->dln($ad_balance, 'gst') ?></b></div>
+				</div>
+				<div class="setbal_row_wrap clear_fix">
+					<div class="setbal_label fl_l ta_r">Курс обмена:</div>
+					<div class="setbal_labeled_text fl_l"><b>1 зайчик = 2000 BYR</b></div>
+				</div>
+				<div class="setbal_row_wrap clear_fix">
+					<div class="setbal_label fl_l ta_r">Обменять:</div>
+					<div class="setbal_labeled_text fl_l"><input type="text" id="exchange" value="1" /></div>
+				</div>
+				<div id="exchange_result"></div>
+				<div class="setbal_row_button_wrap clear_fix">
+					<div class="button_green fl_l" style="margin-left: 165px;">
+						<button onclick="Ads.exchange('exchange', '<?=hash_get($user->id, 16, 'exz')?>')">Обменять на рубли</button>
+					</div>
+					<div class="button_gray fl_l" style="margin-left: 10px;">
+						<button onclick="location.href='/payments.php';">Получить зайчики</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

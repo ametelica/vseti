@@ -1,0 +1,71 @@
+<?php
+	global $board, $new_design, $user;
+	if($new_design) echo tpx('header_design');
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><div class="tabs t_bar clear_fix">
+  <ul class="t0">
+    <li class="">
+      <a href="/board<?=$board->oid?>" onclick="return nav.go(this, event, {back: true})">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Обсуждения</b>
+      </a>
+    </li>
+    <li class=" bt_unshown" style="">
+      <a href="/board<?=$board->oid?>?act=search&q=" onclick="return nav.go(this, event, {back: true})">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Результаты поиска</b>
+      </a>
+    </li>
+    <li class="active_link bt_unshown">
+      <a href="/board<?=$board->oid?>?act=create" onclick="return nav.go(this, event)">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Новая тема</b>
+      </a>
+    </li>
+    <li class=" bt_unshown">
+      <a href="/topic-<?=$board->oid?>_0" onclick="return nav.go(this, event)">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Просмотр темы</b>
+      </a>
+    </li>
+    <li class="t_r" style="display: none">
+      <a href="/board<?=$board->oid?>?act=create" onclick="return nav.go(this, event)">
+        Создать тему
+      </a>
+    </li>
+    <li class="t_r" style="display: none">
+      <a onclick="return Privacy.show(this, event, 'topic_action', [0, 0])" id="privacy_edit_topic_action">
+        Редактировать
+      </a>
+      <div class="progress" id="edit_topic_prg"></div>
+    </li>
+  </ul>
+</div>
+<div class="bnt_wrap">
+  <div class="bnt_header">Заголовок</div>
+  <input type="text" class="text" id="bnt_title" maxlength="255" />
+  <div class="bnt_header">Текст</div>
+  <textarea
+    id="bnt_text"
+    onkeyup="checkTextLength(4096, this, 'bnt_warn')"
+  ></textarea>
+  <div id="bnt_media_preview" class="clear_fix media_preview"></div>
+  <div id="bnt_warn"></div>
+  <div class="clear_fix">
+    <div class="fl_r" id="bnt_attach"><span class="add_media_lnk">Прикрепить</span></div>
+    <div class="button_green fl_l">
+      <button id="bnt_subm" onclick="Board.createTopic(<?=$board->oid?>, '<?=hash_get($user->id . $board->oid, 16, 'ctp')?>')">Создать тему</button>
+    </div>
+    <? if($board->can_edit) { ?><div class="checkbox fl_l" id="bnt_from_group" onclick="checkbox(this)"><div></div>от имени сообщества</div><? } ?>
+    <div class="button_cancel fl_l" id="bnt_cancel_poll">
+      <div class="button" onclick="Board.cancelPoll()">Удалить опрос</div>
+    </div>
+  </div>
+</div></div>
+  </div>
+</div>

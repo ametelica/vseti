@@ -1,0 +1,201 @@
+<?
+	global $search, $c, $name_only;
+?><table id="search_table" class="search_table">
+  <tr>
+    <td id="results" class="results highlight people_result white_page"><?= $var['result']?>
+      
+ <a id="show_more_link" onclick="return searcher.showMore();" class="clear" style="">
+  <div id="show_more_progress" class="progress"></div>
+  <div id="show_more">Показать ещё</div>
+</a>
+    </td>
+    <td id="filters_td" class="filters">
+      <div id="search_filters">
+        
+  <form id="filter_form" name="filter_form">
+    <input type="hidden" id="q" name="c[q]" value="<?=$search?>" />
+    <input type="hidden" id="section" name="c[section]" value="people" />
+    <input type="hidden" id="c[sort]" name="c[sort]" value="0" /><div class="noselect clear_fix filter_main " onselectstart="return false">
+  <div class="text fl_l">Регион</div>
+</div><div class="inner_filter" id="region_filter">
+  <div id="cCountry" class="control">
+    <input id="country" name="c[country]" class="text" />
+  </div>
+  <div id="cCity" class="control" <?=(empty($c['city']) ? 'style="display: none"' : '')?>>
+    <input id="city" name="c[city]" class="text" <?=(empty($c['city']) ? '' : 'value="'.intval($c['city']).'"')?> />
+  </div>
+</div><div class="noselect clear_fix filter_main " onselectstart="return false">
+  <div class="text fl_l">Школа</div>
+</div><div class="inner_filter" id="school_filter">
+  <div id="cSchool" class="control" style="">
+    <input id="school" name="c[school]" class="text" />
+  </div>
+  <div id="cSchClass" class="control" style="display: none">
+    <input id="schClass" name="c[school_class]" class="text" />
+  </div>
+  <div id="cSchYear" class="control" style="display: none;">
+    <input id="schYear" name="c[school_year]" class="text" />
+  </div>
+  <div id="cSchSpec" class="control" style="display: none;">
+   <input id="school_spec" name="c[school_spec]" class="text" value="" placeholder="Специализация"/>
+  </div>
+</div><div class="noselect clear_fix filter_main " onselectstart="return false">
+  <div class="text fl_l">Университет</div>
+</div><div class="inner_filter" id="uni_filter">
+  <div id="cUniversity" class="control">
+    <input id="university" name="c[university]" class="text" />
+  </div>
+  <div id="cFaculty" class="control" style="display: none">
+    <input id="faculty" name="c[faculty]" class="text" />
+  </div>
+  <div id="cChair" class="control" style="display: none">
+    <input id="chair" name="c[chair]" class="text" />
+  </div>
+  <div id="cUniYear" class="control" style="display: none;">
+    <input id="uniYear" name="c[uni_year]" class="text" />
+  </div>
+  <div id="cEduForm" class="control" style="display: none">
+    <input id="edu_form" name="c[edu_form]" class="text" />
+  </div>
+  <div id="cEduStatus" class="control" style="display: none">
+    <input id="edu_status" name="c[edu_status]" class="text" />
+  </div>
+</div><div class="noselect clear_fix filter_main " onselectstart="return false">
+  <div class="text fl_l">Возраст</div>
+</div><div class="inner_filter" id="age_filter">
+  <div id="cAge" class="control clear_fix">
+    <div class="range_to fl_l">
+      <input id="ageFrom" name="c[age_from]" class="text" value="" />
+    </div>
+    <div class="range_sep fl_l"> - </div>
+    <div class="range_to fl_l">
+      <input id="ageTo" name="c[age_to]" class="text" value="" />
+    </div>
+  </div>
+</div><input type="hidden" id="c[sex]" name="c[sex]" value="" /><div class="noselect clear_fix filter_main sex" onselectstart="return false">
+  <div class="text fl_l">Пол</div>
+</div><div class="inner_filter">
+  <div id="cSex" class="control">
+    <div class="radiobtn <?=($c['sex'] == 1 ? 'on' : '')?>" onclick="radiobtn(this, 1, 'sex'); cur.onSexChanged(1);"><div></div>Женский</div>
+    <div class="radiobtn <?=($c['sex'] == 2 ? 'on' : '')?>" onclick="radiobtn(this, 2, 'sex'); cur.onSexChanged(2);"><div></div>Мужской</div>
+    <div class="radiobtn <?=(empty($c['sex']) ? 'on' : '')?>" onclick="radiobtn(this, 0, 'sex'); cur.onSexChanged(0);"><div></div>Любой</div>
+  </div>
+</div><div class="noselect clear_fix filter_main " onselectstart="return false">
+  <div class="text fl_l">Семейное положение</div>
+</div><div class="inner_filter" id="marital_filter">
+  <div id="cStatus" class="control">
+    <input id="status" name="c[status]" class="text" />
+  </div>
+  <input type="hidden" name="c[photo]" id="photo" value="<?=intval($c['photo'])?>" />
+  <input type="hidden" name="c[online]" id="online" value="<?=intval($c['online'])?>" />
+</div>
+	  
+	  <!--<div class="noselect clear_fix filter_shut" onclick="searcher.toggleFilter(this, 'personalFilter');" onselectstart="return false">
+ <div class="text fl_l">Жизненная позиция</div>
+ <div class="arrow fl_l"><div class="arrow_back"></div></div>
+</div>
+<div style="display: none" class="inner_filter" id="personalFilter">
+
+<div id="cInterests" class="control" style="display:none">
+ <input id="interests" name="c[interests]" class="text" value="" placeholder="Интересы" />
+</div>
+
+<div id="cPersonalPriority" class="control">
+ <input id="personal_priority" name="c[personal_priority]" class="text" />
+</div>
+<div id="cImportantInOthers" class="control">
+ <input id="important_in_others" name="c[people_priority]" class="text" />
+</div>
+<div id="cSmoking" class="control">
+ <input id="smoking" name="c[smoking]" class="text" />
+</div>
+<div id="cAlcohol" class="control">
+ <input id="alcohol" name="c[alcohol]" class="text" />
+</div>-->
+
+<? if(!empty($c['group'])) { ?>
+	<input type="hidden" id="c[group]" name="c[group]" value="<?=intval($c['group'])?>" />
+<? } ?>
+
+<!--</div><div class="noselect clear_fix filter_shut" onclick="searcher.toggleFilter(this, 'addressFilter');" onselectstart="return false">
+ <div class="text fl_l">Места</div>
+ <div class="arrow fl_l"><div class="arrow_back"></div></div>
+</div>
+<div style="display: none" class="inner_filter" id="addressFilter">
+<div id="cAddrCountry" class="control">
+<input id="addrCountry" name="c[addr_country]" class="text" />
+</div>
+<div id="cAddrCity" class="control" style="display: none">
+ <input id="addrCity" name="c[addr_city]" class="text" />
+</div>
+<div id="cDistrict" class="control" style="display: none">
+ <input id="district" name="c[addr_district]" class="text" />
+</div>
+<div id="cStation" class="control">
+ <input id="station" name="c[addr_station]" class="text" />
+</div>
+<div id="cStreet" class="control">
+ <input id="street" name="c[addr_street]" class="text" />
+</div>
+<div id="cHouse" class="control">
+ <input id="house" name="c[addr_house]" class="text" />
+</div>
+<div id="cPlace" class="control">
+ <input id="place" name="c[addr_place]" class="text" />
+</div>
+<div id="previewMapPeople" style="border: 1px solid #ccc; margin: 3px 0 0 0; width: 148px; height: 148px; display: none;"></div>
+</div><div class="noselect clear_fix filter_shut" onclick="searcher.toggleFilter(this, 'companyFilter');" onselectstart="return false">
+ <div class="text fl_l">Работа</div>
+ <div class="arrow fl_l"><div class="arrow_back"></div></div>
+</div>
+<div style="display: none" class="inner_filter" id="companyFilter">
+<div id="cCompany" class="control">
+ <input id="company" name="c[company]" class="text" value="" placeholder="Работа" />
+</div>
+<div id="cPosition" class="control">
+ <input id="position" name="c[position]" class="text" value="" placeholder="Должность" />
+</div>
+</div><div class="noselect clear_fix filter_shut" onclick="searcher.toggleFilter(this, 'militaryFilter');" onselectstart="return false">
+ <div class="text fl_l">Военная служба</div>
+ <div class="arrow fl_l"><div class="arrow_back"></div></div>
+</div>
+<div style="display: none" class="inner_filter" id="militaryFilter">
+<div id="cMilCountry" class="control">
+<input id="milCountry" name="c[mil_country]" class="text" />
+</div>
+<div id="cMilUnit" class="control" style="display:none">
+ <input id="milUnit" name="c[mil_unit]" class="text" />
+</div>
+<div id="cMilYearFrom" class="control">
+ <input id="milYearFrom" name="c[mil_year_from]" class="text" />
+</div>
+</div>-->
+<div class="noselect clear_fix filter_shut" onclick="searcher.toggleFilter(this, 'extra_filter');" onselectstart="return false">
+  <div class="text fl_l">Дополнительно</div>
+  <div class="arrow fl_l"><div class="arrow_back"></div></div>
+</div><div style="display: none;" class="inner_filter" id="extra_filter">
+  <div id="name_only_filter">
+    <input type="hidden" name="c[name]" id="name" value="<?=$name_only?>" />
+  </div>
+  <div id="cHometown" class="control" style="display: none">
+   <input id="hometown" name="c[hometown]" class="text" value="" placeholder="Родной город"/>
+  </div>
+  <div id="cBYear" class="control">
+    <input id="bYear" name="c[byear]" class="text" <?=(empty($c['byear']) ? '' : 'value="'.$c['byear'].'"')?> />
+  </div>
+  <div id="cBMonth" class="control">
+    <input id="bMonth" name="c[bmonth]" class="text" <?=(empty($c['bmonth']) ? '' : 'value="'.$c['bmonth'].'"')?> />
+  </div>
+  <div id="cBDay" class="control">
+    <input id="bDay" name="c[bday]" class="text" <?=(empty($c['bday']) ? '' : 'value="'.$c['bday'].'"')?> />
+  </div>
+  <div id="cLang" class="control" style="display: none">
+   <input id="lang" name="c[lang]" class="text" />
+  </div>
+  
+</div>
+  </form>
+      </div>
+    </td>
+  </tr>
+</table>

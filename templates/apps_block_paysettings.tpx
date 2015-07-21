@@ -1,0 +1,21 @@
+<?php
+global $app, $m;
+if($m == 3) {
+	echo '<div class="msg" style="margin:0px 0px 10px 0px">Изменения сохранены.</div>';
+}
+?>	
+<div class='app_stat_head no_padd no_lpadd'>Настройки платежей</div>
+<div id="app_payments_settings_err" class="error" style="display: none; margin: 0 0 15px 0;"></div>
+<table class="apps_edit_table">
+  <tr><td class="label ta_r">Адрес обратного вызова:</td><td class="apps_edit_desc">
+  <input id="app_callback_url" type="text" class="text" value="<?=$app->app_info['app_paylink']?>" placeholder="http://yoursite.com/vseti_pay.php" />
+  </td><td></td></tr>
+  <tr><td class="label ta_r">Тестеры платежей:</td><td class="apps_edit_desc">
+  <div class="fl_l"><input type="text" class="text" id="app_payments_testers" value="" /></div>
+  <div class="fl_l" id="app_testers_prgs"><img src="/images/upload.gif" /></div>
+  </td></tr>
+  
+  <tr><td class="label ta_r"></td><td>
+  <div class="button_green fl_l"><button id="app_save_btn" onclick="cur.savePaymentsOptions(<?=$app->app_id?>, 'a92822033d14bef97a');">Сохранить изменения</button></div>
+  </td></tr>
+</table>

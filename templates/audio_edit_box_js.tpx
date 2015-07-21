@@ -1,0 +1,71 @@
+<?php
+	global $user, $info, $oid;
+?>
+var genres = [[1,"Rock"],[2,"Pop"],[3,"Rap & Hip-Hop"],[4,"Easy Listening"],[5,"Dance & House"],[6,"Instrumental"],[7,"Metal"],[21,"Alternative"],[8,"Dubstep"],[9,"Jazz & Blues"],[10,"Drum & Bass"],[11,"Trance"],[12,"Chanson"],[13,"Ethnic"],[14,"Acoustic & Vocal"],[15,"Reggae"],[16,"Classical"],[17,"Indie Pop"],[0,"Other"],[19,"Speech"],[22,"Electropop & Disco"]];
+var genreDD = new Dropdown(ge('audio_edit_genre'), genres, {
+  width: 298,
+  selectedItems: '<?=$info['mu_genre']?>'
+});
+cur.hiddenAudio = new Checkbox(ge('audio_hidden'), {
+  width: 250,
+  label: 'Не выводить при поиске'
+});
+autosizeSetup(ge('audio_text_edit'), {minHeight: 94, maxHeight: 500});
+cur.checkTextLen = function(val) {
+  var len = val.length, maxlen = 4096, warn = ge('audio_edit_text_warn')
+  if (len > maxlen - 100) {
+    hide('own_reply_in_news', 'own_reply_no_news');
+    show(warn);
+    if (len > maxlen) {
+      warn.innerHTML = getLang('text_exceeds_symbol_limit', len - maxlen);
+    } else {
+      warn.innerHTML = getLang('text_N_symbols_remain', maxlen - len);
+    }
+  } else {
+    hide(warn);
+  }
+};
+cur.saveAudio = function(box) {
+  var performer = ge('audio_performer_edit').value,
+      title = ge('audio_title_edit').value
+      audioText = ge('audio_text_edit').value;
+  if (!performer) {
+    notaBene('audio_performer_edit');
+    return false;
+  }
+  if (!title) {
+    notaBene('audio_title_edit');
+    return false;
+  }
+  var id = <?=intval($info['mu_id'])?>, full_id = '<?=$info['mu_user_id']?>_<?=$info['mu_id']?>';
+  var genre = genreDD.val();
+  var query = {act: 'edit_audio', aid: id, oid: <?=$oid?>, hash: cur.hashes.edit_hash, performer: performer, text: audioText, title: title, genre: genre};
+  if (isVisible(ge('audio_extra_edit'))) {
+    query.privacy = cur.hiddenAudio.val();
+  }
+  var btn = geByClass1('button_green', box.bodyNode.nextSibling).firstChild;
+  lockButton(btn);
+  ajax.post(Audio.address, query, {
+    onDone: function(lid) {
+      cur.audiosIndex.remove(cur.audios[id]);
+      cur.audios[id][5] = clean(performer);
+      cur.audios[id][6] = clean(title);
+      cur.audios[id][7] = intval(lid);
+      cur.audiosIndex.add(cur.audios[id]);
+      box.hide(200);
+			console.log('audio'+full_id);
+      var row = ge('audio'+full_id);
+      row.innerHTML = se(Audio.drawAudio(cur.audios[id])).innerHTML;
+      if (window.audioPlayer) audioPlayer.showCurrentTrack();
+      if (row && row.helper) {
+        sorter.update(row);
+      }
+      var params = {act: 'get_lyrics', lid: cur.audios[id][7] || '', aid: (cur.audios[id][0] || '') + '_' + (cur.audios[id][1] || ''), top: 0},
+          q = Audio.address + '#' + ajx2q(params);
+      delete window.ajaxCache[q];
+    }
+  });
+}
+box.removeButtons();
+box.addButton('Отмена', box.hide, 'no');
+box.addButton('Сохранить', cur.saveAudio.pbind(box), 'yes');

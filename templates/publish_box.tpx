@@ -1,0 +1,110 @@
+<div id="dark_box_topic_wrap">
+  <a onclick="curBox().hide()" class="dark_box_close fl_r">Закрыть</a>
+  <div id="dark_box_ava" class="wdd_imgs"></div>
+  <div id="dark_box_topic">Отправка записи</div>
+</div>
+<?
+	global $obj, $setting;
+	$is_video = substr($obj, 0, 5) == 'video';
+	if($is_video) { ?>
+	<div class="like_share_tab_wrap">
+  <div class="like_share_tab" id="like_share_tab">Поделиться</div>
+  <div class="like_share_tab" id="like_export_tab" style="">Экспортировать</div>
+</div>
+	<? } ?>	
+<div class="dark_box_cont">
+	<div id="like_share_tab_cont" class="like_share_cont" style="">
+	
+	
+	
+  <div id="like_share_error" class="error"></div>
+  <div id="like_share_title_wrap">
+    <div class="dark_box_label">Тема</div>
+    <input type="text" class="text" id="like_share_title" maxlength="64" onchange="curBox().changed=true;"></input>
+  </div>
+  <div class="dark_box_label">Ваш комментарий</div>
+  <textarea id="like_share_text" onkeyup="cur.sbCheckLen(this)" onkeypress="onCtrlEnter(event, cur.sbSend)" onchange="curBox().changed=true;"></textarea>
+  <div id="like_share_after_text">
+    <div id="like_share_media_preview" class="clear_fix media_preview"></div>
+    <div id="like_share_warn"></div>
+  </div>
+  <div id="like_share_add_media" class="fl_r"><span class="add_media_lnk">Прикрепить</span></div>
+  <div class="like_share_target_label dark_box_label">Выберите аудиторию</div>
+
+  <div class="like_share_row">
+    <div class="radiobtn on" onclick="if (!hasClass(this, 'disabled')) ShareBox.rbChanged(this, 0);" id="like_share_my">
+      <div></div><span class="like_share_point">Друзья и подписчики</span>
+    </div>
+    <div class="like_share_about">Поделиться записью с Вашими друзьями и подписчиками</div>
+  </div>
+  <div class="like_share_row">
+    <div class="radiobtn " onclick="if (!hasClass(this, 'disabled')) ShareBox.rbChanged(this, 1);" id="like_share_club">
+      <div></div><span class="like_share_point">Подписчики сообщества</span>
+    </div>
+    <div class="like_share_about_select">
+      <div class="wdd clear_fix" id="like_club_dd">
+        <div class="fl_r wdd_arr"></div>
+        <input type="text" class="wdd_text fl_l" placeholder="Введите название сообщества" id="like_club_inp" onfocus="this.focused=1" onblur="this.focused=''"/>
+        <br class="clear" />
+      </div>
+    </div>
+  </div>
+  <div class="like_share_row">
+    <div class="radiobtn " onclick="if (!hasClass(this, 'disabled')) ShareBox.rbChanged(this, 2);" id="like_share_mail">
+      <div></div><span class="like_share_point">Отправить личным сообщением</span>
+    </div>
+    <div class="like_share_about_select">
+      <div class="wdd clear_fix" id="like_mail_dd">
+        <div class="fl_r wdd_arr"></div>
+        <input type="text" class="wdd_text fl_l" placeholder="Введите имя друга или email" id="like_mail_inp" onfocus="this.focused=1" onblur="this.focused=''"/>
+        <br class="clear" />
+      </div>
+    </div>
+  </div>
+
+  <div class="fl_l button_green dark_box_btn">
+    <button id="like_share_send" onclick="cur.sbSend()">Поделиться записью</button>
+  </div>
+  <br class="clear" />
+</div>
+	 
+<? if($is_video) { ?>	 
+<div class="like_share_cont" id="like_export_tab_cont">
+  <div class="dark_box_label">
+  Прямая ссылка
+</div>
+<div class="video_box_share">
+  <a class="fl_r video_share_icon video_icon_fb" onclick="cur.shareBox(1);"></a>
+  <a class="fl_r video_share_icon" onclick="cur.shareBox(0);"></a>
+  <input type="text" id="video_box_disabled" class="text video_box_disabled" onkeydown="elfocus(this
+, 0, 10000);" onchange="val(this, 'http://<?=$setting['host']?>/<?=$obj?>'); cancelEvent(event);" value
+="http://<?=$setting['host']?>/<?=$obj?>" onclick="elfocus(this, 0, 10000);" readonly="readonly" />
+</div>
+<div class="dark_box_label">
+    Размер видео
+  </div>
+  <div id="embedbox_dropdown_outer">
+    <div id="embedbox_dropdown"></div>
+  </div>
+    <div class="video_blb_block" style="">
+  
+  <div id="embedbox_manualsize_wrap" style="display: none">
+    <input value=640 type=text id="embedbox_manualsize_w" class="text" onkeypress="return event.charCode
+ >= 48 && event.charCode <= 57" onkeyup="cur.onVideoEmbedSizeChange(0)" />
+    <span>&#215;</span>
+    <input value=360 type=text id="embedbox_manualsize_h" class="text" onkeypress="return event.charCode
+ >= 48 && event.charCode <= 57" onkeyup="cur.onVideoEmbedSizeChange(0)" />
+  </div>
+
+<div class="dark_box_label">
+  Код для вставки
+</div>
+<textarea readonly="readonly" class="video_box_disabled" id="embedbox_code"></textarea>
+
+  <div id="embedbox_preview">
+  </div>
+</div>
+</div>
+</div>
+<? } ?>
+</div>

@@ -1,0 +1,159 @@
+<?php
+global $app, $masks, $types, $rtypes, $user;
+?>
+var appEnabled = <?=$app->app_info['app_active_real']?>;
+
+window.radioBtns['app_type'] = {
+  els: [ge('app_type_0'), ge('app_type_1')]
+}
+
+extend(cur, {"lang":{"apps_title_file_delete":"Удаление файла","apps_confirm_file_delete":"Вы уверены, что хотите удалить этот файл?"},"hint":{"app_wrapper_hint":"При использовании Flash контейнера SWF-приложение показывается пользователям не напрямую, а через SWF-обертку, которая в свою очередь выполняет функцию предзагрузчика и предоставляет методы для взаимодействия с внешним интерфейсом.<br><br>Однако мы не рекомендуем использовать Flash контейнер, чтобы избежать проблем с позиционированием элементов в приложении.","apps_wmode_hint":"При использовании режима <b>opaque<\/b> приложение отображается внутри страницы не перекрывая окна чата и уведомлений, однако в приложении могут наблюдаться проблемы с вводом кириллического текста.<br><br>При использовании режима <b>window<\/b> приложение отображается поверх всех элементов, перекрывая собой окна чата и уведомления.<br><br>Режим <b>direct<\/b> обеспечивает максимальную производительность видео и трёхмерной графики, но во многих браузерах приложение может перекрывать окна чата и уведомлений. Используйте его только в случае необходимости."},"maskByGroupNum":<?=jenc($masks)?>});
+
+cur.privacy = {"openapi_types":["Выключен","Включён"],"openapi_help":"Платформа <b>OpenAPI<\/b> обеспечивает систему авторизации пользователей и доступ к интерфейсу <b>ВСети API<\/b> с Вашего сайта. <a href=\"developers.php?id=-1_1\">Подробнее »<\/a>","openapi":[0,1,[],[]],"install_types":["Не требуется","Требуется"],"install_help":"Позволяет перед запуском приложения запрашивать установку и необходимые права.","install":[<?=$app->app_info['app_settings']==0?0:1?>,1,[],[]],"help":[0,1,[],[]],"help_types":["Выключена","Включена"],"help_help":"После включения страницы помощи над приложением появится ссылка <b>Помощь<\/b>, при переходе на которую пользователь увидит Ваш текст.","require_types":{"0":"Не запрашивать доступ","7":"Запрашивать доступ к"},"require_lists":<?=jenc($types)?>,"require":[<?=$app->app_info['app_settings']==0?0:7?>,[],<?=jenc($rtypes)?>]};
+
+function slideSection(obj, val, dt) {
+  var obj = ge(obj);
+  if (parseInt(val) && !isVisible(obj)) {
+    slideUp(obj, 0);
+    slideDown(obj, (dt != undefined) ? dt : 150);
+  }
+  if (!parseInt(val) && isVisible(obj)) {
+    slideUp(obj, (dt != undefined) ? dt : 150);
+  }
+}
+
+cur.onPrivacyChanged = function(key, dt) {
+  var val = Privacy.getValue(key);
+  switch (key) {
+    case 'openapi':
+      slideSection('apps_edit_openapi', val);
+      break;
+    case 'install':
+      slideSection('apps_edit_install_require', val);
+      break;
+    case 'push':
+      var showObjs = [];
+      var rawVal = val.split('_')
+      var rawVal = parseInt(rawVal[2]);
+      if (rawVal == 501) {
+        showObjs = ['apps_edit_push_cert'];
+      } else if (rawVal == 502) {
+        showObjs = ['apps_edit_push_login'];
+      }
+      var objs = ['apps_edit_push_cert', 'apps_edit_push_login']
+      for (var i in objs) {
+        slideSection(ge(objs[i]), showObjs.indexOf(objs[i]) != -1 ? 1 : 0, dt);
+      }
+      break;
+  }
+}
+if (cur.privacy['push']) {
+  cur.onPrivacyChanged('push', 0);
+}
+
+cur.showSWFFileInfo = function(obj, ev) {
+  if (checkEvent(ev)) return;
+  var src = obj.href;
+  showFastBox('Ссылка на файл', 'Вы можете использовать загруженный файл, обращаясь к нему по прямой ссылке:<br /><div class="apps_edit_blockquote">'+src+'</blockquote>');
+  return false;
+}
+
+cur.dropDowns = {};
+
+cur.checkAppType = function(type) {
+  radiobtn(ge('app_type_' + type), type, 'app_type')
+  if (type) {
+    show('apps_edit_iframe_options');
+    hide('apps_edit_flash_options');
+    hide('apps_edit_flash_other_options');
+  } else {
+    hide('apps_edit_iframe_options');
+    show('apps_edit_flash_options');
+    show('apps_edit_flash_other_options');
+  }
+}
+if (isVisible('apps_edit_container_opts')) {
+  cur.checkAppType(<?=$app->app_info['app_engine']>1?0:1?>);
+}
+
+cur.dropDowns['app_wrapper'] = new Dropdown(ge('app_wrapper'), [
+  [0, 'Без использования контейнера'],
+  [1, 'С использованием контейнера']
+], {
+  width: '258px',
+  selectedItems: '0',
+  multiselect: false
+});
+
+cur.dropDowns['app_wmode'] = new Dropdown(ge('app_wmode'), [
+  [0, '<b>opaque</b> — не перекрывает уведомления и окна'],
+  [1, '<b>window</b> — перекрывает уведомления и окна (не рекомендуется)'],
+  [2, '<b>direct</b> — использует аппаратное ускорение (рекомендуется только для 3D-графики)']
+], {
+  width: '258px',
+  selectedItems: '<?=$app->app_info['app_wmode']?>',
+  multiselect: false
+});
+
+if (appEnabled != 0) {
+  cur.dropDowns['app_enabled'] = new Dropdown(ge('app_enabled'), [
+    [-1, 'Приложение отключено'],
+    [1, 'Приложение включено и видно всем']
+  ], {
+    width: '258px',
+    selectedItems: '<?=$app->app_info['app_active_real']?>',
+    multiselect: false
+  });
+} else {
+  var appState = ge('app_enabled');
+  appState.disabled = true;
+  appState.type = 'text';
+  appState.value = 'Приложение заблокировано администрацией';
+}
+
+<?php
+$my_groups = array(array(0,"Группа не выбрана"));
+$arr = $user->user_groups_owner($app->app_info['app_group_id']);
+$groups_where_i_owner = kv2arr($arr);
+if(!empty($groups_where_i_owner)){
+    $my_groups += $groups_where_i_owner;
+}
+?>
+
+var groupsList = <?=jenc($my_groups)?>;
+if (groupsList) {
+  cur.dropDowns['app_group'] = new Dropdown(ge('app_group'), groupsList, {
+    width: '258px',
+    selectedItems: '<?=$app->app_info['app_group_id']?>',
+    multiselect: false
+  });
+}cur.mainCat = 0;
+
+var catList = [[[10,"Аркады"],[11,"Приключения"],[12,"Симуляторы"],[16,"Экономические"],[14,"Стратегии"],[15,"Логические"],[17,"Настольные"],[5,"Прочее"]],[[1007,"Новостные"],[1004,"Общение"],[1005,"Мультимедиа"],[1003,"Рисование"],[1006,"Образовательные"],[1008,"Магазины"],[1000,"Прочее"]]];
+
+window.radioBtns['app_category'] = {
+  els: [ge('app_category_0'), ge('app_category_1')]
+}
+
+cur.defVals = [0, 100];
+cur.defVals[0] = 10;
+
+cur.checkAppCat = function(type) {
+  radiobtn(ge('app_category_' + type), type, 'app_category');
+  if (type != cur.mainCat) {
+    var dd = cur.dropDowns['app_subcategory'];
+    cur.defVals[cur.mainCat] = dd.val();
+
+    cur.mainCat = type;
+
+    dd.setData(catList[cur.mainCat]);
+    dd.val(cur.defVals[cur.mainCat])
+  }
+}
+cur.checkAppCat(cur.mainCat);
+
+cur.dropDowns['app_subcategory'] = new Dropdown(ge('app_subcategory'), catList[cur.mainCat], {
+  width: '258px',
+  selectedItems: '10',
+  multiselect: false
+});

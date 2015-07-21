@@ -1,0 +1,568 @@
+<?php
+global $user, $today_sign, $datetime, $setting, $user_region_club, $events_array, $hotnews, $total_video, $videolist, $freshblog, $blogentries, $langpack, $wishes, $xhost, $smenu, $videoblog, $birthday_users, $birthday_total, $new_design, $app_list, $rubrics;
+
+if ($new_design) {
+	global $point_ids;
+
+
+	//dmp($rubrics);
+	
+	/*
+	Спорт 20
+    Развлечения 26
+    Бизнес 12
+    Наука и технологии 17
+    Общество 13, 14, 11
+    Авто 21
+	*/
+	$rubrics_menu = array(
+	    20 => 'Спорт',
+	    26 => 'Развлечения',
+	    12 => 'Бизнес',
+	    17 => 'Наука и технологии',
+	    13 => 'Общество',
+	    21 => 'Авто',
+	);
+	
+	
+	
+	echo tpx('header_design');
+	?>
+	<div id="wrap2">
+		<div id="wrap1">
+			<div id="content">
+				<div id="main_rubric">
+					<div class="col_left dgray">
+						<!--<h2>Рубрики</h2>
+						<ul class="gray_menu">
+							<li><a href="#" onclick="return Page.xScrollTo('news_scroll', 0);">Все рубрики</a></li>-->
+							<? 
+							/*
+							$cnt = 1;
+							foreach($rubrics_menu as $k => $rm) { 
+								$total_news = count($rubrics[$k]);
+								if($total_news > 7) $total_news = 7;
+								if($total_news == 0) {
+									$nm = '<a href="#" class="disabled" onclick="return false">'.$rm.'</a>';
+								} else {
+									$nm = '<a href="#" onclick="return Page.xScrollTo(\'news_scroll\', '.$cnt.')">'.$rm.' ('.$total_news.')</a>';
+									$cnt++;
+								}
+								
+									
+								//xScrollTo
+								//$nm = $cnt == 0 ? $rm : $rm .' ('.$cnt.')';
+
+								?>
+							<li><?=$nm?></li>
+							<!--<li><a href="#">Новости</a></li>
+							<li><a href="#">Спорт</a></li>
+							<li><a href="#">Развлечения</a></li>
+							<li><a href="#">Бизнес</a></li>
+							<li><a href="#">Наука и технологии</a></li>
+							<li><a href="#">Общество</a></li>
+							<li><a href="#">Авто</a></li>-->
+							<? } */ ?>
+						</ul>
+					</div>
+					<div class="col_right">
+						<div id="news_scroll">
+								<div class="news_rubric" onmouseover="cur.start_news_over()" onmouseout="cur.start_news_out()">
+									<style>
+										#full_new {
+											margin-right: 20px;
+											*width: 550px;
+											float: left;
+											height: 200px;
+											position: relative;
+											padding-left: 10px;
+											overflow: hidden;
+										}
+										#full_new h2 {
+										    color: #3E6D16;
+										    font-size: 21px;
+										    line-height: 27px;
+										    margin-bottom: 10px;
+										    margin-top: 0;
+										    padding: 0;
+										}
+										#full_new_text {
+												display: block;
+										}
+										#full_new_img {
+												float: left;
+												height: 170px;
+												margin-right: 20px;
+												width: 225px;
+												overflow: hidden;
+										}
+										#full_new_date {
+											color: #606060;
+										}
+										#full_new_footer {
+											position: absolute;
+											width: 380px;
+											height: 20px;
+											bottom: 0px;
+											left: 10px;
+										}
+										/*
+										#list_news {
+											float: left;
+											width: 290px;
+											height: 200px;
+											overflow: hidden;
+											position: relative;
+										}
+										*/
+										#list_news {
+											float: left;
+											height: 273px;
+											overflow: hidden;
+											position: absolute;
+											width: 198px;
+											left: 16px;
+											top: 0px;
+										}
+										
+										#list_news a {
+											display: block;
+											border-bottom: #d8d8d8 1px solid;
+											padding: 9px 0;
+											*color: #76B046;
+											color: #ccc;
+										}
+										#list_news a:hover {
+											color: white;
+										}
+										#list_news a.cur {
+											//background: rgba(255,255,255,0.2);
+											color: white;
+										}
+										#list_news_scroll {
+											position: relative;
+										}
+										h2 .news_properties {
+											font-size: 13px;
+											text-decoration: none;
+											margin-top: 8px;
+										}
+									</style>
+									<h2>Свежие новости<a class="news_properties fl_r" href="#" onclick="return cur.show_news_box(event);" title="Настроить для себя">Настроить мои новости</a></h2>
+									
+									<?
+										global $current_new;
+										?>
+										
+									<div id="full_new">
+										<? if(!empty($current_new)) { ?>
+										<table width="100%">
+											<tr>
+												<? if(empty($current_new['img2'])) {
+													echo '<td id="full_new_img" style="display: none;"></td>';
+												} else {
+													echo '<td id="full_new_img"><img width="225" src="'.$current_new['img2'].'" alt=""/></td>';
+												}
+												?>
+												<td valign="top">
+													<h2 id="full_new_header"><?=$current_new['title']?></h2>
+													<span id="full_new_text"><?=$current_new['desc']?></span>
+													<div id="full_new_footer"><span id="full_new_date"><?=$datetime->sdate($current_new['date'])?></span> | <a class="morelink" onclick="return nav.go(this, event)" href="/start.php?act=news">Все новости »</a></div>
+												</td>
+											</tr>
+										</table>
+										<? } else { ?>
+										<div class="message">Нет свежих новостей на выбранные Вами темы.<br /> <a href="#" onclick="return cur.show_news_box(event);">Добавьте другие темы</a> или ждите у моря погоды...</div>
+										<? } ?>
+										
+										
+									</div>
+									<div id="list_news">
+										<div id="list_news_scroll">
+									<? 
+										foreach($hotnews as $nid => $new_data) {
+											$lnk = 	'http://' . $setting['host'] . '/news_ext.php?act=redirect&nid=' . $new_data['id'] . '&hash=' . hash_get($new_data['id'] . $user->id, 8, 'news');
+											echo '<a new_id = "'.$new_data['id'].'" onmouseover="cur.make_aktive('.$new_data['id'].')" href="'.$lnk.'" target="_blank">'.$new_data['title'].'</a>';
+										}
+									?>
+										</div>
+									</div>
+								</div>
+						</div>
+					</div>
+				</div>
+				<div id="main">
+					<div class="col_left dgray">
+						<div class="sep"></div>
+						<div id="leader_wrap">
+							<?=tpx('start_leader_block')?>
+						</div>
+						<div class="sep"></div>
+						<h2>Кто рядом</h2>
+						<? if($user->user_info['user_lat'] > 0) { 
+							if(count($point_ids) > 0) {
+?>
+						<div class="module">
+ <div class="module_body clear_fix">
+  <?=tpx('people_rows', array('users' => $point_ids, 'max' => 9))?>
+ </div>
+</div>
+<? } else { ?>Рядом никого нет. Попробуйте отметить себя на карте в настройках профиля или переселиться в более людное место.<? } } else { ?>Чтобы увидеть ближайших пользователей, необходимо <a onclick="page.showMap(<?=$user->id?>)">отметиться на карте</a><? }?>
+
+						
+					</div>
+					<div class="col_right">
+						<div class="section">
+							<h2>Лица дня</h2>
+							<div style="height: 75px; overflow: hidden;">
+								<div id="vs_carousel_wrapper">
+									<span id="vs_carousel_add" class="button_green">+</span>
+									<div id="vs_carousel"></div>
+								</div>
+								<div class="vs_carousel_tooltip topArrow" style="display:none" id="vs_carousel_tooltip">
+									<span id="vs_carousel_tooltip_name"></span> <br/>
+									<span id="vs_carousel_tooltip_place"></span> <br/>
+									<span id="vs_carousel_tooltip_state"></span> 
+								</div>
+								<div id="vs_carousel_win" style="display:none;" class="vs_carousel_tooltip myArrow">
+									<b>Лица дня</b> <br/><br/>
+									Хотите поместить своё фото на главной странице ВСети? Это позволит привлечь массу внимания к Вашей странице и возможно найти новых друзей.<br/><br/>  
+									Услуга стоит <b>1 зайчик</b>. Ваша фотография будет находиться на главной странице, пока новые пользователи, заказавшие эту же услугу, постепенно не вытеснят её.<br/><br/>
+
+									<? if ($user->credits > 0) { ?>
+										Здесь Вы можете написать несколько слов приветствия:<br />
+										<textarea id="vs_carousel_textarea" maxlength="100" cols="50" rows="1"></textarea><br /><br />
+
+										Вы согласны потратить 1 зайчик? <br/><br/>
+										<center>
+											<div class="button_green" id="vs_carousel_winButtonAccept">Согласен</div> 
+											<div class="button_gray" id="vs_carousel_winButtonDecine">Отменить</div> 
+										</center>
+									<? } else { ?>
+										К сожалению, у Вас пока нет зайчиков... <br/><br/>
+										<center>
+											<div class="button_gray vs_carousel_winButton" onclick="window.location = '/payments.php'">Получить зайчики</div>
+											<div class="button_gray" id="vs_carousel_winButtonDecine">Отменить</div>
+										</center>
+									<? } ?>
+								</div>
+							</div>
+						</div>
+						<div class="section videoday">
+							<h2>Видео дня</h2>
+							<div class="video_scroll">
+								<div class="scroll_x"> 
+									<?=tpx('start_list_hotvideo', $videolist)?>
+								</div>
+							</div>
+						</div>
+						<div class="section has_more video">
+							<div class="banner240x400">
+								<?=vs_ads6()?>
+							</div>
+							<div>
+							<h2>Видеоблоги</h2>
+							<div class="blog_entries">
+							<?=tpx('list_video', array('video' => $videoblog, 'width' => 175)); ?>
+							<br class="clear">
+							</div>
+							<a class="morelink" href="/start.php?act=videoblog" onclick="return nav.go(this, event)">Посмотреть все видеоблоги &raquo;</a>
+							</div>
+						</div>
+						<!--<div class="section affiche has_more">
+							<h2>Афиша</h2>
+							<? /* dmp($events_array); */ ?>
+							<div>
+							<?=tpx('start_list_events', array('events' => $events_array))?>
+						
+							<br class="clear">
+							</div>
+							<a class="morelink" href="/start.php?act=events" onclick="return nav.go(this, event)">Посмотреть все события &raquo;</a>
+						</div>-->
+						<div class="section has_more">
+							<h2>Свежее в блогах</h2>
+							<?= tpx('list_notes', array('notes' => $freshblog)) ?>
+							<a class="morelink" href="/start.php?act=notes" onclick="return nav.go(this, event)">Больше заметок &raquo;</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<? } else { ?>
+	<div id="wrap2">
+		<div id="wrap1">
+			<div id="content" style="background: #bad8f2 url(<?= $xhost ?>images/start_bg.jpg) 0px 0px  no-repeat;">
+				<div id="main">
+
+					<div id="start_menu"><?= start_menu($smenu, $act) ?></div>
+
+					<div style="width: 815px; height: 75px; overflow: hidden; margin-top: 3px;">
+						<div id="vs_carousel_wrapper">
+							<span id="vs_carousel_add" class="button_green">+</span>
+							<div id="vs_carousel"></div>
+						</div>
+						<div class="vs_carousel_tooltip topArrow" style="display:none" id="vs_carousel_tooltip">
+							<span id="vs_carousel_tooltip_name"></span> <br/>
+							<span id="vs_carousel_tooltip_place"></span> <br/>
+							<span id="vs_carousel_tooltip_state"></span> 
+						</div>
+						<div id="vs_carousel_win" style="display:none;" class="vs_carousel_tooltip myArrow">
+							<b>Лица дня</b> <br/><br/>
+							Хотите поместить своё фото на главной странице ВСети? Это позволит привлечь массу внимания к Вашей странице и возможно найти новых друзей.<br/><br/>  
+							Услуга стоит <b>1 зайчик</b>. Ваша фотография будет находиться на главной странице, пока новые пользователи, заказавшие эту же услугу, постепенно не вытеснят её.<br/><br/>
+
+							<? if ($user->credits > 0) { ?>
+								Здесь Вы можете написать несколько слов приветствия:<br />
+								<textarea id="vs_carousel_textarea" maxlength="100" cols="50" rows="1"></textarea><br /><br />
+
+								Вы согласны потратить 1 зайчик? <br/><br/>
+								<center>
+									<div class="button_green" id="vs_carousel_winButtonAccept">Согласен</div> 
+									<div class="button_gray" id="vs_carousel_winButtonDecine">Отменить</div> 
+								</center>
+							<? } else { ?>
+								К сожалению, у Вас пока нет зайчиков... <br/><br/>
+								<center>
+									<div class="button_gray vs_carousel_winButton" onclick="window.location = '/payments.php'">Получить зайчики</div>
+									<div class="button_gray" id="vs_carousel_winButtonDecine">Отменить</div>
+								</center>
+							<? } ?>
+						</div>
+					</div>
+
+					<div class="rightColumn2">
+						<div class="pb bc3">
+							<div class="pbt">
+								<div><h2>Видео дня</h2></div>
+							</div>
+							<div class="c">
+								<div class="bp5">
+									<? if ($total_video > 0) { ?>
+
+										<div class="fallback">Тут у нас будет видео дня</div>
+										<?
+									} else {
+										echo tpx('list_video', array('video' => $videolist));
+									}
+									?>
+									<br /><a href="/start.php?act=video" onclick="return nav.go(this, event)">Ещё интересное видео &raquo;</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="pb bc4">
+							<div class="pbt">
+								<div><h2>Новости ВСети</h2></div>
+							</div>
+							<div class="flexBox clearFix aPad">
+								<?= tpx('list_blog', array('blog' => $blogentries)) ?>
+							</div>
+						</div>
+
+
+					</div><!-- /rightColumn2 -->
+
+					<div class="leftColumn" style="clear: left">
+
+						<div class="pb bc6">
+							<div class="pbt">
+								<div><h2>Свежее в блогах</h2></div>
+							</div>
+							<div class="c">
+								<div class="bp5">
+									<?= tpx('list_notes', array('notes' => $freshblog)) ?>
+
+									<br /><a href="/start.php?act=notes" onclick="return nav.go(this, event)">Больше заметок &raquo;</a>
+								</div>
+							</div>
+						</div>
+
+
+						<? if (!empty($birthday_users)) { ?>
+							<div class="pb bc2">
+								<div class="pbt">
+									<div><h2>Наши именинники</h2></div>
+								</div>
+								<style >.module_body .people_cell {width: 62px;} .module_body {padding-bottom: 0px;}</style>
+								<div class="c module_body">
+									<div class="clearFix bp5">
+
+										<?= tpx('people_rows', array('users' => $birthday_users, 'lnk' => '?z=giftbox', 'max' => 9)) ?>
+
+										<? if ($birthday_total > 9) { ?>
+											<br class="clear"><br />
+											<a href="/gsearch.php?c[name]=1&c[bday]=<?= date('d') ?>&c[bmonth]=<?= date('m') ?>&c[country]=0&c[name]=1&c[noiphone]=1&c[section]=people">И ещё <?= $birthday_total - 9 ?> именинник<?= $langpack->dln($birthday_total - 6, 'file') ?> сегодня &raquo;</a>
+										<? } ?>
+
+									</div>
+								</div>
+							</div>
+						<? } ?> 
+
+
+						<div class="pb bc1">
+							<div class="pbt">
+								<div><h2>Региональные группы</h2></div>
+							</div>
+
+							<div class="c">
+								<div class="clearFix bp5">
+
+									<a href="/start.php?act=groups" onclick="return nav.go(this, event)"><img src="/images/region_small.png" border="0" style="margin-top: 10px;"/></a>
+
+									Карта <a href="/start.php?act=groups" onclick="return nav.go(this, event)">региональных групп</a></br>
+									<? if ($user_region_club['region_club_id'] > 0) { ?>
+										<? if ($user_region_club['there'] == 1) { ?>
+											Ваш регион: <a href="/club<?= $user_region_club['region_club_id'] ?>"><?= $user_region_club['region_name'] ?></a>
+										<? } else { ?>
+											Ближайшая группа: <a href="/club<?= $user_region_club['region_club_id'] ?>"><?= $user_region_club['region_name'] ?></a>
+										<? } ?>
+									<? } else { ?>
+										Группы Вашего региона пока нет
+									<? } ?>
+								</div>
+							</div>
+						</div>
+
+
+
+						<div class="pb bc8">
+							<div class="pbt">
+								<div><h2>Статистика</h2></div>
+							</div>
+							<div class="c">
+								<div class="bp5">
+									Пользователи: <?= nf($setting['total_users']) ?><br />
+									Сегодня новых: <?= nf($today_sign) ?><br />
+									Группы: <?= nf($setting['total_groups']) ?><br />
+									Данные: 35 Терабайт
+								</div>
+							</div>
+						</div>
+
+					</div><!-- /leftColumn -->
+
+					<div class="rightColumn" style="float: left">
+
+
+						<div class="pb bc6">
+							<div class="pbt">
+								<div><h2>Самые интересные новости</h2></div>
+							</div>
+							<div class="c">
+								<div class="whenOpen">
+									<div class="bp5">
+										<?= tpx('list_news', array('news' => $hotnews)) ?>
+										<a href="/start.php?act=news" onclick="return nav.go(this, event)">Посмотреть все свежие новости &raquo;</a>
+									</div>  
+								</div><!-- whenOpen -->
+							</div>
+						</div>
+
+
+						<div class="pb bc3">
+							<div class="pbt">
+								<div><h2>Видеоблоги</h2></div>
+							</div>
+
+							<div class="c">
+								<div class="bp5">
+									<? echo tpx('list_video', array('video' => $videoblog, 'width' => 175)); ?>
+									<br class="clear"/><a href="/start.php?act=videoblog" onclick="return nav.go(this, event)">Посмотреть все видеоблоги &raquo;</a>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="pb bc4">
+							<div class="pbt">
+								<div><h2>Желания пользователей</h2></div>
+							</div>
+
+							<div class="flexBox clearFix aPad">
+								<? foreach ($wishes as $wish) { ?>       
+									<div style="float: left; width: 190px; overflow: hidden;">
+										<a href="http://price.<?= $setting['host'] . $wish['wish_url'] ?>" target="_blank">
+											<div style="width: 30px; height: 50px; background: white url(<?= $wish['wish_image'] ?>) 0 0 no-repeat; background-size: 100%; border: silver 1px solid; float: left; margin: 5px;"></div>
+										</a>
+										<a href="<?= $wish['user']->lnk ?>"><?= $wish['user']->user_info['fio'] ?></a> хочет <br />
+										<a href="http://price.<?= $setting['host'] . $wish['wish_url'] ?>" target="_blank"><?= $wish['wish_title'] ?></a>
+									</div> 
+								<? } ?>
+								<br style="clear: both" /><br />
+								А чего хочется тебе? <a href="http://price.vseti.by">Посмотреть каталог &raquo;</a>
+							</div>
+						</div>
+
+
+						<div class="pb bc2">
+							<div class="pbt">
+								<div><h2>Афиша</h2></div>
+							</div>
+
+							<div class="c">
+								<div class="bp5">
+									<!-- <div class="fallback">Тут у нас скоро будут анонсы всяких интересных событий</div> -->
+									<?
+									if (!empty($events_array)) {
+										foreach ($events_array as $e) {
+											?>
+											<table style="border-bottom: silver 1px solid; width: 100%">
+												<tr>
+													<td width="50px;" valign="top">
+														<a href="<?= $e->lnk ?>"><div style="width: 70px; height: 100px; background: url(<?= $e->group_photo() ?>) no-repeat; background-size: 100%"></div></a>
+													</td>
+													<td valign="top" style="padding-left:7px; line-height: 16px;">
+														<a href="<?= $e->lnk ?>"><strong><?= $e->group_info['group_title'] ?></strong></a><br />
+														<?= strcut($e->group_info['group_desc'], 270) ?><br /> 
+														<small style="color: gray;"><?= $e->group_info['begin_txt'] ?>
+															<span class="divide">|</span>
+															<?= $e->group_info['group_address'] ?>
+															<span class="divide">|</span>
+															<?= $e->group_info['num_members'] ?> участник<?= $langpack->dln($e->group_info['num_members'], 'file') ?></small>
+													</td>
+												</tr>
+											</table>
+										<? } ?>
+
+										<br />
+
+										<!-- href="/gsearch.php?section=events" -->
+										<a href="/start.php?act=events" onclick="return nav.go(this, event)">Больше событий &raquo;</a>
+									<? } else { ?>
+										Никаких исключительно важных событий пока не видно, но можно посмотреть <a href="/gsearch.php?section=events">всё грядущие события</a>
+									<? } ?>
+								</div>
+							</div>
+						</div>
+
+					</div><!-- /rightColumn -->
+
+					<br style="clear: both">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<?
+}
+/*
+  if(!$user->user_info['save_traf']){
+  ?>
+  <script type="text/javascript">
+  var MGCD = new Date();
+  document.write('<scr'
+  +'ipt type="text/javascript"'
+  +' src="http://jsc.dt00.net/v/s/vseti.by.22989.js?t='
+  +MGCD.getYear()
+  +MGCD.getMonth()
+  +MGCD.getDay()
+  +MGCD.getHours()
+  +'" charset="utf-8"></scr'+'ipt>');
+  </script>
+  <?
+  }
+ * 
+ */
+?>

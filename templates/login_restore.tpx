@@ -1,0 +1,46 @@
+<?php
+global $error_message;
+
+echo tpx('header_design');
+?>
+
+  <div id="wrap2">
+
+  <div id="wrap1">
+   <div id="content" class="white_page">
+    
+<div class="simplePage">
+
+<div id="message_text" <? if($error_message == '') { ?>style="display:none;"<? } ?>>
+        <div class="error"><?=$error_message?></div>
+</div>
+<br />
+
+ <form method="post" name="forgot" id="forgot">
+ <input type="hidden" act="op" name="op" value="retrieve">
+    <center>
+     <span class="grey">Я помню: </span>
+     <select name="type" id="type" onchange="typeChange(this.value);"><option value="1" {if $type==1}selected{/if}>E-mail</option><option value="2" {if $type==2}selected{/if}>Номер телефона</option><option value="3" {if $type==3}selected{/if}>Логин</option><option value="4" {if $type==4}selected{/if}>id страницы</option></select>
+     <input class="inputText" type="text" name="email" value="" id="email" size="25" />
+     <br /><small style="color:#808080;" id="example">Пример: sveta@mymail.by</small>
+
+<script>
+function typeChange(val) {
+	var exampleArr = ['', 'sveta@mymail.by', '+375295551254', 'IvanovFedor', 'http://vseti.by/id1234567'];
+	document.getElementById('example').innerHTML = "Пример: "+exampleArr[val];
+}
+if(1 > 0) typeChange(1);
+</script>
+     <br /><br />
+     <div class="button_green">
+       <button onclick="javascript:document.forgot.submit()">Прислать пароль</button>
+     </div>
+  </center>
+  <input type="submit" value='.' style="color:#fff;border:0;padding:0;margin:0;background:#fff;height:6px;width:6px"/>
+ </form>
+</div>
+   </div>
+  </div>
+  </div>
+  </div>
+  <div id="boxHolder"></div>

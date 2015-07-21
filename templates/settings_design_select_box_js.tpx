@@ -1,0 +1,48 @@
+<?php
+global $sections, $user;
+$backgrounds = array();
+foreach($sections as $k => $sect){
+	foreach($sect['ids'] as $bid){ 
+		$backgrounds[$k] .= '<a class="bg_cell fl_l" onclick="cur.showBg('.$bid.'); return false;"><img class="gift_img png" src="/images/bg/'.$bid.'s.jpg" width="120" height="90" /></a>';
+	}
+}
+?>
+var giftsCont = box.tabContent;
+
+
+each(geByClass('gifts_section', giftsCont), function(i,v) {v.style.height = Math.min((lastWindowHeight - 235), 402) + 'px';});
+box.setOptions({bodyStyle: 'padding: 0px', width: 663, onHide: function() {
+  removeEvent(ge('gifts_box'));
+  if (nav.objLoc.z == 'giftbox') {
+    delete nav.objLoc.z;
+    nav.setLoc(nav.objLoc);
+  }
+}});
+addEvent(giftsCont, 'scroll', function() {
+});
+
+
+cur.changeBgSection = function(section) {
+  each(geByClass('gifts_section', giftsCont), function(i,v) {v.innerHTML = ''; hide(v);});
+  ge('gifts_box_'+section).innerHTML = cur.bgSections[section] || '';
+  show('gifts_box_'+section);
+}
+
+try {
+	box.removeButtons().addButton(getLang('global_close'));
+	extend(cur, {
+	  bgSections: <?=jenc($backgrounds)?>,
+	  showBg: function(bid) {
+		  ajax.post('al_settings.php', {act: 'design_def_bg', bid: bid, hash: '<?=hash_get($user->id, 18, 'chbgd')?>'}, {
+		  	onDone: function (result) {
+		        //ge('settings_privacy_result').innerHTML = result;
+		        //show('settings_privacy_result');
+		        //
+		        //animate(ge('vseti'), {backgroundImage: 'url(/images/bg/' + bid + '.jpg)'}, 2000);
+		        $('#vseti').css('background-image', 'url(/images/bg/' + bid + '.jpg)');
+		      } 
+		  })
+	    //console.log(bid);
+	  },
+	});
+}catch(e){debugLog(e.message);}

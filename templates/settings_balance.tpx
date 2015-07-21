@@ -1,0 +1,45 @@
+<?php
+global $langpack, $new_design, $user;
+if ($new_design)
+	echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+			<div class="user_settings">
+				<div class="t_bar tabs clear_fix">
+					<ul id="settings_filters" class="t0">
+						<li><a href="payments.php">Пополнение баланса</a></li>
+						<li class="active_link"><a href="/settings?act=balance">История платежей</a></li>
+						<li><a href="rate.php?act=help">Частые вопросы</a></li>
+					</ul></div>
+				<div id="settings_result"></div>
+				<div id="settings_panel" class="clear_fix">  <div class="settings_panel">
+						<div class="setbal_section">
+							<h2>Состояние личного счёта</h2>
+							<b>Зайчики</b> – это не только ценный мех, но и универсальная валюта для всех платных функций ВСети. Обратите внимание, что услуга считается оказанной в момент зачисления зайчиков, возврат средств невозможен.
+							<div class="setbal_row_wrap clear_fix">
+								<div class="setbal_label fl_l ta_r">На Вашем счёте:</div>
+								<div class="setbal_labeled_text fl_l"><b id="balance_str" class="votes_balance_nom"><?= $user->credits ?> зайчик<?= $langpack->dln($user->credits, 'file') ?></b></div>
+							</div>
+							<div class="setbal_row_button_wrap clear_fix">
+								<div class="button_green fl_l">
+									<button onclick="location.href='/payments.php';">Получить зайчики</button>
+								</div>
+								<div class="button_gray fl_l" style="margin-left: 10px;">
+									<button onclick="location.href='/payments.php?act=info';">Потратить зайчики</button>
+								</div>
+								<div class="button_gray fl_l" style="margin-left: 10px;">
+									<button onclick="showBox('payments', {act: 'votes_transfer_box'})">Передать зайчики</button>
+								</div>
+							</div>
+						</div>
+						<?= tpx('settings_balance_body', $var) ?>	
+						<div class=" clear_fix" style="text-align: center; padding: 10px; line-height: 140%;">
+							<div>Если у Вас возникли проблемы, обратитесь в <a href="/support">техподдержку</a>.</div>
+						</div>
+					</div>
+				</div></div>
+		</div>
+	</div>
+</div>

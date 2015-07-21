@@ -1,0 +1,4 @@
+cur.lang = extend(cur.lang || {}, {"lib_N_books":["","%s книга","%s книги","%s книг"],"fave_N_users_online":["","%s онлайн","%s онлайн","%s онлайн"],"fave_search_summary":["","Найден %s человек","Найдены %s человека","Найдены %s человек"],"fave_links_summary":["","У Вас в закладках %s ссылка","У Вас в закладках %s ссылки","У Вас в закладках %s ссылок"],"fave_search_not_found":"По Вашему запросу ничего не найдено","fave_search_query_not_found":"По запросу {search} ничего не найдено.","fave_link_added":"Ссылка успешно добавлена","fave_delete":"Удалить из закладок","fave_sure_delete":"Вы уверены, что хотите удалить {user} из закладок?","global_photo_full_size":"Увеличить"});
+cur.debug = false;
+cur.options = extend(cur.options || {}, {"max_post_len":280});
+Book.init();

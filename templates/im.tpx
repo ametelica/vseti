@@ -1,0 +1,127 @@
+<?php
+global $user;
+?>
+<!-- Браузер не поддерживается -->
+<!--
+<div id="IM_browser_not_supported">
+    Обновите Ваш браузер до последней версии, чтобы начать пользоваться быстрыми сообщениями!
+    <a href="http://vseti.by/pages.php?o=-123461&p=Browsers&info" target="blank">Узнать больше</a> или
+    <a href="http://vseti.by/pages.php?o=-123461&p=Browsers&upgrade" target="blank">Обновить браузер</a>?
+</div>
+-->  
+
+<!-- Новости мать их -->
+<div id="IM_news" class="glass bradius4">
+    <div id="IM_news_content"></div>
+    <div id="IM_new_controls">
+        <div id="IM_news_controls_allright" class="bradius4" onclick="$('#IM_news').fadeOut();">Все понятно</div>
+        <div id="IM_news_controls_more" class="bradius4" onclick="$('#IM_news').fadeOut(); var _win = window.open('http://vseti.by/page368412'); _win.focus(); return false;">Подробнее</div>
+    </div>
+</div>
+
+<!-- Видеозвонок -->
+<div id="IM_vcall_error" class="glass bradius4"></div>
+<div id="IM_vcall" class="glass bradius4">
+    <div id="IM_vcall_title"></div>
+    <div id="IM_vcall_body"></div>
+    <div id="IM_vcall_tools">
+        <div id="IM_vcall_tools_decide"></div>
+        <div id="IM_vcall_tools_accept">Ответить</div>
+    </div>
+</div>
+
+
+
+<div id='IM'>
+    <div id="IM_main" class="glass bradius4">
+        <div id="IM_main_title">
+            <span id="IM_main_title_offline_toggle" class="IM_main_title_offline_toggle_on" title="Показать всех друзей">•</span>
+            <span id="IM_main_title_window_toggle">Нет друзей ВСети</span>
+        </div>
+
+        <div id="IM_main_body">
+            <div id="IM_main_body_menu">
+                <img id="IM_menu_audio_on" src='/images/im/sound.png' alt="." class="im_menu_elem" />
+                <img id="IM_menu_notif" src='/images/im/notifications.png' alt="." class="im_menu_elem" />
+                <img id="IM_menu_help" src='/images/im/help.png' alt="." class="im_menu_elem_static fright" title="Открыть страницу помощи"/>
+            </div>
+            <div id="IM_main_body_flist" class="bradius2"></div>
+            <div id="IM_main_body_fsrch"><!-- поиск -->
+                <div id="IM_main_body_fsrch_ctrl" title="Поиск">&#x25B2</div>
+                <div id="IM_main_body_fsrch_ctrl_down" title="Скрыть поиск">&#x25BC</div>
+                <div id="IM_main_body_fsrch_inpt">
+                    <input id="IM_main_body_fsrch_inpt_input" type="text" placeholder="Начните вводить имя друга" />
+                    <img src="http://vseti.by/images/progress.gif" id="IM_main_body_fsrch_inpt_procc" height="15px"/>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="IM_dialogs" class="glass bradius4">
+        <div id="IM_dialogs_title"><span>Нет открытых диалогов</span></div>
+        <div id="IM_dialogs_body">
+            <div id="IM_dialogs_body_tabs"></div>
+            <div id="IM_dialogs_body_harea_wrapper" class="bradius2">
+                <div id="IM_dialogs_body_harea">
+                    <div id="IM_dialogs_body_harea_more"><span>Показать предыдущие сообщения &#x2191</span></div>
+                    <div id="IM_dialogs_body_harea_list"></div>
+                </div>
+            </div>
+            <div id="IM_dialogs_body_tools">
+                <div id="IM_dialogs_body_tools_statusline"></div>
+                <div id="IM_dialogs_body_menu">
+                    <img id="IM_dialogs_body_menu_smiles" src='/images/im/smiley.png' alt="." class="im_menu_elem_static" title="Вставить смайл"/>
+                    <img id="IM_menu_send_enter" src='/images/im/send_enter.png' alt="." class="im_menu_elem" />
+                </div>
+            </div>
+            <div id="IM_dialogs_body_form" >
+                <textarea id="IM_dialogs_body_form_message" class="bradius2"></textarea>
+            </div>
+            <div id="IM_dialogs_body_bottom">
+                <div id="IM_dialogs_body_bottom_resize"></div>
+            </div>
+            <div id="IM_dialogs_body_smiles_area">
+                <table>
+                    <tr>
+                        <td><img src="/images/smilies_pm/angel.gif" title="Angel" alt="angel"/></td>
+                        <td><img src="/images/smilies_pm/bad.gif" title="Bad" alt="bad"/></td>
+                        <td><img src="/images/smilies_pm/biggrin.gif" title="Biggrin" alt="biggrin"/></td>
+                        <td><img src="/images/smilies_pm/blum.gif" title="Blum" alt="blum"/></td>
+                        <td><img src="/images/smilies_pm/blush.gif" title="Blush" alt="blush"/></td>
+                        <td><img src="/images/smilies_pm/cray.gif" title="Cry" alt="cray"/></td>
+                        <td><img src="/images/smilies_pm/crazy.gif" title="Crazy" alt="crazy"/></td>
+                    </tr>
+                    <tr>
+                        <td><img src="/images/smilies_pm/dance.gif" title="Dance" alt="dance"/></td>
+                        <td><img src="/images/smilies_pm/diablo.gif" title="Diablo" alt="diablo"/></td>
+                        <td><img src="/images/smilies_pm/dirol.gif" title="Dirol" alt="dirol"/></td>
+                        <td><img src="/images/smilies_pm/good.gif" title="Good" alt="good"/></td>
+                        <td><img src="/images/smilies_pm/in_love.gif" title="In Love" alt="in_love"/></td>
+                        <td><img src="/images/smilies_pm/kiss_mini.gif" title="Kiss mini" alt="kiss_mini"/></td>
+                        <td><img src="/images/smilies_pm/laugh.gif" title="Laugh" alt="laugh"/></td>
+                    </tr>
+                    <tr>
+                        <td><img src="/images/smilies_pm/music.gif" title="Music" alt="music"/></td>
+                        <td><img src="/images/smilies_pm/nea.gif" title="Nea" alt="nea"/></td>
+                        <td><img src="/images/smilies_pm/pardon.gif" title="Pardon" alt="pardon"/></td>
+                        <td><img src="/images/smilies_pm/rolleyes.gif" title="Rolleyes" alt="rolleyes"/></td>
+                        <td><img src="/images/smilies_pm/scratch.gif" title="Scratch" alt="scratch"/></td>
+                        <td><img src="/images/smilies_pm/shok.gif" title="Shok" alt="shok"/></td>
+                        <td><img src="/images/smilies_pm/shout.gif" title="Shout" alt="shout"/></td>
+                    </tr>
+                    <tr>
+                        <td><img src="/images/smilies_pm/smile.gif" title="Smile" alt="smile"/></td>
+                        <td><img src="/images/smilies_pm/unknw.gif" title="Unknw" alt="unknw"/></td>
+                        <td><img src="/images/smilies_pm/wacko2.gif" title="Wacko" alt="wacko2"/></td>
+                        <td><img src="/images/smilies_pm/wall.gif" title="Wall" alt="wall"/></td>
+                        <td><img src="/images/smilies_pm/wink.gif" title="Wink" alt="wink"/></td>
+                        <td><img src="/images/smilies_pm/yahoo.gif" title="Yahoo" alt="yahoo"/></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

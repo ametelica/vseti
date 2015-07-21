@@ -1,0 +1,13 @@
+<?php
+global $user, $group, $remove;
+
+$member_info = $group->member_data($user);
+$adm_level = 5;
+?>box.setOptions({bodyStyle: 'padding: 14px 15px'});
+box.removeButtons().addButton('Отмена', box.hide, 'no');
+box.addButton('Сохранить изменения' , GroupsEdit.uDoneAdmin.pbind(<?=$user->id?>, '<?=hash_get($user->id . $user->id, 16, 'aadm')?>'));
+
+radioBtns['admlevel'] = {
+  els: geByClass('radiobtn', ge('gedit_admbox_admin_info')),
+  val: <?=$adm_level?>
+};

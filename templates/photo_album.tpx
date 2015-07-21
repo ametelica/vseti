@@ -1,0 +1,62 @@
+<?php
+global $vs_album, $user, $owner, $photos_list, $langpack, $photos_on_page, $new_design, $can_add;
+
+$photos_assign = array(
+		'photos' => $photos_list['total'] > $photos_on_page ? array_slice($photos_list['data'], 0, $photos_on_page) : $photos_list['data'],  
+		'from' => 'album' . $vs_album->uid,
+		'album' => 1
+);
+
+$edit = ($user->is_me($owner) or ($owner->oid < 0 and $owner->user_rank > 0)) ? 1 : 0;
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+
+<? if($owner->oid < 0 and $owner->group_info['show_photos'] == 0) { ?>			
+			<div class="photos_no_content">Фотографии группы отключены</div>
+<? } else { ?>
+<div class="t_bar photos_tabs clear_fix">
+  <ul class="t0"><? if($edit) { ?><li class="t_r"><a href="/album<?=$vs_album->uid?>?act=edit" onclick="return nav.go(this, event)">Редактировать альбом</a></li><? } ?><li class="">
+  <a href="/albums<?=$owner->oid?>" onclick="return checkEvent(event);" onmousedown="if ((window.PhotosAdd || nav).go(this, event) === false) (window.PhotosAdd || window.photos || window.friendsphotos).activeTab(this);">
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr>Все фотографии</nobr></b>
+  </a>
+</li><li class="active_link">
+  <a href="/album<?=$vs_album->uid?>" onclick="return checkEvent(event);" onmousedown="if ((window.PhotosAdd || nav).go(this, event) === false) (window.PhotosAdd || window.photos || window.friendsphotos).activeTab(this);">
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr><?=$vs_album->title?></nobr></b>
+  </a>
+</li><li id="photo_add_tab" class="" style="display: none;"><a>
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr>Добавление фотографий</nobr></b>
+  </a>
+</li></ul>
+</div><div class="photos_album_page">
+  <? if($can_add) { ?><div id="photos_upload_area_wrap" style="position: relative;">
+  <a id="photos_upload_area" title="Вы можете перетащить файлы прямо на эту страницу." href="/album<?=$vs_album->uid?>?act=add" onclick="return photos.upload(this, event);">
+    <div class="photos_upload_area_upload">
+      <span id="photo_upload_area_label" class="photos_upload_area_img">
+        Добавить фотографии в альбом
+      </span>
+    </div>
+    <div class="photos_upload_area_drop">
+      Отпустите, чтобы начать загрузку.
+    </div>
+  </a>
+  <input id="photos_upload_input" class="file" type="file" size="28" onchange="Upload.onFileApiSend(cur.uplId, this.files);" multiple="true" name="photo" style="visibility: hidden; position: absolute;"/>
+</div><? } ?><div class="summary_wrap" <? if($photos_list['total'] == 0 ) {?>style="display: none;"<? } ?>>
+    <div class="summary">В альбоме <?=$photos_list['total']?> фотографи<?=$langpack->dln($photos_list['total'], 'pht2')?><span class="divide">|</span><span><a onclick="return nav.go(this, event)" href="/album<?=$vs_album->uid?>?act=comments">Комментарии к альбому</a></span><span>
+				<!--<a onclick="photos.deleteAlbum('<?=$vs_album->uid?>', '8379a553726a75f967')">Удалить</a>--></span></div>
+  </div>
+  <div id="photos_container" class="clear_fix"><?=tpx('photo_photos_rows', $photos_assign)?></div>
+  <a id="photos_load_more" onclick="photos.load()" style="<? if($photos_list['total'] <= $photos_on_page) { ?>display: none<? } ?>"><span>Показать больше фотографий</span>
+    <div id="photos_more_progress" class="progress"></div>
+  </a>
+</div><? } ?></div>
+</div>
+  </div>

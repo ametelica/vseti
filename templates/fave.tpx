@@ -1,0 +1,58 @@
+<?php
+global $fave_users, $fave_links, $section, $langpack, $total, $on_page, $offset, $new_design;
+if($new_design) echo tpx('header_design');
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+	<div id="user_faves">
+	
+<div id="fave_likes_tabs" class="summary_tabs clear_fix">
+  <div class="fl_l summary_tab<? if($section == 'users') {?>_sel<? } ?>">
+  <a class="summary_tab2" href="/fave?section=users" id="fave_like_tab_users" onclick="return nav.go(this, event)">
+    <div class="summary_tab3">
+      <nobr>Люди</nobr>
+    </div>
+  </a>
+</div><div class="fl_l summary_tab<? if($section == 'links') {?>_sel<? } ?>">
+  <a class="summary_tab2" href="/fave?section=links" id="fave_like_tab_links" onclick="return nav.go(this, event)">
+    <div class="summary_tab3">
+      <nobr>Сообщества</nobr>
+    </div>
+  </a>
+</div>
+  <div id="fave_notes_tab_wrap" class="fl_r" style="display: none;">
+    <div  id="fave_notes_tab" class="checkbox " onclick="checkbox(this); nav.go('/fave?section=likes_' + (isChecked(this) ? 'notes' : 'posts'));"><div></div>Только заметки</div>
+  </div>
+  <div class="fave_search <? if($section != 'users'){ ?>unshown<? } ?>">
+  <input onkeyup="Fave.updateList(event, this);" id="fave_search" placeholder="Начните вводить имя" type="text" class="text"/>
+</div><div class="fave_new_link <? if($section != 'links'){ ?>unshown<? } ?>">
+  <input type="hidden" id="new_link_hash" name="new_link_hash" value="72e4292b09b1a0006f"/>
+  <input placeholder="Введите ссылку на группу ВСети" oninput="Fave.newLink(event, this);" onpaste="Fave.newLink(event, this);" onkeydown="Fave.newLink(event, this);" onchange="Fave.newLink(event, this);" id="fave_new_link" type="text" class="text" value="" />
+  <div class="button_green fl_r"><button onclick="Fave.newLinkSubmit(event, this);">Добавить ссылку</button></div>
+  <input class="text unshown" placeholder="Введите описание ссылки (этот текст будет заголовком ссылки)" id="fave_new_link_desc" type="text" value="" onkeydown="return onCtrlEnter(event, Fave.newLinkSubmit)"/>
+</div><div id="fave_faces_other" class="fave_more_button fl_r" style="display: none;">
+  <div class="button_green"><button id="faces_other_btn" onclick="Fave.facesOther();">Показать других</button></div>
+</div>
+</div><?
+if($section == 'users') {
+	/*
+	echo tpx('fave_module', array(
+			'module_id' => $section,
+			'content' => tpx('fave_user_rows', array('users' => $fave_users)),
+			'subject' => $fave_users['total'].' '.$langpack->humans($fave_users['total']),
+			'more' => $fave_users['total'] > ($offset + $on_page)
+	));
+	 * 
+	 */
+	echo tpx('fave_module_users');
+	echo tpx('fave_module_users_online');
+}
+
+if($section == 'links') {
+	echo tpx('fave_module_links');
+}
+
+?></div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,55 @@
+<?php
+global $owner, $photos_on_page, $photos_list, $act, $vs_photo;
+$photos_assign = array(
+	'photos' => $photos_list['data'],
+	'offset' => $photos_on_page,
+	'from' => 'photos'.$owner->oid
+);
+?>
+showBackLink('<?=$owner->lnk?>', '<?=$owner->title?>');
+//addEvent(document, 'click', onDocumentClick);
+extend(cur, {
+  offset: <?=$photos_on_page?>,
+  count: <?=$photos_list['total']?>,
+  moreFrom: 'photos<?=$owner->oid?>',
+  moreOpts: undefined
+});
+
+cur.lang = extend(cur.lang || {}, {
+  photos_deleting_album: 'Удаление альбома',
+  photos_sure_del_album: 'Вы уверены, что хотите удалить альбом?',
+  photos_stop_uploading: 'Прервать загрузку',
+  photos_uploading_warning: 'Загрузка фотографий еще продолжается. Вы уверены, что хотите покинуть страницу и прервать загрузку?'
+});
+
+if (vs.version) {
+  addEvent(window, 'load', photos.initScroll);
+} else {
+  photos.initScroll();
+}
+var preload = <?=jenc(array($photos_on_page * 2, tpx('photo_photos_rows', $photos_assign)))?>;
+
+ajax.preload(cur.moreFrom, extend({offset: cur.offset, part: 1}, cur.moreOpts || {}), preload);
+
+photos.registerDragZone({
+  on: function() {
+    addClass(ge('photos_upload_area'), 'photos_upload_area_enter');
+    if (ge('lite_photo_uploader')) setStyle(ge('lite_photo_uploader'), {width: '1px', height: '1px'});
+  },
+  un: function() {
+    removeClass(ge('photos_upload_area'), 'photos_upload_area_enter');
+    if (ge('lite_photo_uploader')) setStyle(ge('lite_photo_uploader'), {width: '100%', height: '100%'});
+  },
+  drop: function(files) {
+    if (cur.uplId !== undefined && window.Upload && Upload.checked && Upload.checked[cur.uplId]) {
+      Upload.onFileApiSend(cur.uplId, files);
+    } else {
+      photos.onUploadSelect(files);
+    }
+  }
+});
+<? if($act == 'photo') { ?>
+var sf = function() {showPhoto('<?=$vs_photo->uid?>', 'photos<?=$owner->oid?>', {root: 1, noHistory: 1})};
+sf();
+//if (vs.loaded) sf(); else { addEvent(window, 'load', sf);}
+<? } ?>

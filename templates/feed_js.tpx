@@ -1,0 +1,448 @@
+<?php
+global $user, $feed, $langpack, $new_design, $section, $search;
+
+$reply_names = array();
+if(!empty($feed['user_ids'])) {
+	$feed['user_ids'] = array_unique($feed['user_ids']);
+	foreach ($feed['user_ids'] as $u) {
+		$u = pdata($u);
+		$reply_names[$u->id] = array('<a class="mem_link" href="' . $u->lnk . '" onclick="return nav.go(this, event)">' . $u->user_info['fio'] . '</a>', $u->user_info['name'] . ', ');
+	}
+}
+
+$init = array(
+   'section' => $section,
+   'subsection' => ($section == 'comments' ? '' : 'recent'),
+   'count' => $feed['total'],
+   'reply_names' => $reply_names,
+   'timestamp' => $_SERVER['REQUEST_TIME'],
+   'offset' => 10,
+   'from' => '18755_1349125200_5',
+   'all_shown' => false,
+   'loc' => 'feed' . ($section == 'news' ? '' : '?section=' . $section) ,
+   'all_shown_text' => 'Показан'.$langpack->dln($feed['total'],'shw').' '.$feed['total'].' последн'.$langpack->dln($feed['total'],'lst').' новост'.$langpack->dln($feed['total'],'zap').'.',
+   'empty_text' => ($section=='news' ? 'Здесь Вы будете видеть новостную ленту своих друзей' : 'Здесь будут показаны все новые комментарии к интересующим Вас объектам.'),
+   'q' => $search,
+   'add_queue' => true,
+   'ignore_owners' => true,
+   'search_name' => 'Поиск: <i></i>',
+   'reposts' => NULL,
+   'mentionObj' => NULL,
+   'owner' => 0,
+   'owner_name' => NULL,
+   'source' => 0,
+   'source_name' => NULL,
+   'summary' => 'Показаны все новости<!--<span class="divider">|</span><span><a href="feed?subsection=top">Показать наиболее интересные</a></span>-->',
+   'htitle' => 'Новости',
+   'search_sort' => array(0, 'По дате добавления'),
+   'graphs' => NULL,
+   'feedback_form' => '<div class="feedback_reply_row_wrap" id="%item%_reply_wrap">
+  <div class="feedback_reply_tail_wrap">
+    <div class="feedback_reply_tail"></div>
+  </div>
+  <div class="feedback_reply_row">
+    <table class="feedback_row_t" cellpadding="0" cellspacing="0">
+      <tr>
+        <td class="feedback_row_photo">
+          <a href="'.$user->lnk.'"><img src="'.$user->photo().'" class="feedback_row_photo" /></a>
+        </td>
+        <td class="feedback_reply_row_content">
+          <div class="feedback_reply_field_wrap clear_fix">
+            <textarea placeholder="%placeholder%" class="feedback_reply_field fl_l" id="%item%_field" autocomplete="off" onkeydown="feed.onNotifyReplySubmit(\'%item%\', event);">%greeting%</textarea>
+          </div>
+          <div class="feedback_reply_actions" id="reply_box%item%">
+            <div class="reply_hint"></div>
+            <div class="button_green fl_l">
+              <button onclick="feed.notifySendReply(\'%item%\');" id="%item%_btn"  onmouseover="wall.replySubmitTooltip(\'%item%\', 1);" onmouseout="wall.replySubmitTooltip(\'%item%\', 0);">%submit%</button>
+            </div>
+            <div class="feedback_reply_hint_wrap fl_l"><div class="feedback_reply_hint" onmouseover="showTooltip(this, {shift: [3, -2, 3], text: \'%bighint%\', slide: 15, className: \'feedback_ownreply_tt\', hasover: 1});">%hint%</div></div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>',
+   'feedback_acts_like' => '<div class="like_wrap clear_fix" onmouseover="wall.likeOver(\'%like_raw%\', {noLabels: 1, topShift: 8})" onmouseout="wall.likeOut(\'%like_raw%\', {opacity: 0.6})" onclick="wall.like(\'%like_raw%\', \'%like_hash%\'); event.cancelBubble = true;">
+  <span class="like_count fl_l" id="like_count%like_raw%">%like_count%</span>
+  <div class="%like_class% fl_l" id="like_icon%like_raw%" onmouseover="if (hasClass(this, \'no_likes\')) showTooltip(this, {text: \'Мне нравится\'});" onclick="this.tt && this.tt.el && this.tt.hide();"></div>
+  <span class="like_link fl_l" id="like_link%like_raw%"></span>
+</div>',
+   'feedback_acts_del' => '<div class="feedback_del clear_fix" onclick="feed.notifyDelete(\'%item%\', \'%del_types%\', \'%del_hash%\', this)" onmouseover="feed.notifyDeleteOver(\'%item%\', this, \'Удалить\');" onmouseout="feed.notifyDeleteOut(\'%item%\');">
+  <div class="feedback_del_icon fl_l" id="delete_post%item%"></div>
+</div>',
+   'max_post_len' => 1000,
+   'post_hash' => hash_get($user->id.$var['oid'], 16, 'post'),
+   'media_types' => array (
+     array ('graffiti', 'Граффити'),
+     array ('photo', 'Фотографию'),
+     array ('video', 'Видеозапись'),
+     array ('audio', 'Аудиозапись'),
+   ),
+   'wall_type' => 'feed',
+   'share' => array(
+     'url' => 'http://cs6076.vk.com/upload.php',
+     'hash' => '47307727e39a349bf411e1d8e24015e1',
+     'rhash' => '6b4492d212e379fb316e17356160cd40',
+  ),
+   'user_id' => $user->id,
+   'top_periods' => array(
+     '0' => 'за час',
+     '10' => 'за 2 часа',
+     '20' => 'за 4 часа',
+     '30' => 'за 8 часов',
+     '50' => 'за сутки',
+     '60' => 'за 3 дня',
+     '70' => 'за неделю',
+     '80' => 'за месяц',
+     '90' => 'за 3 месяца',
+     '100' => 'все статьи',
+  ),
+   'feed_types' => array(
+     'groups' => array ('ph', 'vd', 'tp'),
+     'comments' => array ('ps', 'ph', 'vd', 'tp', 'nt'),
+     'person' => array ('ps', 'ph', 'vd', 'tp', 'fr', 'gr', 'ev', 'pr', 'gf'),
+     'group' => array ('ps', 'ph', 'vd', 'tp', 'nw'),
+     'updates' => array ('ph', 'vd', 'nt', 'tp', 'fr', 'gr', 'ev', 'pr'),
+     'notifications' => array ('ps', 'mt', 'tp', 'lk', 'rp', 'gr'),
+  ),
+   'my_feed_types' => array(
+     'friends' => true,
+     'groups' => true,
+     'comments' => true,
+     'person' => true,
+     'group' => true,
+     'updates' => true,
+     'notifications' => true,
+     'suggested' => true,
+  ),
+   'wall_tpl' => array(
+     'reply_box' => '<div class="reply_fakebox_wrap" id="reply_fakebox%post_id%" onclick="wall.showEditReply(\'%post_id%\')"><div class="reply_fakebox">Комментировать..</div></div><input type="hidden" id="post_hash%post_id%" value="1349170322_1f393e0ff8eeb25417" can_reply_as_group="%can_reply_as_group%" />',
+     'reply_form' => '<div id="reply_box%post_id%" class="reply_box clear_fix" onclick="return cancelEvent(event)">
+  <a class="reply_form_image" href="'.$user->lnk.'"><img src="'.$user->photo().'" class="reply_form_image" /></a>
+  <div class="reply_form">
+    <input type="hidden" id="reply_to%post_id%" value="" />
+    <div class="reply_field_wrap clear_fix">
+      <div class="reply_field_tail"></div>
+      <div id="reply_smile%post_id%" class="emoji_smile fl_l" style="right: 1px; opacity: 0.7;" onclick="return cancelEvent(event);" onmousedown="return wall.showEmojiTT(\'%post_id%\', this, event);" onmouseout="if (window.Emoji) Emoji.ttOut(this);" onmouseover="if (window.Emoji) Emoji.ttOver(this);" title="Используйте TAB, чтобы быстрее открывать смайлы">
+        <div class="emoji_smile_icon_on"></div>
+        <div class="emoji_smile_icon"></div>
+      </div>
+      <div id="reply_field%post_id%" class="reply_field" onfocus="return wall.showEditReply(\'%post_id%\', event);" contenteditable="true" placeholder="Комментировать.."></div>
+    </div>
+    <div id="reply_media_preview%post_id%" class="reply_media_preview clear_fix media_preview"></div>
+    <div class="reply_warn clear" id="reply_warn%post_id%"></div>
+    <div id="submit_reply%post_id%" class="submit_reply clear">
+      <div class="fl_l reply_button_wrap"><div class="button_green"><button id="reply_button%post_id%" onclick="wall.sendReply(\'%post_id%\', event);">Отправить</button></div></div>
+      <div class="reply_as_group_wrap fl_l %reply_as_group_class%">
+        <div class="checkbox" id="reply_as_group%post_id%" onclick="checkbox(this)"><div></div>от имени сообщества</div>
+      </div>
+      <div id="reply_to_title%post_id%" class="reply_to_title fl_l"></div>
+      <div id="reply_media_lnk%post_id%" class="reply_media_lnk fl_r"><span class="add_media_lnk">Прикрепить</span></div>
+    </div>
+  </div>
+</div>',
+     'reply_multiline' => $user->user_info['multiline']==1?true:false,
+     'reply_multiline_intro' => false,
+     'reply_fast' => '<div id="post%reply_id%" class="reply reply_dived clear " onmouseover="wall.replyOver(\'%reply_id%\')" onmouseout="wall.replyOut(\'%reply_id%\')" >
+  <div class="reply_table">
+    <a class="reply_image" href="'.$user->lnk.'">
+      <img src="'.$user->photo().'" width="50" height="50" class="reply_image" />
+    </a>
+    <div class="reply_info">
+      
+      <div class="reply_text">
+        <a class="author" href="'.$user->lnk.'">'.$user->title.'</a>
+        <div class="wall_reply_text">%message%</div>
+        
+      </div>
+      <div class="info_footer">
+        
+        %date% 
+      </div>
+    </div>
+  </div>
+</div>',
+     'reply_multiline_hint' => '<div class="reply_submit_hint_wrap" onclick="event.cancelBubble = true;">
+  <div class="reply_submit_hint_title">Настройки отправки</div>
+  <div id="reply_submit_hint_opts">
+    <div class="radiobtn %disabled%" onclick="radiobtn(this, 0, \'reply_submit\'); wall.onReplySubmitChanged(0);"><div></div><b>Enter</b> — отправка сообщения<br><b>Shift+Enter</b> — перенос строки</div>
+    <div class="radiobtn %enabled%" onclick="radiobtn(this, 1, \'reply_submit\'); wall.onReplySubmitChanged(1);"><div></div><b>Ctrl+Enter</b> — отправка сообщения<br><b>Enter</b> — перенос строки</div>
+  </div>
+</div>',
+     'reply_link' => '<span id="reply_link%post_id%" class="reply_link"><span class="divide">|</span><a class="reply_link" onclick="wall.showEditReply(\'%post_id%\')">Комментировать</a></span>',
+     'own_reply_link' => '<span class="divide">|</span><a class="reply_link" onclick="showBox(\'al_wall.php\', {act: \'own_reply\', post: \'%post_id%\'}, {stat: [\'ui_controls.css\', \'ui_controls.js\', \'mentions.js\']})">Ответить</a>',
+     'post_replies' => '<div class="reply_link_wrap" id="wpe_bottom%post_id%">
+  <small><a href="%post_url%" onclick="return nav.go(this, event)">%date%</a>%date_postfix%</small>%reply_link%
+</div>
+<div class="replies_wrap clear" id="replies_wrap%post_id%" style="display: none;">
+  <div id="replies%post_id%"><input type="hidden" id="start_reply%post_id%" value=""/></div>
+  %reply_box%
+</div>',
+     'post' => '<div id="post%post_id%" class="post" onmouseover="wall.postOver(\'%post_id%\')" onmouseout="wall.postOut(\'%post_id%\')" onclick="wall.postClick(\'%post_id%\', event);">
+  <div class="post_table">
+    <div class="post_image">
+      <a class="post_image" href="%link%"><img src="%photo%" width="50" height="50"/></a>
+      %online%
+    </div>
+    <div class="post_info">
+      %del%
+      <div class="wall_text">%name% %text%</div>
+      <div class="post_like_wrap fl_r" onmouseover="wall.postLikeOver(\'%post_id%\')" onmouseout="wall.postLikeOut(\'%post_id%\')" onclick="wall.like(\'%post_id%\', \'1349170322_ad4c38d877d9678e75\'); event.cancelBubble = true;">
+  <div class="post_like">
+    <span class="post_like_link fl_l" id="like_link%post_id%">Мне нравится</span>
+    <i class="post_like_icon no_likes fl_l" id="like_icon%post_id%"></i>
+    <span class="post_like_count fl_l" id="like_count%post_id%"></span>
+  </div>
+</div>
+      <div class="replies">%replies%</div>
+    </div>
+  </div>
+  
+</div>',
+     'reply' => '<div id="post%reply_id%" class="reply reply_dived clear %classname%" onmouseover="wall.replyOver(\'%reply_id%\')" onmouseout="wall.replyOut(\'%reply_id%\')" %attr%>
+  <div class="reply_table">
+    <a class="reply_image" href="%link%">
+      <img src="%photo%" width="50" height="50" class="reply_image" />
+    </a>
+    <div class="reply_info">
+      %delete_link%
+      <div class="reply_text">
+        <a class="author" href="%link%">%name%</a>
+        <div class="wall_reply_text">%text%</div>
+        %media%
+      </div>
+      <div class="info_footer">
+        <div class="like_wrap fl_r" onclick="wall.like(\'%like_id%\', \'1349170322_ad4c38d877d9678e75\'); event.cancelBubble = true;" onmouseover="wall.likeOver(\'%like_id%\')" onmouseout="wall.likeOut(\'%like_id%\')">
+  <span class="like_link fl_l" id="like_link%like_id%">Мне нравится</span>
+  <i class="no_likes fl_l" id="like_icon%like_id%"></i>
+  <span class="like_count fl_l" id="like_count%like_id%"></span>
+</div>
+        <a class="wd_lnk" href="/wall%post_id%?reply=%reply_msg_id%" onclick="return nav.go(this, event)">%date%</a> %to_link%
+      </div>
+    </div>
+  </div>
+</div>',
+     'del' => '<div class="fl_r delete_post_wrap">
+  <div class="delete_post">
+    <div id="delete_post%post_id%" onclick="wall.deletePost(\'%post_id%\', \'1349170322_94b9f13b959d6d5fce\');" onmouseover="wall.activeDeletePost(\'%post_id%\', \'Удалить запись\')" onmouseout="wall.deactiveDeletePost(\'%post_id%\')"></div>
+  </div>
+</div>',
+     'spam' => '<div class="fl_r delete_post_wrap">
+  <div class="delete_post">
+    <div id="delete_post%full_id%" onclick="feed.ignoreItem(\'%full_id%\', \'%item_id%\', \'1349170322_adb67ceefa4db5449f\'); event.cancelBubble = true;" onmouseover="wall.activeDeletePost(\'%full_id%\', \'Это не интересно\')" onmouseout="wall.deactiveDeletePost(\'%full_id%\')"></div>
+  </div>
+</div>',
+     'del_reply' => '<div class="fl_r delete_post_wrap">
+  <div class="delete_post">
+    <div id="delete_post%reply_id%" onclick="wall.deletePost(\'%reply_id%\', \'1349170322_94b9f13b959d6d5fce\');" onmouseover="wall.activeDeletePost(\'%reply_id%\', \'Удалить\')" onmouseout="wall.deactiveDeletePost(\'%reply_id%\')"></div>
+  </div>
+</div>',
+     'spam_reply' => '<div class="fl_r delete_post_wrap">
+  <div class="delete_post">
+    <div id="delete_post%reply_id%" onclick="wall.markAsSpam(\'%reply_id%\', \'1349170322_fafb5e7a432a1a743a\');" onmouseover="wall.activeDeletePost(\'%reply_id%\', \'Это спам\')" onmouseout="wall.deactiveDeletePost(\'%reply_id%\')"></div>
+  </div>
+</div>',
+     'answer_reply' => '<a class="reply_to_link" href="#" onmouseup="return wall.replyTo(\'%post_id%\', %reply_msg_id%, %reply_uid%, event);" onclick="cancelEvent(event);return false;">Ответить</a>',
+     'poll_stats' => '<tr><td colspan="2" class="page_poll_text">%option_text%</td></tr>
+<tr>
+  <td class="page_poll_row">
+    <div class="page_poll_percent" style="width: %css_percent%%"></div>
+    <div class="page_poll_row_count">%count%</div>
+  </td>
+  <td class="page_poll_row_percent ta_r"><nobr><b>%percent%%</b></nobr></td>
+</tr>',
+     'poll_hash' => '1349170322_600b49871930a78ec1',
+     'date_format' => 'сегодня в {hour}:{minute}',
+     'time_system' => false,
+     'abs_timestamp' => $_SERVER['REQUEST_TIME'],
+     'lang' => array(
+       'wall_M_replies_of_N' => array (
+        '',
+        '%s комментарий из {link}{all}{/link}',
+        '%s последних комментария из {link}{all}{/link}',
+        '%s последних комментариев из {link}{all}{/link}',
+      ),
+       'wall_hide_replies' => 'Скрыть комментарии',
+       'wall_show_n_of_m_last' => array (
+        '',
+        'Показать последние %s комментарий из {count}',
+        'Показать последние %s комментария из {count}',
+        'Показать последние %s комментариев из {count}',
+      ),
+       'wall_show_all_n_replies' => array (
+        '',
+        'Показать %s комментарий',
+        'Показать все %s комментария',
+        'Показать все %s комментариев',
+      ),
+       'wall_N_replies' => array (
+        '',
+        '%s комментарий',
+        '%s комментария',
+        '%s комментариев',
+      ),
+       'wall_three_last_replies' => 'три последних комментария',
+       'wall_all_replies' => 'все комментарии',
+       'wall_x_new_replies_more' => array (
+        '',
+        'Добавлен %s новый комментарий',
+        'Добавлены %s новых комментария',
+        'Добавлены %s новых комментариев',
+      ),
+       'wall_X_people_voted' => array (
+        '',
+        'Проголосовал <b>%s</b> человек.',
+        'Проголосовало <b>%s</b> человека.',
+        'Проголосовало <b>%s</b> человек.',
+      ),
+       'wall_reply_submit_hint_1' => 'Shift+Enter – перевод строки',
+       'wall_reply_submit_hint_2' => 'Ctrl+Enter – отправка сообщения',
+       'wall_reply_submit_hint_1_more' => 'Enter – отправка сообщения, Shift+Enter – перевод строки',
+       'wall_reply_submit_hint_2_more' => 'Enter – перевод строки, Ctrl+Enter – отправка сообщения',
+       'wall_just_now' => array (
+        '',
+        'только что',
+        'две секунды назад',
+        'три секунды назад',
+        'четыре секунды назад',
+        'пять секунд назад',
+      ),
+       'wall_X_seconds_ago_words' => array (
+        '',
+        'только что',
+        'две секунды назад',
+        'три секунды назад',
+        'четыре секунды назад',
+        'пять секунд назад',
+      ),
+       'wall_X_seconds_ago' => array (
+        '',
+        '%s секунду назад',
+        '%s секунды назад',
+        '%s секунд назад',
+      ),
+       'wall_X_minutes_ago_words' => array (
+        '',
+        'минуту назад',
+        'две минуты назад',
+        'три минуты назад',
+        '4 минуты назад',
+        '5 минут назад',
+      ),
+       'wall_X_minutes_ago' => array (
+        '',
+        '%s минуту назад',
+        '%s минуты назад',
+        '%s минут назад',
+      ),
+       'wall_X_hours_ago_words' => array (
+        '',
+        'час назад',
+        'два часа назад',
+        'три часа назад',
+        'четыре часа назад',
+        'пять часов назад',
+      ),
+       'wall_X_hours_ago' => array (
+        '',
+        '%s час назад',
+        '%s часа назад',
+        '%s часов назад',
+      ),
+    ),
+     'photo_thumb' => '<div class="page_media_thumb page_media_photo fl_l"><a class="photo" href="/photo%photo_id%" onclick="return showPhoto(\'%photo_id%\', \'feed%full_id%\', {temp: %temp%, big: 1, dark: 1}, event);"><img src="%thumb%" /></a></div>',
+     'photos' => '%explain%<div class="post_media clear_fix">%photos%</div>',
+     'tagged_explain' => '<span class="explain">%explain_text%</span>',
+     'photo_replies' => '<div class="reply_link_wrap"> <small num="%count%" class="feed_photos_num">%date%</small> </div>',
+     'grouped_posts' => '<div class="feed_reposts_wrap%place%" id="feed_reposts_wrap%place%_%random%">
+  <div class="feed_reposts_first">%first%</div>
+  <div class="feed_reposts_group" id="feed_reposts%place%_%random%">%other%</div>
+  <div class="feed_reposts_more">
+    <a id="feed_reposts_more%place%_%random%" href="/feed?section=comments&reposts=%place%" class="wr_header feed_reposts_more_link" onclick="return feed.toggleReposts(\'%place%\', \'%random%\', event);">%label%</a>
+  </div>
+</div>',
+  ),
+   'qversion' => 12,
+	 'upload' => array(
+			 'url' => 'http://cs1.vseti.local/upload.php',
+			 'params' => array(
+					 'act' => "do_add",
+					 'aid' => -14,
+					 'gid' => 0,
+					 'mid' => $user->id,
+					 'hash' => "b98c925576a8675e6562166f7f5865c0",
+					 'rhash' => "b2aa1b9d0a50d895438671f065ff65ca",
+					 'vs' => 1,
+					 "from_host" => "vseti.by",
+			 ),
+			 'opts' => array(
+					'server' => 1,
+					 'default_error' => 1,
+					 'error_hash' => "51f5b24d229d1bb5eb08c589443bb93c",
+					 'ext_re' => "\.(gif|jpg|jpeg|png)$",
+					 'lang' => array(
+							 "max_files_warning" => null,
+							 "wall_drop_photos_here" => "Перенесите сюда фотографии, чтобы прикрепить их к записи",
+							 "wall_release_photos_here" => "Отпустите клавишу мыши, чтобы прикрепить фотографии",
+							 "wall_photos_drag_hint" => "Сюда можно перетаскивать фотографии"
+					 )
+			 )
+	 ),
+   'delay_ads' => true,
+);
+
+//"upload":{"url":"http:\/\/cs306810.vk.com\/upload.php","params":{"act":"do_add","aid":-14,"gid":0,"mid":4803497,"hash":"b98c925576a8675e6562166f7f5865c0","rhash":"b2aa1b9d0a50d895438671f065ff65ca","vk":1,"from_host":"vk.com"},"opts":{"server":"306810","default_error":1,"error_hash":"51f5b24d229d1bb5eb08c589443bb93c","ext_re":"\\.(gif|jpg|jpeg|png)$","lang":{"max_files_warning":null,"wall_drop_photos_here":"Перенесите сюда фотографии, чтобы прикрепить их к записи","wall_release_photos_here":"Отпустите клавишу мыши, чтобы прикрепить фотографии","wall_photos_drag_hint":"Сюда можно перетаскивать фотографии"}}}
+
+?>
+stManager.add(["page.js","feed.js"], function () {try {
+cur.lang = extend(cur.lang || {}, {
+  create_poll: 'Опрос',
+  dont_attach: 'Не прикреплять',
+  news_return_to_news: 'Новости',
+  news_unsubscribe: 'Отписаться',
+  news_warning: 'Предупреждение',
+  news_show_all_comments: 'Показать все комментарии',
+  news_show_last_three: 'Показать последние три комментария',
+  news_unsubscribe_comments: 'Отписаться от комментариев',
+  news_unsubscribe_comments_confirm: 'Отписаться от комментариев к этой записи',
+  news_show_menu: 'Фильтр',
+  news_hide_menu: 'Фильтр',
+  news_search_tab: 'Поиск: <i>%s</i>',
+  feed_add_post: 'Добавить новость',
+  news_switch_to_search: 'Поиск новостей',
+  news_top_X_percent: ["","топ <b>%s%<\/b> новостей","топ <b>%s%<\/b> новостей","топ <b>%s%<\/b> новостей"],
+  news_top_all_news: 'все новости',
+  news_top_no_news: 'только мои записи',
+  news_top_slider_about: 'Вы можете передвинуть бегунок вправо или влево, чтобы определить, какие Новости будут отображаться.<br><br>Чем правее бегунок, тем <b>больше</b> новостей в потоке. Смещая бегунок влево, Вы оставляете самое <b>важное</b>.',
+  news_x_photos: ["","%s фотография","%s фотографии","%s фотографий"],
+  wall_user_was_tagged_on_photos: ["","был отмечен на фотографиях","была отмечена на фотографиях"],
+  news_switch_to_articles: 'К обсуждаемым новостям',
+  news_show_X_reposts: ["","Показать ещё %s похожую запись","Показать ещё %s похожих записи","Показать ещё %s похожих записей"],
+  news_hide_reposts: "Скрыть похожие записи",
+  news_search: "Введите хештеги для поиска"
+});
+feed.init(<?=jenc($init)?>);
+<? if(!$new_design) { ?>
+carousel_init();
+<? } ?>
+	
+cur.show_news_box = function() {
+	showBox('/start.php', {act: 'a_news_box'}, {params: {bodyStyle: 'padding: 0px; position: relative;', width: 550}}); 
+	return false;
+}
+
+if(ge('news_module')){
+	var news_module_height = $("#news_module").height();
+	var news_table_height = $("#news_table").height();
+	if(news_module_height > news_table_height) {
+		$("#news_table").height(news_module_height + 20);
+	}
+}
+
+<? echo run_video_objects(); ?>
+} catch (e) {
+  debugLog(e.message, e.stack, e);
+  if (vs.id == 16) {
+    alert(e.message);
+  }
+};});

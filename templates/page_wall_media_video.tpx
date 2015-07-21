@@ -1,0 +1,30 @@
+<?php
+global $user, $setting, $video_objects;
+
+extract($var);
+
+//dmp($var);
+
+$object_id = 'v'.$obj.'_'.mt_rand(1111,9999);
+
+$v = new se_video($user->id);
+$img = $cnv == '1' ? $v->video_dir($cid, 1, $cs, 1) . $cid . "b.jpg" : "/images/video.jpg";
+
+if($var['video']['ext']) {
+	$img = $video['sizes']['l'][0];
+	echo '<div><a class="video_big fl_l" href="#" id="'.$object_id.'" onclick="return showInlineVideo(\''.$obj.'\', \''.hash_get($obj, 16, 'iv').'\', {autoplay: 1, addParams: { post_id: \''.$var['post'].'\'}}, event, this);"><div class="bg"></div><div class="ttl"><span class="ttl fl_l">'.$title.'</span>  <span class="fl_r">' . $dur . '</span></div><img class="preview" src="' . $img . '" alt="'.$title.'"/><div class="play" /></div></a></div>';
+} else {
+	$url = 'http://'.($user->byfly?'':'v').'cs'.$cs.'.'.$setting['host'].'/video.php%3Fflv%3D'.$id.'%26hash%3D'.hash_get($id.$user->id,8,'alv2',2).'%26mid%3D'.$user->id;
+	echo '<a class="video_big fl_l" href="'.$url.'" id="'.$object_id.'"><div class="bg"></div><div class="ttl"><span class="ttl fl_l">'.$title.'</span>  <span class="fl_r">' . $dur . '</span></div><img class="preview" src="' . $img . '" alt="'.$title.'"/><div class="play" /></div></a>';
+	$video_objects[] = $object_id;
+}
+
+
+echo '<div class="media_desc">
+<a id="post_media_lnk' . $obj . '" class="lnk" href="video' . $obj . '" onclick="return showVideo(\'' . $obj . '\', \'' . hash_get($id . $user->id, 8, 'alv2', 2) . '\', {autoplay: 1}, event);">
+<b class="fl_l video"></b>
+<span class="a post_video_title">'.$title.'</span>
+<span class="post_video_duration">'.$dur.'</span>
+</a>
+</div><br class="clear">';
+?>

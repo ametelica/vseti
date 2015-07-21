@@ -1,0 +1,632 @@
+<?php
+global $user, $owner, $show_full_info, $privacyMPhone, $privacyHPhone, $privacyICQ, $privacySkype, $privacy_places, $weblink, $political_text, $subculture_text, $work_total, $work_html, $military_total, $military_html, $new_design, $interests2;
+if(empty($new_design)) {
+?>
+<div id="profile_full_info" <? if($show_full_info==0) { ?>style="display: none"<? } ?>>
+	<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=contacts">Редактировать</a><? } ?>
+  <b>Контакты</b>
+</h4>
+<div class="profile_info short1">
+<? if($owner->profile_info['basic_city']!=0) { ?>
+ <div class="clear_fix ">
+  <div class="label fl_l">Город:</div>
+  <div class="labeled fl_l"><a href="/search?c%5Bsection%5D=people&c[country]=<?=$owner->profile_info['basic_country']?>&c[city]=<?=$owner->profile_info['basic_city']?>" onclick="return nav.go(this, event)"><?=$owner->profile_info['basic_city_name']?></a></div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['mobile_phone'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Мобильный телефон:</div>
+  <div class="labeled fl_l">
+  <? if($privacyMPhone) { ?>
+    <span style="color: #555555;">Информация скрыта</span>
+  <? } else { ?>
+   <?=$owner->profile_info['mobile_phone']?>
+  <? } ?>
+  </div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['home_phone'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Домашний телефон:</div>
+  <div class="labeled fl_l">
+  <? if($privacyHPhone) { ?>
+    <span style="color: #555555;">Информация скрыта</span>
+  <? } else { ?>
+   <?=$owner->profile_info['home_phone']?>
+  <? } ?>
+  </div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['icq'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">ICQ:</div>
+  <div class="labeled fl_l">
+  <? if($privacyICQ) { ?>
+    <span style="color: #555555;">Информация скрыта</span>
+  <? } else { ?>
+   <?=$owner->profile_info['icq']?>
+  <? } ?>
+  </div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['skype'])) { ?>
+<div class="clear_fix miniblock">
+  <div class="label fl_l">Skype:</div>
+  <div class="labeled fl_l">
+  <? if($privacySkype) { ?>
+    <span style="color: #555555;">Информация скрыта</span>
+  <? } else { ?>
+   <?=$owner->profile_info['skype']?>
+  <? } ?>
+  </div>
+</div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['website'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Личный сайт:</div>
+  <div class="labeled fl_l"><a href="<?=$weblink?>" target="_blank" target="_blank"><?=$owner->profile_info['website']?></a></div>
+ </div>
+<? } ?>
+</div>
+<h4>
+	<? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php">Редактировать</a><? } ?>
+  <b>Убеждения</b>
+</h4>
+<div class="profile_info">
+<? if($owner->profile_info['political']>0 and !empty($political_text)) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Полит. взгляды:</div>
+  <div class="labeled fl_l"><a onclick="return nav.go(this, event)" href="/search?c%5Bsection%5D=people&c%5Bpolitic%5D=<?=$owner->profile_info['political']?>"><?=$political_text?></a></div>
+ </div>
+<? } ?>
+<? if($owner->profile_info['subculture']>0 and !empty($subculture_text)) { ?>
+<div class="clear_fix miniblock">
+  <div class="label fl_l">Субкультура:</div>
+  <div class="labeled fl_l"><a onclick="return nav.go(this, event)" href="/search?c%5Bsection%5D=people&c[subculture]=<?=$owner->profile_info['subculture']?>"><?=$subculture_text?></a></div>
+ </div>
+<? } ?>
+<? if(!empty($owner->profile_info['religion_name'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Религ. взгляды:</div>
+  <div class="labeled fl_l"><a onclick="return nav.go(this, event)" href="/search?c%5Bsection%5D=people&c%5Breligion_id%5D=<?=$owner->profile_info['religion_id']?>"><?=$owner->profile_info['religion_name']?></a></div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['smoking'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Отн. к курению:</div>
+  <div class="labeled fl_l"><?=$owner->profile_info['smoking_name']?></div>
+ </div>
+<? } ?>
+<? if(!empty($owner->profile_info['alcohol'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Отн. к алкоголю:</div>
+  <div class="labeled fl_l"><?=$owner->profile_info['alcohol_name']?></div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['user_imeniny'])) { ?>
+<div class="clear_fix miniblock">
+  <div class="label fl_l">Ближайшие именины:</div>
+  <div class="labeled fl_l"><?=$owner->profile_info['user_imeniny']?></div>
+</div>
+<? } ?>
+<? if($owner->profile_info['blood']>0 and $owner->profile_info['blood']<9) { ?>
+<div class="clear_fix miniblock">
+  <div class="label fl_l">Группа крови:</div>
+  <div class="labeled fl_l">
+   <a onclick="return nav.go(this, event)" href="/search?c%5Bsection%5D=people&c%5Bblood%5D=<?=$owner->profile_info['blood']?>">
+<?
+	$blood_types = array(
+		1 => '0(I) Rh+',
+		2 => 'A(II) Rh+',
+		3 => 'B(III) Rh+',
+		4 => 'AB(IV) Rh+',
+		5 => '0(I) Rh-',
+		6 => 'A(II) Rh-',
+		7 => 'B(III) Rh-',
+		8 => 'AB(IV) Rh-',
+	);
+	echo $blood_types[$owner->profile_info['blood']]; 
+?>   
+   </a>
+  </div>
+</div>
+<? } ?>
+</div>
+
+<h4>
+	<? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=personal">Редактировать</a><? } ?>
+  <b>Личная информация</b>
+</h4>
+<div class="profile_info">
+<? if(!empty($owner->profile_info['activities'])) { ?>
+ <div class="clear_fix ">
+  <div class="label fl_l">Деятельность:</div>
+  <div class="labeled fl_l"><?=nl2br(ChopText($owner->profile_info['activities'], 20))?></div>
+ </div>
+<? } if(!empty($owner->profile_info['interests'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Интересы:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['interests'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['aspirations'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Устремления:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['aspirations'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['music'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимая музыка:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['music'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['movies'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые фильмы:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['movies'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['tv'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые телешоу:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['tv'])?></div>
+ </div> 
+<? } if(!empty($owner->profile_info['books'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые книги:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['books'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['games'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые игры:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['games'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['quotes'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые цитаты:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['quotes'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['about'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">О себе:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['about'])?></div>
+ </div>
+<? } ?>
+</div>
+
+<? if($owner->profile_info['html_edu_cnt'] > 0) { ?>
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=education">Редактировать</a><? } ?>
+  <b>Образование</b>
+</h4>
+<div class="profile_info">
+ <?=$owner->profile_info['html_edu']?>
+</div>
+<? } ?>
+
+<? if($military_total > 0) { ?>
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=military">Редактировать</a><? } ?>
+  <b>Военная служба</b>
+</h4>
+<div class="profile_info">
+ <?
+ $i = 0;
+ foreach($military_html as $m) { 
+	 $time_period = array();
+    if ($m['military_begin_year'] > 0) {
+      $time_period[] = $m['military_begin_year'];
+    }
+    $time_period[] = 'по';
+   
+    if ($m['military_end_year'] > 0) {
+      $time_period[] = $m['military_end_year'];
+    } else {
+    	$time_period[] = 'сегодняшний день';
+    }
+    $time_period = trim(join(' ',$time_period));
+	 ?>
+	<div class="clear_fix <? if($i > 0) {?>block<? } ?>">
+   <div class="label fl_l">Воинская часть:</div>
+   <div class="labeled fl_l">
+    <?=$m['military_place']?><br><? if(!empty($m['country_name'])) { echo $m['country_name'].', '; } ?><?=$time_period?>
+   </div>
+  </div>
+ <? 
+ $i++;
+ }
+ ?>
+</div>
+<? } ?>
+
+
+<? if($work_total > 0) { ?>
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=career">Редактировать</a><? } ?>
+  <b>Карьера</b>
+</h4>
+<div class="profile_info">
+ <?=$work_html?>
+</div>
+<? } ?>
+
+<? if($owner->profile_info['html_places_cnt']>0 and $privacy_places) { ?>
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=addresses">Редактировать</a><? } ?>
+  <b>Места</b>
+</h4>
+<div class="profile_info">
+ <?=$owner->profile_info['html_places']?>
+</div>
+<? } ?>
+
+<?  if($owner->profile_info['html_pets_cnt']>0) { ?>
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=pets">Редактировать</a><? } ?>
+  <b>Питомцы</b>
+</h4>
+<div class="profile_info">
+ <?=$owner->profile_info['html_pets']?>
+</div>
+<? } ?>
+
+<? if($owner->profile_info['html_auto_cnt']>0) { ?>
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=auto">Редактировать</a><? } ?>
+  <b>Авто</b>
+</h4>
+<div class="profile_info">
+ <?=$owner->profile_info['html_auto']?>
+</div>
+<? } ?>
+</div>
+<? } else { 
+
+// Новый дизайн
+
+?>
+
+<div id="profile_full_info" <? if($show_full_info==0) { ?>style="display: none"<? } ?>>
+	<div id="profile_cols">
+<? 
+// Контакты
+if($owner->profile_info['basic_city']!=0 
+				or !empty($owner->profile_info['mobile_phone'])
+				or !empty($owner->profile_info['home_phone'])
+				or !empty($owner->profile_info['icq'])
+				or !empty($owner->profile_info['skype'])
+				or !empty($owner->profile_info['website'])
+) { 
+?>
+<div class="profile_info short" pos="1">
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r edit_info" href="/profileEdit.php?page=contacts"></a><? } ?>
+  <b>Контактная информация</b>
+</h4>
+<? if($owner->profile_info['basic_city']!=0) { ?>
+ <div class="clear_fix ">
+  <div class="label fl_l">Город:</div>
+  <div class="labeled fl_l"><a onclick="return nav.go(this, event)" href="/search?c%5Bsection%5D=people&c[country]=<?=$owner->profile_info['basic_country']?>&c[city]=<?=$owner->profile_info['basic_city']?>"><?=$owner->profile_info['basic_city_name']?></a></div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['mobile_phone'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Мобильный телефон:</div>
+  <div class="labeled fl_l">
+  <? if($privacyMPhone) { ?>
+    <span style="color: #555555;">Информация скрыта</span>
+  <? } else { ?>
+   <?=$owner->profile_info['mobile_phone']?>
+  <? } ?>
+  </div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['home_phone'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Домашний телефон:</div>
+  <div class="labeled fl_l">
+  <? if($privacyHPhone) { ?>
+    <span style="color: #555555;">Информация скрыта</span>
+  <? } else { ?>
+   <?=$owner->profile_info['home_phone']?>
+  <? } ?>
+  </div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['icq'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">ICQ:</div>
+  <div class="labeled fl_l">
+  <? if($privacyICQ) { ?>
+    <span style="color: #555555;">Информация скрыта</span>
+  <? } else { ?>
+   <?=$owner->profile_info['icq']?>
+  <? } ?>
+  </div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['skype'])) { ?>
+<div class="clear_fix miniblock">
+  <div class="label fl_l">Skype:</div>
+  <div class="labeled fl_l">
+  <? if($privacySkype) { ?>
+    <span style="color: #555555;">Информация скрыта</span>
+  <? } else { ?>
+   <?=$owner->profile_info['skype']?>
+  <? } ?>
+  </div>
+</div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['website'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Личный сайт:</div>
+  <div class="labeled fl_l"><a href="<?=$weblink?>" target="_blank" target="_blank"><?=$owner->profile_info['website']?></a></div>
+ </div>
+<? } ?>
+</div>
+<? } ?>
+	
+<?
+// Убеждения
+if(($owner->profile_info['political']>0 and !empty($political_text)) 
+			or ($owner->profile_info['subculture']>0 and !empty($subculture_text))
+			or (!empty($owner->profile_info['religion_name']))
+			or (!empty($owner->profile_info['smoking']))
+			or (!empty($owner->profile_info['alcohol']))
+			or (!empty($owner->profile_info['user_imeniny']))
+			or ($owner->profile_info['blood']>0)) {
+?>	
+	
+<div class="profile_info short">
+<h4>
+	<? if($user->is_me($owner)) { ?><a class="fl_r edit_info" href="/profileEdit.php"></a><? } ?>
+  <b>Убеждения</b>
+</h4>
+<? if($owner->profile_info['political']>0 and !empty($political_text)) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Полит. взгляды:</div>
+  <div class="labeled fl_l"><a onclick="return nav.go(this, event)" href="/search?c%5Bsection%5D=people&c%5Bpolitic%5D=<?=$owner->profile_info['political']?>"><?=$political_text?></a></div>
+ </div>
+<? } ?>
+<? if($owner->profile_info['subculture']>0 and !empty($subculture_text)) { ?>
+<div class="clear_fix miniblock">
+  <div class="label fl_l">Субкультура:</div>
+  <div class="labeled fl_l"><a onclick="return nav.go(this, event)" href="/search?c%5Bsection%5D=people&c[subculture]=<?=$owner->profile_info['subculture']?>"><?=$subculture_text?></a></div>
+ </div>
+<? } ?>
+<? if(!empty($owner->profile_info['religion_name'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Религ. взгляды:</div>
+  <div class="labeled fl_l"><a onclick="return nav.go(this, event)" href="/search?c%5Bsection%5D=people&c%5Breligion_id%5D=<?=$owner->profile_info['religion_id']?>"><?=$owner->profile_info['religion_name']?></a></div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['smoking'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Отн. к курению:</div>
+  <div class="labeled fl_l"><?=$owner->profile_info['smoking_name']?></div>
+ </div>
+<? } ?>
+<? if(!empty($owner->profile_info['alcohol'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Отн. к алкоголю:</div>
+  <div class="labeled fl_l"><?=$owner->profile_info['alcohol_name']?></div>
+ </div>
+<? } ?>
+
+<? if(!empty($owner->profile_info['user_imeniny'])) { ?>
+<div class="clear_fix miniblock">
+  <div class="label fl_l">Ближайшие именины:</div>
+  <div class="labeled fl_l"><?=$owner->profile_info['user_imeniny']?></div>
+</div>
+<? } ?>
+<? if($owner->profile_info['blood']>0 and $owner->profile_info['blood']<9) { ?>
+<div class="clear_fix miniblock">
+  <div class="label fl_l">Группа крови:</div>
+  <div class="labeled fl_l">
+   <a onclick="return nav.go(this, event)" href="/search?c%5Bsection%5D=people&c%5Bblood%5D=<?=$owner->profile_info['blood']?>">
+<?
+	$blood_types = array(
+		1 => '0(I) Rh+',
+		2 => 'A(II) Rh+',
+		3 => 'B(III) Rh+',
+		4 => 'AB(IV) Rh+',
+		5 => '0(I) Rh-',
+		6 => 'A(II) Rh-',
+		7 => 'B(III) Rh-',
+		8 => 'AB(IV) Rh-',
+	);
+	echo $blood_types[$owner->profile_info['blood']]; 
+?>   
+   </a>
+  </div>
+</div>
+<? } ?>
+</div>
+<? } ?>
+	
+<? 
+// Интересы
+if(empty($interests2) and !empty($owner->profile_info['interests'])) { ?>
+<div class="profile_info">
+	<h4><? if($user->is_me($owner)) { ?><a class="fl_r edit_info" href="/edit?act=interests"></a><? } ?><b>Интересы</b></h4>
+	<div class="clear_fix ">
+		<?=nl2br($owner->profile_info['interests'])?>
+	</div>
+</div><? } ?>
+
+<?
+// Личное
+if(!empty($owner->profile_info['activities'])
+				or !empty($owner->profile_info['aspirations'])
+				or !empty($owner->profile_info['music'])
+				or !empty($owner->profile_info['movies'])
+				or !empty($owner->profile_info['tv'])
+				or !empty($owner->profile_info['books'])
+				or !empty($owner->profile_info['games'])
+				or !empty($owner->profile_info['quotes'])
+				or !empty($owner->profile_info['about'])) {
+?>	
+<div class="profile_info">
+<h4>
+	<? if($user->is_me($owner)) { ?><a class="fl_r edit_info" href="/edit?act=interests"></a><? } ?>
+  <b>Личная информация</b>
+</h4>
+<? if(!empty($owner->profile_info['activities'])) { ?>
+ <div class="clear_fix ">
+  <div class="label fl_l">Деятельность:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['activities'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['aspirations'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Устремления:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['aspirations'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['music'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимая музыка:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['music'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['movies'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые фильмы:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['movies'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['tv'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые телешоу:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['tv'])?></div>
+ </div> 
+<? } if(!empty($owner->profile_info['books'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые книги:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['books'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['games'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые игры:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['games'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['quotes'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Любимые цитаты:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['quotes'])?></div>
+ </div>
+<? } if(!empty($owner->profile_info['about'])) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">О себе:</div>
+  <div class="labeled fl_l"><?=nl2br($owner->profile_info['about'])?></div>
+ </div>
+<? } ?>
+</div>
+<? } ?>
+
+<? if($owner->profile_info['html_edu_cnt'] > 0) { ?>
+
+<div class="profile_info">
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=education">Редактировать</a><? } ?>
+  <b>Образование</b>
+</h4>
+ <?=$owner->profile_info['html_edu']?>
+</div>
+<? } ?>
+
+<? if($military_total > 0) { ?>
+
+<div class="profile_info short">
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=military">Редактировать</a><? } ?>
+  <b>Военная служба</b>
+</h4>
+ <?
+ $i = 0;
+ foreach($military_html as $m) { 
+	 $time_period = array();
+    if ($m['military_begin_year'] > 0) {
+      $time_period[] = $m['military_begin_year'];
+    }
+    $time_period[] = 'по';
+   
+    if ($m['military_end_year'] > 0) {
+      $time_period[] = $m['military_end_year'];
+    } else {
+    	$time_period[] = 'сегодняшний день';
+    }
+    $time_period = trim(join(' ',$time_period));
+	 ?>
+	<div class="clear_fix <? if($i > 0) {?>block<? } ?>">
+   <div class="label fl_l">Воинская часть:</div>
+   <div class="labeled fl_l">
+    <?=$m['military_place']?><br><? if(!empty($m['country_name'])) { echo $m['country_name'].', '; } ?><?=$time_period?>
+   </div>
+  </div>
+ <? 
+ $i++;
+ }
+ 
+ //dmp($owner->profile_info['html_military']);
+	
+	?>
+</div>
+<? } ?>
+
+<? if($work_total > 0) { ?>
+<div class="profile_info short">
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=career">Редактировать</a><? } ?>
+  <b>Карьера</b>
+</h4>
+ <?=$work_html?>
+</div>
+<? } ?>
+
+<? if(0 and $owner->profile_info['html_places_cnt']>0 and $privacy_places) { ?>
+
+<div class="profile_info">
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=addresses">Редактировать</a><? } ?>
+  <b>Места</b>
+</h4>
+ <?=$owner->profile_info['html_places']?>
+</div>
+<? } ?>
+</div>
+<? /* if($owner->profile_info['html_pets_cnt']>0) { ?>
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=pets">Редактировать</a><? } ?>
+  <b>Питомцы</b>
+</h4>
+<div class="profile_info">
+ <?=$owner->profile_info['html_pets']?>
+</div>
+<? } */ ?>
+
+<? /* if($owner->profile_info['html_auto_cnt']>0) { ?>
+
+<div class="profile_info">
+<h4>
+  <? if($user->is_me($owner)) { ?><a class="fl_r" href="/profileEdit.php?page=auto">Редактировать</a><? } ?>
+  <b>Авто</b>
+</h4>
+ <?=$owner->profile_info['html_auto']?>
+</div>
+<? } */ 
+
+	   if($interests2) {
+	  	echo tpx('profile_block_interests');
+	  }
+	
+?>
+</div>
+<? }  ?>

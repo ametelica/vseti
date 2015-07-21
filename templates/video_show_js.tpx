@@ -1,0 +1,179 @@
+<?php
+	global $user, $setting;
+?>
+/*
+	cur.incViews = function() {
+  if (cur.videoInc) {
+    return;
+  }
+	
+  cur.videoInc = setTimeout(function() {
+    cur.videoInc = 'finished';
+    var oid = ' . $owner->id . ';
+    if (oid) {
+      ajax.post("al_video.php", {act:'inc_view_counter', oid:oid, vid:' . $video_info['video_id'] . ', hash:'b1efb64cf0bc9672233494b19b855bbf'});
+    }
+  }, 5000);
+  cur.destroy.push(function () {
+    if (cur.videoInc && cur.videoInc != 'finished') {
+      clearTimeout(cur.videoInc);
+    }
+  });
+}
+*/
+mvcur.mvData.addedVideo = '<?=$var['video']->uid?>'; 
+mvcur.mvData.addedVideoHash = '<?=hash_get('video' . $var['video']->uid . $user->id, 18, 'vpc')?>'; 
+mvcur.mvData.addedVideoShareHash = 'e65f9ce1932a5a4d25';
+mvcur.mvData.needsNew = 1;
+
+<? if($var['video']->is_external()) { ?>
+cur.incViews = function() {
+  if (cur.videoInc) {
+    return;
+  }
+  cur.videoInc = setTimeout(function() {
+    cur.videoInc = 'finished';
+    var oid = <?=$var['video']->oid?>;
+    if (oid) {
+      ajax.post("al_video.php", {act:'inc_view_counter', oid: oid, vid: <?=$var['video']->id?>, hash:'<?=hash_get($var['video']->uid, 16, 'cnt')?>'});
+    }
+  }, 5000);
+  cur.destroy.push(function () {
+    if (cur.videoInc && cur.videoInc != 'finished') {
+      clearTimeout(cur.videoInc);
+    }
+  });
+}
+<? } else { ?>
+var vidPlayerConfig = {
+	key: '#@5332c08957dde3ba825',
+	clip: {
+		url: 'http://<?=($user->byfly ? '' : 'v')?>cs<?=$var['video']->cs?>.<?=$setting['host']?>/video.php%3Fflv%3D<?=$var['video']->id?>%26hash%3D<?=hash_get($var['video']->id . $user->id, 8, 'alv2', 2)?>%26mid%3D<?=$user->id?>',
+		provider: 'lighttpd',
+		autoPlay: <?=($autoplay ? 'true' : 'false')?>,
+		autoPlay: true,
+		autoBuffering: false,
+		scaling: 'fit'
+	},
+	onStart: function() {
+		audioPlayer.pauseTrack();
+	    // clear the canvas if successfully started
+	    // this.getPlugin('canvas').css( { backgroundImage: null } ); 
+	},
+	onLoad: function() {
+		showAds(this);
+	},
+	onBeforeStop: function () {
+		audioPlayer.playTrack();
+		this.stopBuffering();
+	},
+	play: {
+		replayLabel: 'Еще раз'
+	},
+	logo: {
+		url: 'http://g1.vseti.by/images/logo_video2.png',
+		opacity: 0.7,
+		fullscreenOnly: false
+	},
+	plugins: {
+		lighttpd: {
+			url: './include/flow_player/flowplayer.pseudostreaming-3.2.12.swf',
+			queryString: escape('?start=${start}')
+		},
+		c2: {
+			url: './include/flow_player/flowplayer.content-3.1.0.swf',
+			bottom: 18,
+			margin: 0,
+			padding: 0,
+			width: 488,
+			height: 80,
+			display: 'none',
+			html: '',
+			closeButton: true,
+			zIndex: 2,
+			backgroundGradient:'none',
+			borderRadius: 0,
+        },
+		controls: {
+			url: './include/flow_player/flowplayer.controls-3.2.15.swf', 
+			sliderBorder: '1px solid rgba(128, 128, 128, 0.7)',
+			progressColor: '#ffffff',
+			timeBgColor: 'rgba(0, 0, 0, 0.75)',
+			timeSeparator: ' ',
+			backgroundGradient: [.2, .1, 0],
+			bufferColor: '#cccccc',
+			tooltipTextColor: '#ffffff',
+			backgroundColor: 'rgba(0, 0, 0, 0.9)',
+			timeColor: '#ffffff',
+			timeBorder: '1px solid rgba(0, 0, 0, 0.3)',
+			sliderGradient: 'none',
+			buttonColor: '#ffffff',
+			volumeSliderColor: '#fcfcfc',
+			sliderColor: '#555555',
+			durationColor: '#ffffff',
+			volumeBorder: '1px solid rgba(67, 67, 67, 0.7)',
+			progressGradient: 'medium',
+			volumeSliderGradient: 'medium',
+			borderRadius: '0px',
+			tooltipColor: '#333333',
+			buttonOverColor: '#f1f1f1',
+			autoHide: 'never',
+			bufferGradient: 'none',
+			volumeColor: '#ffffff',
+			height: 35,
+			stop: 'true',
+			autoHide: {
+				fullscreenOnly: true,
+				style: 'fade',
+				delay: 500,
+				duration: 400
+			},
+			opacity: 0.9,
+				tooltips: {
+				buttons: true, 
+				fullscreen: 'На весь экран',
+				pause: 'Пауза',
+				play: 'Поехали',
+				stop: 'Стоп',
+				mute: 'Без звука',
+				unmute: 'Включить звук',
+				fullscreenExit: 'Обычный размер'
+			}
+		}
+	},
+	canvas: { 
+		backgroundColor:'#000000',
+		/* backgroundImage:'url(/include/flow_player/player_bg.jpg) no-repeat 50pct 50pct', */
+		backgroundGradient: 'none'
+	}
+};
+
+<? if ($video_info['video_duration_sec'] > 299) { ?>
+vidPlayerConfig['plugins']['ova'] = {
+	url: './include/flow_player/ova.swf?17',
+	autoPlay: true,
+	ads: {
+		pauseOnClickThrough: true,
+		servers: [{
+			type: 'OpenX',
+			apiAddress: 'http://ads.vseti.by/www/delivery/fc.php'
+		}],
+		schedule: [{
+			zone: 6,
+			region: 'auto:bottom',
+			duration: 40,
+			startTime: '00:00:20'
+		}]
+	},
+	overlays: {
+		closeButton: {
+			type: 'custom',
+			image: './include/flow_player/button-custom-sepia.png',
+			width: 15,
+			height: 15
+		}
+	}
+};
+<? } ?>
+flowplayer("video_box_wrap<?=$var['video']->uid?>", "http://<?=$setting['host']?>/include/flow_player/flowplayer.commercial-3.2.16.swf", vidPlayerConfig);
+<? } ?>

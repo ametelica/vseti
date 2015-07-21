@@ -1,0 +1,7 @@
+<?php
+global $hash, $user, $rid, $request;
+?>
+<div class="apps_request_removed">
+  <div class="apps_request_restore">Запрос был удалён. <a onclick="Apps.requestsRestore(this, <?=$rid?>, '<?=$hash->get_hash($user->user_info['user_id'].$rid,16,'arr')?>');">Восстановить</a>.</div>
+  <div><div class="button_green"><button onclick="Apps.requestsBanUser(this, <?=$request['user_from']->user_info['user_id']?>, '<?=$hash->get_hash($user->user_info['user_id'].$request['user_from']->user_info['user_id'],16,'arb')?>');">Не принимать запросы, которые присылает <?=$request['user_from']->user_info['fio']?></button></div></div>
+</div>

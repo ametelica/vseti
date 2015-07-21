@@ -1,0 +1,19 @@
+<?php
+global $user, $owner, $docs;
+
+$js_docs = array();
+
+if(!empty($docs['data'])) {
+	foreach($docs['data'] as $doc) {
+		$js_docs[] = $doc->info4js();
+	}
+}
+
+$found = intval($docs['total']);
+$shown = $found > 50 ? 50 : $found;
+
+?>showBackLink('<?=$owner->lnk?>', '<?=$owner->title?>');
+extend(cur, {"oid":<?=$owner->oid?>,"lang":{"docs_empty_search":"По запросу %s не найдено ни одного документа.","docs_empty_msg":"Здесь будут отображаться все Ваши документы.<br><br>Если Вы прикрепите документ к личному сообщению или новости,<br>он будет доступен всем, кто получит сообщение или видит новость.<br><br><a onclick=\"Docs.addDocBox()\">Загрузить документ<\/a>","docs_found_X_docs":["","Найден %s документ","Найдено %s документа","Найдено %s документов"],"docs_not_found":"Ни одного документа не найдено","docs_you_have_X_docs":["","У Вас %s документ","У Вас %s документа","У Вас %s документов"],"docs_X_docs":["","%s документ","%s документа","%s документов"],"docs_no_docs":"Ни одного документа","docs_placeholder":"Поиск по документам","docs_remove_tt":"Удалить документ","docs_edit_tt":"Редактировать документ","docs_add_tt":"Добавить документ"},"section":"all","summary_add":"","hash":"<?=hash_get($user->id, 12, 'dox')?>","privacy":{"docs_edit_actions_types":{"download":"Загрузить","get_link":"Получить ссылку","edit":"Редактировать","delete":"Удалить"},"docs_view_actions_types":{"add":"Добавить в Документы","download":"Загрузить"},"_noselect":1,"docs_edit_actions":[0,0,[],[]],"docs_view_actions":[0,0,[],[]]},"found":<?=$found?>,"shown":<?=$shown?>,"count":<?=$found?>});
+cur.docs = <?=jenc($js_docs)?>;
+cur.itemTpl = function(oid, id, ext, title, dateStr, url, tags, mid) {return ['',ext,'<div class="docs_item_cont">  <a class="docs_item_name" href="',url,'" onclick="return Docs.downloadItem(',oid,', ',id,');">',title,'</a><span class="docs_tags"></span><br />  <div class="docs_item_date">',dateStr,'',tags,'</div></div>']};
+Docs.init();

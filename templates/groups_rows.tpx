@@ -1,0 +1,25 @@
+<?php
+global $langpack, $user;
+$tab = empty($var['tab']) ? 'groups' : $var['tab'];
+foreach($var['group_ids'] as $gid) {
+	$group = pdata(-$gid);
+?><div id="gl_<?=$tab.$gid?>" class="group_list_row" onmouseover="GroupsList.glOver('<?=$gid?>')" onmouseout="GroupsList.glOut('<?=$gid?>')">
+
+  <div class="fl_r delete_post_wrap">
+    <div class="delete_post">
+      <div id="delete_post<?=$gid?>" onmouseout="GroupsList.deactiveDeletePost('<?=$gid?>')" onmouseover="GroupsList.activeDeletePost('<?=$gid?>', 'Выйти из группы')" onclick="GroupsList.leave(this, <?=$gid?>, '<?=hash_get($user->id . $gid, 18, 'gout')?>', false, true)" style="opacity: 0;"></div>
+    </div>
+  </div>
+
+  <div class="fl_l group_row_photo">
+    <a href="<?=$group->lnk?>" onclick="return nav.go(this, event)">
+      <img class="groups_row_img" class="groups_row_img" src="<?=$group->photo('b')?>" />
+    </a>
+  </div>
+  <div class="group_row_info fl_l">
+    <div class="group_row_labeled"><a href="<?=$group->lnk?>" onclick="return nav.go(this, event)"><b><?=$group->title?></b></a></div>
+    <div class="group_row_labeled"><?=$group->group_info['group_privacy'] ? "Закрытая группа" : "Открытая группа" ?></div>
+    <div class="group_row_labeled"><?=nf($group->group_info['num_members'])?> <?=$langpack->dln($group->group_info['num_members'], array('участник', 'участника', 'участников'))?></div>
+  </div>
+  <br class="clear" />
+</div><? } ?>

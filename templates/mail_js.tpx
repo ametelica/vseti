@@ -1,0 +1,48 @@
+<?php
+global $act, $pm, $hash, $to_user, $user, $offset, $has_more;
+if($act==''){
+?>
+cur.mar = function(id){
+	console.log(id);
+	row = ge('mess'+id);
+	if(row && hasClass(row,'new_msg')){
+		removeClass(row, 'new_msg')
+		if(mcnt = ge('new_mess_cnt'))
+			mcnt.innerHTML = mcnt.innerHTML-1;
+	}
+}
+stManager.add(["mail.js","ui_controls.js"], function () {cur.lang = extend(cur.lang || {}, {
+  mail_return_to_list: 'Список сообщений',
+  dont_attach: 'Не прикреплять',
+  mail_sure_to_delete_all: 'Вы действительно хотите удалить всю переписку с данным пользователем?<br><br>Отменить это действие будет невозможно.',
+  mail_X_selected: ["","Выделено %s сообщение","Выделены %s сообщения","Выделено %s сообщений"]
+});
+mail.init(<?=tpx('mail_json')?>);
+});
+<? } elseif($act=='show' or $act=='write') { 
+$init = array(
+	'id' => $to_user->user_info['user_id'],
+	'hash' => $hash->get_hash($to_user->id,18,'msg'),
+	'reply_title' => ' ... ',
+	'media_types' => array(
+		array("photo","Фотографию"),
+		array("video","Видеозапись"),
+		array("audio","Аудиозапись"),
+		array("doc","Документ"),
+	),
+	'out' => null,
+	'offset' => $offset + 40,
+	'has_more' => empty($has_more) ? false : true,
+	'mark_hash' => hash_get($user->id, 18, 'mr'),
+	'delete_all_link' => '<a href="#" onclick="mail.deleteAllHistory('.$to_user->id.', \''.$hash->get_hash($user->user_info['user_id'].$to_user->id,18,'fls').'\'); return false;">удалить все</a>',
+);
+
+if(!empty($pm[0])){
+	$init['msg_id'] = $m[0]['pm_id'];
+}
+?> 
+mail.initThread(<?=jenc($init)?>);
+cur.module = 'mail';
+<? 
+echo run_video_objects();
+} ?>

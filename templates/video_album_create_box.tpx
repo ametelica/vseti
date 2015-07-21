@@ -1,0 +1,4 @@
+<?php
+global $album;
+?><div class="video_album_edit_header">Введите название альбома</div>
+<input id="video_album_edit_title" type="text" class="text" onkeydown="if (event.keyCode == 13) cur.doCreateAlbum();" value="<?=$album[1]?>" />

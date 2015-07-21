@@ -1,0 +1,14 @@
+<?php
+global $owner, $user;
+?>box.removeButtons().addButton('Отмена', box.hide, 'no');
+box.addButton('Продолжить', function() {
+  ajax.post('al_settings.php', {
+    act: 'a_add_to_bl',
+    id: <?=$owner->id?>,
+    hash: '<?=hash_get($user->id . $owner->id, 16, 'bl')?>',
+    from: 'fans'
+  }, {onDone: function() {
+    curBox().hide();
+    FansBox.remove(<?=$owner->id?>);
+  }, progress: box.progress});
+});

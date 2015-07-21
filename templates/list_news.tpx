@@ -1,0 +1,10 @@
+<?php
+global $datetime, $setting, $hash, $user, $langpack;
+if(count($var['news'])>0){
+	echo '<ul class="notes_titles">';
+	foreach($var['news'] as $n){
+		echo '<li class="navina src'.$n['source'].'"><a href="http://'.$setting['host'].'/news_ext.php?act=redirect&nid='.$n['id'].'&hash='.$hash->get_hash($n['id'].$user->user_info['user_id'],8,'news').'" target="_blank">'.$n['title'].'</a>
+  <small style="color: gray;">'.$datetime->sdate($n['date'],2).($n['cnt']>0?'<span class="divide">|</span>'.$n['cnt'].' просмотр'.$langpack->dln($n['cnt'],'file'):'').'</small></li>';
+	}
+	echo '</ul>';
+} else echo '<!--n-->';?>

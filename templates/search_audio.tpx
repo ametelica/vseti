@@ -1,0 +1,33 @@
+<?php
+	global $search, $gid;
+?><table id="search_table" class="search_table">
+  <tr>
+    <td id="results" class="results highlight audio_results">
+    <?=$var['result']?>
+</td>
+    <td id="filters_td" class="filters">
+      <div id="search_filters">
+        
+  <form id="filter_form" name="filter_form">
+    <input type="hidden" id="q" name="c[q]" value="<?=$search?>" />
+    <input type="hidden" id="section" name="c[section]" value="audio" />
+    <input type="hidden" id="c[sort]" name="c[sort]" value="" /><input type="hidden" id="c[count]" name="c[count]" value="" /><div class="noselect clear_fix filter_main " onselectstart="return false">
+  <div class="text fl_l">Поиск</div>
+</div><input type="hidden" id="c[performer]" name="c[performer]" value="" /><div class="inner_filter">
+  <div id="cPerformer" class="control">
+    <div class="radiobtn on" onclick="cur.onLengthChanged(this, 0);"><div></div>По композициям</div>
+    <div class="radiobtn " onclick="cur.onLengthChanged(this, 1);"><div></div>По исполнителям</div>
+  </div>
+</div><div id="audio_lyrics_filter" style="display: none;">
+  <div class="filter_main">
+    Дополнительно
+  </div>
+  <div class="inner_filter" id="events_filter">
+    <input type="hidden" name="c[lyrics]" id="lyrics" value="0" />
+  </div>
+</div><? if($gid > 0) { ?><input type="hidden" id="gid" name="gid" value="<?=$gid?>" /><? } ?>
+  </form>
+      </div>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,7 @@
+<div class="bap_header">Тема опроса</div>
+<input type="text" class="text" id="bap_poll_question" />
+<nobr class="no_select fl_r" onselectstart="return false;" ondblclick="return false;">
+  <a id="bap_poll_add" onclick="Board.incPoll('bap')">Добавить вариант</a><span class="divide">|</span><a id="bap_poll_delete" class="bap_disabled" onclick="Board.decPoll('bap')">Убрать вариант</a>
+</nobr>
+<div class="bap_header">Варианты ответа</div>
+<div id="bap_poll_answers"></div>

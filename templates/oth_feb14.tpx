@@ -1,0 +1,165 @@
+<?php
+global $path_css,$path_js,$hash,$user,$to_ass,$langpack,$datetime,$setting,$val_top,$val_my,$new_design;
+//echo tpx('header_func_al');
+
+if($new_design) {
+echo tpx('header_design');
+echo '<script>var new_design = 1;</script>';
+} else {
+echo '<script>var new_design = 0;</script>';
+}
+
+?>
+<style>
+#content img {
+	border-radius: 7px;
+	float: left;
+	margin-right: 12px;
+}
+#content {
+	padding: 0px !important;
+	margin: 0px !important;
+	background: url(/images/f14bg.jpg) 0 0;
+}
+#content a {
+	color: #bb0000;
+}
+#content p {
+	font-size: 14px;
+	text-align: justify;
+	text-indent: 30px;
+}
+#content h4{
+	color: #bb0000;
+	font-size: 24px;
+	text-shadow: #fff 2px 2px 5px;
+}
+#content h1{
+	border-bottom: 1px solid #ECF1E9;
+  color: #bb0000;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  padding: 0 0 3px;
+  margin-bottom: 10px;
+  text-shadow: #fff 1px 1px 4px;
+}
+#button_green {
+	margin: 0px auto;
+}
+#main_panel {
+	border-right: 1px solid #ECF1E9;
+	width: 550px;
+	float: left;
+	//background-color: rgba(0, 50, 50, 0.4);
+	padding: 12px;
+	*color: white;
+	margin-left: 10px;
+}
+#right_panel {
+	width: 230px;
+	float: right;
+	color: gray;
+	padding: 12px;
+}
+.val {
+	*border-radius: 7px;
+	margin: 5px 10px;
+	width: 200px;
+	height: 60px;
+	*border: gray 1px solid;
+	background-color: rgba(255,255,255,0.6)
+	overflow: hidden; 
+}
+.wide {
+	width: 400px;
+}
+.val img {
+	margin: 5px;
+	width: 50px;
+	height: 50px;
+}
+.vbox img {
+	margin: 4px;
+	margin-right: 0px !important;
+	width: 50px;
+	height: 50px;
+}
+.vcnt {
+	margin: 10px;
+	font: bold 20px Arial;
+}
+.vname {
+	margin: 5px 0px 0px 10px;
+}
+.vtxt {
+	margin: 10px 0px 0px 10px;
+}
+.vbox {
+
+}
+</style>
+<script src="<?=$path_js?>/common.js"></script>
+<script src="<?=$path_js?>/lib/title.js"></script>
+<link rel="stylesheet" href="<?=$path_css?>/al/common<? if($new_design) {?>_new<? } ?>.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/rustyle<? if($new_design) {?>_new<? } ?>.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/al/page<? if($new_design) {?>_new<? } ?>.css" type="text/css" />
+<?
+//echo tpx('header_func');
+?>
+<div id="page_body" class="fl_r">
+ <div id="header_wrap2">
+  <div id="header_wrap1">
+   <div id="header" style="">
+    <h1 id="title">
+     <a href="/start.php">Главная</a> &raquo; День святого Валентина
+    </h1>
+   </div>
+  </div>
+ </div>
+
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content">
+		
+		<div id="main_panel">
+			<h4>C Днём святого Валентина!</h4> 
+			<p>Сегодня можно бесплатно дарить друг другу валентинки с пожеланиями! Любите и будьте любимы!</p>
+
+			<h4>Кто подарил мне валентинку (<?=count($val_my)?>)</h4> 
+<?
+			foreach($val_my as $vt){
+				$vu = $vt['user'];
+				if(!$vu->user_exists) continue;
+				if($vt['v_anonym']){
+					echo '<div class="vbox"><img src="/images/f14.png" title="Неизвестный пользователь: '."\n".$vt['v_message'].'"/></div>';
+				} else {
+					echo '<div class="vbox"><a href="'.$vu->lnk.'"><img src="'.$vu->user_photo().'" title="'.$vu->user_info['fio'].': '."\n".$vt['v_message'].'" /></a></div>';
+					//echo '<div class="val_wide"><a href="'.$vu->lnk.'"><img src="'.$vu->user_photo().'" /></a><div class="vname"><a href="'.$vu->lnk.'">'.$vu->user_info['fio'].'</a></div><div class="vtxt">'.$vt['v_message'].'</div></div>';	
+				}
+				
+			}
+			//dmp($val_top);
+?>		 
+			<br style="clear:both"><br />
+			<h4>И самое главное!!! ВСети.by вас любит :)</h4>
+			<img src="/images/bklove.jpg" />
+			
+		</div>
+		<div id="right_panel">
+			<h1>Рейтинг валентинок</h1>
+<?
+			foreach($val_top as $vt){
+				$vu = $vt['user'];
+				if(!$vu->user_exists) continue;
+				echo '<div class="val"><a href="'.$vu->lnk.'"><img src="'.$vu->user_photo().'" /></a><div class="vname"><a href="'.$vu->lnk.'">'.$vu->user_info['fio'].'</a></div><div class="vcnt">'.$vt['user_valentine'].'</div></div>';
+			}
+			//dmp($val_top);
+?>
+
+			
+		</div><br class="clear" />
+   </div><!--/content-->
+  </div><!--/wrap1-->
+ </div><!--/wrap2-->
+</div><!--/page_body-->

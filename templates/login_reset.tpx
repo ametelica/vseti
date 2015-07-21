@@ -1,0 +1,72 @@
+<?php
+global $is_error, $owner, $error_message, $code;
+echo tpx('header_design');
+?><div id="wrap2">
+  <div id="wrap1">
+   <div id="content" class="white_page">
+    <div class="simplePage">
+<?php
+if ($is_error) {
+    echo '<div id="error" style="font-size: 11px">Ссылка устарела, или содержит ошибку. Чтобы восстановить пароль - сделайте заявку на восстановление ещё раз</div>';
+} else {
+    ?>
+	<div id="message_text">
+			<div id="error" style='font-size: 11px'><?
+			if(empty($error_message)) {
+				echo 'Привет, ' . $owner->user_info['user_name'].'! Забыл' .($owner->user_info.user_sex == 1 ? 'a' : '') . ' пароль? Не беда, поменяем, пиши новый.<br />Твой логин: <b>' . $owner->user_info['user_login'].'</b>';
+			} else {
+				echo $error_message;
+			}
+		?>
+		</div>
+		</div>
+    <div class="simplePage">
+ <form method="post" name="newpass" id="newpass" action="login.php">
+ <input type="hidden" name="op" value="newpass"/>
+ <input type="hidden" name="hash" value="<?=$code?>"/>
+ <input type="hidden" name="user" value="<?=$owner->id?>"/>
+  <table align="center" cellpadding=0 cellspacing=7 border=0 width="50%">
+   <tr>
+    <td width="100px">
+     <span class="grey">Новый пароль:</span>
+    </td>
+    <td>
+     <input class="inputText" type="password" name="newpass" value="" id="newpass" size="25" />
+    <td>
+   </tr>
+   <tr>
+    <td width="100px">
+     <span class="grey">И ещё раз сюда:</span>
+    </td>
+    <td>
+     <input class="inputText" type="password" name="newpass2" value="" id="newpass2" size="25" />
+    <td>
+   </tr>
+   <tr>
+    <td>
+     &nbsp;
+    </td>
+    <td>
+     <div style="width:156px; margin:0px">
+        <div class="button_green">
+			<button onclick="document.newpass.submit(); return false;">Смена пароля</button>
+		</div>
+     </div>
+    </td>
+   </tr>
+  </table>
+  <input type="submit" value='.' style="color:#fff;border:0;padding:0;margin:0;background:#fff;height:6px;width:6px"/>
+ </form>
+
+</div>
+<?php } 
+?>
+    
+   </div>
+
+  </div>
+  	  </div>
+  </div>
+
+  </div>
+  <div id="boxHolder"></div>

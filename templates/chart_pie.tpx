@@ -1,0 +1,6 @@
+<?php
+global $setting;
+$graph = $var['graph'];
+?><div id="wrapper_svg_<?=$graph->name?>" class="fl_l" style="width: <?=$graph->options['width']?>px; height: <?=$graph->options['width']?>px; overflow: hidden;">
+   <embed id="svg_embed_<?=$graph->name?>" src="js/piechart.svg?ver=15&svgid=<?=$graph->name?>&dmn=<?=$setting['host']?>&pst=1" style="width: 100%; height: 100%;" preventhide="1" />
+</div>

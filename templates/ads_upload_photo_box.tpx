@@ -1,0 +1,19 @@
+<?php
+	global $size, $sizes;
+?>
+<div class="ads_edit_upload_photo_box">
+  <div id="ads_edit_upload_photo_error" class="error" style="display: none;"></div>
+  <h2>Выберите изображение на Вашем компьютере</h2>
+  <ul class="ads_listing">
+    <li><span>Изображение должно соответствовать <a href="/ads?section=terms" target="_blank">Правилам размещения рекламных объявлений</a>. В противном случае объявление не пройдет модерацию.</span></li>
+    <li><span>Минимальный размер изображения: <?=$sizes[$size][0]?>x<?=$sizes[$size][1]?>.</span></li>
+    <li><span>Максимальный размер файла: 5 МБ.</span></li>
+    <li><span>Допустимые форматы: JPG, PNG, BMP, TIF или GIF.</span></li>
+  </ul>
+  <div class="ads_edit_upload_uploader"></div>
+  <div class="ads_edit_upload_progress_wrap2" style="display: none;">
+    <div class="ads_edit_upload_progress_wrap1 ads_gradient_progress_wrap">
+      <div class="ads_gradient_progress"></div>
+    </div>
+  </div>
+</div>

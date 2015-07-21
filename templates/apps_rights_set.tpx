@@ -1,0 +1,23 @@
+<?php
+global $app,$hash; 
+	$app_rights = array(
+		0 => 'Разрешить приложению присылать Вам уведомления',
+		1 => 'Разрешить приложению доступ к Вашим друзьям',
+		2 => 'Разрешить приложению доступ к Вашим фотографиям',
+		3 => 'Разрешить приложению доступ к Вашим аудиозаписям',
+		4 => 'Разрешить приложению доступ к Вашим видеозаписям',
+		8 => 'Выводить ссылку на приложение в меню слева',
+		12 => 'Разрешить доступ к Вашим сообщениям',
+		13 => 'Разрешить доступ к Вашей стене',
+		18 => 'Разрешить доступ к Вашим группам',
+	);
+	foreach($app_rights as $k=>$v){
+		if($k!=800 and !chfln($app->app_info['app_settings'],$k)) continue;
+		$n = pow(2,$k);
+		if($k==8){
+			echo '<div id="app_settings_'.$n.'" class="checkbox " onclick="checkbox(this); Apps.saveSettings('.$app->app_info['app_id'].', \''.$hash->get_hash($app->app_id.$user->user_info['user_id'],16,'ap').'\', true);"><div></div>'.$v.'</div>';
+		} else {
+			echo '<div id="app_settings_'.$n.'" class="apps_sett_checkbox checkbox '.(chfln($app->app_info['app_user_settings'],$k)?'on':'').'" onclick="checkbox(this);"><div></div>'.$v.'</div>';
+		}
+	}
+?>

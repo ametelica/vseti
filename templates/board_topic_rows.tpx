@@ -1,0 +1,40 @@
+<?php
+	global $datetime, $user, $board;
+	
+	$first_page = array_key_exists('first_page', $var) ? 1 : 0;
+	$i = 0;
+	foreach($var['posts'] as $p) {
+		$post_author = pdata($p['aid']);
+		$post_id = $p['oid'] . '_' . $p['id'];
+?><div id="post<?=$post_id?>" class="bp_post" onmouseover="wall.replyOver('<?=$p['oid']?>topic_<?=$p['id']?>')" onmouseout="wall.replyOut('<?=$p['oid']?>topic_<?=$p['id']?>')"><table class="bp_table" cellspacing="0" cellpadding="0"><tr>
+  <td class="bp_thumb_td">
+    <a class="bp_thumb" href="<?=$post_author->lnk?>" onclick="return nav.go(this, event)"><img width="50" src="<?=$post_author->photo()?>" /></a>
+  </td>
+  <td class="bp_info">
+    <div class="bp_author_wrap"><a class="bp_author" href="<?=$post_author->lnk?>" onclick="return nav.go(this, event)"><?=$post_author->title?></a></div>
+    <div id="bp_data<?=$post_id?>"><div class="bp_text"><?=tpx('wall_post_body', array('comment' => $p))?></div><div></div></div>
+    <div class="bp_bottom clear_fix">
+      <div class="bp_edited_by"<?
+    
+    if(!empty($p['opt']['e'])) {
+    	echo ' style="display: block" >Отредактировал администратор, ' . $datetime->sdate($p['opt']['e']['d']);
+    } else {
+    	echo '>';
+    }
+    
+    ?></div>
+      <div class="like_wrap fl_r" onclick="wall.like('<?=$p['oid']?>topic_comment<?=$p['id']?>', '<?=hash_get('topic_comment' . $post_id . $user->id, 18, 'lk') ?>'); event.cancelBubble = true;" onmouseover="wall.likeOver('<?=$p['oid']?>topic_comment<?=$p['id']?>')" onmouseout="wall.likeOut('<?=$p['oid']?>topic_comment<?=$p['id']?>')">
+  <span class="like_link fl_l" id="like_link<?=$p['oid']?>topic_comment<?=$p['id']?>">Мне нравится</span>
+  <i <? if(empty($p['like'])) {?>class="no_likes fl_l" style="visibility: hidden; opacity: 0;"<? } else { ?>class="<? if(!empty($p['like_my'])){ ?>my_like <? } ?>fl_l"<? } ?> id="like_icon<?=$p['oid']?>topic_comment<?=$p['id']?>"></i>
+  <span class="like_count fl_l" id="like_count<?=$p['oid']?>topic_comment<?=$p['id']?>"><?=empty($p['like']) ? '' : $p['like']?></span>
+</div>
+      <div class="fl_l"><a class="bp_date" href="/topic<?=$p['oid']?>_<?=$p['pid']?>?post=<?=$p['id']?>" onclick="return nav.go(this, event)"><?=$datetime->sdate($p['date'])?></a>
+    <? if($user->id == $p['aid'] or $board->can_edit) { ?><span class="divide">|</span><a onclick="Board.editPost(<?=$p['id']?>)">Редактировать</a><? } ?>
+	<? if(($user->id == $p['aid'] or $board->can_edit) and (!$first_page or $i > 0)) { ?><span class="divide">|</span><a onclick="Board.deletePost(<?=$p['id']?>)">Удалить</a><? } ?>
+	<span class="divide">|</span><a onmousedown="return cancelEvent(event)" onclick="Board.replyPost(<?=$p['id']?>, <?=$p['aid']?>)">Ответить</a></div>
+      <div class="fl_l progress bp_progress"></div>
+    </div>
+  </td>
+</tr></table></div><? 
+		$i++;
+		} ?>

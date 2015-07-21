@@ -1,0 +1,37 @@
+<?php
+global $owner, $album;
+?>cur.doCreateAlbum = function() {
+  var titleElem = ge('video_album_edit_title');
+  var title = titleElem.value;
+  if (false && !title) {
+    setTimeout(function() {
+      titleElem.focus();
+    }, 200);
+  } else {
+    box.showProgress();
+    var aid = '<?=intval($album[0])?>';
+    ajax.post('al_video.php', {act: 'do_edit_album', hash: '<?=hash_get($owner->oid . intval($album[0]) , 12, 'vac')?>', title: title, oid: <?=$owner->oid?>, id: aid}, {
+      onDone: function(albumId, albumsList) {
+        box.hideProgress();
+        Video.updateAlbums(albumsList);
+        cur.updateSorter = true;
+        if (!aid) {
+          nav.change({section:'album_'+albumId});
+        }
+        box.hide();
+      },
+      onFail: function(text) {
+        box.hideProgress();
+        notaBene(titleElem);
+        titleElem.focus();
+        return true;
+      }
+    });
+  }
+}
+
+
+box.setOptions({bodyStyle: 'padding: 20px; padding-bottom: 25px;', width: 422});
+box.removeButtons().addButton('Отмена', box.hide, 'no');
+box.addButton('Сохранить', cur.doCreateAlbum);
+ge('video_album_edit_title').focus();

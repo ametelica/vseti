@@ -1,0 +1,81 @@
+var filterTypes = [[2,"По релевантности"],[0,"По дате добавления"],[1,"По длительности"]];
+if (cur.sortDD) {
+  re(cur.sortDD.container);
+}
+cur.sortDD = new DropdownMenu(filterTypes, {
+  target: ge('search_sort_dd'),
+  value: 2,
+  fadeSpeed: 0,
+  onSelect: function(event) {
+    if (event) searcher.switchFilter('sort', event.target.index || 0);
+  }
+});
+cur.isAdult = 1;new Checkbox(ge('hd'), {
+  width: 150,
+  label: 'Высокое качество',
+  onChange: searcher.updResults
+});window.radioBtns['length'] = {
+  els: Array.prototype.slice.apply(geByClass('radiobtn', ge('cLength'))),
+  val: 0
+}
+cur.onLengthChanged = function(el, value) {
+  radiobtn(el, value, 'length');
+  ge('c[length]').value = value;
+  searcher.updResults();
+}
+var cancelAgreed = function() {
+  if (cur.isAdult || getCookie('adult_agreed')) {
+    return true;
+  }
+  cur.checkAdult.setState(true, false);
+  ge('adult').value = 0;
+}
+var checkAgreed = function(val) {
+  if (val || cur.isAdult || getCookie('adult_agreed')) {
+    return true;
+  }
+  var box = showFastBox({title: 'Безопасный поиск', onHide: cancelAgreed}, 'Безопасный поиск скрывает видеозаписи, которые пользователи считают материалами для взрослых.<br><br>Отключая фильтрацию, Вы подтверждаете, что достигли необходимого для просмотра таких записей возраста.', 'Продолжить', function() {
+  ge('adult').value = 1;
+  setCookie('adult_agreed', 1);
+  cur.isAdult = true;
+  searcher.updResults();
+  box.hide();
+}, 'Отмена', function() {
+  cancelAgreed();
+  box.hide();
+});
+  return false;
+}
+cur.checkAdult = new Checkbox(ge('no_adult'), {
+  width: 150,
+  label: 'Фильтровать видео',
+  onChange: function(val) {
+    if (!checkAgreed(val)) return;
+    ge('adult').value = val ? 0 : 1;
+    searcher.updResults();
+  }
+});
+ge('extra_filter').onmouseover = function () {
+  if (!cur.isAdult && !getCookie('adult_agreed')) return;
+  showTooltip(this, {
+    shift: [-1, -8, -8],
+    text: 'Фильтр скрывает видеозаписи, которые пользователи считают материалами для взрослых.',
+    slide: 15,
+    className: 'search_adult_tt',
+    hasover: 1
+  });
+};cur.videoMarkSpam = function(link, oid, vid, hash) {
+  var loadEl = ce('span', {className: 'loading'});
+  ajax.post('/al_video.php', {act: 'video_mark_spam', vid: vid, oid: oid, hash: hash}, {
+  onDone: function () {
+    link.innerHTML = 'Видеозапись отмечена как спам.';
+  },
+  showProgress: function () {
+    link.parentNode.replaceChild(loadEl, link);
+  },
+  hideProgress: function () {
+    if (loadEl.parentNode) {
+      loadEl.parentNode.replaceChild(link, loadEl);
+    }
+  }});
+};

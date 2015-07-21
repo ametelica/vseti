@@ -1,0 +1,141 @@
+<?php
+	global $currency_list, $albums_list, $item, $user, $setting;
+	
+	$options = array(
+	'url' => 'http://' . ($user->byfly==1?'':'v') . 'cs' . $item->get('cs') . '.' . $setting['host'] . '/upload.php',
+	'save_act' => 'a_save_photo', 
+	'server' => $item->get('cs'),
+	'default_error' => 1,
+	'error_hash' => '34bcade93679470633eb0487beca7aa2',
+	'check_hash' => '728f2149228cb3acb8',
+	'lang' => array(
+		'button_browse' => 'Выбрать файл',
+		'switch_mode' => 'Если у вас возникли проблемы с загрузкой файла, воспользуйтесь {link}стандартным{/link} загрузчиком.',
+		'cannot_upload_title' => 'Ошибка',
+		'cannot_upload_text' => 'Загрузка изображений в данный момент недоступна. Попробуйте повторить операцию позже.',
+		'apps_banner_size_error' => 'Размер загруженного изображения не соответствует <b>186x116px</b>.',
+		'apps_photo_notloaded_unknown' => 'Не удалось загрузить данное изображение.'
+	),
+	'vars' => array(
+		'act' => 'app',
+		'mid' => $user->id,
+		'item_id' => $item->get('id'),
+		'hash' => hash_get($user->id, 32, 'h1app'),
+		'rhash' => '15a9a1228e70a9c98d08da2f3ea7061f',
+		'vs' => 1,
+		'upldr' => 1
+	),
+	'small' => array(),
+	'banner' => array(
+		'save_act' => 'a_save_banner',
+		'lang' => array('button_browse' => 'Выберите изображение'),
+		'vars' => array('act' => 'app_photo')
+	),
+	'screenshot' => array(
+		'error_hash' => 'a8c7d4de2186dafa66dafa8b20178e1d',
+		'check_hash' => 'fd9c75919566677c63',
+		'lang' => array('button_browse' => 'Выберите изображение'),
+		'save_act' => 'a_save_screenshot',
+		'vars' => array(
+			'act' => 'bazar_image', // app_screenshot
+			'aid' => $item->get('id'),
+			'gid' => 0,
+			'hash' => hash_get($user->id, 32, 'h1bazar_image'),
+			'rhash' => '9b0a758c4f3b36a5190142f9d5ef5b4d',
+			'mid' => $user->id,
+		),
+		'success_callback' => 'screenshot_uploaded'
+	)
+);
+?>
+showBackLink('/bazar_lot<?=$item->get('id')?>', 'Просмотр объявления'); 
+extend(cur, {
+  item_id: <?=$item->get('id')?>,
+  ssHash: '12313123123',
+  ssCount: <?=intval(count($item->get('screenshots')))?>
+});
+  
+var options = <?=jenc($options)?>;
+var opts = extend(true, clone(options, true), options['small']);
+
+if (options['screenshot']) {
+  var opts = extend(true, clone(options, true), options['screenshot']);
+  var screenCont = ge('item_edit_upload_screenshot');
+  if (screenCont) {
+    bazar.initUpload(screenCont, opts, opts.lang, ge('items_edit_screenshot'));
+  }
+}
+
+cur['screenshot_uploaded'] = function(img, pid) {
+  var lastScreen = geByClass1('item_empty_screen', ge('bazar_edit_screens_list'));
+  if (lastScreen) {
+    lastScreen.style.background = 'url('+img+') no-repeat';
+    removeClass(lastScreen, 'item_empty_screen');
+    lastScreen.setAttribute('rel', pid);
+    cur.ssCount += 1;
+    if (cur.ssCount >= 6) {
+      show('items_edit_ss_reason');
+      hide('items_edit_ss_limit');
+    }
+  }
+}
+  
+uiCurr = new Dropdown(ge('bazar_edit_currency'), <?=jenc($currency_list)?>, {
+  zeroPlaceholder: true,
+  introText: 'Введите валюту',
+  placeholder: '-- Выберите валюту',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '<?=$item->get('currency')?>',
+  width: 102,
+});
+cur.uiCurr = uiCurr;
+<? /*
+uiAlbums = new Dropdown(ge('bazar_edit_photo'), <?=jenc($albums_list)?>, {
+  zeroPlaceholder: true,
+  introText: 'Введите альбом',
+  placeholder: '-- Выберите альбом',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '<?=empty($item['album_id']) ? '' : $item['album_id']?>',
+  width: 266,
+});
+cur.uiAlbums = uiAlbums;
+ */ ?>
+cur.saveItem = function() {
+	title = ge('bazar_edit_name');
+	if(!trim(title.value)) {
+		notaBene(title);
+		return false;
+	}
+	desc = ge('bazar_edit_desc');
+	if(!trim(desc.value)) {
+		notaBene(desc);
+		return false;
+	}
+	price = ge('bazar_edit_price');
+	if(price.value < 1) {
+		notaBene(price);
+		return false;
+	}
+	
+	ajax.post('al_bazar.php', {
+		id: <?=$item->get('id')?>,
+	  	act: 'save',
+	    title: title.value,
+	    desc: desc.value,
+	    /* album: cur.uiAlbums.val(), */
+	    price: price.value,
+	    currency: cur.uiCurr.val(),
+	    hash: '<?=hash_get($user->id, 16, 'si')?>'
+	  }, {onDone: function(text) {
+	    if (text == 'title') {
+	      notaBene(ge('group_create_title'));
+	    }
+	  }, onFail: function(text) {
+	    if (text) {
+	      setTimeout(showFastBox(getLang('global_error'), text).hide, 3000);
+	      return true;
+	    }
+	  }});
+};

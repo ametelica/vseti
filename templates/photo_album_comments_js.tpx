@@ -1,0 +1,53 @@
+<?php
+global $owner, $vs_album, $comments, $comments_on_page;
+
+$preload_comments = $comments;
+if($comments['total'] > $comments_on_page) {
+	$preload_comments['data'] = array_slice($preload_comments['data'], $comments_on_page);
+} else {
+	$preload_comments['data'] = array();
+}
+?>
+showBackLink('<?=$owner->lnk?>', '<?=$owner->title?>');
+/* addEvent(document, 'click', onDocumentClick); */
+extend(cur, {
+  offset: 20,
+  count: <?=intval($comments['total'])?>,
+  moreFrom: '<?= $vs_album->id > 0 ? 'album'.$vs_album->uid : 'photos' . $owner->oid ?>',
+  moreOpts: {act: 'comments'},
+  reorderHash: '65a3717fbc74a535c6'
+});
+
+cur.lang = extend(cur.lang || {}, {
+  photos_deleting_album: 'Удаление альбома',
+  photos_sure_del_album: 'Вы уверены, что хотите удалить альбом?',
+  photos_stop_uploading: 'Прервать загрузку',
+  photos_uploading_warning: 'Загрузка фотографий еще продолжается. Вы уверены, что хотите покинуть страницу и прервать загрузку?'
+});
+
+if (vs.version) {
+  addEvent(window, 'load', photos.initScroll);
+} else {
+  photos.initScroll();
+}
+var preload = <?=jenc(array($comments_on_page * 2, tpx('photo_album_comments_rows', array('comments' => $preload_comments))))?>;
+
+ajax.preload(cur.moreFrom, extend({offset: cur.offset, part: 1}, cur.moreOpts || {}), preload);
+
+photos.registerDragZone({
+  on: function() {
+    addClass(ge('photos_upload_area'), 'photos_upload_area_enter');
+    if (ge('lite_photo_uploader')) setStyle(ge('lite_photo_uploader'), {width: '1px', height: '1px'});
+  },
+  un: function() {
+    removeClass(ge('photos_upload_area'), 'photos_upload_area_enter');
+    if (ge('lite_photo_uploader')) setStyle(ge('lite_photo_uploader'), {width: '100%', height: '100%'});
+  },
+  drop: function(files) {
+    if (cur.uplId !== undefined && window.Upload && Upload.checked && Upload.checked[cur.uplId]) {
+      Upload.onFileApiSend(cur.uplId, files);
+    } else {
+      photos.onUploadSelect(files);
+    }
+  }
+});

@@ -1,0 +1,84 @@
+<?php
+	global $act, $good_faces;
+?>
+var resizeTimer = 0;
+var fade_timer = 0;
+
+var face_img = <?=jenc($good_faces)?>;
+
+function go2register() {
+	window.location = '/signup.php?first_name=' + $('#reg_name').val() + '&last_name=' + $('#reg_lastname').val();
+	return false;
+}
+
+function init_faces(){
+	w =	$('#faces').width();
+	w100 = Math.ceil(w/100)*100;
+	$('#fx100').width(w100);
+
+	var flimit = w100 / 100 * 4;
+	for(i = 0; i < flimit; i++) {
+		cur_face = face_img[i % face_img.length];
+		var img = new Image();
+		var face_link = $('<a/>').attr('href', '/id' + cur_face[0]).attr('target', '_blank');
+		$(img).attr('src', face_img[i % face_img.length][1]);
+		$(img).attr('id', 'face'+i);
+		$(img).attr('width', '100');
+		$(img).attr('height', '100');
+		//$(img).click(function() {window.location = '/id' + face_img[i % face_img.length][0]})
+		face_link.append(img);
+		$('#fx100').append(face_link);
+	}
+	fade_faces(flimit);
+}
+
+function getRandomInt(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function fade(r1, r2) {
+	$("#face"+r1).fadeOut(1000, function() {
+		$("#face"+r1).attr('src', face_img[r2][1]);
+		$("#face"+r1).parent().attr('href', '/id' + face_img[r2][0])
+		//$("#face"+r1).click(function() {window.location = '/id' + face_img[r2][0]});
+		$("#face"+r1).fadeIn(2000);
+	});
+}
+
+function fade_faces(flimit) {
+	if (fade_timer) clearTimeout(fade_timer);
+	random_face1 = Math.floor (Math.random () * flimit);
+	random_face2 = Math.floor (Math.random () * face_img.length);
+	fade(random_face1, random_face2);
+	fade_timer = setTimeout('fade_faces('+flimit+')', getRandomInt(500,1000));
+}
+
+$(window).resize(function() { 
+	if (resizeTimer) clearTimeout(resizeTimer);
+	if (fade_timer) clearTimeout(fade_timer);
+	resizeTimer = setTimeout('init_faces()', 1000);
+	adaptive_login_heigth();
+});
+
+function adaptive_login_heigth() {
+	if($('#trees').innerHeight() < $(window).height()) {
+		$('#trees').css('height', $(window).height() + 'px');
+	}
+	$('#logo').toggle($(window).width() >= 1550);
+	 
+}
+
+$(function(){
+	init_faces();
+	adaptive_login_heigth();
+	<?
+		if($act == 'stayconnected') {
+			echo "showDoneBox('<center style=\"font-size: 17px;\">Всего вам доброго, приходите ещё!</center><br />Оставайтесь на связи при помощи <a href=\"http://play.google.com/store/apps/details?id=com.vsetiby.vs\" target=\"_blank\">Android-приложения</a> и мобильной версии сайта <a href=\"http://m.vseti.by\" target=\"_blank\">m.vseti.by</a>.<br /><br /><center><a href=\"http://play.google.com/store/apps/details?id=com.vsetiby.vs\" target=\"_blank\"><img src=\"/images/stay_connect.png\" width=\"280\" height=\"233\" alt=\"\" border=\"0\"/></a></center>', {out: 15000});";
+		}
+	?>
+});
+
+var qf = ge('login_form'), ql = ge('login'), qe = ge('email'), qp = ge('pass');
+var qlb = ge('login_button'), prgBtn = qlb;
+
+<?=tpx('user_login_js')?>

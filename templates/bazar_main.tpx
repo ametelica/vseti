@@ -1,0 +1,55 @@
+<?php
+global $new_design, $categories, $cat, $act, $item_list, $bazar, $items_on_page;
+
+if (!empty($new_design))
+	echo tpx('header_design');
+
+//dmp($item_list);
+
+
+
+?>
+<div id="wrap2">
+	<div id="wrap1">
+		<div id="content" class="white_page bazar_page">
+
+				<div class="bazar_main_panel">
+					<!--<h2>Доска объявлений</h2>
+					В этом разделе можно бесплатно разместить объявление о продаже и посмотреть уже имеющиеся объявления.		
+					-->
+					<h2>
+						<div class="sort_type"><a onclick="return cur.bazarSort(<?=($bazar->sort == 1 ? -1 : 1 )?>)" class="<?=(abs($bazar->sort) == 1 ? 'selected' : '')?>">Дата</a> | <a onclick="return cur.bazarSort(<?=($bazar->sort == -2 ? 2 : -2 )?>)" class="<?=(abs($bazar->sort) == 2 ? 'selected' : '')?>">Цена</a></div>
+						<? if(empty($cat)) { 
+							if($act == 'my') {
+								echo 'Мои объявления';
+							} elseif($act == 'favorits') {
+								echo 'Избранные объявления';
+							} else {
+								echo 'Все объявления';
+							}
+						 } else { ?>
+							<? if($bazar->categories[$cat]['parent_id'] > 0) { ?>
+							<?=$bazar->categories[$bazar->categories[$cat]['parent_id']]['name']?>, 
+							<? } ?>
+							<?=$bazar->categories[$cat]['name']?>
+						<? } ?>
+					</h2>
+					<div id="items_container"><?=tpx('bazar_rows', array('items' => $item_list['data']))?></div>
+					<a id="items_load_more" onclick="bazar.load()" style="<? if($item_list['total'] < $items_on_page) { ?>display: none;<? } ?>"><span>Показать больше объявлений</span>
+					<div id="photos_more_progress" class="progress"></div>
+				</a>
+
+				</div>
+				
+				<div class="bazar_side_panel">
+					<div style="padding: 20px">
+						<div class="button_green button_wide">
+							<button onclick="showBox('al_bazar.php', {act: 'create_box'})">Добавить объявление</button>
+						</div>
+					</div>
+					<?=tpx('bazar_nav_panel')?>
+				</div>
+			</div>
+
+	</div>
+</div>

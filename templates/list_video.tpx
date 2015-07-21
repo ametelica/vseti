@@ -1,0 +1,37 @@
+<?php
+global $datetime,$langpack,$setting,$new_design;
+
+$div_width = empty($var['width'])?180:$var['width'];
+
+if(!$new_design) {
+foreach($var['video'] as $v){
+	$vu = $v['uvideo_info'];
+?>
+<div class="vRow" style="width: <?=$div_width?>px; float: left; height: 180px;">
+ <a onclick="return showVideo('<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>', '', {autoplay: 1}, event)" href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>">
+  <div>
+   <div><img src="<?=$vu['video_thumb']?>"></div>
+  </div>
+  <p style=""><?=strcut($vu['vu_title'],80)?></a>
+  <br>
+  <small><?=$datetime->cdate($setting['setting_dateformat'], $datetime->timezone($vu['vu_date']))?><span class="divide">|</span><a href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>#comments"><?=$vu['vu_totalcomments']?> комментари<?=$langpack->dln($vu['vu_totalcomments'],'com')?></a></small>
+   </p>
+  </div>
+<? 
+	}
+} else {
+	foreach($var['video'] as $v) {
+		$vu = $v['uvideo_info'];
+	?>
+    <div class="video_entry">
+        <a onclick="return showVideo('<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>', '', {autoplay: 1}, event)" href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>">
+            <img class="video" src="<?=$vu['video_thumb']?>">
+        </a>
+        <a class="title" onclick="return showVideo('<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>', '', {autoplay: 1}, event)" href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>"><?=strcut($vu['vu_title'],80)?></a>
+        <small><?=$datetime->sdate($vu['vu_date'])?></small>
+    </div>
+<?
+    /* <a class="comments" href="/video<?=$vu['vu_user_id']?>_<?=$vu['vu_id']?>#comments"><?=$vu['vu_totalcomments']?></a> */
+    }
+}
+?>

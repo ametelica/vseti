@@ -1,0 +1,14 @@
+<?php
+	global $new_design, $wall, $langpack;
+	//echo $wall->postpone_cnt . ' ' . $wall->can_edit;
+
+if($wall->postpone_cnt > 0 and $wall->can_edit) {
+	?><a id="wall_postponed_link" class="clear wr_header" onclick="wall.showPostponed();">
+<div id="wall_postponed_progress" class="progress"></div>
+<div id="wall_postponed_msg_show" class="wrh_text">
+Показать
+<span id="wall_postponed_cnt"><?=$wall->postpone_cnt?></span>
+отложенн<?=$langpack->dln($wall->postpone_cnt, array('ую', 'ые', 'ые'))?> запис<?=$langpack->dln($wall->postpone_cnt, array('ь', 'и', 'ей'))?>
+<span class="wall_postponed_link_arrow"></span>
+</div>
+</a><? } ?>

@@ -1,0 +1,19 @@
+<?php
+global $owner;
+?><div class="photos_edit_data">
+  <div class="photos_edit_header">Название</div>
+  <input type="text" class="text photos_edit_title" id="new_album_title" maxlength="64" onchange="curBox().changed=true;" onkeyup="onCtrlEnter(event, cur.saveNewAlbum)" />
+  <div class="photos_edit_header">Описание</div>
+  <textarea class="photos_edit_description" id="new_album_description" onchange="curBox().changed=true;" onkeyup="onCtrlEnter(event, cur.saveNewAlbum)"></textarea>
+  <div class="photos_privacy_controls"><? if ($owner->oid > 0) { ?>
+			<div class="photos_privacy_control">Кто может просматривать этот альбом? <a id="privacy_edit_album0" onclick="return Privacy.show(this, event, 'album0')">Все пользователи</a><span></span>.</div>
+			<div class="photos_privacy_control">Кто может комментировать фотографии? <a id="privacy_edit_albumcomm0" onclick="return Privacy.show(this, event, 'albumcomm0')">Все пользователи</a><span></span>.</div>
+		<? } else { ?>
+			<div id="album_only_check" class="checkbox fl_l photos_privacy_checkbox" onclick="checkbox(this)">
+				<div></div>
+				Фотографии могут добавлять только редакторы и администраторы
+			</div>
+			<br class="clear">
+		<? } ?>
+	</div>
+</div>

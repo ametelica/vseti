@@ -1,0 +1,5 @@
+<?php
+foreach($var['audio'] as $a){
+	echo tpx('page_wall_media_audio', $a);
+}
+?>

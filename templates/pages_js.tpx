@@ -1,0 +1,97 @@
+<?php
+global $act, $user, $group;
+$page_id = $var['oid'].'_'.$var['pg']['page_id'];
+?>
+showBackLink('<?=$group->lnk?>', '<?=$group->title?>');
+stManager.add(["pages.js","wk.js","ui_controls.js","wysiwyg.js","wk_editor.js"], function () {
+<? if($act=='edit') {?>
+cur.editor = new WkEditor('wke_cont', {
+  buttons: {
+    bold: [0, 0, 'Жирный'],
+    italic: [0, -20, 'Курсивный'],
+    left: [0, -80, 'Выровнять по левому краю'],
+    center: [0, -100, 'Выровнять по центру'],
+    right: [0, -120, 'Выровнять по правому краю'],
+    list: [0, -140, 'Маркированный список', 'Элемент списка'],
+    h1: [0, -180, 'Добавить заголовок', 'Введите текст заголовка'],
+    h2: [0, -200, 'Добавить подзаголовок', 'Введите текст заголовка'],
+    h3: [0, -220, 'Добавить подзаголовок второго уровня', 'Введите текст заголовка'],
+    blockquote: [0, -360, 'Добавить цитату', 'Текст цитаты']
+    /*
+    url: [0, -300, 'Добавить ссылку', 'Удалить ссылку'],
+    image: [0, -240, 'Добавить фотографию'],
+    video: [0, -260, 'Добавить видеозапись'],
+    audio: [0, -280, 'Добавить аудиозапись']
+    */
+  },
+  plain: 0,
+  wikiPref: '',
+  source: ge('wke_textarea'),
+  panelCont: ge('wke_buttons_cont'),
+  mode: [0, -340, 'Режим wiki разметки', 'Визуальный режим редактирования'],
+  lang: {
+    too_long: 'Страница слишком длинная. Пожалуйста сократите её.'
+  },
+  onPlainToggle: function(on, btn) {
+    if (btn) {
+      ajax.post('al_pages.php', {act: 'toggle_plain', state: on ? 1 : 0}, {})
+    }
+    if (on) {
+      show('wk_wiki_help');
+    } else {
+      hide('wk_wiki_help');
+    }
+  },
+  page: '<?=$page_id?>',
+  oid: <?=$var['oid']?>,
+  isLayer: true
+});
+cur.newEditor = true;
+cur._editMode = function(ev) {
+  var el = ev.target;
+  while(el) {
+    if (el.id == 'wke_cont') {
+      return true;
+    }
+    el = el.parentNode;
+  }
+  return false;
+};
+
+setTimeout(function() {
+  cur.editor.checkFocus();
+  Pages.onScroll();
+}, 0);
+
+function onScroll() {
+  Pages.onScroll()
+}
+function onResize() {
+  Pages.onScroll(true);
+}
+addEvent(window, 'scroll', onScroll);
+addEvent(window, 'resize', onResize);
+cur.destroy.push(function() {
+  removeEvent(window, 'scroll', onScroll);
+  removeEvent(window, 'resize', onResize);
+});
+
+var parents = <?=jenc($var['parents'])?>;
+
+cur.uiParents = new Dropdown(ge('pages_edit_parent'), parents, {
+    width: 250,
+    selectedItems: <?=$var['pg']['page_pid']?>,
+    multiselect: false
+});
+<? } ?>
+cur.set_as_main = function(pid, el) {
+	ajax.post('al_pages.php', {act: 'set_main', id: pid, 'oid': <?=-$var['oid']?>}, {
+		onDone: function(text) {
+			el.innerHTML = text;
+		}
+	});
+	return false;
+};
+Pages.initDraft();
+Pages.init({"hash":"<?=hash_get($var['oid'].$var['pg']['page_id'].$user->id,18,'pg')?>","drafthash":"05733fec45adf4c554","oid":<?=$var['oid']?>,"pid":"<?=$var['pg']['page_id']?>"}); 
+cur.lang = extend(cur.lang, {"pages_compare":"Сравнить","pages_cancel2":"Отменить"}); });

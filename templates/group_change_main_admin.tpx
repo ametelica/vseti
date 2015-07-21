@@ -1,0 +1,9 @@
+<?php
+global $user, $group, $remove;
+$admin_info = $group->admins[$user->id];
+
+
+?><div class="gedit_admbox_top clear_fix">
+  Вы можете передать права создателя группы другому руководителю этой группы.
+</div>
+<input type="hidden" id="new_creator" />

@@ -1,0 +1,13 @@
+<?php
+global $user;
+foreach($var['users']['users'] as $uid) {
+	$u = pdata($uid);
+	//if(!$u->user_exists) continue;
+	//dmp($u);
+?><div class="fave_user_div" id="fave_user_div<?=$uid?>"><div><div style="width: 120px;">
+  <div class="fave_uph_wrap ta_l" onmouseover="Fave.bigphOver(this, <?=intval($uid)?>)"><a class="fave_user_image" href="<?=$u->lnk?>" onclick="if (cur.cancelClick) return (cur.cancelClick = false); return nav.go(this, event)">
+    <div class="fave_u_bl_wrap" onmouseover="Fave.removeTip(this)" onclick="return Fave.remove(this, <?=intval($uid)?>, <?=htmlspecialchars('"<a href=\"'.$u->lnk.'\">'.$u->title.'<\/a>"')?>, '<?=hash_get($user . $uid, 18, 'fave')?>', event)"><div class="fave_u_bl"></div></div>
+    <img class="fave_u_img" src="<?=$u->photo('b')?>" />
+  </a></div>
+  <div class="fave_user_name"><a href="<?=$u->lnk?>" onclick="return nav.go(this, event)"><?=$u->title?></a></div>
+</div></div></div><? } ?>

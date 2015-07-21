@@ -1,0 +1,8 @@
+<div class="video_external_inline">
+  <div class="video_box_wrap" style="width: <?=$var['width']?>px; height: <?=$var['height']?>px; overflow: hidden;">
+<iframe id="video_player" preventhide="1" onload="if (1 && cur && cur.incViews) cur.incViews();" onmouseover
+="if (cur && cur.incViews) cur.incViews();" type="text/html" width="<?=$var['width']?>" height="<?=$var['height']?>" src="<?=$var['video']->movie()?>" frameborder="0" webkitallowfullscreen
+ mozallowfullscreen allowfullscreen>
+</iframe>
+</div>
+</div>

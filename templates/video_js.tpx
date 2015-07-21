@@ -1,0 +1,147 @@
+<?php
+global $owner, $videolist, $on_page, $edit, $user, $video_albums, $silent, $shown, $section, $comments, $id, $act;
+
+/*
+if($videolist['total'] > $on_page * 2) {
+	$videolist['data'] = array_slice($videolist['data'], 0, 12);
+	$shown = 12;
+	$silent = 1;
+} else {
+	$shown = $videolist['total'] > $on_page ? $on_page : $videolist['total'];
+	$silent = 0;
+}
+*/
+$videoList = array('all' => array());
+foreach($videolist['data'] as $v) {
+	$videoList['all'][] = $v->arr0($edit);
+}
+
+$options = array(
+		'perPage' => $on_page,
+		'hash' => hash_get($user->id . $owner->oid, 12, 'vreorder'),
+		'videoCount' => $videolist['total'],
+		'sections' => $video_albums['data'],
+		'uploadBanned' => false,
+		'htitle_videos' => 'Видеозаписи ' . $owner->profile_info['name_gen'],
+		'htitle_comments' => 'Комментарии к видеозаписям ' . $owner->profile_info['name_gen'],
+		'htitle_tagged_user' => 'Пользователем',
+		'vStr' => '""',
+		'moveHash' => hash_get($user->id . $owner->oid, 12, 'vmove'),
+		'silent' => $silent,
+		'canEditAlbums' => $edit ? true : false,
+		'reorder_hash' => hash_get($user->id . $owner->oid, 12, 'varrd'),
+		'cansort' => $edit,
+);
+
+if(!empty($comments)) {
+	$options['commentsCount'] = $comments['total'];
+	$options['commentsShown'] = $shown;
+}
+
+?>showBackLink('<?=$owner->lnk?>', '<?=$owner->title?>');
+cur.isAdult = 1;
+Video.init(extend({
+  videoList: <?=jenc($videoList)?>,
+  shown: <?=$shown?>,
+  videoTpl: function(v, canedit) {
+var tagLabel = '', tags = '', videoRaw = v[0] + '_' + v[1];
+
+if (v[8] & 2) {
+  tagLabel = '<div class="video_tag_label">'+getLang('video_new_tag')+'</div>';
+}
+if (v[10]) {
+  for (var i = 1; i <= v[10]; i++) {
+    var label = '';
+    switch (i) {
+      case 3: label = 720; break;
+      case 2: label = 480; break;
+      default: label = 360; break;
+    }
+    tags += '<a class="quality fl_l" href="/video' + videoRaw + '" onclick="return Video.show(event, \'' + videoRaw + '\', {params: {act: \'show\', video: \'' + videoRaw + '\', force_hd: \'' + i + '\', autoplay: 1}});">' + label + '</a>';
+  }
+  if (tags) tags = '<div class="video_quality clear_fix">' + tags + '</div>';
+}
+if (v[5] & 1) {
+  v[3] += '<span class="video_is_private" onmouseover="return Video.privateTooltip(this);" onclick="return Video.privateClick(this, event);"></span>';
+}
+var addBtn = '';
+if (!canedit && vs.id && vs.id != v[0]) {
+  addBtn = '<div class="video_row_add"><div class="video_row_icon_add fl_l" onmouseover="Video.activate(this, \'add_tt\', 1);" onmouseout="Video.deactivate(this);" onclick="return Video.addFromList(\''+v[0]+'_'+v[1]+'\', \''+v[11].substr(1)+'\', event);"><div class="video_row_icon"></div></div></div>';
+}
+return rs(cur.videoTplHTML, {
+  oid: v[0],
+  vid: v[1],
+  thumb: v[2],
+  title: v[3],
+  duration: v[9],
+  descr: v[4],
+  adult: v[13] || '',
+  linkclass: v[12],
+  hash: v[11],
+  canedit: canedit,
+  row_acts: '',
+  acts: '',
+  newtags: tagLabel,
+  addbtn: addBtn,
+});
+},
+  albumsTpl: function(aid, v, t) {
+  return rs(cur.albumsTplHTML, {
+    album_id: aid,
+    main_href: '/videos<?=$owner->oid?>',
+    section_name: (aid == -1) ? 'tagged' : 'album_'+aid,
+    title: t,
+    thumb: v[2],
+    count: v[3],
+    new_tags: (aid == -1 && cur.new_tags_str) ? cur.new_tags_str : '',
+    class_name: (aid == -1) ? '' : ' video_album_candrop',
+    nodrag: (aid == -1) ? 'nodrag="1"' : ''
+  });
+},
+  videoTplHTML: "<div id=\"video_cont%oid%_%vid%\" class=\"video_row_cont\"><div class=\"video_row_inner_cont%canedit%\"><a href=\"\/video%oid%_%vid%\" class=\"video_row_relative%linkclass%\" id=\"video_row%oid%_%vid%\" onmouseover=\"Video.rowOver(this);\" onmouseout=\"Video.rowOut(this)\" onclick=\"if (cur.cancelClick) return (cur.cancelClick = false); return Video.show(event, '%oid%_%vid%', {}, this);\">\n    %newtags%%adult%\n    <div class=\"video_row_info_line\"><div class=\"video_raw_info_name\">%title%<\/div><div class=\"video_row_duration\">%duration%<\/div><\/div>\n    <div class=\"video_row_info_play\"><\/div>\n    %addbtn%\n    <div class=\"video_row_controls\">\n      <div class=\"video_row_icon_edit fl_l\" onmouseover=\"Video.activate(this);\" onmouseout=\"Video.deactivate(this);\" onclick=\"return videoview.showEditBox(%vid%, %oid%, event);\"><div class=\"video_row_icon\"><\/div><\/div>\n      <div class=\"video_row_icon_delete fl_l\" onmouseover=\"Video.activate(this);\" onmouseout=\"Video.deactivate(this);\" onclick=\"return Video.onDeleteClick(%vid%, %oid%, '%hash%', this, event);\"><div class=\"video_row_icon\"><\/div><\/div>\n      <br class=\"clear\" \/>\n    <\/div>\n    <div class=\"video_image_div\" style=\"background-image: url('%thumb%');\"><\/div>\n  <\/a><\/div>\n<\/div>",
+  albumsTplHTML: "<a id=\"video_album_%album_id%\" href=\"%main_href%?section=%section_name%\" onclick=\"if (cur.cancelClick) return (cur.cancelClick = false); return nav.change({section:'%section_name%'});\" class=\"video_album%class_name%\" onmouseover=\"Video.albumOver(this);\" onmouseout=\"Video.albumOut(this)\" %nodrag%><div class=\"video_album_row_inner\">\n  %new_tags%\n  <div class=\"video_album_controls\">\n    <div class=\"video_row_icon_edit fl_l\" onmouseover=\"Video.activate(this);\" onmouseout=\"Video.deactivate(this);\" onclick=\"return Video.editAlbum(%album_id%, event);\"><div class=\"video_row_icon\"><\/div><\/div>\n    <div class=\"video_row_icon_delete fl_l\" onmouseover=\"Video.activate(this);\" onmouseout=\"Video.deactivate(this);\" onclick=\"return Video.deleteAlbum('album_%album_id%', event);\"><div class=\"video_row_icon\"><\/div><\/div>\n    <br class=\"clear\" \/>\n  <\/div>\n  <div class=\"video_album_info\"><div class=\"video_album_text fl_l\">%title%<\/div><div class=\"video_album_count fl_r\"><div class=\"video_row_icon video_album_count_icon\"><\/div>%count%<\/div><br class=\"clear\" \/><\/div>\n  <div class=\"video_album_bg\" style=\"background-image: url('%thumb%')\"><\/div><\/div>\n<\/a>",
+  lang: {"video_N_views":["","<b>%s<\/b> просмотр","<b>%s<\/b> просмотра","<b>%s<\/b> просмотров"],"video_new_tag":"Новая отметка","global_N_comments":["","%s комментарий","%s комментария","%s комментариев"],"videofile_num":["","видеозапись","видеозаписи","видеозаписей"],"video_num_found_files":["","Найден %s видеофайл","Найдено %s видеофайла","Найдено %s видеофайлов"],"video_novideo":"Нет видеозаписей","video_delete_tag":"Удалить отметку","video_sumary_to_user_page":"<a href=\"\/al.metelica\">к странице Александра<\/a>","video_X_comms":["","%s комментарий","%s комментария","%s комментариев"],"video_no_comments":"Нет комментариев.","video_delete_album":"Удалить альбом","video_no_album":"без альбома","video_add_to_album":"добавить в альбом","video_change_album":"{link}Альбом{\/link}: {title}","video_remove_all_tags":"Удалить новые отметки","video_title_X_videos":["","%s видеозапись","%s видеозаписи","%s видеозаписей"],"video_title_X_videos_tagged":["","%s видеозапись с {user}","%s видеозаписи с {user}","%s видеозаписей с {user}"],"video_title_search":"Поиск видеозаписей по запросу {q}","video_title_search_X_found":["","%s результат","%s результата","%s результатов"],"video_adult_box_title":"Безопасный поиск","video_adult_box_text":"Безопасный поиск скрывает видеозаписи, которые пользователи считают материалами для взрослых.<br><br>Отключая фильтрацию, Вы подтверждаете, что достигли необходимого для просмотра таких записей возраста.","video_claims_no_upload":"Вы больше не можете загружать новые видеозаписи, поскольку на Вас поступило много жалоб от правообладателей.","video_no_upload_title":"Загрузка невозможна","video_drop_to_move":"Отпустите, чтобы переместить в альбом","video_albums_found_summary":["","%s альбом","%s альбома","%s альбомов"],"video_albums_summary":["","У Вас %s альбом","У Вас %s альбома","У Вас %s альбомов"],"video_show_all_albums":["","Показать все %s альбом","Показать все %s альбома","Показать все %s альбомов"],"video_comments_review":"Обзор комментариев","video_is_private_tt":"Видеозапись защищена приватностью","video_add_tt":"Добавить в мои видеозаписи","video_please_sign_in":"Пожалуйста, войдите или <a href=\"\/join\" onclick=\"return !showBox('join.php', {act: 'box', from: nav.strLoc}, {}, event)\">зарегистрируйтесь<\/a>, чтобы просмотреть эту видеозапись."},
+  oid: <?=$owner->oid?>,
+  vSection: '<?=$section?>'
+}, <?=jenc($options)?>));
+window.radioBtns['length'] = {
+  els: Array.prototype.slice.apply(geByClass('radiobtn', ge('video_length_filter'))),
+  val: 0
+};
+<? if($section != 'comments') { ?>
+var filterTypes = [[2, 'По релевантности'], [0, 'По дате добавления'], [1, 'По длительности']];
+if (cur.sortDD) {
+  re(cur.sortDD.container);
+}
+cur.sortDD = new DropdownMenu(filterTypes, {
+  target: ge('video_sort_dd'),
+  value: 2,
+  fadeSpeed: 0,
+  onSelect: function(event) {
+    if (event) Video.toggleOrder(event.target.index || 0);
+  }
+});
+if (ge('video_external_dd')) {
+  var extTypes = [[0, 'Все видеозаписи'], [-1, 'ВСети'], [1, 'Youtube'], [2, 'Vimeo'], [3, 'RuTube'], [32, 'Kinopoisk'], [33, 'Molodejj.tv'], [34, 'CarambaTV']];
+  cur.extDD = new DropdownMenu(extTypes, {
+    target: ge('video_external_dd'),
+    value: 0,
+    fadeSpeed: 0,
+    onSelect: function(event) {
+      if (event) Video.toggleExt(event.target.index || 0);
+    }
+  });
+}
+
+Video.sortInit(4);
+<? } ?>
+
+<? if($act == 'add') { ?>
+	Video.uploadVideoBox();
+<? } elseif(!empty($id)) { 
+	$vuid = $owner->oid . '_' . $id;
+	
+	?>
+
+	showVideo('<?=$vuid?>', 'videos<?=$owner->oid?>', {root: 1, fromPreload: 1, noLocChange: 1, prevTitle: 'Видеозаписи', params: {"act":"show","video":"<?=$vuid?>"}});
+<? } ?>

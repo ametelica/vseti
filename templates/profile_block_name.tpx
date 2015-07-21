@@ -1,0 +1,128 @@
+<?php
+global $is_profile_private,$user,$owner,$datetime,$new_design;
+if($is_profile_private != 0 or $user->user_exists == 0 or ($user->user_info['user_rate'] < 30 and !$user->is_me($owner))){
+?>
+<div id="profile_info" class="dgray h100">
+ <h4 class="simple">
+  <span class="fl_r"></span>
+  <?=$owner->profile_info['name'].' '.$owner->profile_info['nick'].' '.$owner->profile_info['lastname']?> 
+	<? if(!empty($owner->profile_info['lastname2'])) echo '('.$owner->profile_info['lastname2'].')'; 
+	
+	echo '<div class="clear" id="profile_current_info" style="height: auto"><small >заходил'.($owner->user_info['user_sex'] == 1 ? 'a' : '') .' '.$datetime->age2($owner->user_info['user_lastactive']).'</small></div>';
+	?>
+	
+ </h4>
+ <div class="error">
+ <? if($user->user_exists) {?>
+  <? if($user->user_info['user_rate'] < 30) {?>
+   Для просмотра данных о пользователях, необходимо заполнить о себе хотя бы 30% данных.
+  <? } else { ?>
+   Страница пользователя защищена настройками приватности.
+  <? } ?>
+ <? } else { ?>
+  Для просмотра данных о других пользователях, необходимо:<br />
+  1. <a href="/signup.php">зарегистрироваться</a> или <a href="/login.php">войти</a>, если у Вас уже есть аккаунт.<br />
+  2. заполнить о себе хотя бы 30% данных.<br /><br />
+  Мы установили такое правило, чтобы ВСети было меньше пустых анкет, и сайт был интереснее. У Вас уйдёт на регистрацию всего пару минут, а польза большая ;)
+ <? } ?>
+ </div>
+</div>	
+<?	
+} else {
+?>
+<div id="profile_info" class="dgray"><div id="profile_info_array"></div>
+ <? if($owner->user_info['user_real'] > 0) {
+	switch($owner->user_info['user_real']) {
+	case 1:
+		echo '<a class="real" onclick="showDoneBox(\'Подлинность страницы проверена Администрацией ВСети.\'); return false;"></a>';
+		break;
+	case 3:
+		echo '<a class="real star" onclick="showDoneBox(\'Известная личность. Подлинность страницы проверена Администрацией ВСети.\'); return false;"></a>';
+		break;
+	}
+	?>
+ <? } ?>
+ <? if($new_design and $user->is_me($owner)) { ?><a href="/profileEdit.php" class="edit_info white fl_r"></a><? } ?>
+ <h4 class="simple">
+  <span class="fl_r"></span>
+  <?=$owner->profile_info['name'].' '.$owner->profile_info['nick'].' '.$owner->profile_info['lastname']?><? if(!empty($owner->profile_info['lastname2'])) echo ' ('.$owner->profile_info['lastname2'].')'; ?><? if($new_design and $owner->user_info['online']) { ?>&nbsp;<b>•</b><? } ?>
+	
+  <div class="clear" id="profile_current_info"><span id="current_info" <? if($user->is_me($owner)) { ?>onclick="Profile.infoEdit()"<? } ?>><? 
+   	if(trim($owner->user_info['user_status'])!='') {
+   		
+   		if($owner->id == 814831) {
+   			$update_text = 'Обновлено в незапамятные времена. Имеет археологическую ценность.';
+   		} else {
+   			$update_text = 'Обновлено ' . $datetime->age2($owner->user_info['user_status_time']);
+   		}
+   		
+   		
+   		echo '<span class="my_current_info">'.$owner->user_info['user_status'].'</span></span><br />'.(trim($owner->user_info['user_status'])!='' ? '<small class="fl_l">'.$update_text.'</small>' : '' ) . (($new_design and !$owner->user_info['online']) ? '<small class="fl_r">заходил'.($owner->user_info['user_sex'] == 1 ? 'a' : '') .' '.$datetime->age2($owner->user_info['user_lastactive']).'</small>' : '');
+   	} elseif($user->is_me($owner)) {
+   		echo '<span class="no_current_info">изменить статус</span>';
+   	} elseif($new_design and !$owner->user_info['online']) {
+		echo '<span class="my_current_info"></span><br /><small class="fl_r">заходил'.($owner->user_info['user_sex'] == 1 ? 'a' : '') .' '.$datetime->age2($owner->user_info['user_lastactive']).'</small>';
+	}
+
+   ?>
+   <div class="clear">
+   <? if($user->is_me($owner)) { ?>
+    <table cellspacing="0" cellpadding="0" id="currinfo_editor">  
+     <tr>
+      <td class="sidesh" rowspan="2"><div></div></td>
+      <td>
+       <div class="editor">
+        <input class="text" id="currinfo_input" onkeydown="Profile.infoCheckSave(event)" onkeyup="Profile.infoCheck(this)" />
+        <div class="fl_l" id="currinfo_warn"></div>
+        <div class="fl_l" id="currinfo_about">Введите здесь текст Вашего статуса.</div>
+        <div class="fl_l" id="currinfo_clear"><a onclick="Profile.infoSave('')">Очистить статус</a></div>
+        <div class="progress fl_l" id="currinfo_progress"></div>
+        <div class="fl_r button_gray"><button id="currinfo_cancel">Отмена</button></div>
+        <div class="fl_r" id="currinfo_sep"></div>
+        <div class="fl_r button_green"><button id="currinfo_save">Сохранить</button></div>
+        <div class="clear"></div>
+       </div>
+      </td>
+      <td class="sidesh" rowspan="2"><div></div></td>
+     </tr>
+     <tr><td class="bottomsh1"><div></div></td></tr>
+     <tr><td class="bottomsh2" colspan="3"><div></div></td></tr>
+    </table>
+    <? } ?>
+   </div>
+  </div>
+ </h4>
+ 
+ <? if($user->is_me($owner) and $user->user_info['user_id']>825880 and $user->user_info['user_verified_phone'] == 0 and $user->user_info['user_verified'] == 0 and !$new_design) {?>
+ 
+   <div class="error"><span style="color:red">Вам необходимо <blink>подтвердить страницу</blink>! Без подтверждения - Вы не сможете полноценно использовать все функции сайта!</span> <a href="#" id="verify_more_link" onclick="hide('verify_more_link'); show('verify_more');">Подробнее &raquo;</a><br />
+   <div id="verify_more" style="display: none">
+   <br /><center><b>Как подтвердить страничку</b></center><br />
+   <b>1. Через мобильный телефон (так лучше).</b><br />
+   Идём в <a href="/settings.php?act=mobile">Настойки - Мобильные сервисы</a>, пишем свой номер полностью, следуем появившимся инструкциям. Этот способ лучше тем, что страничка надёжнее защищена от кражи (восстановить пароль можно только на телефон), к тому же подтверждение через телефон даёт дополнительные +10% к рейтингу.
+   <br /><br />
+   <b>2. Через E-mail (а так бесплатно).</b><br />
+   <? if($user->user_info['user_email']!='') { ?>
+   1.1. Проверяем почту, находим свежее письмо от vseti.by и открываем специальную ссылку из письма.<br /> 
+   1.2. Если при регистрации Вы ошиблись со вводом е-мейла, или ввели несуществующий е-мейл, или письмо не пришло даже через полчаса - 
+   идём в <a href="/settings.php">настройки</a>, и в разделе "Изменить основной E-Mail" пишем правильный, рабочий адрес, жмём кнопку "Изменить е-маil", на этот адрес уходит письмо с новой ссылкой, возвращаемся к пункту 1.1.
+   <? } else { ?>
+   1.1. Идём в <a href="/settings.php">настройки</a>, и в разделе "Изменить основной E-Mail" пишем правильный, рабочий адрес, жмём кнопку "Изменить е-маil", на этот адрес уходит письмо со специальной ссылкой<br />
+   1.2. Проверяем почту, находим свежее письмо от vseti.by и открываем специальную ссылку из письма.<br />
+   2.3. Если через 10 минут письма всё ещё нет - проверяем правильно ли указан адрес, нет ли письма в папке "Спам" и пробуем <a href="/login.php?act=email2">отправить ещё раз</a>.
+   <? } ?>
+   <br /><br />
+   Если что-то не получается - <a href="/write16" style="color: red; text-decoration: underline;">пишите в техподдержку</a>, мы обязательно Вам поможем!</div></div>
+  <? } ?>
+ <div id="history" style="display: none;">
+  <div id="history_progress" style="display: none;"><img src="/images/upload.gif"></div>
+  <div id="history_container" class="history_container" style="display: none;"></div>
+ </div>
+ <div id="profile_short">
+ <? echo tpx('profile_block_info_short');?>
+ </div>
+</div>
+<? echo tpx('profile_block_info'); ?>
+<?	
+}
+?>

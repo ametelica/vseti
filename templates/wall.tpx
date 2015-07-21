@@ -1,0 +1,77 @@
+<?php
+global $offset, $own, $user, $privacy_wall_send, $new_design;
+$oid = $var['oid'];
+$comments = $var['comments'];
+
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content">
+	<div class="wall_post_wrap">
+	<div class="full_wall_tabs t_bar clear_fix">
+				<div class="fl_r progress" id="full_wall_progress"></div>
+				<ul id="full_wall_filters" class="t0"><li id="wall_own_filter" class="<?= $own ? 'active_link' : '' ?>">
+							<a href="/wall<?= $oid ?>?own=1" onclick="return checkEvent(event)" onmousedown="return FullWall.go(this, event)">
+								<b class="tl1"><b></b></b>
+								<b class="tl2"></b>
+								<b class="tab_word">Записи <?= $oid > 0 ? $var['owner']->user_info['user_name_gen'] : ' сообщества'?></b>
+							</a>
+						</li><li id="wall_all_filter" class="<?= $own ? '' : 'active_link' ?>">
+						<a href="/wall<?= $oid ?>" onclick="return checkEvent(event)" onmousedown="return FullWall.go(this, event)">
+							<b class="tl1"><b></b></b>
+							<b class="tl2"></b>
+							<b class="tab_word">Все записи</b>
+						</a>
+					</li>
+					<li class="t_r" id="full_wall_return">
+						<?
+						if ($oid > 0)
+							echo '<a href="/id' . $oid . '" onclick="return nav.go(this, event, {back: true})">Перейти к странице</a>';
+						else
+							echo '<a href="/club' . -$oid . '" onclick="return nav.go(this, event, {back: true})">Перейти к группе</a>';
+						?>      
+					</li>
+			</div>
+
+			<div class="big_wall_post"><div class="wall_module"><div id="submit_post_box" class="clear_fix" onclick="return cancelEvent(event)" style="<?=$var['access_send']==1?'':'display:none'?>">
+						<div class="clear_fix">
+							<textarea
+								id="post_field"
+								class="fl_l"
+								onkeyup="wall.postChanged(this.value)"
+								onkeydown="onCtrlEnter(event, wall.sendPost)"
+								onfocus="wall.showEditPost()"
+								placeholder="<?=$user->id == $var['oid']?'Что новенького, '.$user->profile_info['name'].'?':'Написать сообщение...'?>"
+								></textarea>
+						</div>
+						<div id="post_warn"></div>
+						<div id="submit_post" onclick="event.cancelBubble=true;">
+							<div id="media_preview" class="clear_fix media_preview"></div>
+							<div class="button_green fl_l"><button id="send_post" onclick="wall.sendPost()">Отправить</button></div>
+							<!--<div class="checkbox fl_l" id="friends_only" onclick="checkbox(this);checkbox('status_export',!isChecked(this));checkbox('facebook_export',!isChecked(this));"><div></div>только для друзей</div>-->
+							<?	if($oid < 0 and $var['owner']->user_rank > 0 and $var['owner']->user_level > 1) { ?>
+								<div class="checkbox  fl_l" id="official" onclick="checkbox(this);toggle('signed',isChecked(this));"><div></div>от имени группы</div><div class="checkbox fl_l unshown" id="signed" onclick="checkbox(this)"><div></div>подпись</div>								
+							<? } ?>
+							<div id="page_add_media" class="fl_r"><span class="add_media_lnk">Прикрепить</span></div>
+							<div class="progress fl_r" id="page_post_progress"></div>
+						</div>
+					</div></div></div>
+
+			<div class="summary_wrap" id="fw_summary_wrap"><div class="pg_pages fl_r" id="fw_pages"><?= pg_pages('/wall' . $oid . '?' . ($own ? 'own=' . $own . '&' : ''), $comments['total'], 20, $offset) ?></div>
+				<div class="summary" id="fw_summary">Всего <?= $comments['total'] ?> записей</div></div>
+
+			<div class="wall_wrap clear_fix">
+				<div class="big_wall wide_wall_module">
+					<div class="wall_module">
+						<div id="page_wall_posts"><?php
+						echo tpx('wall_rows', $var);
+						?></div>
+					</div>
+					<a id="fw_load_more" class="pg_more_link" onclick="Pagination.showMore()" style=""><span>к предыдущим записям</span>
+						<div id="fw_more_progress" class="pg_more_progress progress"></div>
+					</a>
+				</div>
+			</div></div>
+  </div>
+</div></div>

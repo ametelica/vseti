@@ -1,0 +1,359 @@
+<?php
+global $new_design;
+if($new_design) echo tpx('header_design');
+	
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content"><div id="main_feed">
+  <div class="tabs t_bar clear_fix">
+  <ul class="t0">
+    <li id="feedtab_news" class="">
+      <a onmousedown="return feed.switchSection('news', event);" onclick="return checkEvent(event);" href="/feed"><b class="tl1"><b></b></b><b class="tl2"></b>
+       <b class="tab_word">Новости</b>
+      </a>
+    </li>
+    <li id="feedtab_updates" class="">
+      <a onmousedown="return feed.switchSection('updates', event);" onclick="return checkEvent(event);" href="/feed?section=updates"><b class="tl1"><b></b></b><b class="tl2"></b>
+       <b class="tab_word">Обновления</b>
+      </a>
+    </li>
+    <li id="feedtab_comments" class="active_link">
+      <a onmousedown="return feed.switchSection('comments', event);" onclick="return checkEvent(event);" href="/feed?section=comments"><b class="tl1"><b></b></b><b class="tl2"></b>
+       <b class="tab_word">Комментарии</b>
+      </a>
+    </li>
+    <li id="feedtab_owner" class="">
+      <a onmousedown="return feed.switchSection('owner', event);" onclick="return checkEvent(event);" href="/feed?section=owner"><b class="tl1"><b></b></b><b class="tl2"></b>
+       <b class="tab_word"><nobr></nobr></b>
+      </a>
+    </li>
+    <li id="feedtab_source" class="">
+      <a onmousedown="return feed.switchSection('source', event);" onclick="return checkEvent(event);" href="/feed?section=source"><b class="tl1"><b></b></b><b class="tl2"></b>
+       <b class="tab_word"></b>
+      </a>
+    </li>
+    <li class="t_r"><a onclick="return showWiki({w: 'postbox'}, false, event, {queue: 1, stat: ['wkview.js' ,'wkview.css', 'postbox.js', 'postbox.css', 'wide_dd.js', 'wide_dd.css', 'page.js', 'page.css']})" class="fl_r summary_right">Новая запись</a></li>
+  </ul>
+</div>
+  <div id="feed_bar" class="clear_fix bar unshown">
+  <div id="feed_news_bar" class="clear_fix" style="display: none;">
+    <div class="fl_l summary_tab feed_tab_add">
+      <a class="summary_tab2" onclick="Feed.toggleTabsMenu(); return false;">
+        <div class="summary_tab3"><div class="feed_tab_add_icon"></div></div>
+      </a>
+      <div id="feed_tab_add_menu_wrap">
+        <div id="feed_tab_add_menu" onmousedown="event.cancelBubble = true;">
+          <div id="feed_tab_add_header" onclick="Feed.toggleTabsMenu(0);"><div class="feed_tab_add_icon fl_r"></div>Разделы новостей</div>
+          <div id="feed_tab_add_filters" class="clear_fix"><div id="tabs_filters" class="feed_s_filter noselect" style="" onselectstart="return false;">
+    <div class="feed_filter_tabs_row clear_fix  checked" id="filter_t_news" onmouseover="addClass(this, 'feed_filter_tabs_row_over');" onmouseout="removeClass(this, 'feed_filter_tabs_row_over');" onclick="feed.checkTabsFilter('news', 't_news');">
+    <div class="feed_filter_tabs_icon fl_l feed_icon_news"></div>
+    <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">Лента</div>
+    <div class="feed_filter_tabs_check fl_l"></div>
+  </div>  <div class="feed_filter_tabs_row clear_fix  checked" id="filter_t_photos" onmouseover="addClass(this, 'feed_filter_tabs_row_over');" onmouseout="removeClass(this, 'feed_filter_tabs_row_over');" onclick="feed.checkTabsFilter('photos', 't_photos');">
+    <div class="feed_filter_tabs_icon fl_l feed_icon_photos"></div>
+    <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">Фотографии</div>
+    <div class="feed_filter_tabs_check fl_l"></div>
+  </div>  <div class="feed_filter_tabs_row clear_fix  checked" id="filter_t_search" onmouseover="addClass(this, 'feed_filter_tabs_row_over');" onmouseout="removeClass(this, 'feed_filter_tabs_row_over');" onclick="feed.checkTabsFilter('search', 't_search');">
+    <div class="feed_filter_tabs_icon fl_l feed_icon_search"></div>
+    <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">Поиск</div>
+    <div class="feed_filter_tabs_check fl_l"></div>
+  </div>  <div class="feed_filter_tabs_row clear_fix " id="filter_t_recommended" onmouseover="addClass(this, 'feed_filter_tabs_row_over');" onmouseout="removeClass(this, 'feed_filter_tabs_row_over');" onclick="feed.checkTabsFilter('recommended', 't_recommended');">
+    <div class="feed_filter_tabs_icon fl_l feed_icon_recommended"></div>
+    <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">Рекомендации</div>
+    <div class="feed_filter_tabs_check fl_l"></div>
+  </div>  <div class="feed_filter_tabs_row clear_fix  checked" id="filter_t_friends" onmouseover="addClass(this, 'feed_filter_tabs_row_over');" onmouseout="removeClass(this, 'feed_filter_tabs_row_over');" onclick="feed.checkTabsFilter('friends', 't_friends');">
+    <div class="feed_filter_tabs_icon fl_l feed_icon_friends"></div>
+    <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">Друзья</div>
+    <div class="feed_filter_tabs_check fl_l"></div>
+  </div>  <div class="feed_filter_tabs_row clear_fix " id="filter_t_groups" onmouseover="addClass(this, 'feed_filter_tabs_row_over');" onmouseout="removeClass(this, 'feed_filter_tabs_row_over');" onclick="feed.checkTabsFilter('groups', 't_groups');">
+    <div class="feed_filter_tabs_icon fl_l feed_icon_groups"></div>
+    <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">Сообщества</div>
+    <div class="feed_filter_tabs_check fl_l"></div>
+  </div>  <div class="feed_filter_tabs_row clear_fix  checked" id="filter_t_articles" onmouseover="addClass(this, 'feed_filter_tabs_row_over');" onmouseout="removeClass(this, 'feed_filter_tabs_row_over');" onclick="feed.checkTabsFilter('articles', 't_articles');">
+    <div class="feed_filter_tabs_icon fl_l feed_icon_articles"></div>
+    <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">Статьи</div>
+    <div class="feed_filter_tabs_check fl_l"></div>
+  </div>  <div class="feed_filter_tabs_row clear_fix " id="filter_t_likes" onmouseover="addClass(this, 'feed_filter_tabs_row_over');" onmouseout="removeClass(this, 'feed_filter_tabs_row_over');" onclick="feed.checkTabsFilter('likes', 't_likes');">
+    <div class="feed_filter_tabs_icon fl_l feed_icon_likes"></div>
+    <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">Понравилось</div>
+    <div class="feed_filter_tabs_check fl_l"></div>
+  </div>  <div class="feed_filter_tabs_row clear_fix feed_newlist_filter_row" id="filter_t_newlist" onmouseover="addClass(this, 'feed_filter_tabs_row_over');" onmouseout="removeClass(this, 'feed_filter_tabs_row_over');" onclick="feed.checkTabsFilter('newlist', 't_newlist');">
+    <div class="feed_filter_tabs_icon fl_l feed_icon_newlist"></div>
+    <div class="feed_filter_tabs_title fl_l noselect" onselectstart="return false;">Добавить вкладку</div>
+    <div class="feed_filter_tabs_check fl_l"></div>
+  </div>
+</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="fl_l feed_tab_news  summary_tab">
+  <a class="summary_tab2"  href="feed?section=news" onclick="if (!checkEvent(event)) {feed.switchSection('news'); return false;}">
+    <div class="summary_tab3">
+      <nobr>Лента</nobr>
+    </div>
+  </a>
+</div><div class="fl_l feed_tab_photos  summary_tab">
+  <a class="summary_tab2"  href="feed?section=photos" onclick="if (!checkEvent(event)) {feed.switchSection('photos'); return false;}">
+    <div class="summary_tab3">
+      <nobr>Фотографии</nobr>
+    </div>
+  </a>
+</div><div class="fl_l feed_tab_search  summary_tab">
+  <a class="summary_tab2"  onclick="Feed.switchSearch();" onmouseover="Feed.searchPreloadExtended();">
+    <div class="summary_tab3">
+      <nobr>Поиск</nobr>
+    </div>
+  </a>
+</div><div class="fl_l feed_tab_recommended feed_tab_hidden summary_tab">
+  <a class="summary_tab2"  href="feed?section=recommended" onclick="if (!checkEvent(event)) {feed.switchSection('recommended'); return false;}">
+    <div class="summary_tab3">
+      <nobr>Рекомендации</nobr>
+    </div>
+  </a>
+</div><div class="fl_l feed_tab_friends  summary_tab">
+  <a class="summary_tab2"  href="feed?section=friends" onclick="if (!checkEvent(event)) {feed.switchSection('friends'); return false;}">
+    <div class="summary_tab3">
+      <nobr>Друзья</nobr>
+    </div>
+  </a>
+</div><div class="fl_l feed_tab_groups feed_tab_hidden summary_tab">
+  <a class="summary_tab2"  href="feed?section=groups" onclick="if (!checkEvent(event)) {feed.switchSection('groups'); return false;}">
+    <div class="summary_tab3">
+      <nobr>Сообщества</nobr>
+    </div>
+  </a>
+</div><div class="fl_l feed_tab_articles  summary_tab">
+  <a class="summary_tab2"  href="feed?section=articles" onclick="if (!checkEvent(event)) {feed.switchSection('articles'); return false;}">
+    <div class="summary_tab3">
+      <nobr>Статьи</nobr>
+    </div>
+  </a>
+</div><div class="fl_l feed_tab_likes feed_tab_hidden summary_tab">
+  <a class="summary_tab2"  href="feed?section=likes" onclick="if (!checkEvent(event)) {feed.switchSection('likes'); return false;}">
+    <div class="summary_tab3">
+      <nobr>Понравилось</nobr>
+    </div>
+  </a>
+</div>
+  </div>
+  <div id="feed_comments_bar" class="clear_fix" style=""><div class="fl_l feed_tab_comments summary_tab_sel">
+  <a class="summary_tab2"  href="feed?section=comments" onclick="if (!checkEvent(event)) {feed.switchSection('comments'); return false;}">
+    <div class="summary_tab3">
+      <nobr>Комментарии</nobr>
+    </div>
+  </a>
+</div><div class="fl_l feed_tab_updates summary_tab">
+  <a class="summary_tab2"  href="feed?section=updates" onclick="if (!checkEvent(event)) {feed.switchSection('updates'); return false;}">
+    <div class="summary_tab3">
+      <nobr>Обновления</nobr>
+    </div>
+  </a>
+</div></div>
+  <div id="feed_search_bar" class="top_search_wrap clear_fix" style="display: none;" onclick="event.cancelBubble = true;">
+    <div id="feed_isearch" class="fl_l">
+      <input placeholder="Поиск по новостям" id="feed_search" type="text" autocomplete="off" class="text top_search_inp" value="" />
+    </div>
+    <div id="feed_query_reset" onclick="Feed.searchReset(true);"></div>
+    <div class="feed_search_extform_wrap">
+      <div id="feed_search_extform"></div>
+    </div>
+  </div>
+</div>
+<div id="feed_recommends" style="display: none"></div>
+  <div class="summary_wrap clear_fix" id="feed_summary_wrap">
+    <div class="fl_r" id="feed_menu_toggle" style=""><a href="#" onclick="feed.toggleMenu(); return false;" id="feed_menu_toggler" onmousedown="event.cancelBubble = true;">Фильтр</a></div>
+    <div class="fl_r" id="feed_edit_hidden" style="display: none;"><a href="#" onclick="feed.editHidden(); return false;">Список источников</a></div>
+    <div class="fl_r" id="feed_search_sort" style=""><a id="feed_search_sort_dd" class="dd_link">По дате добавления</a></div>
+    <div class="fl_r progress" id="feed_progress"></div>
+    <div class="summary" id="feed_summary">Последние комментарии</div>
+  </div>
+  <div class="fl_r" id="feed_rate_tt_place"></div>
+<div id="feed_rate_slider_wrap" class="fl_r noselect" style="display: none;" onmousedown="return false" onselectstart="return false" ondragstart="return false">
+  <div id="feed_rate_full">
+    <div class="feed_rate_label"><span id="feed_rate_slider_label"></span><span class="feed_rate_load_label">загрузка</span></div>
+      <div id="feed_rate_slider_scale" onmousedown="feed.sliderScaleClick(event);">
+        <div id="feed_rate_slider_line"><!-- --></div>
+        <div id="feed_rate_slider" onmousedown="feed.sliderClick(event);" style="margin-left: 44.5px;"><!-- --></div>
+    </div>
+  </div>
+  <div id="feed_rate_mobile" style="display: none;">
+    <select id="feed_period_select" onchange="feed.sliderSelectChanged(event);"><option value="0" >за час</option><option value="10" >за 2 часа</option><option value="20" >за 4 часа</option><option value="30" >за 8 часов</option><option value="50" selected="selected">за сутки</option><option value="60" >за 3 дня</option><option value="70" >за неделю</option><option value="80" >за месяц</option><option value="90" >за 3 месяца</option><option value="100" >все статьи</option></select>
+  </div>
+</div>
+  <div id="feed_menu_wrap">
+    <div id="feed_menu" onmousedown="event.cancelBubble = true;">
+      <div id="feed_filters_block" class="clear_fix"><div id="comments_filters" class="feed_s_filter noselect" style="display: block;" onselectstart="return false;">
+    <div class="feed_filter_row clear_fix  checked" id="filter_c_ps" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ps', 'c_ps');" ondblclick="feed.setFilter('ps', 'c_ps', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ps"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Записи</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_c_ph" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ph', 'c_ph');" ondblclick="feed.setFilter('ph', 'c_ph', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ph"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Фотографии</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_c_vd" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('vd', 'c_vd');" ondblclick="feed.setFilter('vd', 'c_vd', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_vd"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;"> Видеозаписи</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_c_tp" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('tp', 'c_tp');" ondblclick="feed.setFilter('tp', 'c_tp', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_tp"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Темы</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix " id="filter_c_nt" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('nt', 'c_nt');" ondblclick="feed.setFilter('nt', 'c_nt', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_nt"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Заметки</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>
+</div><div id="updates_filters" class="feed_s_filter noselect" style="" onselectstart="return false;">
+    <div class="feed_filter_row clear_fix  checked" id="filter_u_ph" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ph', 'u_ph');" ondblclick="feed.setFilter('ph', 'u_ph', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ph"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Фотографии</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_u_vd" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('vd', 'u_vd');" ondblclick="feed.setFilter('vd', 'u_vd', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_vd"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;"> Видеозаписи</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_u_nt" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('nt', 'u_nt');" ondblclick="feed.setFilter('nt', 'u_nt', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_nt"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Заметки</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_u_tp" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('tp', 'u_tp');" ondblclick="feed.setFilter('tp', 'u_tp', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_tp"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Темы</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_u_fr" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('fr', 'u_fr');" ondblclick="feed.setFilter('fr', 'u_fr', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_fr"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Новые друзья</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_u_gr" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('gr', 'u_gr');" ondblclick="feed.setFilter('gr', 'u_gr', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_gr"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Группы</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_u_ev" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ev', 'u_ev');" ondblclick="feed.setFilter('ev', 'u_ev', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ev"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">События</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_u_pr" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('pr', 'u_pr');" ondblclick="feed.setFilter('pr', 'u_pr', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_pr"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Личные данные</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>
+</div><div id="person_filters" class="feed_s_filter noselect" style="" onselectstart="return false;">
+    <div class="feed_filter_row clear_fix  checked" id="filter_op_ps" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ps', 'op_ps');" ondblclick="feed.setFilter('ps', 'op_ps', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ps"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Записи</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_op_ph" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ph', 'op_ph');" ondblclick="feed.setFilter('ph', 'op_ph', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ph"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Фотографии</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_op_vd" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('vd', 'op_vd');" ondblclick="feed.setFilter('vd', 'op_vd', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_vd"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;"> Видеозаписи</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_op_tp" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('tp', 'op_tp');" ondblclick="feed.setFilter('tp', 'op_tp', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_tp"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Темы</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_op_fr" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('fr', 'op_fr');" ondblclick="feed.setFilter('fr', 'op_fr', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_fr"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Новые друзья</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_op_gr" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('gr', 'op_gr');" ondblclick="feed.setFilter('gr', 'op_gr', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_gr"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Группы</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_op_ev" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ev', 'op_ev');" ondblclick="feed.setFilter('ev', 'op_ev', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ev"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">События</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_op_pr" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('pr', 'op_pr');" ondblclick="feed.setFilter('pr', 'op_pr', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_pr"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Личные данные</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_op_gf" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('gf', 'op_gf');" ondblclick="feed.setFilter('gf', 'op_gf', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_gf"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Подарки</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>
+</div><div id="group_filters" class="feed_s_filter noselect" style="" onselectstart="return false;">
+    <div class="feed_filter_row clear_fix  checked" id="filter_og_ps" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ps', 'og_ps');" ondblclick="feed.setFilter('ps', 'og_ps', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ps"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Записи</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_og_ph" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ph', 'og_ph');" ondblclick="feed.setFilter('ph', 'og_ph', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ph"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Фотографии</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_og_vd" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('vd', 'og_vd');" ondblclick="feed.setFilter('vd', 'og_vd', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_vd"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;"> Видеозаписи</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_og_tp" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('tp', 'og_tp');" ondblclick="feed.setFilter('tp', 'og_tp', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_tp"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Темы</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>
+</div><div id="notifications_filters" class="feed_s_filter noselect" style="" onselectstart="return false;">
+    <div class="feed_filter_row clear_fix  checked" id="filter_n_ps" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ps', 'n_ps');" ondblclick="feed.setFilter('ps', 'n_ps', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ps"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Стена</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_n_mt" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('mt', 'n_mt');" ondblclick="feed.setFilter('mt', 'n_mt', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_mt"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Упоминания</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_n_tp" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('tp', 'n_tp');" ondblclick="feed.setFilter('tp', 'n_tp', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_tp"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Комментарии</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_n_lk" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('lk', 'n_lk');" ondblclick="feed.setFilter('lk', 'n_lk', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_lk"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">«Мне нравится»</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_n_rp" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('rp', 'n_rp');" ondblclick="feed.setFilter('rp', 'n_rp', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_rp"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Копии</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_n_gr" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('gr', 'n_gr');" ondblclick="feed.setFilter('gr', 'n_gr', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_gr"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Подписчики</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>
+</div><div id="likes_filters" class="feed_s_filter noselect" style="" onselectstart="return false;">
+    <div class="feed_filter_row clear_fix  checked" id="filter_l_ps" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ps', 'l_ps');" ondblclick="feed.setFilter('ps', 'l_ps', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ps"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Записи</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_l_tp" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('tp', 'l_tp');" ondblclick="feed.setFilter('tp', 'l_tp', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_tp"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Комментарии</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_l_ph" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('ph', 'l_ph');" ondblclick="feed.setFilter('ph', 'l_ph', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_ph"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;">Фотографии</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>  <div class="feed_filter_row clear_fix  checked" id="filter_l_vd" onmouseover="addClass(this, 'feed_filter_row_over');" onmouseout="removeClass(this, 'feed_filter_row_over');" onclick="feed.checkFilter('vd', 'l_vd');" ondblclick="feed.setFilter('vd', 'l_vd', true); return cancelEvent(event);">
+    <div class="feed_filter_icon fl_l feed_icon_vd"></div>
+    <div class="feed_filter_title fl_l noselect" onselectstart="return false;"> Видеозаписи</div>
+    <div class="feed_filter_check fl_l"></div>
+  </div>
+</div></div>
+    </div>
+  </div>
+  <div id="feed_empty" style="">Здесь будут показаны все новые комментарии к интересующим Вас объектам.</div>
+  <div class="wall_wrap clear_fix">
+    <div id="feed_wall" class="clear_fix">
+      <div class="wall_module wide_wall_module">
+        <div id="feed_rows"><?=tpx('feed_rows')?><div id="feed_rows_next"></div>
+        </div>
+        <a id="show_more_link" onclick="return feed.showMore();" class="clear more_link" style="height: 13px; ">
+          <div id="show_more_progress" class="progress"></div>
+          <div id="show_more">Показать предыдущие новости &#8595;</div>
+        </a>
+        <div id="all_shown" style="">Показаны последние новости</div>
+      </div>
+    </div>
+  </div>
+</div>
+	</div></div></div>

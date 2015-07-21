@@ -1,0 +1,11 @@
+<div id="owner_photo_crop" style="display: none">
+  <a onclick="curBox().hide()" class="fl_r owner_photo_close">Закрыть</a>
+  <div class="owner_photo_title">Выбор миниатюры</div>
+  <div class="owner_photo_desc">Осталось выбрать квадратную область для маленьких фотографий.<br>Выбранная миниатюра будет использоваться в новостях, списках сообществ и комментариях.</div>
+  <div id="owner_photo_crop_thumb"></div>
+  <div class="owner_photo_controls">
+    <div class="button_green button_big">
+      <button id="owner_photo_done" onclick="OwnerPhoto.cropDone()">Сохранить изменения</button>
+    </div><div class="button_cancel unshown" id="owner_photo_edit_return"><div class="button" onclick="OwnerPhoto.editReturn()">Вернуться назад</div></div>
+  </div>
+</div>

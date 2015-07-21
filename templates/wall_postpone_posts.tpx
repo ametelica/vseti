@@ -1,0 +1,31 @@
+<?php
+	global $wall, $langpack;
+if($wall->postpone_cnt > 0 && $wall->can_edit) {
+?><a class="clear wr_header" id="wall_postponed_link" onclick="wall.hidePostponed();">
+<div class="progress" id="wall_postponed_progress"></div>
+<div id="wall_postponed_msg_show" class="wrh_text" style="display: none;">Показать
+<span id="wall_postponed_cnt"><?=$wall->postpone_cnt?></span>
+отложенн<?=$langpack->dln($wall->postpone_cnt, array('ую', 'ыx', 'ых'))?> запис<?=$langpack->dln($wall->postpone_cnt, array('ь', 'и', 'ей'))?><span class="wall_postponed_link_arrow"></span></div>
+<div id="wall_postponed_msg_hide" class="wrh_text">Скрыть отложенные записи<span class="wall_postponed_link_arrow"></span></div></a>
+<div id="wall_postponed_posts"><?
+
+	echo tpx('wall_postpone_rows', $var);
+	
+	?><!--<div id="post-10134912_339" class="post postponed" onmouseover="wall.postOver('-10134912_339')" onmouseout="wall.postOut('-10134912_339')" onclick="wall.postClick('-10134912_339', event)">
+  <div class="post_table">
+    <div class="post_image">
+      <a class="post_image" href="/vsetiby_official"><img src="https://pp.vk.me/c409728/v409728497/537c/uo_EdYoXaDo.jpg" width="50" height="50"/></a>
+      
+    </div>
+    <div class="post_info">
+      <div class="fl_r post_actions_wrap"><div class="post_actions"><div id="post_delete-10134912_339" class="post_delete_button fl_r" onclick="wall.deletePost('-10134912_339', '19a0ca647bd6be6756');" onmouseover="wall.activeDeletePost('-10134912_339', 'Удалить запись', 'post_delete')" onmouseout="wall.deactiveDeletePost('-10134912_339', 'post_delete')"></div><div id="post_edit-10134912_339" class="post_edit_button fl_r" onclick="wall.editPost('-10134912_339')" onmouseover="wall.activeDeletePost('-10134912_339', 'Редактировать', 'post_edit')" onmouseout="wall.deactiveDeletePost('-10134912_339', 'post_edit')"></div></div></div>
+      <div class="wall_text"><div class="wall_text_name"><a class="author" href="/vsetiby_official" data-from-id="-10134912">vSeti.by</a></div> <div id="wpt-10134912_339"><div class="wall_post_text">Test</div></div></div>
+      
+      <div class="replies"><div class="reply_link_wrap sm" id="wpe_bottom-10134912_339">
+  <small><a  href="/wall-10134912_339" onclick="return showWiki({w: 'wall-10134912_339'}, false, event);" ><span class="rel_date">завтра в 10:15</span></a></small><span class="divide">|</span><a onclick="wall.publishPostponedPost('-10134912_339', 'cabf7edcf254f4452b')">Опубликовать сейчас</a><span class="progress_inline wpe_prg" id="wpe_prg-10134912_339" style="display: none"></span>
+</div></div>
+    </div>
+  </div>-->
+  
+</div></div>
+<? } ?>

@@ -1,0 +1,52 @@
+<?php
+global $owner, $user, $datetime;
+$i = 0;
+if($var['comments']['total'] > 0) {
+foreach($var['comments']['data'] as $comment) {
+	$photo = pdata($comment->photo, 0, 'photo');
+	$author = pdata($comment->author_id);
+	//dmp($comment);
+	//dmp($photo);
+	
+	$comment_uid = $owner->oid . '_' . $comment->id;
+	
+// Коммент можно удалить, если
+// 1 я - владелец страницы, или автор группы
+// 2 я - автор коммента 
+// 3 я - автор фото
+	
+	$edit = ($comment->author_id == $user->id 
+			or $photo->author_id == $user_id 
+			or ($owner->oid > 0 and $user->is_me($owner))
+			or ($owner->oid < 0 and $owner->user_rank > 0)
+	) ? 1 : 0
+?><div class="clear_fix pv_comment <? if($i == 0) echo 'pv_first_comment' ?>" id="pv_comment<?=$comment_uid?>review" onmouseover="wall.replyOver('<?=$owner->oid?>photo_<?=$comment->id?>pvreview')" onmouseout="wall.replyOut('<?=$owner->oid?>photo_<?=$comment->id?>pvreview')"><div class="reply_table">
+  <div class="fl_l pv_thumb">
+    <a href="<?=$author->lnk?>" onclick="return nav.go(this, event)"><img src="<?=$author->photo()?>" /></a>
+  </div>
+  <div class="fl_l pv_comm">
+    <a href="<?=$author->lnk?>" onclick="return nav.go(this, event)" class="author"><?=$author->title?></a>
+    <div id="wpt<?=$owner->oid?>photo_<?=$comment->id?>pvreview"><div class="pv_commtext"><?=nl2br($comment->text)?></div></div>
+    
+    <div class="pv_commdata" id="wpe_bottom<?=$owner->oid?>photo_<?=$comment->id?>pvreview">
+      <span class="fl_l pv_commdate"><?=$datetime->sdate($comment->time)?>
+				<!-- <span class="sdivide">|</span><a onclick="Photoview.commAction('spam', '<?=$comment_uid?>', 'review', '4a31df0e2c94522db8')">Это спам</a> -->
+				<? if($edit) { ?>
+				<span class="sdivide">|</span><a onclick="Photoview.commAction('delete', '<?=$comment_uid?>', 'review', '<?=hash_get($comment_uid . $user->id, 10, 'phc')?>')">Удалить</a>
+				<? } ?>
+				 <!--<span class="sdivide">|</span> <div class="like_wrap inl_bl pv_review_like" onclick="wall.like('<?=$owner->oid?>photo_comment<?=$comment->id?>pvreview', '16087be20b8d869c3d'); event.cancelBubble = true;" onmouseover="wall.likeOver('<?=$owner->oid?>photo_comment<?=$comment->id?>pvreview')" onmouseout="wall.likeOut('<?=$owner->oid?>photo_comment<?=$comment->id?>pvreview')">
+ <span class="like_link fl_l" id="like_link<?=$owner->oid?>photo_comment<?=$comment->id?>pvreview">Мне нравится</span> 
+  <i class="no_likes no_like_hide fl_l" id="like_icon<?=$owner->oid?>photo_comment<?=$comment->id?>pvreview"></i>
+  <span class="like_count fl_l" id="like_count<?=$owner->oid?>photo_comment<?=$comment->id?>pvreview"></span>
+</div>--></span>
+      <div class="fl_r progress" id="pv_progress<?=$comment_uid?>review"></div>
+    </div>
+  </div>
+  <a class="pv_photo_thumb fl_r" href="/photo<?=$photo->uid?>" onclick="return showPhoto('<?=$photo->uid?>', 'album<?=$owner->oid?>_<?=$photo->album_id?>', {&quot;temp&quot;:{&quot;base&quot;:&quot;http://cs1.vseti.by/u<?=$owner->oid?>/&quot;,&quot;x_&quot;:[&quot;149672634/x_c55a455f&quot;],&quot;y_&quot;:[&quot;149672634/y_c165a7cf&quot;],&quot;z_&quot;:[&quot;149672634/z_a589f0a6&quot;]}}, event)">
+  <img src="<?=$photo->view('m')?>" />
+</a>
+</div></div><? $i++; }
+} else {
+	echo '<div class="photos_no_content"> Комментариев пока нет </div>';
+}
+ ?>

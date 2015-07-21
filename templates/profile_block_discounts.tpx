@@ -1,0 +1,46 @@
+<?php
+ global $bonus,$user;
+?>
+<div class="module clear notes_module" id="profile_discounts">
+ <a href="/settings.php?act=block" target="_blank" class="module_header">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/settings.php?act=block'"></span>
+   Халява
+  </div>
+  <div class="p_header_bottom">
+   <span class="fl_r">Настройка</span>
+   <? echo count($bonus) ?> бонусов
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+ <? if($user->usersetting_info['usersetting_bonus']==1) { ?>
+    <table id="photos" border=0>
+    <tbody>
+    <? foreach($bonus as $b) { ?>
+    <tr class="album" style="border-bottom: gray 1px solid; margin-bottom: 5px;">
+    <td style="width: 75px; margin-right:4px; overflow: hidden; float: left;">
+        <a href="<?=$b['caption']?>" target="_blank">
+      <img style="width: 75px;" src="<?=$b['pic']?>" class="image">
+     </a>
+    </td>
+    <td class="aTop">
+     <span class="date"><?=$b['text']?></span>
+    </td>
+   </tr>
+   <? } ?>
+  </tbody>
+</table>
+   <? } else { ?>
+   <? foreach($bonus as $b) { ?>
+        <div class="vRow">
+            <div><a href="<?=$b['caption']?>">
+                <div><img style="width: 180px;" src="<?=$b['pic']?>"></div></a>
+            </div>
+            <p>
+            <?=$b['text']?>
+            </p>
+        </div>
+   <? } 
+   } ?>
+ </div>
+</div>

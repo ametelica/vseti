@@ -1,0 +1,23 @@
+<?php
+global $langpack, $fave_users, $section;
+
+$fave_users_online = $fave_users;
+$fave_users_online['users'] = $fave_users['online'];
+unset($fave_users['online']);
+$fave_users_online['total'] = count($fave_users_online['users']);
+
+if($fave_users_online['total'] > 0) {
+?><div class="fave_module <? if($section != 'users'){ ?>unshown<? } ?>" id="users_online">
+  <div class="summary_wrap ">
+    <div class="summary">ВСети <?=$fave_users_online['total']?> <?=$langpack->humans($fave_users_online['total'])?></div>
+  </div>
+  <div class="fave_users_online_not_found unshown" id="not_found_users_online"></div>
+  <div id="users_content"><?=tpx('fave_user_rows', array('users' => $fave_users_online))?></div>
+  <a id="show_more_link_users_online" onclick="return Fave.showMore('users_online');" class="clear fave_more_link" style="">
+    <div id="show_more_progress_users_online" class="fave_show_more_progress progress"></div>
+    <div id="show_more_users_online">Показать еще</div>
+  </a>
+  <div id="fave_all_shown_users_online" class="fave_all_shown" style=""></div>
+  <div id="fave_list_empty_users_online" class="fave_list_empty" style=""></div>
+</div>
+<? } ?>

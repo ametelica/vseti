@@ -1,0 +1,95 @@
+<?php
+global $group, $is_group_private, $new_design;
+if ($new_design) {
+	?>
+	<div class="group_info">
+		<?
+		if (!empty($group->group_info['group_desc'])) {
+			?>    
+			<div class="clear_fix ">
+				<div class="label">Описание</div>
+				<div class="labeled">
+					<?
+					$desc_len = mb_strlen($group->group_info['group_desc'], 'UTF-8');
+					if ($desc_len < 400)
+						echo nl2br($group->group_info['group_desc']);
+					else {
+						echo '<span><div class="short_text" onclick="hide(this);show(this.nextSibling);">' . nl2br(strcut($group->group_info['group_desc'], 400)) . '<br/><a class="page_desc_full" onclick="hide(this.parentNode);show(this.parentNode.nextSibling);">Показать полностью..</a></div><div class="full_text unshown">' . nl2br($group->group_info['group_desc']) . '</div></span>';
+					}
+					?>
+				</div>
+			</div>
+		
+		<? } if (!empty($group->group_info['group_address'])) { ?>
+			<div class="fl_l">
+				<div class="label">Город</div>
+				<div class="labeled"><?= $group->group_info['group_address'] ?></div>
+			</div>
+		<? } if (!empty($group->group_info['group_website'])) { ?>
+			<div class="fl_l" style="margin-left: 20px;">
+				<div class="label">Веб-сайт</div>
+				<div class="labeled"><a href="/away.php?to=<?= urlencode($group->group_info['group_website']) ?>" target="_blank" target="_blank"><?= $group->group_info['group_website'] ?></a></div>
+			</div>
+		<? } ?>
+		<br class="clear" />
+	</div>
+
+<? } else { ?>
+	<div class="group_info">
+		<?
+		if (!empty($group->group_info['group_desc'])) {
+			?>    
+			<div class="clear_fix ">
+				<div class="label fl_l">Описание:</div>
+				<div class="labeled fl_l">
+					<?
+					$desc_len = mb_strlen($group->group_info['group_desc'], 'UTF-8');
+					if ($desc_len < 400)
+						echo nl2br($group->group_info['group_desc']);
+					else {
+						echo '<span><div class="short_text" onclick="hide(this);show(this.nextSibling);">' . nl2br(strcut($group->group_info['group_desc'], 400)) . '<br/><a class="page_desc_full" onclick="hide(this.parentNode);show(this.parentNode.nextSibling);">Показать полностью..</a></div><div class="full_text unshown">' . nl2br($group->group_info['group_desc']) . '</div></span>';
+					}
+					?>
+				</div>
+			</div>
+		<? } if (!empty($group->group_info['group_website'])) { ?>
+			<div class="clear_fix ">
+				<div class="label fl_l">Веб-сайт:</div>
+				<div class="labeled fl_l"><a href="/away.php?to=<?= urlencode($group->group_info['group_website']) ?>" target="_blank" target="_blank"><?= $group->group_info['group_website'] ?></a></div>
+			</div>
+		<? } if (!empty($group->group_info['group_address'])) { ?>
+			<div class="clear_fix ">
+				<div class="label fl_l">Город:</div>
+				<div class="labeled fl_l"><?= $group->group_info['group_address'] ?></div>
+			</div>
+		<? } ?>		
+	</div>
+
+
+	<?
+}
+if ($group->group_info['show_news'] == 1 and (!empty($group->group_info['group_news']) or $group->user_rank > 0)) {
+	?>
+	<div class="group_wiki_wrap">
+		<a class="group_wiki_hider" href="/page?oid=-<?= $group->id ?>" onclick="if (checkEvent(event)) return; if(isVisible(this.nextSibling)) {setCookie('vs_info_hide','1',365)} else {setCookie('vs_info_hide','0',365)} toggle(this.nextSibling); return false;">
+			<?
+			if ($group->user_rank > 0) {
+
+				if (!empty($group->group_info['group_page_id'])) {
+					$edit_lnk = '/page-' . $group->id . '_' . $group->group_info['group_page_id'] . '?act=edit';
+				} else {
+					$edit_lnk = 'page?oid=-' . $group->id;
+				}
+
+				echo '<span class="fl_r" onmouseout="this.parentNode.href=\'' . $edit_lnk . '\'; this.parentNode.onclick = function(event) {if (checkEvent(event)) return;  toggle(this.nextSibling); return false;}" onclick="if (checkEvent(event)) return; this.parentNode.onclick = \'\'" onmouseover="this.parentNode.href=\'' . $edit_lnk . '\'">ред.</span>';
+			}
+
+			if (trim($group->group_info['group_news_title']) == '') {
+				echo 'Свежие новости';
+			} else {
+				echo '' . $group->group_info['group_news_title'] . '';
+			}
+			?>
+		</a><div class="wk_text" <?= ($group->group_info['fixed_post'] && !$is_group_private ? 'style="display:none;"' : '') ?> <?= empty($_COOKIE['vs_info_hide']) ? 'style="display: block;"' : '' ?>><!--5--><?= $group->group_info['group_news'] ?></div>
+	</div>
+<? } ?>

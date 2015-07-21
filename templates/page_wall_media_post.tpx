@@ -1,0 +1,38 @@
+<?php
+global $spage, $datetime;
+
+	//dmp($var['comment']);
+	//echo '1111';
+	$comment = $var['comment'];
+
+	$spage->add_authors(array($comment['oid'], $comment['aid']));
+	if(!empty($comment['opt']['s'])) {
+		$spage->add_authors($comment['opt']['o']);
+	}
+	
+	$src_author = pdata($comment['aid']);
+	$src_link = '/wall' . $comment['oid'] . '_' . $comment['id'];
+
+
+	
+	?>
+	<table class="published_by_wrap" cellspacing="0" cellpadding="0">
+		<tbody>
+			<tr>
+				<td>
+					<a class="published_by_photo" onclick="return nav.go(this, event)" href="<?= $src_author->lnk ?>"><img width="30" height="30" src="<?= $src_author->photo($new_design ? 'b' : 'c') ?>"></a>
+				</td>
+				<td>
+					<a class="published_by" onclick="return nav.go(this, event)" href="<?= $src_author->lnk ?>"><?= $src_author->title ?></a>
+					<div class="published_by_date">
+						<a class="published_by_date" onclick="return nav.go(this, event);" href="<?= $src_link ?>"><?= $datetime->sdate($comment['date']) ?></a>
+					<? if($r['type']=='wall_reply') echo 'к <a href="/wall' . $r['oid'] . '_' . $r['id'] .'"  onmouseover="wall.postTooltip(this, \'' . $r['oid'] . '_' . $r['pid'] .'\', {self: 1});" >записи</a>'; ?>	
+						
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+<? 
+	echo tpx('wall_post_body', $var);
+?>

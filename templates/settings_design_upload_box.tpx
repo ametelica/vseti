@@ -1,0 +1,11 @@
+<div id="profile_new_photo" class="profile_box">
+  <div class="error" id="profile_new_photo_error"></div>
+  <div class="info_msg">Фоновое изображение не должно содержать элементов, противоречащих <a href="/help.php?page=terms">Пользовательскому соглашению</a>. Поддерживается формат JPG.</div>
+  <div id="settings_bg_upload"></div>
+  <div class="additional">Файл не должен превышать 4 Mб. Если у Вас возникают проблемы с загрузкой, попробуйте использовать картинку меньшего размера.</div>
+</div>
+<div id="profile_dropbox" class="dropbox">
+  <div class="dropbox_wrap">
+    <div class="dropbox_area">Перетащите файлы сюда</div>
+  </div>
+</div>

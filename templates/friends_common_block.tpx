@@ -1,0 +1,12 @@
+<?php
+global $langpack, $user;
+$friend = $var['friend'];
+$common = $var['common'];
+$total_common = count($common);
+
+if($total_common > 0) {
+?><div class="common_friends_label">У Вас <a onclick="return Friends.showCommonBox(event, <?=$friend->id?>, '<?=hash_get($user->id . $friend->id, 16, 'comm')?>');" href="/friends?filter=common&id=<?=$friend->id?>"><?=$total_common?> <?=$langpack->dln($total_common, array('общий друг', 'общих друга', 'общих друзей'))?></a></div><div class="common_friends"><?
+$i = 0;
+foreach($common as $f) {
+	$fr = pdata($f);
+?><a href="<?=$fr->lnk?>" title="<?=$fr->title?>"><img width="32" src="<?=$fr->photo()?>"/></a><? $i++; if($i >= 5) break;} ?><br class="clear" /></div><? } ?>

@@ -1,0 +1,5 @@
+<div class="bazar_create_box">
+  <input type="hidden" class="text" id="item_cat" /><br />
+  <input type="hidden" class="text" id="item_subcat" /><br />
+  Выберите <b>подходящую категорию</b>, чтобы Ваше объявление было легко найти.<br /><br /> Если затрудняетесь с выбором - напишите в группу <a href="/support" onclick="return nav.go(this, event)">Техподдержка</a>, мы поможем Вам с выбором или подумаем над созданием новых категорий.
+</div></div>

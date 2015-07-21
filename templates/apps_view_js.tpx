@@ -1,0 +1,175 @@
+<?php
+global $app, $setting, $user, $oid, $ref;
+$page_js = 'cur.aid = '.intval($app->app_id).';';
+
+// Приложение надо показать, оно не сайт и активировано
+  
+if($app->app_info['app_active']==1 and $app->app_info['app_type']>=0 and !$app->need_install){
+
+	list($sid,$secret) = $app->app_start();
+	
+	$app->app_stat($user);
+	
+	$params = array(
+		'api_url' => 'http://api.'.$setting['host'].'/api.php',
+		'api_id' => $app->app_id,
+		'api_settings' => $app->app_info['app_user_settings'],
+		'viewer_id' => $app->user_id,
+		'viewer_type' => 0,
+		'sid' => $sid,
+		'secret' => $secret,
+		'access_token' => 0,
+		'user_id' => ($app->user_id == $oid || empty($oid)) ? $user->id : $oid,
+		'group_id' => 0,
+		'is_app_user' => $app->installed,
+		'auth_key' => $app->app_info['auth_key'],
+		'language' => $user->user_info['user_lang'],
+		'by' => $user->byfly,
+	);
+	
+	$request_id = rq('request_id','r',1); 
+	if(!empty($request_id)){
+		$params['request_id'] = $request_id;
+		$app->request_delete_app();
+	}
+	
+	$request_key = substr(preg_replace('/[^a-z0-9]/','',rq('request_key')),0,32);	
+	if(!empty($request_key))
+		$params['request_key'] = $request_key;
+	
+	$params2 = $params;
+	$params2['api_result'] = '';
+	$params2['referrer'] = 'unknown';
+	$params2['lc_name'] = randomcode();
+	$wmodes = array(
+		0 => 'opaque',
+		1 => 'window',
+		2 => 'direct',
+	);
+	
+	$options = array(
+		'aid' => $app->app_id,
+		'type' => intval($app->app_info['app_engine']),
+		'heightSync' => 0,
+		'domain' => 'app'.$app->app_id,
+		'width' => $app->app_info['app_width'],
+		'height' => $app->app_info['app_height'],
+		'hash' => hash_get($app->app_id . $user->id, 16, 'ap'),
+		'icon' => '',
+		'wmode' => $wmodes[$app->app_info['app_wmode']],
+	);
+	
+	if($app->app_info['app_engine']>1){
+		$app->app_info['app_addr'] = 'http://cs1.'.$setting['host'].'/swf/'.$app->app_info['app_swf'].'.zip';
+	}
+	
+	if($user->byfly==0 and $app->app_id != 58){
+		$app->app_info['app_addr'] = str_replace('/cs', '/vcs', $app->app_info['app_addr']);
+	}
+	
+	if($app->app_info['app_engine']==2){
+		$params2['domain'] = 'vseti.by';
+		$params2['scale'] = '1';
+		$params2['width'] = $app->app_info['app_width'];
+		$params2['height'] = $app->app_info['app_height'];
+		$params2['swf_url'] = $app->app_info['app_addr'];
+		$params2['debug'] = 1;
+		
+		$options['src'] = '/swf/api_wrapper2_0.swf';
+	} else {
+		$options['src'] = $app->app_info['app_addr'];
+	}
+	
+	$page_js .= 'var rnd = cur.appRnd = Math.random();
+	window._appAuthDone = function() {
+	
+  setTimeout(function() {
+    re(_appAuthFrame);
+    window._appAuthFrame = false;
+    window._appAuthDone = false;
+    if (rnd != cur.appRnd) return;
+    var params = '.custom_json::encode($params2).';
+    var options = '.custom_json::encode($options).';
+		if (!vs.loaded) {
+		  params.hash = \'\' || (location.hash || \'\').substr(1);
+		} else {
+		  params.hash = \'\';
+		}
+		
+		cur.app = new vsApp(\'app_' . $app->app_id . '_container\', options, params, function() {
+		  addClass(ge(\'app_' . $app->app_id . '_container\'), \'loaded\');
+		});
+		
+		Apps.initAppView(params, options);
+		  }, 0);
+		}
+
+		//console.log(cur.app);
+
+		if (window._appAuthFrame) re(_appAuthFrame);
+		window._appAuthFrame = utilsNode.appendChild(ce(\'div\', {innerHTML: \'<iframe src="http://'.$setting['host'].'/apps_auth.php?act=try&hash=c43dfbc5dd4262e23196d65053255788&from_host=vs.com"></iframe>\'})).firstChild; 
+';
+	}
+
+//:: Позаботимся о footer
+	
+if(empty($app->app_info['app_group_id'])){
+	$author = new se_user($app->app_info['app_user_id']);
+	$footer_author = 'Автор: <a href="'.$author->lnk.'" onclick="return nav.go(this, event)">'.$author->user_info['fio'].'</a>';	
+} else {
+	$sgroup = new se_group($user->user_info['user_id'],$app->app_info['app_group_id']);
+	$footer_author = 'Группа: <a href="'.$sgroup->lnk.'">'.$sgroup->group_info['group_title'].'</a>';
+}	
+
+if($user->id > 0) {
+	if($user->verified or $app->app_info['app_can_pay']==0 or $app->app_id == 30) {
+		$ext1 = array(
+			'appUser' => $user->user_info['user_id']==$app->app_info['app_user_id']?1:0,
+			'footer' => '<div id="footer" class="clear apps_footer"><div class="copy_lang"><a onclick="Apps.showInviteBox();">Пригласить друзей</a></div><div class="apps_footer_author">'.$footer_author.'</div></div>',
+			'backLang' => $app->app_info['app_title']
+		);
+	} else {
+		$ext1 = array(
+		'appUser' => false,
+		'backLang' => $app->app_info['app_title'],
+		'pleaseSignInLang' => "Использовать это приложение могут только <b>подтверждённые пользователи</b>!<br />Подтвердите свою анкету через <a href=\"/settings.php\">e-mail</a> или <a href=\"/settings.php?act=mobile\">телефон</a>."
+	);	
+	}
+	
+} else {
+	$ext1 = array(
+		'appUser' => false,
+		'backLang' => $app->app_info['app_title'],
+		'pleaseSignInLang' => "Пожалуйста войдите или <a href=\"/signup.php?r=app".$app->app_id."\" >зарегистрируйтесь</a>, чтобы иметь возможность использовать приложения."
+	);	
+}
+
+$page_js .= 'extend(cur, '.jenc($ext1).');';	
+$page_js .= 'Apps.setFooter();';	
+$page_js .= 'cur.lang = extend(cur.lang || {}, {
+  global_n_votes: ["","%s зайчик","%s зайчика","%s зайчиков"]
+});
+cur.handleMoneyChange = function() {
+  var el = ge(\'balance_str\');
+  if (!el) return;
+  el.innerHTML = \'У Вас {votes}\'.replace(\'{votes}\', \'<b>\' + getLang(\'global_n_votes\', vs.balance) + \'</b>\');
+};';	
+
+
+if($user->id == 0 or $app->need_install) {
+	$app->app_info['app_width'] = 633;
+} else {
+	$app->app_info['app_width'] += 6;
+		
+		
+		
+}
+
+if(!empty($app->app_info['app_width']) and $app->app_info['app_width'] > 700)
+	$page_js .= 'wresize('.($app->app_info['app_width']).');';
+
+//$html = tpx('apps_view_body');
+
+
+echo $page_js; 
+?>

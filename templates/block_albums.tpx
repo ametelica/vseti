@@ -1,0 +1,47 @@
+<?php
+$vars = array(
+		'max' => 'Максимальное количество альбомов на странице', 
+		'show_more' => 'Показывать ли кнопку "Все альбомы"', 
+		'total' => 'Всего альбомов', 
+		'albums' => 'Массив с альбомами'
+);
+$more = '';
+
+if ($var['total'] > 0) {
+	$i = 0;
+	foreach ($var['albums'] as $a) {
+
+		$uaid = $a['uid'];
+		$src = $a['cover'];
+
+		$a = '<div class="fl_l clear_fix clear page_album_row" onmouseout="Page.albumOut(this, \'' . $uaid . '\', true);" onmouseover="Page.albumOver(this, \'' . $uaid . '\');">
+<a class="img_link" onclick="return nav.change({z: \'album'.$uaid.'\'}, event)"  href="/album' . $uaid . '">
+<img class="page_photo_thumb_big" src="' . $src . '">
+<div class="page_album_title_wrap" style="margin-top: 98px;">
+<div class="clear_fix" style="margin: 0px">
+<div class="page_album_title fl_l" title="' . $a['title'] . '">' . $a['title'] . '</div>
+<div class="page_album_camera fl_r">' . $a['files'] . '</div>
+</div>
+<div class="page_album_description">' . $a['desc'] . '</div>
+</div>
+</a>
+<a class="bg"></a>
+</div>';
+		
+		if ($i < $var['max']) {
+			echo $a;
+		} else {
+			if ($var['show_more']) {
+				$more .= $a;
+			} else {
+				break;
+			}
+		}
+		$i++;
+	}
+
+	if ($more != '') {
+		echo '<a class="group_wiki_hider clear clear_fix" onclick="if (checkEvent(event)) return; toggle(this.nextSibling); hide(this); return false;" href="#" style="padding-left: 40px; position: relative; top: 10px;">Показать все альбомы</a><div class="unshown">' . $more . '</div>';
+	}
+}
+?>

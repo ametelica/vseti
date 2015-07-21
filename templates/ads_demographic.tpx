@@ -1,0 +1,83 @@
+<?php
+	global $demo_stat;
+?>
+<div id="ads_demography_wrap" style="padding-bottom: 10px;"><h2 style="margin-bottom: 0; padding-bottom: 8px; border-color: #DAE1E8;">Демография</h2>
+	<? if(empty($demo_stat)) {
+		echo '<div style="padding-top: 10px;"><div style="padding: 30px; font-size: 12px; color: #777777; text-align: center; line-height: 200%;">Здесь будет отображаться демографическая статистика по переходам и показам,<br>когда система соберёт необходимое количество данных.</div></div>';
+	} else {
+?><div style="padding-bottom: 20px;"><!--<div class="summary_tabs clear_fix"><div class="fl_l summary_tab_sel">
+				<a class="summary_tab2" href="#" id="ads_demography_navigation_tab_bars_all" onclick="Ads.changeDemographyView('bars_all', '2848157');
+						return false;">
+					<div class="summary_tab3">
+						<nobr>View as diagram</nobr>
+					</div>
+				</a>
+			</div><div class="fl_l summary_tab">
+				<a class="summary_tab2" href="#" id="ads_demography_navigation_tab_graphs" onclick="Ads.changeDemographyView('graphs', '2848157');
+						return false;">
+					<div class="summary_tab3">
+						<nobr>View as graph</nobr>
+					</div>
+				</a>
+			</div>--><div class="fl_r summary_tab">
+				<a class="summary_tab2" href="#" id="ads_demography_navigation_tab_views" onclick="Ads.changeDemographySource('views');
+						return false;">
+					<div class="summary_tab3">
+						<nobr>Просмотры</nobr>
+					</div>
+				</a>
+			</div><div class="fl_r summary_tab_sel">
+				<a class="summary_tab2" href="#" id="ads_demography_navigation_tab_clicks" onclick="Ads.changeDemographySource('clicks');
+						return false;">
+					<div class="summary_tab3">
+						<nobr>Переходы</nobr>
+					</div>
+				</a>
+			</div><div id="ads_demography_navigation_tab_progress" class="fl_l summary_right" style="visibility: hidden;"><span class="summary_tab2"><img src="/images/upload.gif"></span></div></div></div><div style="position: relative;"><div id="ads_demography_bars_all_wrap1" style="visibility: visible; height: auto;"><div id="ads_demography_bars_all_wrap2" class="clear_fix"><div class="fl_l" style="position: relative;"><div class="fl_l" style="position: relative;"><div class="ads_demography_bars_clicks" style="position: relative; top: 0;"><div style="padding: 32px 0px 16px 50px; width: 300px; color: #3E6D16; font-size: 13px; font-weight: bold;">По полу</div><div id="wrapper_clicks_sex" class="clear_fix" style="width:350px;">
+								<div id="rows_clicks_sex" class="piechart_rows_root fl_l">
+									<?=$demo_stat['clicks_sex']['legend'][0]?>
+								</div>
+								<?=$demo_stat['clicks_sex']['chart']?>
+							</div></div><div class="ads_demography_bars_views" style="position: absolute; top: 0;visibility: hidden;"><div style="padding: 32px 0px 16px 50px; width: 300px; color: #3E6D16; font-size: 13px; font-weight: bold;">По полу</div><div id="wrapper_views_sex" class="clear_fix" style="width:350px;">
+								<div id="rows_views_sex" class="piechart_rows_root fl_l">
+									<?=$demo_stat['views_sex']['legend'][0]?>
+								</div>
+								<?=$demo_stat['views_sex']['chart']?>
+							</div></div></div><div class="fl_l" style="position: relative;"><div class="ads_demography_bars_clicks" style="position: relative; top: 0;"><div style="padding: 32px 0px 16px 50px; width: 300px; color: #3E6D16; font-size: 13px; font-weight: bold;">По возрасту</div><div id="wrapper_clicks_age" class="clear_fix" style="width:440px;">
+								<div id="rows_clicks_age" class="piechart_rows_root fl_l">
+									<?=$demo_stat['clicks_age']['legend'][0]?>
+								</div>
+								<?=$demo_stat['clicks_age']['chart']?>
+							</div></div><div class="ads_demography_bars_views" style="position: absolute; top: 0;visibility: hidden;"><div style="padding: 32px 0px 16px 50px; width: 300px; color: #3E6D16; font-size: 13px; font-weight: bold;">По возрасту</div><div id="wrapper_views_age" class="clear_fix" style="width:440px;">
+								<div id="rows_views_age" class="piechart_rows_root fl_l">
+									<?=$demo_stat['views_age']['legend'][0]?>
+								</div>
+								<?=$demo_stat['views_age']['chart']?>
+							</div></div></div></div><div class="fl_l" style="position: relative;"><div class="ads_demography_bars_clicks clear_fix" style="position: relative; top: 0;"><div style="padding: 32px 0px 16px 50px; width: 300px; color: #3E6D16; font-size: 13px; font-weight: bold;">По полу и возрасту</div>
+									<div id="wrapper_clicks_sexage" class="clear_fix" style="width:835px;">
+							<div id="rows_clicks_sexage" class="piechart_rows_root fl_l">
+								<?=$demo_stat['clicks_sexage']['legend'][0]?>
+								<?=str_replace('style="', 'style="margin-right: 40px;',$demo_stat['clicks_sexage']['chart'])?>
+								<?=$demo_stat['clicks_sexage']['legend'][1]?>
+							</div>
+						</div></div><div class="ads_demography_bars_views clear_fix" style="position: absolute; top: 0;visibility: hidden;"><div style="padding: 32px 0px 16px 50px; width: 300px; color: #3E6D16; font-size: 13px; font-weight: bold;">По полу и возрасту</div><div id="wrapper_views_sexage" class="clear_fix" style="width:835px;">
+							<div id="rows_views_sexage" class="piechart_rows_root fl_l">
+								
+								<?=$demo_stat['views_sexage']['legend'][0]?>
+								<?=str_replace('style="', 'style="margin-right: 40px;',$demo_stat['views_sexage']['chart'])?>
+								<?=$demo_stat['views_sexage']['legend'][1]?>
+							</div>
+							
+						</div></div></div><div class="fl_l" style="position: relative;"><div class="ads_demography_bars_clicks" style="position: relative; top: 0;"><div style="padding: 32px 0px 16px 50px; width: 300px; color: #3E6D16; font-size: 13px; font-weight: bold;">По городам</div><div id="wrapper_clicks_cities" class="clear_fix" style="width:600px;">
+							<div id="rows_clicks_cities" class="piechart_rows_root fl_l">
+								<?=$demo_stat['clicks_city']['legend'][0]?>
+							</div>
+							<?=$demo_stat['clicks_city']['chart']?>
+						</div></div><div class="ads_demography_bars_views" style="position: absolute; top: 0;visibility: hidden;"><div style="padding: 32px 0px 16px 50px; width: 300px; color: #3E6D16; font-size: 13px; font-weight: bold;">По городам</div><div id="wrapper_views_cities" class="clear_fix" style="width:600px;">
+							<div id="rows_views_cities" class="piechart_rows_root fl_l">
+								
+								<?=$demo_stat['views_city']['legend'][0]?>
+								
+							</div>
+							<?=$demo_stat['views_city']['chart']?>
+	</div></div></div></div></div><div id="ads_demography_graphs_wrap1" style="visibility: hidden; height: 0;"><div id="ads_demography_graphs_wrap2" style="position: absolute;"></div></div></div><? } ?></div>

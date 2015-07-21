@@ -1,0 +1,214 @@
+<?php
+global $oid, $id, $user, $reply, $owner, $wall;
+$comments = $var['comments'];
+$post_id = $oid . '_' . $id;
+$reply_names = array();
+
+
+if (!empty($comments['user_ids'])) {
+	foreach ($comments['user_ids'] as $uid) {
+		$u = pdata($uid);
+		$reply_names[$uid] = array($u->title, $u->title . ', ');
+	}
+}
+
+$opts = array(
+		'owner_id' => $oid,
+		'post_id' => $id,
+		'note_id' => false,
+		'note' => false,
+		'seen' => array(
+				0 => array(
+						'-24982282_3802' => 1,
+				),
+		),
+		'scroll' => empty($reply) ? false : 'post' . $oid . '_' . $reply,
+		'start' => 0,
+		'offset' => 20,
+		'per_page' => 20,
+		'count' => intval($comments['total']),
+		'url' => '/wall' . $post_id,
+		'params' => false,
+		'href' => '/wall' . $post_id . '?offset=',
+		'max_post_len' => 1000,
+		'post_hash' => hash_get($user->id, 16, 'post'),
+		'rmedia_types' => array(
+			array('photo', 'Фотографию'),
+			array('video', 'Видеозапись'),
+			array('audio', 'Аудиозапись'),
+			array('doc', 'Документ'),
+		),
+		'reply_names' => $reply_names,
+		'wall_type' => 'full',
+		'add_queue_key' => array(
+				'key' => 'GQCjYGPBuWZI_0k31QlLDqpCtNtTYWNi58pjVd6YEhjgnjgEySw5HcJe',
+				'ts' => '327431158',
+		),
+		'wall_tpl' => array(
+				'reply_form' => 'от имени сообщества',
+				'reply_multiline' => false,
+				'reply_multiline_intro' => false,
+				'reply_fast' => '
+Александр Метелица
+%message%
+%date%
+',
+				'reply_multiline_hint' => '
+Настройки отправки
+Enter — отправка сообщения
+Shift+Enter — перенос строки
+Ctrl+Enter — отправка сообщения
+Enter — перенос строки
+',
+				'own_reply_link' => '|Ответить',
+				'reply' => '
+	%name%
+%text%
+%date%%acts%
+Мне нравится
+',
+				'del' => '',
+				'spam' => '',
+				'del_reply' => 'Удалить',
+				'spam_reply' => 'Это спам',
+				'answer_reply' => 'Ответить',
+				'poll_stats' => '%option_text%
+%count%
+  %percent%%
+',
+				'poll_hash' => '1348509559_95a7391ff3aa18c7cd',
+				'date_format' => 'сегодня в {hour}:{minute}',
+				'time_system' => false,
+				'abs_timestamp' => 1348505959,
+				'lang' => array(
+						'wall_M_replies_of_N' =>
+						array(
+								0 => '',
+								1 => '%s комментарий из {link}{all}{/link}',
+								2 => '%s последних комментария из {link}{all}{/link}',
+								3 => '%s последних комментариев из {link}{all}{/link}',
+						),
+						'wall_hide_replies' => 'Скрыть комментарии',
+						'wall_show_n_of_m_last' =>
+						array(
+								0 => '',
+								1 => 'Показать последние %s комментарий из {count}',
+								2 => 'Показать последние %s комментария из {count}',
+								3 => 'Показать последние %s комментариев из {count}',
+						),
+						'wall_show_all_n_replies' =>
+						array(
+								0 => '',
+								1 => 'Показать %s комментарий',
+								2 => 'Показать все %s комментария',
+								3 => 'Показать все %s комментариев',
+						),
+						'wall_N_replies' =>
+						array(
+								0 => '',
+								1 => '%s комментарий',
+								2 => '%s комментария',
+								3 => '%s комментариев',
+						),
+						'wall_three_last_replies' => 'три последних комментария',
+						'wall_all_replies' => 'все комментарии',
+						'wall_x_new_replies_more' => array(
+								0 => '',
+								1 => 'Добавлен %s новый комментарий',
+								2 => 'Добавлены %s новых комментария',
+								3 => 'Добавлены %s новых комментариев',
+						),
+						'wall_X_people_voted' => array(
+								0 => '',
+								1 => 'Проголосовал %s человек.',
+								2 => 'Проголосовало %s человека.',
+								3 => 'Проголосовало %s человек.',
+						),
+						'wall_reply_submit_hint_1' => 'Shift+Enter – перевод строки',
+						'wall_reply_submit_hint_2' => 'Ctrl+Enter – отправка сообщения',
+						'wall_reply_submit_hint_1_more' => 'Enter – отправка сообщения, Shift+Enter – перевод строки',
+						'wall_reply_submit_hint_2_more' => 'Enter – перевод строки, Ctrl+Enter – отправка сообщения',
+						'wall_just_now' => array(
+								0 => '',
+								1 => 'только что',
+								2 => 'две секунды назад',
+								3 => 'три секунды назад',
+								4 => 'четыре секунды назад',
+								5 => 'пять секунд назад',
+						),
+						'wall_X_seconds_ago_words' => array(
+								0 => '',
+								1 => 'только что',
+								2 => 'две секунды назад',
+								3 => 'три секунды назад',
+								4 => 'четыре секунды назад',
+								5 => 'пять секунд назад',
+						),
+						'wall_X_seconds_ago' =>
+						array(
+								0 => '',
+								1 => '%s секунду назад',
+								2 => '%s секунды назад',
+								3 => '%s секунд назад',
+						),
+						'wall_X_minutes_ago_words' =>
+						array(
+								0 => '',
+								1 => 'минуту назад',
+								2 => 'две минуты назад',
+								3 => 'три минуты назад',
+								4 => '4 минуты назад',
+								5 => '5 минут назад',
+						),
+						'wall_X_minutes_ago' =>
+						array(
+								0 => '',
+								1 => '%s минуту назад',
+								2 => '%s минуты назад',
+								3 => '%s минут назад',
+						),
+						'wall_X_hours_ago_words' =>
+						array(
+								0 => '',
+								1 => 'час назад',
+								2 => 'два часа назад',
+								3 => 'три часа назад',
+								4 => 'четыре часа назад',
+								5 => 'пять часов назад',
+						),
+						'wall_X_hours_ago' =>
+						array(
+								0 => '',
+								1 => '%s час назад',
+								2 => '%s часа назад',
+								3 => '%s часов назад',
+						),
+				),
+		),
+		'qversion' => 12,
+		'wall_oid' => $oid,
+);
+?>
+stManager.add(["page.js","wall.js","pagination.js"], function (){ var opts = <?= jenc($opts) ?>, preload = <?= jenc($var['preload']) ?>;
+
+cur.lang = extend(cur.lang || {}, {
+wall_n_replies: ["","%s комментарий","%s комментария","%s комментариев"],
+wall_no_replies: 'Нет комментариев',
+global_add_media: 'Прикрепить',
+profile_mention_start_typing: 'Начните вводить имя друга или название сообщества',
+profile_mention_not_found: 'Пользователь не найден',
+wall_fix_post: 'Закрепить',
+wall_unfix_post: 'Открепить'
+});
+var st = opts.scroll;
+if (st) {
+st = ge(st);
+}
+if (st) {
+opts.scroll = getXY(st)[1];
+animate(st, {backgroundColor: '#f4f5ee'}, 200, animate.pbind(st, {backgroundColor: '#FFF'}, 5000));
+}
+showBackLink('<?=$wall->owner->lnk?>', '<?=$wall->owner->title?>');
+FullWall.initOnePost(opts, preload);
+<?  echo run_video_objects(); ?>
+});

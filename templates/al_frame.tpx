@@ -1,0 +1,200 @@
+<?php
+global $path_js,$path_css,$nochat,$chat_content,$js_fr_cnt,$setting,$user,$spage,$langpack,$znav,$is_fan,$new_design,$global_lang_num;
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru" id="vseti">
+<head>
+<link href="/favicon.png" rel="shortcut icon">
+<title><?=$spage->get_title()?></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- Счастья, радости, добра Вам и Вашим близким! 
+эти слова разлетаются по Беларуси по 7-10 млн. в сутки,
+и не важно что Вы их не видите на странице -->
+<script type="text/javascript" src="/al_loader.php?act=nav&v=4658&lang=<?=$global_lang_num?>"></script>
+
+<? if ($nochat=='' and isset($chat_content)) { ?>
+<link type="text/css" href="<?=$path_css?>/cometchat.css" rel="stylesheet" charset="utf-8">
+<?=$chat_content?>
+<? } 
+	
+if($new_design) {
+	//echo tpx('header_design');
+}
+?>
+
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var pp_gemius_identifier = new String('nSBAq3dR61ArGT_2Ie_DkJbBDtYIiE8neyj.yOwbU2v.B7');
+var pp_gemius_hitcollector = 'gaby1.hit.gemius.pl';
+//--><!]]>
+</script>
+<script type="text/javascript" src="<?=$path_js?>/xgemius.js"></script>
+
+<script type="text/javascript">
+var vs = {
+  ads_rotate_interval: 120000,
+  al: parseInt('3') || 4,
+  id: <?=$user->id?>,
+  new_design: <?=intval($new_design)?>,
+  intnat: '' ? true : false,
+  /* by: <?=$user->byfly?>, */
+  host: '<?=$setting['host']?>',
+  lang: <?=$global_lang_num?>,
+  rtl: parseInt('') || 0,
+  version: 4658,
+  zero: false,
+  contlen: 136663,
+  loginscheme: 'http',
+  ip_h: '5572072ca4639acd63',
+  navPrefix: '/'
+}
+
+window.locDomain = vs.host.match(/[a-zA-Z]+\.[a-zA-Z]+\.?$/)[0];
+var _ua = navigator.userAgent.toLowerCase();
+if (/opera/i.test(_ua) || !/msie 6/i.test(_ua) || document.domain != locDomain) document.domain = locDomain;
+var ___htest = (location.toString().match(/#(.*)/) || {})[1] || '';
+if (vs.al != 1 && ___htest.length && ___htest.substr(0, 1) == vs.navPrefix) {
+  if (vs.al != 3 || vs.navPrefix != '!') {
+    location.replace(location.protocol + '//' + location.host + '/' + ___htest.replace(/^(\/|!)/, ''));
+  }
+}
+<?=$spage->static_js();?>
+var lastWindowHeight = 0;
+</script>
+<?=$spage->static_html();?>
+</head>
+
+<body onresize="onBodyResize()" class="is_rtl"><?
+
+global $user, $tpl_debug_info, $db;
+
+if(isset($_GET['tpl'])) {
+	echo '<pre style="background: white">Используемые шаблоны ('.count($tpl_debug_info).'):  <br />';
+	foreach($tpl_debug_info as $k => $v) {
+		echo $k . " (".$v.")\n";
+	}
+	echo '</pre>';
+}
+
+if($user->is_admin and isset($_GET['adma'])) {
+	if($user->is_admin) {
+		echo '<pre style="background: white">MySQL: <br />';
+		foreach($db->query_stats as $qq){
+			echo number_format($qq['time'],2).' <small>'.$qq['query'].'</small><br>';
+			$total+=$qq['time'];
+		}
+		echo '<b>'.$total.'</b></pre>';
+	}
+}
+
+?><div id="system_msg" class="fixed"></div><div id="utils"></div><div id="layer_bg" class="fixed"></div><div id="layer_wrap" class="scroll_fix_wrap fixed"><div id="layer"></div></div><div id="box_layer_bg" class="fixed"></div><div id="box_layer_wrap" class="scroll_fix_wrap fixed"><div id="box_layer"><div id="box_loader"><div class="loader"></div><div class="back"></div></div></div></div><div id="stl_left"></div><div id="stl_side"></div> 
+<script type="text/javascript">domStarted();</script>
+<div class="scroll_fix_wrap" id="page_wrap">
+<?
+	echo tpx('header_func_al');
+?>
+<div id="page_body" class="fl_r">
+ <div id="header_wrap2">
+  <div id="header_wrap1">
+   <div id="header" <?if(empty($var['title'])){?>style="display: none"<?}?>>
+    <h1 id="title"><?=empty($var['title'])?'':$var['title']?></h1>
+   </div>
+  </div>
+ </div>
+ <div id="wrap_between"></div>
+ <div id="wrap3">
+	 
+<?=$var['html']?>
+ 
+ </div><!-- wrap3 -->
+</div><!-- page_body -->
+
+<div id="gray_bar"></div>
+<div id="footer_wrap" class="bFooter"> <!-- class="fl_r" style="width: 861px;" -->
+<div id="akavita"> 
+<? /* 
+<!--Akavita counter start-->
+<script type="text/javascript">var AC_ID=30802;var AC_TR=false;
+(function(){var l='http://adlik.akavita.com/acode.js'; var t='text/javascript';
+try {var h=document.getElementsByTagName('head')[0];
+var s=document.createElement('script'); s.src=l;s.type=t;h.appendChild(s);}catch(e){
+document.write(unescape('%3Cscript src="'+l+'" type="'+t+'"%3E%3C/script%3E'));}})();
+</script><span id="AC_Image"></span>
+<noscript><a target='_blank' href='http://www.akavita.by/'>
+<img src='http://adlik.akavita.com/bin/lik?id=30802&it=1'
+border='0' height='1' width='1' alt='Akavita'/>
+</a></noscript>
+<!--Akavita counter end--> */ ?>
+</div>
+
+ <div id="bottom_nav" class="dgray">
+  <a href="/blog.php">блог</a>&nbsp;&nbsp;
+  <a href="/support" onclick="return nav.go(this, event)">помощь</a>&nbsp;&nbsp;
+  <a href="/help.php?page=terms">правила</a>&nbsp;&nbsp;
+  <a href="/ads">реклама</a>&nbsp;&nbsp;
+  <a href="/help.php?page=authors">о сайте</a>&nbsp;&nbsp;
+  <a href="/dev.php">разработчикам</a>&nbsp;&nbsp;
+ </div>
+
+</div><!--/footer_wrap-->
+<div class="clear"></div>
+</div><!--/page_layout-->
+</div><!--/scroll_fix-->
+</div><!--/simply_div-->
+</div><!--/page_wrap-->
+<noindex>
+<center><?=$banner_footer?><div class="progress" id="global_prg"></div>
+</center>
+<?=tpx('im');?>
+<script type="text/javascript">
+/*
+if(browser.mobile){
+  document.write('<iframe src="http://vseti.by/adinch.php" frameborder="0" style="width:100%;position:fixed;bottom:0;"></iframe>');
+}
+*/
+
+if (parent && parent != window && (browser.msie || browser.opera || browser.mozilla || browser.chrome || browser.safari || browser.iphone)) {
+   document.getElementsByTagName('body')[0].innerHTML = '';
+} else {
+      domReady();
+      <? if($user->user_exists == 1) { ?>
+      updateMoney(<?=intval($user->credits)?>);
+      <? } ?>
+gSearch.init();
+cur.lang = extend(cur.lang || {}, {
+  show_full: 'показать подробную информацию',
+  hide_full: 'скрыть подробную информацию',
+  sure_delete_photo: 'Вы уверены, что хотите удалить фотографию?',
+  change_current_info: 'изменить статус',
+  share_current_info: 'Рассказать друзьям',
+  create_poll: 'Опрос',
+  dont_attach: 'Не прикреплять'
+});
+<? if($is_fan) { ?>
+	cur.toggleFanAct=0;
+<? } ?>
+}
+<?=$var['js']?>;
+<? if($user->user_exists) {
+
+//if($user->user_info['user_id']==16 or $user->user_info['user_id']==1 or $user->user_info['user_id']==68720){	
+?>
+(function($){$(function(){try{IM.init(vs.id);}catch(e){}})})(jQuery);
+<? 
+//}
+
+} elseif($_SERVER['SCRIPT_NAME']!='/login.php') { 
+	
+echo "var qf = ge('quick_login_form'), ql = ge('quick_login'), qe = ge('quick_email'), qp = ge('quick_pass'); var qlb = ge('quick_login_button'), prgBtn = qlb;".tpx('user_login_js');
+
+	
+} ?>
+<? if(!empty($var['json'])){ ?>
+handlePageParams(<?=jenc($var['json'])?>);
+<? } ?>
+///addEvent(document, 'click', onDocumentClick);
+</script>
+<?php
+?>
+</body>
+</html>

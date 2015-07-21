@@ -1,0 +1,111 @@
+<?php
+global $freshblog,$allblog,$friendsblog,$smenu,$xhost,$act,$new_design;
+
+
+if($new_design) {
+echo tpx('header_design');
+?>
+<div id="wrap2">
+ <div id="wrap1">
+  <div id="content">
+   <div id="main">
+     
+    <div class="col_left dgray">
+	<h2>Свежее в блогах</h2>Нет данных
+       <? /* =tpx('list_notes',array('notes'=>$allblog)) */?>       
+    </div>
+    
+    <div class="col_right">
+
+	<div class="section">
+		<h2>Лучшее</h2>
+       		<?=tpx('list_notes',array('notes'=>$freshblog))?>
+    	</div>
+
+	
+	<div class="section">
+		<h2>Заметки ваших друзей</h2>
+		<?
+			if(!empty($friendsblog)) {
+				echo tpx('list_notes', array('notes'=>$friendsblog));
+			} else {
+				echo 'Тут пока ничего нет. Это значит, что нужно подружиться с кем-то, кто пишет интересные заметки ;)';
+			}
+
+
+?>
+	</div>
+
+	
+    
+    
+   </div>
+
+  </div>
+ </div>
+</div>
+</div>
+<?
+
+} else {
+
+?>
+<div id="wrap2">
+ <div id="wrap1">
+  <div id="content" style="background: #bad8f2 url(<?=$xhost?>images/start_bg.jpg) no-repeat;">
+   <div id="main">
+     
+    <div id="start_menu"><?=start_menu($smenu, $act)?></div> 
+     
+    <div class="rightColumn2">
+    
+     <div class="pb bc6">
+      <div class="pbt">
+       <div><h2>Свежее в блогах</h2></div>
+      </div>
+      <div class="c">
+       <div class="bp5">
+       <?=tpx('list_notes',array('notes'=>$allblog))?>
+       </div>
+      </div>
+     </div>
+    
+    </div>
+    
+    <div class="rightColumn">
+    	
+    	<div class="pb bc1">
+      <div class="pbt">
+       <div><h2>Заметки ваших друзей</h2></div>
+      </div>
+      <div class="c">
+       <div class="bp5">
+       <?=tpx('list_notes',array('notes'=>$friendsblog))?>
+       </div>
+      </div>
+     </div>
+    
+    </div>
+    
+    <div class="leftColumn">
+     
+     <div class="pb bc2">
+      <div class="pbt">
+       <div><h2>Лучшее</h2></div>
+      </div>
+      <div class="c">
+       <div class="bp5">
+       <?=tpx('list_notes',array('notes'=>$freshblog))?>
+       </div>
+      </div>
+     </div>
+     
+    </div>
+    
+    
+    <br class="clear">
+   </div>
+  </div>
+ </div>
+</div>
+<? } ?>

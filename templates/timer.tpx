@@ -1,0 +1,44 @@
+if(window.timer_tt1) {
+	clearTimeout(window.timer_tt1);
+	//console.log('Таймер есть!');
+}
+var ppt1 = <?=($var['time']-$_SERVER['REQUEST_TIME'])?>;
+window.timer_t1 = function() {
+	v = new Date();
+	var bxxt1 = document.getElementById('bxxt1');
+	if(bxxt1) {
+		n = new Date();
+		sst1 = ppt1;
+		sst1 = sst1 - Math.round((n.getTime() - v.getTime()) / 1000.);
+		mt1 = 0;
+		ht1 = 0;
+		dt1 = 0;
+		if (sst1 < 0) {
+			bxxt1.innerHTML = "<?=$var['msg']?>";
+			//window.location.reload();
+		} else {
+			if (sst1 > 59) {
+				mt1 = Math.floor(sst1 / 60);
+				sst1 = sst1 - mt1 * 60;
+			}
+			if (mt1 > 59) {
+				ht1 = Math.floor(mt1 / 60);
+				mt1 = mt1 - ht1 * 60;
+			}
+			if (ht1 > 24) {
+				dt1 = Math.floor(ht1 / 24);
+				ht1 = ht1 - dt1 * 24;
+			}
+			if (sst1 < 10) {
+				sst1 = "0" + sst1;
+			}
+			if (mt1 < 10) {
+				mt1 = "0" + mt1;
+			}
+			bxxt1.innerHTML = dt1 + ":" +ht1 + ":" + mt1 + ":" + sst1;
+		}
+		ppt1 = ppt1 - 1;
+		window.timer_tt1 = window.setTimeout("window.timer_t1();", 999);
+	}
+}
+window.timer_t1();

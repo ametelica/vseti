@@ -1,0 +1,7 @@
+<?
+global $access_error, $user;
+?><a class="mv_show_info" id="mv_show_info" onmouseover="videoview.activate(this, 2);" onmouseout="videoview.deactivate(this, 2);" onclick="return videoview.showInfo();">Показать комментарии</a>
+<a class="mv_hide_info" id="mv_hide_info" onmouseover="videoview.activate(this, 2);" onmouseout="videoview.deactivate(this, 2);" onclick="return videoview.hideInfo();">Скрыть комментарии</a>
+<? if(!$var['video']->is_my() and !$access_error) {?>
+<span id="mv_add_divider" class="divider">|</span><span id="mv_like_line"><a class="video_add_link" onmouseover="videoview.activate(this, 2);" onmouseout="videoview.deactivate(this, 2);" onclick="return videoview.addSmall('<?=$var['video']->uid?>', '<?=hash_get($user->id, 16, 'vid')?>');">Добавить в Мои Видеозаписи</a>
+<span class="video_already_added">Добавлено</span></span><? } ?>

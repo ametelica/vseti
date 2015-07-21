@@ -1,0 +1,155 @@
+<?php
+global $owner,$user,$langpack,$blog_total,$blogentries,$datetime,$setting,$global_timezone;
+?>
+<div class="module clear notes_module" id="profile_notes">
+ <a href="/notes<?=$owner->user_info['user_id']?>" class="module_header">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/notes<?=$owner->user_info['user_id']?>'"></span>
+    Заметки
+  </div>
+  <div class="p_header_bottom">
+    <span class="fl_r"><a href="<?=$owner->lnk?>?t=0" ><span class="fl_r">Показать стену</span></a></span>
+    <?=$blog_total?> замет<?=$langpack->dln($blog_total,'ord')?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+<?
+	if($blog_total>0) {
+		foreach($blogentries as $be){
+?>
+	<div class="note clearFix">
+   <div class="note_body">
+    <div class="note_header">
+     <div class="note_title_share clearFix ">
+      <div class="note_title">
+       <a href="/note<?=$be['blogentry_user_id'].'_'.$be['blogentry_id']?>"><?=$be['blogentry_title']?></a>
+      </div>
+     </div>
+     <div class="byline">
+      <? if($user->is_me($author)) { ?>
+      <span><a href="<?=$author->lnk?>"><?=$author->user_info['fio']?></a></span> 
+      <? } ?>
+      <?=$datetime->cdate($setting['setting_dateformat'], $datetime->timezone($be['blogentry_date'], $global_timezone))?>
+      <? if($be['blogentry_blogentrycat']!='') {?>
+      	в разделе <a href="notes.php?cat=<?=$be['blogentry_blogentrycat_id']?><? if(!$user->is_me($owner)){ ?>&id=<?=$owner->user_info['user_id']?><? } ?>"><?=$be['blogentry_blogentrycat']?></a>
+      <? } ?>
+     </div>
+    </div>
+    <div class="note_content clearFix">
+     <div>
+     	<div class="wikiText">
+     	<?=$be['blogentry_body']?>
+     	</div>
+     </div>
+    </div>
+    <div class="note_footer clearFix">
+     <div class="comments_count"><a href="/note<?=$be['blogentry_user_id'].'_'.$be['blogentry_id']?>#comments">
+     <? if($be['blogentry_comm_cnt']) { ?> 
+     	<?=$be['blogentry_comm_cnt']?> комментари<?=$langpack->dln($be['blogentry_comm_cnt'],'com')?>
+     <? } else { ?>
+     	Нет комментариев
+     <? } ?></a>
+     <? if($be['blogentry_user_id'] == $user->user_info['user_id']) { ?>
+     <span class='divide'>|</span>
+     <a href="/notes.php?act=edit&nid=<?=$be['blogentry_id']?>">редактировать</a><!--<span class='divide'>|</span><a href="javascript:showDeleteNoteBox(<?=$be['blogentry_id']?>)">удалить</a>-->
+     <? } ?>
+     </div>
+    </div>
+   </div>
+  </div>			
+<?			
+		}
+	} else {
+?><div class="noNotes">
+		Нет заметок
+	</div>
+<?		
+	}
+?>
+ </div>
+</div>
+
+
+<? /*
+<div id="personal" class="flexOpen">
+	<div class="{if $tabs_show.personal==1}bShut{else}bOpen{/if}">
+		<div class="flexHeader clearFix" onclick="return collapseBox('personal', this, 0.90, 0.50)" onfocus="blur()">
+			<div>
+				<h2>Блог</h2>
+			</div>
+			
+			<div class="flexEdit" >
+      	<a href="?t=0" onclick="event.cancelBubble = true; " title="">Информация</a>
+      </div>
+			
+		</div>
+	</div>
+  <div class="c" {if $tabs_show.personal==1}style="display:none;"{/if}>
+		<div class="flexBox clearFix" >
+	
+		
+		{if $total_blogentries == 0}
+<div style="padding:20px">
+	{if $act=='fave'}
+		<div class="noNotes">
+Вы еще не добавили ни одной заметки в Избранное.
+		</div>
+	{else}
+		<div id="noResultsWhite">
+		{if $cat>0}
+		В этой категории пока нет ни одной заметки.
+		{else}
+		Нету ни одной заметки
+		{/if}
+		</div>
+	{/if}
+</div>
+{else}
+	{section name=blogentry_loop loop=$blogentries}
+	$beogentries[blogentry_loop].blogentry_author}
+	<div class="note clearFix">
+   <div class="note_body">
+    <div class="note_header">
+     <div class="note_title_share clearFix">
+      <div class="note_title">
+       <a href="/note{$blogentries[blogentry_loop].blogentry_user_id}_{$blogentries[blogentry_loop].blogentry_id}">{if $blogentries[blogentry_loop].blogentry_title==''}Без названия{else}{$blogentries[blogentry_loop].blogentry_title}{/if}</a>
+      </div>
+     </div>
+     <div class="byline">
+      {if !$user->is_me($author)}
+      <span><a href="/id{$author->user_info.user_id}">{$author->user_info.fio}</a></span> 
+      {/if}
+      {$datetime->cdate("`$setting.setting_dateformat`", $datetime->timezone($blogentries[blogentry_loop].blogentry_date, $global_timezone))}
+      {if $blogentries[blogentry_loop].blogentry_blogentrycat!=''}
+      	в разделе <a href="notes.php?cat={$blogentries[blogentry_loop].blogentry_blogentrycat_id}{if !$user->is_me($owner)}&id={$owner->user_info.user_id}{/if}">{$blogentries[blogentry_loop].blogentry_blogentrycat}</a>
+      {/if}
+     </div>
+    </div>
+    <div class="note_content clearFix">
+     <div>
+     	<div class="wikiText">
+     	{$blogentries[blogentry_loop].blogentry_body}
+     	</div>
+     </div>
+    </div>
+    <div class="note_footer clearFix">
+     <div class="comments_count"><a href="/note{$blogentries[blogentry_loop].blogentry_user_id}_{$blogentries[blogentry_loop].blogentry_id}#comments">{if $blogentries[blogentry_loop].blogentry_comm_cnt!=0} 
+     {$blogentries[blogentry_loop].blogentry_comm_cnt} комментари{$langpack->dln($blogentries[blogentry_loop].blogentry_comm_cnt,'com')}
+     {else}
+     	Нет комментариев
+     {/if}</a>
+     {if $blogentries[blogentry_loop].blogentry_user_id == $user->user_info.user_id}
+     <span class='divide'>|</span>
+     <a href="/notes.php?act=edit&nid={$blogentries[blogentry_loop].blogentry_id}">редактировать</a><span class='divide'>|</span><a href="javascript:showDeleteNoteBox({$blogentries[blogentry_loop].blogentry_id})">удалить</a>
+     {/if}
+     </div>
+    </div>
+   </div>
+  </div>
+	{/section}
+{/if}
+
+		</div> <!-- flexBox -->
+	</div> <!-- c  -->
+</div> <!-- personal -->
+*/ ?>

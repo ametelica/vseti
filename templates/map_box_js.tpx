@@ -1,0 +1,171 @@
+<?php
+global $user, $owner;
+?>cur.load_map = function() {
+    <? if($owner->user_info['user_lat']==0 and $owner->user_info['user_lng']==0) { ?>
+    var user_lat = '53.902180298403'; // Минск
+    var user_lng = '27.557255016916';
+    var show_home = false;
+    <? } else { ?>
+    var user_lat = '<?=$owner->user_info['user_lat']?>';
+    var user_lng = '<?=$owner->user_info['user_lng']?>';
+    var show_home = true;
+    <? } ?>
+        
+    var hash = '<?=hash_get($user->id, 16, 'loc')?>';
+    var map = new M.Map({id: 'map', apiKey: 5597851674});
+    map.setView({lat: user_lat, lon: user_lng, zoom: 17});
+    
+    marker2 = new M.MarkerPopup({lat: user_lat, lon: user_lng, content: 'Я здесь!'});
+    map.addMarkerPopup(marker2);
+    
+    <? if($user->is_me($owner)) { ?>
+    event = new M.Event({action: 'click', callback: function(e){
+        map.removeLayer(marker2);
+        onDone = function(text) {
+            marker2 = new M.MarkerPopup({lat: e.latlng.lat, lon: e.latlng.lng, content: 'Я здесь!'});
+            map.addMarkerPopup(marker2);
+        };
+        ajax.onFail = function(res, text) {alert('Error'+text)};
+        ajax.post('/map.php',{'act': 'a_ithere', 'lng': e.latlng.lng, 'lat': e.latlng.lat, 'hash': hash}, {'onDone': onDone });
+    }});
+    map.addEvent(event);
+    
+    // Выпадающие списки
+    
+    extend(cur, {
+    	placeSelData: {"type":1,"types":[],"countries":[[3,"<b>Беларусь<\/b>"],[1,"Россия"],[2,"Украина"],[4,"Казахстан"],[5,"Азербайджан"],[6,"Армения"],[7,"Грузия"],[8,"Израиль"],[9,"США"],[65,"Германия"],[11,"Кыргызстан"],[12,"Латвия"],[13,"Литва"],[14,"Эстония"],[15,"Молдова"],[16,"Таджикистан"],[17,"Туркменистан"],[18,"Узбекистан"],[3,"Беларусь"]],"cities":[[282,"<b>Минск<\/b>"],[22371,"<b>Лужесно<\/b>"],[9868,"<b>Городок<\/b>"],[538,"Барановичи"],[281,"Брест"],[244,"Витебск"],[392,"Гомель"],[2179,"Горки"],[649,"Гродно"],[467,"Могилев"],[375,"Мозырь"],[1299,"Новополоцк"],[610,"Пинск"],[1107,"Бобруйск"]],"place_id":"0","country":[3,"Беларусь"],"city":["244","Витебск"],"street":{"city":"244","completed_streets":1,"completed_schools":1,"completed_universities":1}},
+    });
+    
+    var address = ge('place_address').value;
+	extend(cur, {
+	  placeAddress: new StreetSelect(ge('place_address'), ge('address_row'), {
+	    width: 208,
+	    forceEnableCustom: 1,
+	    noBlur: true,
+	    big: 1
+	  }),
+	  placeUpdateMap: function (v, edit) {
+	    var address = [], region, city, i, isLoaded;
+
+	    if (cur.placeUpdatingMap) {
+	      return false;
+	    }
+	    cur.placeUpdatingMap = true;
+
+	    cur.placeGeoData.country = intval(cur.placeCountry.val());
+	    if (cur.placeGeoData.country > 0) {
+	      address.push(cur.placeCountry.val_full()[1]);
+	    } else {
+	      cur.placeUpdatingMap = false;
+	      return false;
+	    }
+	    cur.placeGeoData.city = intval(cur.placeCity.val());
+	    if (cur.placeGeoData.city > 0) {
+	      city = cur.placeCity.val_full();
+	      if (!city[2]) {
+	        address.push(city[1]);
+	      } else {
+	        region = city[2].split(',');
+	        address.push(region[0] + ', ' + city[1]);
+	      }
+	    }
+
+	    if (intval(cur.placeAddress.val()) > 0) {
+	      cur.placeGeoData.street = cur.placeAddress.val_full()[1];
+	    } else if (cur.placeAddress.val() == -1) {
+	      cur.placeGeoData.street = cur.placeAddress.customVal();
+	    } else {
+	      cur.placeGeoData.street = '';
+	    }
+	    if (cur.placeGeoData.street) {
+	      address.push(cur.placeGeoData.street);
+	    }
+
+	    if (cur.placeFailsLevel > 0) {
+	      if (cur.placeFailsLevel >= address.length) {
+	        address = ['Russia'];
+	        cur.placeFailsLevel = -1;
+	      } else {
+	        address = address.slice(0, address.length - cur.placeFailsLevel);
+	      }
+	    }
+	    address.reverse();
+	    address = address.join(', ');
+	    address = address.replace(/<\/?[^>]+>/g, '');
+
+	    curBox().showProgress();
+	    cur.placeSwapProvider(cur.placeGeoData.country);
+	    if (cur.placeMap.isLoaded(cur.placeProvider)) {
+	      if (cur.placeLat && cur.placeLng && !edit) {
+	        var placePoint = new vsMaps.LatLonPoint(cur.placeLat, cur.placeLng);
+	        cur.placeMap.setCenterAndZoom(placePoint, 14);
+	        cur.onCenterSet();
+	        cur.placeUpdateMapCb({point: placePoint});
+	      } else {
+	        cur.placeGeocoder.geocode({address: address});
+	      }
+	    } else {
+	      cur.placeMap.load.addHandler(function() {
+	        cur.placeUpdatingMap = false;
+	        cur.placeUpdateMap();
+	      });
+	    }
+	  }
+	});    
+    extend(cur, {
+	  placeCity: new CitySelect(ge('place_city'), ge('city_row'), {
+	    width: 208,
+	    streetSelect: cur.placeAddress,
+	    big: 1
+	  })
+	});
+	extend(cur, {
+	  placeCountry: new CountrySelect(ge('place_country'), ge('country_row'), {
+	    width: 208,
+	    citySelect: cur.placeCity,
+	    full_list: getLang('select_country_full_list'),
+	    big: 1
+	  })
+	});
+	
+	extend(cur, {
+	  placeGeoData: {
+	    type: intval(cur.placeSelData.type),
+	    country: cur.placeSelData.country ? intval(cur.placeSelData.country[0]) : 1,
+	    city: cur.placeSelData.city ? intval(cur.placeSelData.city[0]) : 0,
+	    street: '',
+	    house: ''
+	  }
+	});
+    
+    selectsData.setCountries(cur.placeSelData.countries);
+    if (cur.placeSelData.country) {
+  		selectsData.setCities(cur.placeSelData.country[0], cur.placeSelData.cities);
+	}
+	
+	//cur.placeCountry.val(cur.placeGeoData.country, true);
+	//cur.placeCity.val(cur.placeGeoData.city, true);
+
+	cur.placeCountry.setOptions({onChange: function(v) {
+	  cur.placeUpdateMap(v, true);
+	}});
+	cur.placeCity.setOptions({onChange: function(v) {
+	  cur.placeUpdateMap(v, true);
+	}});
+	cur.placeAddress.setOptions({onChange: function(v) {
+	  cur.placeUpdateMap(v, true);
+	}});
+
+	if (address) {
+	  cur.placeAddress.val(address);
+	} else {
+	  cur.placeAddress.val('');
+	}
+	
+    <? } ?>
+    
+    map.addExt('Fullscreen');
+}
+onDomReady(function() {
+    cur.load_map();
+})

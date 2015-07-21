@@ -1,0 +1,129 @@
+<?php
+	global $setting, $togglePiechartTooltip;
+	$graph = $var['graph'];
+?>if (!('cur' in window)) {
+  window.cur = {};
+}
+(function() {
+  var timer = setInterval(function() {
+    if ('svgData' in cur && '<?=$graph->name?>' in cur.svgData && cur.svgData['<?=$graph->name?>']) {
+      clearInterval(timer);
+      extend(cur.svgData['<?=$graph->name?>'], {
+        width: <?=intval($graph->options['width'])?>,
+        height: <?=intval($graph->options['width'])?>
+      });
+      cur.invokeSvgFunction('<?=$graph->name?>', 'setOptions', [{
+          showLegend: false
+        }]);
+      cur.invokeSvgFunction('<?=$graph->name?>', 'loadData', <?=jenc($graph->graph_data_pie($var['limit']))?>);
+    }
+  }, 100);
+})();
+
+<?
+	if(empty($togglePiechartTooltip)) {
+		$togglePiechartTooltip = 1;
+?>
+if (!cur.togglePiechartTooltip) {
+  document.body.appendChild(ce('div', {id: 'piechart_tooltip', className: 'piechart_tooltip'}));
+  addEvent(ge('piechart_tooltip'), 'mouseover', function(e) {
+      cur.onPiechartMousemove(e);
+    });
+
+  cur.onWindowMessageFromSVG = function(e) {
+    if (!e.origin.match(/^https?:\/\/([a-zA-Z0-9\-\.]+\.)?<?=str_replace('.', '\.', $setting['host'])?>$/)) {
+      return false;
+    }
+    var data = e.data;
+    switch (data.act) {
+      case 'init':
+        if (!('svgData' in cur)) cur.svgData = {};
+        cur.svgData[data.svgUid] = {
+          ref: e.source
+        };
+        break;
+      case 'invoke':
+        var parts = data.method.split('.');
+        var ref = window;
+        for (var i = 0; i < parts.length - 1; i++) {
+          ref = ref[parts[i]];
+        }
+        ref[parts.pop()].apply({}, data.args);
+        break;
+    }
+  };
+  window.addEventListener('message', cur.onWindowMessageFromSVG, false);
+
+  cur.invokeSvgFunction = function(id, method, args) {
+    var menu = cur.svgData[id];
+    if (menu.ref) {
+      menu.ref.postMessage({
+        act: method,
+        data: args
+      }, '*');
+    } else {
+      menu[method].apply({}, args);
+    }
+  }
+
+  cur.highlightChartRowList  = function(svgUid, id, len, isIn) {
+    for (var i = 0; i < len; i++) {
+      var hList = ge('piechart_row_' + svgUid + '_' + i);
+      if (!hList) continue;
+      fadeTo(hList, 200, id == i || !isIn ? 1 : 0.5);
+    }
+  }
+
+  // function for fixing zoom in webkit browsers
+  if (browser.chrome || browser.safari) {
+
+    cur.webkitSVGZoomFixTimer = setInterval((function() {
+        var curZoom = getZoom();
+        return function() {
+          var zoom = getZoom();
+          if (zoom == curZoom) return;
+          curZoom = zoom;
+          if (!('svgData' in cur)) return;
+          for (var id in cur.svgData) {
+            cur.svgData[id].container.documentElement.setAttribute('width', (cur.svgData[id].width) + 'px');
+            cur.svgData[id].container.documentElement.setAttribute('height', (cur.svgData[id].height) + 'px');
+          }
+        }
+      })(), 50);
+  }
+
+
+  cur.onPiechartMousemove = function(e, id) {
+    var xy = getXY(ge('svg_embed_' + id)) || [0, 0];
+    var x = intval(e.clientX || e.pageX) + xy[0],
+        y = intval(e.clientY || e.pageY) + xy[1],
+        s = getSize(ge('piechart_tooltip').firstChild);
+
+    extend(ge('piechart_tooltip').style, {
+        left: (x - s[0] - 10) + 'px',
+        top: (y - s[1]) + 'px'
+      });
+  }
+
+  cur.togglePiechartTooltip = function(data, isOn) {
+    var text = ['<b>', data.l, '</b>', ' — ', Number(data.p).toPrecision(3), '%'].join('');
+    if (data.c) {
+      text = ['<b>', data.c, '</b><br />', text].join('');
+    }
+    ge('piechart_tooltip').innerHTML = ['<div class="background">', text, '</div><div>', text, '</div>'].join('');
+    window[isOn ? 'show' : 'hide']('piechart_tooltip');
+  }
+
+  cur.destroy.push(function() {
+    document.body.removeChild(ge('piechart_tooltip'));
+    window.removeEventListener('message', cur.onWindowMessageFromSVG, false);
+
+    delete cur.onWindowMessageFromSVG;
+    delete cur.invokeSvgFunction;
+    delete cur.highlightChartRowList;
+    if (cur.webkitSVGZoomFixTimer) delete cur.webkitSVGZoomFixTimer;
+    delete cur.onPiechartMousemove;
+    delete cur.togglePiechartTooltip;
+  });
+}
+<? } ?>

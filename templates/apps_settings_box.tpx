@@ -1,0 +1,30 @@
+<?php
+	global $app;
+?>
+<h4>Приложение запрашивает доступ к Вашим данным</h4>
+<div id="apps_settings_controls" class="apps_settings_controls">
+<?
+echo tpx('apps_rights_set');
+
+if($app->app_info['app_can_pay']){
+?>
+<h4 style="margin-top: 20px;">Ваш личный счет в этом приложении</h4>
+<div class="apps_sett_section">
+<table cellspacing="0" cellpadding="0" class="apps_edit_vites_sett">
+<tbody><tr><td class="app_sett_pay_label ta_l">Текущий баланс*:</td>
+<td id="app_new_votes"><?=$app->app_info['app_user_votes']?></td></tr>
+<tr><td class="app_sett_pay_label ta_l">Пополнить баланс на:</td>
+<td style="width: 150px;">
+<input type="text" style="width: 40px; margin-right: 10px;" maxlength="8" class="text" onkeyup="Apps.recountAddVotes(this)" value="0" id="app_pay_add" name="add"/><a id="add_votes" href="payments.php?return=apps">зайчиков</a>
+</td></tr>
+<tr><td class="app_sett_pay_label ta_l">Уменьшить баланс на:</td>
+<td style="width: 150px;">
+<input type="text" style="width: 40px; margin-right: 10px;" maxlength="8" class="text" onkeyup="Apps.recountWithdrawVotes(this)" value="0" id="app_pay_withdraw" name="withdraw"/><a id="withdraw_votes" href="payments.php?return=apps">зайчиков</a>
+</td></tr>
+</tbody></table>
+</div>
+<? } ?>
+<div class="agreement_text">
+Нажимая «Разрешить», Вы признаете, что данное приложение создано сторонними разработчиками и Вы не будете иметь претензий к Всети.бай при любых последствиях передачи Ваших данных <? if($app->app_info['app_can_pay']) {?>и зайчиков <? } ?>этому приложению.
+</div>
+</div>

@@ -1,0 +1,9 @@
+<?php
+	global $langpack;
+	?><div class="header" onclick="wall.pollFull(false, '<?=$var['post_uid']?>', event, 449653591)"><div class="poll_tt_head_wrap">Проголосовал<?=$langpack->dln($var['stats']['total'], array('', 'о', 'и'))?> <?=$var['stats']['total']?> <?=$langpack->dln($var['stats']['total'], array('человек', 'человека', 'человек'))?></div></div>
+<div class="wrap">
+  <div class="content"><div class="hider"><table cellspacing="0" cellpadding="0" class="poll_stats"><tr><?
+  		foreach($var['stats']['user_ids'] as $uid) {
+  			$u = pdata($uid);
+  		?><td><a class="poll_tt_usr" title="<?=$u->title?>" href="<?=$u->lnk?>"><img class="poll_tt_stats_photo" src="<?=$u->photo()?>" width="30" height="30" /></a></td><? } ?></tr></table></div></div>
+</div>

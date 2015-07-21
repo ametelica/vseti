@@ -1,0 +1,31 @@
+<?php
+global $user, $group_create;
+if($group_create == 0) {
+?>window.radioBtns['club_type'] = {
+  els: [ge('groups_create_group'), ge('groups_create_event'), ge('groups_create_public')],
+  val: 0
+}
+box.setOptions({bodyStyle: 'padding: 1px 14px 16px'});
+box.removeButtons().addButton('Отмена', box.hide, 'no');
+box.addButton('Создать сообщество', function() {
+  var title = ge('group_create_title');
+  if (!trim(title.value)) {
+    return notaBene(title);
+  }
+  ajax.post('al_groups.php', {
+    act: 'create',
+    title: trim(title.value),
+    cls: radioval('club_type'),
+    hash: '<?=hash_get($user->id, 18, 'cgr')?>'
+  }, {onDone: function(text) {
+    if (text == 'title') {
+      notaBene(ge('group_create_title'));
+    }
+  }, onFail: function(text) {
+    if (text) {
+      setTimeout(showFastBox(getLang('global_error'), text).hide, 3000);
+      return true;
+    }
+  }, progress: box.progress});
+});
+setTimeout(elfocus.pbind('group_create_title'), 0);<? } ?>

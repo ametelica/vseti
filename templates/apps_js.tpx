@@ -1,0 +1,121 @@
+<?php
+global $act,$user;
+?>
+
+showBackLink();
+setTimeout(function() {
+  document.title = replaceEntities(stripHTML('Приложения'));
+}, browser.chrome ? 50 : 100);
+
+<? if($act=='catalog') {?>
+cur.catalogSection = 'all';
+cur.searchType = '0';
+<? } ?>
+
+Apps.init({
+  "id": <?=$user->user_info['user_id']?>,
+  "gid": 0,
+  "oid": <?=$user->user_info['user_id']?>,
+  "section": '<?=$act?>',
+  "silent_mode": 1,
+  "isGroupAdmin": 0,
+  "shownApps": 50,
+  "backLang": "Приложения"
+}, function(app, last) {
+  var cl = last ? 'app_row last' : 'app_row';
+  var aid = app[0];
+  var img = '<img src="'+app[1]+'"/>';
+  var name = app[3];
+  var url = app[2];
+  if (url) {
+    var away = (url.substr(0, 8) == 'away.php');
+    if (away) {
+      var js_url = url.split('&').join('&amp;');
+      name = '<a href="' + url + '" class="app_link" target="_blank" onclick="return goAway(\'' + js_url + '\')">' +  name + '</a>';
+      img = '<a href="' + url + '" class="app_link" target="_blank" onclick="return goAway(\'' + js_url + '\')">' +  img + '</a>';
+    } else {
+      name = '<a href="' + url + '" class="app_link">' +  name + '</a>';
+      img = '<a href="' + url + '" class="app_link">' +  img + '</a>';
+    }
+  } else {
+    name = '<span class="app_link">' +  name + '</span>';
+  }
+  var count = app[4] ? langNumeric(app[4], cur.summaryLang['x_likes'], true) : getLang('apps_noparticipants');
+  var actions = '';
+  var hash = app[5];
+  if (cur.isGroupAdmin) {
+    actions += '<div class="app_delete_row" id="delete_row' + aid + '" onmouseover="Apps.rowActive(' + aid + ', \'' + getLang('apps_removefromgroup') + '\')" onmouseout="Apps.rowInactive(' + aid + ')" onclick="Apps.removeApp(' + aid + ', \'' + hash + '\'); return false"></div>';
+  }
+  if (cur.id == vs.id && !parseInt(app[6])) {
+    actions += '<div class="app_delete_row" id="delete_row' + aid + '" onmouseover="Apps.rowActive(' + aid + ', \'' + getLang('apps_removefrompage') + '\')" onmouseout="Apps.rowInactive(' + aid + ')" onclick="Apps.removeApp(' + aid + ', \'' + hash + '\'); return false"></div>';
+  }
+  if (actions) actions = '<td class="app_hide">' + actions + '</td>';
+	
+  return '<div id="app' + aid + '"><div class="' + cl + '" onmouseover="Apps.rowOver(' + aid + ')" onmouseout="Apps.rowOut(' + aid + ')">\n <table cellspacing="0" border="0">\n  <tr>\n   <td class="app_image" >\n    <div class="app_subdimage">' + img + '</div>\n   </td>\n   <td class="app_info">\n      <div class="app_name">'+name+'</div>\n      <div class="app_audience">' + count + '</div>\n   </td>\n   ' + actions + '\n  </tr>\n </table>\n</div></div>';
+}, function(app, last) {
+  var cl = last ? 'app_row last' : 'app_row';
+  var aid = app[0];
+  var url = app[1];
+  var img = '<img src="' + app[2] + '"/>';
+  var name = app[3];
+  var hash = app[7];
+  if (url) {
+    name = '<a href="' + url + '" class="app_link">' +  name + '</a>';
+    img = '<a href="' + url + '" class="app_link">' +  img + '</a>';
+  }
+  var friends = '<div class="app_friends"><table><tr>';
+  for (var i in app[6]) {
+    var memname = app[6][i][0];
+    var link = app[6][i][1];
+    var image = app[6][i][2];
+    friends += '<td><a title="' + memname + '" href="' + link + '" onclick="return nav.go(this, event);"><img src="' + image + '" /></a></td>'
+  }
+  friends += '</tr></table></div>';
+
+  return '<div id="app' + aid + '">\n<div class="' + cl + '" onmouseover="Apps.rowOver(' + aid + ')" onmouseout="Apps.rowOut(' + aid + ')">\n <table cellspacing="0" border="0">\n  <tr>\n   <td class="app_image" >\n    <div class="app_subdimage">\n    ' + img + '\n    </div>\n   </td>\n   <td class="app_search_info">\n      <div class="app_name">\n       ' + name + '\n      </div>\n      ' + app[4] + '\n      <div class="app_users">' + app[5] + '</div>\n      ' + friends + '\n   </td>\n   <td class="app_hide">\n      <div class="app_delete_row" id="delete_row' + aid + '" onmouseover="Apps.rowActive(' + aid + ', \'' + getLang('apps_dont_show') + '\')" onmouseout="Apps.rowInactive(' + aid + ')" onclick="Apps.deleteRow(' + aid + ', \'' + hash + '\')"></div>\n   </td>\n  </tr>\n </table>\n</div>\n</div>';
+}, function(app, last) {
+  var cl = last ? 'app_row last' : 'app_row';
+  var aid = app[0];
+  var url = app[1];
+  var img = '<img src="' + app[2] + '"/>';
+  var name = app[3];
+  var hash = app[6];
+  if (url) {
+    name = '<a href="' + url + '" class="app_link">' +  name + '</a>';
+    img = '<a href="' + url + '" class="app_link">' +  img + '</a>';
+  }
+
+  return '<div id="app' + aid + '">\n<div class="' + cl + '" onmouseover="Apps.rowOver(' + aid + ')" onmouseout="Apps.rowOut(' + aid + ')">\n <table cellspacing="0" border="0">\n  <tr>\n   <td class="app_image" >\n    <div class="app_subdimage">\n    ' + img + '\n    </div>\n   </td>\n   <td class="app_search_info">\n      <div class="app_name">\n       ' + name + '\n      </div>\n      ' + app[4] + '\n      <div class="app_users">' + app[5] + '</div>\n   </td>\n   <td class="app_hide">\n      <div class="app_delete_row" id="delete_row' + aid + '" onmouseover="Apps.rowActive(' + aid + ', \'' + getLang('apps_dont_show') + '\')" onmouseout="Apps.rowInactive(' + aid + ')" onclick="Apps.hideRow(' + aid + ', \'' + hash + '\')"></div>\n   </td>\n  </tr>\n </table>\n</div>\n</div>';
+});
+
+cur.summaryLang = {"apps_X_apps_found":["","Найдено %s приложение","Найдено %s приложения","Найдено %s приложений"],"no_apps":"Нет приложений","apps_popular_summary":"Популярные приложения"};
+cur.searchSort = 0;
+cur.newLook = 1;
+cur.loadMore = 0;
+if (0) {
+  hide('support_link_td');
+}
+var ts_input = ge('ts_input'), oldFF = browser.mozilla && parseInt(browser.version) < 8;
+if (browser.mozilla && !oldFF) {
+  setStyle(ts_input, {padding: (vs.rtl ? '3px 22px 4px 4px' : '3px 4px 4px 22px')});
+}
+placeholderSetup(ts_input, {back: false, reload: true});
+if (browser.opera || browser.msie || oldFF) {
+  setStyle(ts_input, {padding: (vs.rtl ? '3px 22px 4px 4px' : '3px 4px 4px 22px')});
+}
+if (browser.chrome) {
+  setStyle(ts_input, {padding: (vs.rtl ? '4px 23px 3px 2px' : '4px 3px 3px 23px')});
+}
+
+if (browser.msie8 || browser.msie7) {
+  var st = {border: '1px solid #a6b6c6'};
+  if (hasClass(ge('ts_wrap'), 'vs')) {
+    if (vs.rtl) st.left = '1px';
+    else st.right = '0px';
+  } else {
+    if (vs.rtl) st.right = '146px';
+    else st.left = '146px';
+  }
+  setStyle(ge('ts_cont_wrap'), st);
+}
+window.tsHintsEnabled = 1;

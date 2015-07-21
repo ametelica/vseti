@@ -1,0 +1,3 @@
+<?php
+echo '<img class="sticker_img" height="128" src="/images/stickers/'.$var['media_id'].'/128.png">';
+?>

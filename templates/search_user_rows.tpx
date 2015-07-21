@@ -1,0 +1,24 @@
+<? 
+global $offset;
+if(!empty($var['users'])) {
+foreach($var['users'] as $u) { 
+?><div class="people_row three_col_row clear_fix">
+  <div class="img search_bigph_wrap fl_l" onmouseover="Searcher.bigphOver(this, <?=$u->id?>)">
+    <a href="<?=$u->lnk?>" onclick="return nav.go(this, event);"><img class="search_item_img" src="<?=$u->photo('b')?>" /></a>
+  </div>
+  <div class="info fl_l">
+    <div class="labeled name"><a href="<?=$u->lnk?>" onclick="return nav.go(this, event);"><?=$u->title?></a></div><!--<div class="labeled ">Москва, Россия</div>--><? if($u->is_online()) { ?><div class="online">ВСети<b class="mob_onl search_mob_onl"  onmouseover="mobileOnlineTip(this, {mid: <?=$u->id?>})" onclick="mobilePromo(); "><? } ?></b></div>
+  </div>
+</div><? 
+
+//dmp($u);
+} 
+
+if($offset == 0 and $var['hasmore']) { ?>
+	<a id="show_more_link" onclick="return searcher.showMore();" class="clear" style="<? if(!$var['more']) { ?>display: none;<? } ?>">
+  <div id="show_more_progress" class="progress"></div>
+  <div id="show_more">Показать ещё</div>
+</a><? }
+} else {
+	echo '<div id="no_results" class="">Ваш запрос не дал результатов</div>';
+}?>

@@ -1,0 +1,21 @@
+<?php
+global $group, $new_design;
+if($new_design) { ?>
+<div id="group_like_module">
+    <?=tpx('group_block_photo_like')?>
+</div>
+<div id="page_actions" class="page_actions" style="">
+    <?=tpx('group_block_photo_actions', array('only_admins' => 1))?>
+</div>    
+
+<? } else { ?>
+<div id="group_avatar" class="group_avatar">
+    <img src="<?=$group->group_photo()?>" />
+</div>
+<div id="page_actions" class="page_actions" style="">
+    <?=tpx('group_block_photo_actions')?>
+</div>    
+<div id="group_like_module">
+    <?=tpx('group_block_photo_like')?>
+</div>
+<? } ?>

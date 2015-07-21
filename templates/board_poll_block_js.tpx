@@ -1,0 +1,30 @@
+<?php
+	global $poll, $user, $context;
+if($poll and $poll->error == 0) {
+if(!empty($var['message'])) { ?>showDoneBox("<?=$var['message']?>");<? } 
+if($poll->error) { ?>
+	showDoneBox("<?=$poll->error_text?>");
+<? } else { 
+if($poll->can_vote) { ?>
+window.radioBtns['vote_option<?=$poll->id?>'] = {
+  els: ge('vote_option<?=$poll->id?>').childNodes
+}
+if (!cur.polls) {
+  cur.polls = {};
+}
+cur.polls['<?=$poll->id?>'] = {"id":"<?=$poll->id?>","hash":"<?=hash_get($user->id, 16, 'pvt')?>"};
+<? }
+	
+	if($poll->aid == $user->id or $poll->can_edit) { ?>
+cur.privacy = extend(cur.privacy || {}, {
+  voting_action: [0, 0, []],
+  voting_action_types: <?=jenc($poll->actions())?>,
+  voting_action_lists: []
+});<? } ?>
+ 
+extend(cur, {_voting: {oid: <?=$poll->oid?>, vid: <?=$poll->id?>, hash: '<?=hash_get($user->id, 16, 'pvt')?>'}});
+<? } 
+
+if(empty($context)) echo 'if(cur.smartResize) {cur.smartResize(true)};';
+	
+	}?>

@@ -1,0 +1,88 @@
+<?php
+	global $user, $new_design, $interests_new, $interests_text;
+
+if($new_design) {
+	echo tpx('header_design');
+}
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><div class="t_bar tabs clear_fix"><?
+    	echo tpx('profile_edit_menu');
+    ?></div>
+<div id="profile_editor">
+  <div id="pedit_result"></div>
+  <div id="pedit_interests">
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">Деятельность:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <textarea id="pedit_interests_activities" class="dark" autocomplete="off"><?=$user->profile_info['activities']?></textarea>
+      </div>
+      <div class="pedit_interests_details fl_l">Участие в организациях, общественные посты</div>
+    </div>
+    
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">Интересы:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <input type="hidden" id="interests_mode" value="<?=$interests_new?1:0?>" />
+        <div id="interests_new" <? if(!$interests_new){ ?>style="display: none;"<? } ?>><input type="hidden" id="pedit_interests_interests2" name="" /><a href="#" onclick="show(ge('interests_old')); hide(ge('interests_new')); ge('interests_mode').value = '0'; return false;">Вернуться к старому текстовому виду</a></div>
+        <div id="interests_old" <? if($interests_new){ ?>style="display: none;"<? } ?>><textarea id="pedit_interests_interests" class="dark" autocomplete="off"><?=$interests_text?></textarea><a href="#" onclick="hide(ge('interests_old')); show(ge('interests_new')); ge('interests_mode').value = '1'; return false;">Переключиться на новый вид графических тегов</a></div>
+      </div>
+    </div>
+	
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">Устремления:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <textarea id="pedit_interests_aspirations" class="dark" autocomplete="off"><?=$user->profile_info['aspirations']?></textarea>
+      </div>
+    </div>
+    
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">Любимая музыка:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <textarea id="pedit_interests_music" class="dark" autocomplete="off"><?=$user->profile_info['music']?></textarea>
+      </div>
+      <div class="pedit_interests_details fl_l">Группы, исполнители, композиторы</div>
+    </div>
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">Любимые фильмы:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <textarea id="pedit_interests_movies" class="dark" autocomplete="off"><?=$user->profile_info['movies']?></textarea>
+      </div>
+    </div>
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">Любимые телешоу:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <textarea id="pedit_interests_tv" class="dark" autocomplete="off"><?=$user->profile_info['tv']?></textarea>
+      </div>
+    </div>
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">Любимые книги:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <textarea id="pedit_interests_books" class="dark" autocomplete="off"><?=$user->profile_info['books']?></textarea>
+      </div>
+    </div>
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">Любимые игры:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <textarea id="pedit_interests_games" class="dark" autocomplete="off"><?=$user->profile_info['games']?></textarea>
+      </div>
+    </div>
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">Любимые цитаты:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <textarea id="pedit_interests_quotes" class="dark" autocomplete="off"><?=$user->profile_info['quotes']?></textarea>
+      </div>
+    </div>
+    <div class="pedit_interests_row clear_fix">
+      <div class="pedit_interests_label fl_l ta_r">О себе:</div>
+      <div class="pedit_interests_labeled fl_l">
+        <textarea id="pedit_interests_about" class="dark" autocomplete="off"><?=$user->profile_info['about']?></textarea>
+      </div>
+    </div>
+    <div class="pedit_controls clear_fix">
+      <div class="button_green fl_l">
+        <button onclick="ProfileEditor.saveInterests(this)">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div></div></div></div>

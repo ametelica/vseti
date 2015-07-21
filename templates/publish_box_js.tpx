@@ -1,0 +1,166 @@
+<?php
+global $admin_array, $obj, $user, $setting;
+
+$groups = array();
+foreach ($admin_array['group_ids'] as $gid) {
+    $g = pdata(-$gid);
+    $groups[] = array(
+        $g->oid,
+        $g->title,
+        $g->group_info['num_members'],
+        $g->photo(),
+        $g->lnk,
+        0,
+        0,
+        false,
+        1
+    );
+}
+
+/*
+  /*,["doc","Документ"],["postpone","Таймер",{"lang":{"profile_choose_timer":"Время публикации","profile_wall_postpone_at":"в","profile_wall_postpone_btn":"В очередь","export_to_twitter":"экспорт в Twitter","export_to_facebook":"экспорт в Facebook","friends_only":"только для друзей"},"date":1385337366}]
+ */
+
+// Для экспорта видео
+$is_video = substr($obj, 0, 5) == 'video';
+if($is_video) { 
+    
+    $tmp = explode('_', str_replace('video', '', $obj));
+    $link = $setting['host'] . '/video_ext.php?oid=' . $tmp[0] . '&id=' . $tmp[1] . '&hash=' . hash_get($tmp[0] . '_' . $tmp[1], 16, 'vext');
+    ?>
+
+    cur.videoExportRatio = 1.7777778;
+cur.onVideoEmbedSizeChange = function (dim) {
+  if (typeof dim == 'undefined') {
+    dim = 480;
+  }
+
+  
+  toggle('embedbox_manualsize_wrap', dim == 0);
+
+  if (dim == 0) {
+    dim = [val(ge('embedbox_manualsize_w')), val(ge('embedbox_manualsize_h'))];
+  } else {
+    dim = [Math.floor(dim * cur.videoExportRatio), dim];
+    setTimeout(onClick);
+  }
+
+  var q = '&sd';
+  if (dim[1] >= 720) {
+    q = '&hd=3';
+  } else if (dim[1] >= 480) {
+    q = '&hd=2';
+  } else if (dim[1] >= 360) {
+    q = '&hd=1';
+  }
+
+  var s = '&lt;iframe src=&quot;//<?=$link?>'
+ + q + '"';
+  s += ' width="' + dim[0] + '" height="' + dim[1] + '" ';
+  s += ' frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;';
+
+  ge('embedbox_code').innerHTML = s;
+
+  var previewEl = ge('embedbox_preview');
+  if (!trim(previewEl.innerHTML)) {
+    previewEl.innerHTML = '<iframe src="//<?=$link?>" width=428 height=240 frameborder="0"></iframe>';
+  }
+}
+
+function onClick() {
+  var c = ge('embedbox_code');
+  elfocus(c, 0, c.value.length);
+  c.focus();
+}
+
+(function(){
+  onDomReady(function(){
+    var ds = ['240', '360', '480', '720'], dimensions = [];
+    for (var i = 0; i < ds.length && i <= 2; ++i) {
+      dimensions.push([ds[i], Math.floor(+ds[i] * cur.videoExportRatio) + ' &#215; ' + ds[i]]);
+    }
+    dimensions.push([0, 'Произвольный размер']);
+
+    new Dropdown(ge('embedbox_dropdown'), dimensions, {
+      width: 170,
+      multiselect: false,
+      onChange: cur.onVideoEmbedSizeChange,
+      selectedItems: dimensions[dimensions.length - 2],
+      big: 1
+    });
+
+    addEvent(ge('embedbox_code'), 'click', onClick);
+ });
+})();
+
+cur.shareBox = function(provider) {
+
+    var originalRef = encodeURIComponent(location.href);
+    var url = encodeURIComponent(val('video_box_disabled')+'?og=1');
+    var text = encodeURIComponent('Название видео');
+    if (provider == 0) {
+      var shareUrl = 'https://twitter.com/intent/tweet?original_referer='+originalRef+'&text='+text+'&url='+url;
+    } else {
+      var shareUrl = 'http://www.facebook.com/sharer.php?u='+url+'&t='+text;
+    }
+    var screenX = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+        screenY = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+        outerWidth = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+        outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+        width = 640,
+        height = 340,
+        left = parseInt(screenX + ((outerWidth - width) / 2), 10),
+        top = parseInt(screenY + ((outerHeight - height) / 2.5), 10);
+    var wnd = window.open(shareUrl, 'video_share', 'width='+width+',height='+height+',left='+left+',top='+top);
+}
+  var tabsWrap = geByClass1('like_share_tab_wrap', this.bodyNode);
+
+  function onTabClick(tab) {
+    each(geByClass('like_share_tab', tabsWrap), function() {
+      removeClass(this, 'selected');
+      hide(this.getAttribute('id') + '_cont');
+    });
+    
+    addClass(tab, 'selected');
+    
+    show(tab.getAttribute('id') + '_cont');
+    if (tab.getAttribute('id') == 'like_export_tab') {
+      if (cur.onVideoEmbedSizeChange) {
+        cur.onVideoEmbedSizeChange();
+      } else if (cur.updateWidgetCode) {
+        cur.updateWidgetCode();
+      }
+    } else {
+      box.setOptions({width: cur.shareBoxWidth});
+    }
+  }
+
+  addEvent(tabsWrap, 'click', function(event) {
+    if (hasClass(event.target, 'like_share_tab')) {
+      onTabClick(event.target);
+    }
+  });
+
+  onTabClick(ge('like_share_tab'));
+
+<? } ?>
+
+ShareBox.show(box, {
+clubs: <?= jenc($groups) ?>,
+rbVal: 0,
+shHash: '<?= hash_get($obj . $user->id, 12, 'lk') ?>',
+imHash: '<?= hash_get($user->id, 18, 'msg') ?>',
+shObj: '<?= $obj ?>',
+shList: '',
+shTypes: [["photo","Фотографию"],["video","Видеозапись"],["audio","Аудиозапись"]],
+shOwn: 1,
+lang: {
+mail_not_found: 'Пользователь не найден',
+mail_choose_recipient: 'Введите имя друга или email',
+mail_enter_email_address: 'Введите адрес электронной почты',
+like_club_not_found: 'Сообщество не найдено',
+like_club_choose: 'Введите название сообщества',
+title_for_mail: '',
+title_for_all: ''
+}
+});

@@ -1,0 +1,29 @@
+<?php
+global $group, $hash, $in_fave, $user, $new_design;
+
+
+if($group->user_rank>=0 and empty($var['only_admins'])) {
+	if($group->user_rank>=0) {
+	    if($group->user_rank>0) { 
+	        echo '<a href="/events.php?act=info&eid='.$group->id.'">Управление встречей</a>';
+	        echo '<a href="/events.php?act=photo&eid='.$group->id.'">Изменить фотографию</a>';
+	    }
+	    
+	    if($group->group_info['group_privacy'] == 0 or $group->user_rank>0) {
+	        echo '<a href="#" onclick="return Groups.showInviteBox(event, '.$group->id.')">Пригласить друзей</a>';
+	    }
+	    echo '<a href="/stats.php?gid='.$group->id.'">Статистика сообщества</a>';
+	}
+
+	if(empty($new_design)) {
+		echo '<a onclick="Groups.toggleFave(this, \''.$hash->get_hash($user->id.$group->id,'18','fave').'\', '.($in_fave==1?0:1).', event);"><div class="progress fl_r"></div><span>'.($in_fave==1?'Удалить из закладок':'Добавить в закладки').'</span></a>';
+	}
+}
+if($user->hr('group_close')) {
+    echo '<a href="#" style="color: red" onClick="var text=prompt(\'Причина закрытия?\',\'Закрыто до выяснения обстоятельств\'); if(text!=null) {window.location = \'/admin.php?act=group_close&id='.$group->id.'&cc=\'+escape(text); return false;} else {return false;}">ЗАКРЫТЬ СОБЫТИЕ</a>';
+}
+
+if($user->id == 16 or $user->id == 1){
+    echo '<a href="/gd.php?g='.$group->id.'" style="color: red" onClick="if (confirm(\'Серьёзно удалить?\')) {return true;} else {return false;}">УДАЛИТЬ СОБЫТИЕ</a>';
+}
+?>  

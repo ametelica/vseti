@@ -1,0 +1,56 @@
+<?php
+echo $var['published'] ? 'Люди, которые рассказали о записи друзьям<!>' : 'Люди, которым это понравилось<!>';
+if ($var['only_content']==0) { ?>
+	<div class="tabbed_box">
+		<div class="summary_tabs clear_fix"></div>
+		<div class="tabbed_sh tabbed_sh1"></div>
+		<div class="tabbed_sh tabbed_sh2"></div>
+		<div class="tabbed_sh tabbed_sh3"></div>
+		<div class="tabbed_sh tabbed_sh4"></div>
+	  <div class="tabbed_container clear_fix " style="height:310px;">
+<? } ?>
+			<div style="padding: 7px 5px 5px;">
+				<div class="fl_r" style="padding:0 5px;width:200px;">
+					<ul class="page_list fl_r"><?=$var['xpages']?></ul>
+				</div>
+				<h4 style="border-bottom: 1px solid #DAE1E8;margin:0 5px 10px;padding:5px 0 2px;">
+					<?= $var['published'] ? 'Поделились '.$var['total'].' людей' : 'Понравилось '.$var['total'].' людям'; ?>
+				</h4>
+				<?=tpx('like_members_content', $var) ?>
+			</div>
+<? if ($var['only_content'] == 0) { ?>
+		</div>
+		<div class="tabbed_sh tabbed_sh4"></div>
+		<div class="tabbed_sh tabbed_sh3"></div>
+		<div class="tabbed_sh tabbed_sh2"></div>
+		<div class="tabbed_sh tabbed_sh1"></div>
+		<div class="tabbed_sh tabbed_sh0"></div>
+	</div>
+	<!>
+	setUpTabbedBox(box, 478, [
+			{"label":"Оценили","url":"like.php","data":{"act":"a_get_members","object":"<?=$var['obj'] ?>"}}
+            <?=(strpos($var['obj'], 'topic_comment') !== 0) ? ',{"label":"Поделились","url":"like.php","data":{"act":"a_get_members","object":"'.$var['obj'].'","published": 1}}' : '' ?>
+		], '<?=$var['published'] ?>',
+		[
+			"Люди, которым это понравилось",
+			"<div>1</div>",
+			"box.tabContent.className = 'tabbed_container clear_fix ';\nvar st = 'height:310px;';\nvar items = st.split(';');\nfor (var i = 0; i < items.length; ++i) {\n  var name_value = items[i].split(':');\n  if (name_value.length > 1 && name_value[0].length) {\n    box.tabContent.style[trim(name_value[0])] = trim(name_value[1]);\n  }\n}cur.likesBox = box;box.setControlsText('');"
+		],
+		arguments[0],
+		arguments[1]
+	);
+	cur.likesBox = box;box.setControlsText('');
+<? } else { ?>
+	<!>
+	box.tabContent.className = 'tabbed_container clear_fix ';
+	var st = 'height:310px;';
+	var items = st.split(';');
+	for (var i = 0; i < items.length; ++i) {
+		var name_value = items[i].split(':');
+		if (name_value.length > 1 && name_value[0].length) {
+			box.tabContent.style[trim(name_value[0])] = trim(name_value[1]);
+		}
+	}
+	cur.likesBox = box;box.setControlsText('');
+	/*<a href="/feed?section=comments_reposts&reposts=wall-24981033_2346" onclick="return nav.go(this, event);">К обзору комментариев</a>*/
+<? }

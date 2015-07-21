@@ -1,0 +1,12 @@
+<?php
+global $oaid;
+foreach ($var['photos'] as $photo) {
+	
+	$tmp = explode('/',$photo->view('x'));
+	
+	$user_path = join('/', array_slice($tmp,0,4));
+	$album_path = join('/',array_slice($tmp,-2));
+	
+?><div class="pva_photo"><a href="/photo<?= $photo->uid ?>" onclick="return showPhoto('<?= $photo->uid ?>', 'album<?= $oaid ?>', {temp:{base:&quot;<?=$user_path?>/&quot;,x_:[&quot;<?=$album_path?>&quot;,604,453],y_:[&quot;4088/fJSgnIFQVXM&quot;,807,605],z_:[&quot;4089/xaorzHqnjDM&quot;,1280,960]}, jumpTo: {z: 'album<?= $oaid ?>'}}, event)" class="pva_photo_link"><img class="pva_photo_img" src="<?= $photo->view() ?>" /></a></div><? 
+}
+?>

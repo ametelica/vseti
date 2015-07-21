@@ -1,0 +1,65 @@
+<?php
+global $new_design;
+$post = $var['post'];
+
+//dmp($post);
+
+if(!empty($post['media_arr'])) {
+	if($new_design) {
+		//$post['media_arr'] = parse_media($post['media_arr'], 'mail' . $post['pm_id'] );
+	
+		echo '<div class="wall_module">';
+		$media_photos = array();
+		
+		if(count($post['media_arr']) > 1 or $post['media_arr'][0]['type'] != 'video') {
+			foreach($post['media_arr'] as $k => $m) {
+				//dmp($m);
+				if($m['type'] == 'photo' or $m['type'] == 'video' or $m['type'] == 'album') {
+					$media_photos[] = $m;
+					unset($post['media_arr'][$k]);
+				}
+			}
+		}
+		
+		// Мозайка
+		
+		if(!empty($media_photos)){
+			
+			echo '<div>';
+			$assign = mosaic(537, 310, $media_photos, array('wide' => 1));
+			echo tpx('page_wall_media_rows', $assign);
+			echo '</div>';
+		}
+		
+		// Остальное медиа
+		
+		if(!empty($post['media_arr'])) {
+			echo '<div class="post_media">';
+			$cnt_photo = 0;
+			foreach ($post['media_arr'] as $media) {
+				if(is_array($media) and $media['type']=='photo') {
+					$cnt_photo++;
+				}
+			}
+			//dmp($post['media_arr']);
+
+			foreach ($post['media_arr'] as $media) {
+				if (is_array($media)) {
+
+					$assign = $media;
+					if($cnt_photo==1) {
+						$assign['cnt_photo'] = 1;
+					}
+					echo tpx('page_wall_media_' . $media['type'], $assign);
+				} else
+					echo $media;
+			}
+			echo '</div>';
+		}
+		echo '</div>';
+	} else {
+		echo '<div class="error">Отобращение прикреплённых файлов возможно только в новом дизайне<br /> (Настройки -> Включить новый дизайн)</div>';
+	}
+}
+
+?>

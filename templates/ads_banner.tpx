@@ -1,0 +1,103 @@
+<?php
+global $path_css,$path_js,$hash,$user,$langpack,$datetime,$setting;
+echo tpx('header_css');
+?>
+<style>
+#content img {
+	border-radius: 7px;
+	float: left;
+	margin-right: 12px;
+}
+#content {
+	padding: 0px !important;
+	margin: 0px !important;
+	background-color: #f9f9f9;
+}
+#content p {
+	font-size: 14px;
+	padding-left: 10px;
+	/* text-indent: 30px; */
+}
+#content h4{
+	font-size: 15px;
+}
+#content h1{
+	border-bottom: 1px solid #E8EBEE;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  padding: 0 0 3px;
+  margin-bottom: 10px;
+}
+#button_green {
+	margin: 0px auto;
+}
+#main_panel {
+	border-right: 1px solid #ECF1E9;
+	width: 550px;
+	float: left;
+	padding: 12px;
+	background-color: white;
+}
+#right_panel {
+	width: 230px;
+	float: right;
+	padding: 12px;
+}
+#bxxt1{
+	font-size: 25px; 	
+	text-shadow: #000 0px -2px 0px;
+	font-weight: bold;
+}
+</style>
+<link rel="stylesheet" href="<?=$path_css?>/al/common.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/rustyle.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/al/page.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/al/wiki3.css" type="text/css" />
+<?
+echo tpx('header_func');
+?>
+<div id="page_body" class="fl_r">
+ <div id="header_wrap2">
+  <div id="header_wrap1">
+   <div id="header" style="">
+    <h1 id="title">
+     <a href="/start.php">Главная</a> &raquo; Мои объявления
+    </h1>
+   </div>
+  </div>
+ </div>
+ <div id="wrap_between"></div>
+ <div id="wrap3">
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content">
+   <div id="main_panel">
+		
+		<p align="justify">Система внутренних объявлений позволяет привлечь внимание к группе или событию. Цену размещения объявления Вы выбираете сами, но чем выше будет установлена цена - тем чаще оно будет показываться и соответственно эффективнее работать.</p>
+		
+		<h4>Настройки</h4>
+		 <p>
+		 	
+		 	</p>
+		 	
+		 	<h4>Контакты</h4>
+		 	<p>
+		 	</p>
+		 	 
+		</div>
+		<div id="right_panel">
+			<h4>Что получится</h4>
+			<p>
+      </p>
+
+		</div>
+		 
+   </div><!--/content-->
+  </div><!--/wrap1-->
+ </div><!--/wrap2-->
+ </div><!--/wrap3-->
+</div><!--/page_body-->
+<?
+echo tpx('footer');
+?>

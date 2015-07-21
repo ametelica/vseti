@@ -1,0 +1,20 @@
+<?php 
+global $video;
+
+$privacy_text = user_privacy_levels($video->privacy, '', 1);
+$privacy_comm_text = user_privacy_levels($video->privacy_comm, '', 1);
+
+?><div class="mv_edit_header">Название</div>
+<input id="mv_title_text" type="text" class="text" value="<?=$video->title?>" />
+<br /><br />
+<div class="mv_edit_header">Описание</div>
+<textarea id="mv_desc_text" onkeyup="checkTextLength(2000, this, 'mv_desc_warn')" onchange="curBox().changed=true;"><?=$video->desc?></textarea>
+<div id="mv_desc_warn"></div><br />
+<div class="mv_edit_header">Альбом</div>
+<input id="mv_edit_album" type="hidden" class="text" value="<?=$video->album_id?>" />
+<div id="mv_edit_create_album" style="display: none;">
+  <br/>
+  <input id="mv_create_album" type="text" class="text" value="" placeholder="Введите название альбома" />
+</div><br />
+<div class="video_privacy_edit">Кому можно смотреть это видео?  <a id="privacy_edit_video<?=$video->id?>" onclick="return Privacy.show(this, event, 'video<?=$video->id?>')"><?= $privacy_text['text'] ?></a><span><?= $privacy_text['add'] ?></span></div>
+<div class="video_privacy_edit">Кому можно комментировать это видео?  <a id="privacy_edit_videocomm<?=$video->id?>" onclick="return Privacy.show(this, event, 'videocomm<?=$video->id?>')"><?= $privacy_comm_text['text'] ?></a><span><?= $privacy_comm_text['add'] ?></span></div><!--<div id="video_edit_repeat" class="checkbox video_edit_checkbox " onclick="checkbox(this)"><div></div>Зацикливать воспроизведение видеозаписи</div>-->

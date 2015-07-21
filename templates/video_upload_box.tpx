@@ -1,0 +1,100 @@
+<?php
+global $user, $video_albums;
+?>
+<div id="video_upload_tab" class="video_upload_tab">
+  <div id="video_upload_info">
+		<? if($user->byfly) {
+			if($user->user_info['user_video_upload']) {
+		 ?>
+    <div class="video_add_label">Название</div>
+    <input type="text" class="text" id="video_upload_title" onchange="curBox().changed=true;" />
+    <div class="video_add_label">Описание<span class="video_add_optionally"></span></div>
+    <textarea id="video_upload_description" class="video_upload_textarea" onkeyup="checkTextLength(512, this, ge('text_warn'), true)" onchange="curBox().changed=true;"></textarea>
+    <? if($video_albums['total'] > 0) { ?>
+	<div class="video_add_label">Альбом</div>
+	<input type="hidden" id="video_upload_album" />
+    <? } ?>
+    <br /><span id="text_warn" class="text_warn"></span>
+    <div class="video_add_label">Настройки</div><div class="video_upload_privacy">
+  Кому можно смотреть это видео?  <a id="privacy_edit_video" onclick="return Privacy.show(this, event, 'video')">Всем пользователям</a><span></span>
+	<div class="video_upload_privacy">
+  Кому можно комментировать это видео?  <a id="privacy_edit_videocomm" onclick="return Privacy.show(this, event, 'videocomm')">Всем пользователям</a><span></span>
+</div><!--<div id="video_edit_repeat" class="checkbox video_edit_checkbox " onclick="checkbox(this)"><div></div>Зацикливать воспроизведение видеозаписи</div>-->
+    <!--<div id="video_upload_status_export" style="" class="checkbox video_upload_checkbox" onclick="checkbox(this)"><div></div>Опубликовать на моей странице</div>-->
+	<? } else { ?>
+	<br />Загрузка видеофайлов для Вашего аккаунта в данный момент недоступна. Но Вы можете смотреть и добавлять себе видеофайлы, загруженные другими пользователями. <br /><br />
+	Чтобы включить возможность загрузки - необходимо завалидировать <a href="/payments.php">хотя бы 1 зайчик</a>.<br /><br />
+	Мы пошли на эти меры, чтобы на сервере было больше интересного видео, и меньше некачественных роликов, загруженных несерьёзными пользователями.<br /> Спасибо за понимание!
+	<?}
+	} else { ?>
+	<br />Видео на наш сайт можно загрузить только из Беларуси, используя Белтелеком. Это досадное ограничение связано с тем, что в Беларуси платный внешний трафик.
+	<? } ?>
+</div>
+  </div>
+  <div id="video_upload_file">
+    <div id="video_upload_error_msg" style="display: none">
+      Не удалось сохранить это видео.
+    </div>
+    <!--<h4>Выберите видеозапись на Вашем компьютере</h4>-->
+    <ul class="video_upload_rules">
+      <li><span>Файл не должен нарушать авторские и смежные права</span></li>
+      <li><span>Видеофайл не должен содержать порнографии, проявлений жестокости, пропаганды экстремизма, нецензурных слов в описании видео и названии видео.</span></li>
+      <li><span>Не должен противоречить законодательству РБ и <a class="wikiVkLink" href="/help.php?page=terms">Правилам ВСети</a> </span></li>
+      <li><span>Максимальный допустимый объем файла – 1 Гб </span></li>
+      <li><span>Поддерживаются форматы AVI, MP4, 3GP, MPEG, MOV, MKV, FLV или WMV.</span></li>
+    </ul>
+    <div id="video_upload_box">
+      <img style="margin-top: 20px;" src="/images/upload.gif" />
+    </div>
+    <div id="video_upload_info_box" style="display: none">
+      Загрузка может длиться несколько минут.<br />Пожалуйста, не закрывайте это окно, пока видеозапись не загрузится.
+    </div>
+  </div>
+</div>
+<div id="video_add_from_youtube_tab" class="video_upload_tab">
+	<? if($user->id != 16 and 0) { ?>
+	<br />ВСети не поддерживает добавление видео со сторонних сайтов, потому что весь контент должен быть доступен внутри Беларуси. Вы можете скачать видеозапись себе на компьютер и загрузить на <b>ВСети</b> как видеофайл.<br /><br />
+	Для скачивания файлов с youtube.com и других сервисов рекомедуем пользоваться сервисом <a href="http://ssyoutube.com">ssyoutube.com</a>.-->
+	<? } else { ?>
+  <form method="POST" id="video_share_form" action="http://cs1.vseti.by/upload.php" target="video_share_frame">
+    <div class="video_add_label">Ссылка на видеоролик</div>
+    <input id="video_external_link" name="url" type="text" class="text" id="video_upload_link" />
+
+    <input type="hidden" name="act" value="parse_share" />
+    <input type="hidden" name="from_host" value="vk.com" />
+    <input type="hidden" name="mid" value="<?=$user->id?>" />
+    <input type="hidden" name="hash" value="b00e5adbba96566cad79bbca585742ed" />
+    <input type="hidden" name="rhash" value="bf3855aa7314192570498eadea9cdbd6" />
+  </form>
+	<?} ?>
+  <form method="POST" id="video_share_photo_form" action="/share.php" target="video_share_photo_frame">
+    <input type="hidden" name="act" value="a_photo" />
+    <input type="hidden" name="url" id="video_share_photo_url" value="" />
+    <input type="hidden" name="image" id="video_share_photo_image" value="" />
+    <input type="hidden" name="extra" id="video_share_photo_extra" value="" />
+  </form>
+  <iframe id="video_share_frame" name="video_share_frame" style="display: none;"></iframe>
+  <iframe id="video_share_photo_frame" name="video_share_photo_frame" style="display: none;"></iframe>
+
+  <div id="video_share_error">Видеосервис не поддерживается, либо ссылка является неправильной</div>
+  <div id="video_share_not_allowed">Эта видеозапись недоступна для проигрывания через <b>ВСети</b>. Вы можете обратиться к автору видеозаписи с просьбой разрешить ее встраивание либо скачать ее на компьютер и загрузить на <b>ВСети</b> как видеофайл.</div>
+  <div id="video_share_server_error">Не удалось сохранить это видео.</div>
+  <br />
+  <div id="video_extra_settings" style="display: none;">
+    <div class="video_add_label">Изображение</div>
+    <div id="video_external_image"></div>
+    <div class="video_add_label">Название</div>
+    <input type="text" class="text" id="video_external_title" onchange="curBox().changed=true;" />
+    <div class="video_add_label">Описание<span class="video_add_optionally"></span></div>
+    <textarea id="video_external_description" class="video_upload_textarea" onkeyup="checkTextLength(512, this, ge('external_text_warn'), true)" onchange="curBox().changed=true;"></textarea>
+    <br /><span id="external_text_warn" class="external_text_warn"></span>
+    <br />
+    <div class="video_upload_privacy">
+  Кто может смотреть это видео?  <a id="privacy_edit_video_external" onclick="return Privacy.show(this, event, 'video_external')">Все пользователи</a><span></span>
+</div>
+<div class="video_upload_privacy">
+  Кто может комментировать это видео?  <a id="privacy_edit_videocomm_external" onclick="return Privacy.show(this, event, 'videocomm_external')">Все пользователи</a><span></span>
+</div>
+    <div id="video_external_status_export" style="display: none" class="checkbox video_upload_checkbox" onclick="checkbox(this)"><div></div>Опубликовать на моей странице</div>
+  </div>
+</div>

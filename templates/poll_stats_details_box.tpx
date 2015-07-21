@@ -1,0 +1,18 @@
+<?php
+	global $poll, $onpage, $offset;
+	$answer = $poll->answers[$var['opt_id']];
+	if($offset == 0 and $var['stats']['total'] > $onpage) {
+		$var['stats']['user_ids'] = array_slice($var['stats']['user_ids'], 0, $onpage);
+	}
+?><div class="wk_poll_top"><table cellspacing="0" cellpadding="0"><tr><td colspan="2" class="wk_poll_text"><?=$answer['title']?></td></tr>
+<tr onclick="WkPoll.tab(0, 1)">
+  <td class="wk_poll_row">
+    <div class="wk_poll_row_line" style="width: <?=round($answer['cnt']/$poll->max * 100)?>%" id="wk_poll_row0"></div>
+    <div class="wk_poll_row_count"><span id="wk_poll_row_count0"><?=$answer['cnt']?></span></div>
+  </td>
+  <td class="wk_poll_row_percent ta_r"><nobr><b id="wk_poll_row_percent0"><?=round($answer['cnt']/$poll->total * 100, 1)?>%</b></nobr></td>
+</tr>
+</table></div>
+<div id="wk_poll_people_rows"><?=tpx('poll_stats_details_box_body', $var)?></div>
+<a id="wk_poll_more" onclick="WkPoll.more(<?=$opt_id?>)" style="<? if($var['stats']['total'] <= $onpage) { ?>display: none<? } ?>">Показать всех проголосовавших</a>
+<div id="wk_poll_more_prg"></div>

@@ -1,0 +1,34 @@
+<?php
+global $group, $datetime;
+
+//dmp($var['black_list']);
+
+foreach($var['black_list'] as $b) {
+	$block_user = pdata($b['bl_id']);
+	$block_admin = pdata($b['bl_author_id']);
+?>
+<div class="group_bl_row" id="group_bl<?=$block_user->id?>">
+  <a href="<?=$block_user->lnk?>" onclick="return nav.go(this, event)" class="fl_l group_bl_photo">
+    <img src="<?=$block_user->photo()?>" class="group_bl_photo_img" />
+  </a>
+  <div class="group_bl_block fl_l">
+    <a href="<?=$block_user->lnk?>" onclick="return nav.go(this, event)" class="group_bl_name">
+      <?=$block_user->title?>
+    </a>
+    <? if($b['bl_time']) { ?>
+    <div class="group_bl_info">Добавил <a href="<?=$block_admin->lnk?>" title="<?=$block_admin->title?>"><?=$block_admin->title?></a> <?=$datetime->sdate($b['bl_time'])?><?
+    	if($b['bl_end_time'] > 0) { 
+    		$unblock_date = $datetime->sdate($b['bl_end_time']);
+    ?>, <span onmouseover="setTitle(this, domPN(this), '<?=$unblock_date?>')" title="<?=$unblock_date?>">разблокировка <?=$unblock_date?></span>
+    <? } ?></div>
+    <? if($b['bl_comment'] != '') { ?>
+    	<div class="group_bl_info">Комментарий:
+<span onmouseover="setTitle(this, domPN(this))"><?=$b['bl_comment']?></span></div>
+    <? } ?>
+    <? } else { ?>
+    	<div class="group_bl_info">Удалён из чёрного списка.</div>
+    <? } ?>
+  </div>
+  <div class="group_bl_actions fl_r"><? if($b['bl_time']) { ?><a onclick="GroupsEdit.editBlacklist(<?=$block_user->id?>)" class="group_bl_action"><div class="progress"></div><span>Настройки</span></a><a onclick="GroupsEdit.toggleBlacklist(<?=$block_user->id?>, this)" class="group_bl_action" id="group_bl_rm<?=$block_user->id?>"><div class="progress"></div><span>Удалить из списка</span></a><? } else { ?><a onclick="GroupsEdit.toggleBlacklist(<?=$block_user->id?>, this)" class="group_bl_action" id="group_bl_action<?=$block_user->id?>"><div class="progress"></div><span>Вернуть в список</span></a><? } ?></div>
+  <br class="clear" />
+</div><? } ?>

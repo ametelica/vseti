@@ -1,0 +1,31 @@
+<?php
+$tabbed_js = 'box.tabContent.className = \'tabbed_container clear_fix\';
+var st = \'height:auto;\';
+var items = st.split(';');
+for (var i = 0; i < items.length; ++i) {
+  var name_value = items[i].split(\':\');
+  if (name_value.length > 1 && name_value[0].length) {
+	box.tabContent.style[trim(name_value[0])] = trim(name_value[1]);
+  }
+}';
+
+$params = array($var['title'],$var['html'],$tabbed_js.$var['js']);
+
+$tabs = array();
+$i=0;
+$tn=0;
+foreach($var['sections'] as $k=>$v){
+	if($var['tab'] == $k) $tn = $i;
+	$t = array('label'=>$v['name'],'func'=>$v['func']);
+	if(!empty($v['data'])) {
+		$t['data'] = $v['data'];
+	}
+	if(!empty($v['url'])) {
+		$t['url'] = $v['url'];
+	}
+	$tabs[] = $t;
+	$i++;
+}
+?>
+setUpTabbedBox(box, <?=$var['width']?>, <?=jenc($tabs)?>, '<?=$tn?>', <?=jenc($params)?>, arguments[0], arguments[1]);
+<?=$var['js']?>

@@ -1,0 +1,49 @@
+<?php
+/*
+$media = $var['media'];
+foreach($media['media'] as $m){ 
+	$photo_id = $m['media_user_id'].'_'.$m['media_id'];
+	
+	// http://cs306313.userapi.com/v306313497/1462/dO_D2MmJ96Y.jpg - маленькая 
+	// http://cs306313.userapi.com/v306313497/1461/CUzH7QJ96pA.jpg - ещё меньше
+	// http://cs306313.userapi.com/v306313497/1463/HlP2kksMzAs - средняя
+	// http://cs306313.userapi.com/v306313497/1465/2NLqz2FCyUQ - большая
+	// 
+	
+	$img_s = media_link($m, 's');
+	$img_m = media_link($m, 'm');
+	$img_x = media_link($m, 'x');
+	
+?><div class="photos_choose_row fl_l"><a href="photo<?=$photo_id?>" onclick="return cur.chooseMedia('photo', '<?=$photo_id?>', ['<?=$img_m?>', '<?=$img_s?>', '4b7041596b5b24528b', '{temp:{base:&quot;&quot;,x_:[&quot;&quot;,410,604],y_:[&quot;&quot;,548,807],z_:[&quot;&quot;,695,1024]}}']);">
+  <img class="photo_row_img" src="<?=$img_m?>" />
+</a></div><? } 
+
+
+*/
+
+if(!empty($var['photos'])) {
+foreach($var['photos'] as $photo) {
+
+$params = array(
+	'thumb_s' => $photo->view('s'),
+	'thumb_m' => $photo->view('m'),
+	'list' => 'd07e6f4f789da951c8',
+	'view_opts' => jenc(array('temp' => $photo->src())),
+	'editable' => array('sizes' => $photo->sizes()),
+);
+?><a id="photos_choose_row<?= $photo->uid ?>_" href="photo<?= $photo->uid ?>" onclick="return cur.choosePhotoMulti('<?= $photo->uid ?>', cur.chooseMedia.pbind('photo', '<?= $photo->uid ?>', <?=str_replace('"','&quot;',jenc($params))?>), event)" class="photos_choose_row fl_l" onmouseover="addClass(this, 'over');" onmouseout="removeClass(this, 'over');">
+  <img class="photo_row_img" src="<?=$photo->view('m')?>" />
+  <div class="photos_choose_row_bg"></div>
+  <div class="photos_choose_row_add" onmouseover="addClass(this, 'over'); showTooltip(this, {black: 1, shift: [10, 2, 0], text: 'Выбрать несколько фотографий'});" onmouseout="removeClass(this, 'over');" onclick="cur.chooseToggleSelected('<?= $photo->uid ?>', cur.chooseMedia.pbind('photo', '<?= $photo->uid ?>', <?=str_replace('"','&quot;',jenc($params))?>), event);">
+    <div class="bg"></div>
+    <div class="icon"></div>
+  </div>
+</a><? }
+
+if(empty($var['part']))
+	echo '<br id="photos_choose_clear" class="clear" />';
+
+} else {
+	echo '<div class="photos_choose_empty"> Не загружено ни одной фотографии </div>';
+}
+?>

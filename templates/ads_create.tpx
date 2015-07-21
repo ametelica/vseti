@@ -1,0 +1,641 @@
+<?php
+global $ad_info, $langpack, $setting, $user_no_campaigns;
+echo tpx('header_design');
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+      <div class="tabs t_bar clear_fix">
+        <ul class="t0">
+          <li id="feedtab_news">
+            <a href="/ads?act=office" onclick="return nav.go(this, event)">Личный кабинет</a>
+          </li>
+	  <li id="feedtab_news" class="active_link">
+            <a href="/adscreate" onclick="return nav.go(this, event)">Новое объявление</a>
+          </li>
+        </ul>
+      </div>
+			<div id="ads_edit_error_ad" class="error" style="display: none;"></div>
+			<div class="clear_fix ads_edit_panels_top">
+				<div class="fl_l ads_edit_panel_edit">
+					<table class="ads_edit_table">
+						<tr id="ads_edit_ad_row_format_type" class="" style="">
+						  <td class="ads_edit_label"><div class="ads_edit_label_radiobutton">Формат объявления:</div></td>
+						  <td class="ads_edit_value"><div class="ads_edit_value_format_type_wrap" style="height: 60px;">
+						  <input autocomplete="off" type="hidden" id="ads_param_format_type">
+						  <div class="clear_fix">
+						    <div class="fl_l">
+						      <input autocomplete="off" type="hidden" name="ads_param_format_type" id="ads_param_format_type_text_image" value="1">
+						    </div>
+						  </div>
+						  <div class="clear_fix">
+						    <div class="fl_l">
+						      <input autocomplete="off" type="hidden" name="ads_param_format_type" id="ads_param_format_type_big_image" value="2">
+						    </div>
+						  </div>
+						  <div class="clear_fix" id="ads_param_format_type_exclusive_wrap" style="">
+						    <div class="fl_l">
+						      <input autocomplete="off" type="hidden" name="ads_param_format_type" id="ads_param_format_type_exclusive" value="3">
+						    </div>
+						  </div>
+						  <div class="clear_fix" id="ads_param_format_type_promotion_community_wrap" style="">
+						    <div class="fl_l">
+						      <input autocomplete="off" type="hidden" name="ads_param_format_type" id="ads_param_format_type_promotion_community" value="4">
+						    </div>
+						  </div>
+						</div></td>
+						</tr>
+						<tr id="ads_edit_ad_row_link" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Что рекламировать:</div></td>
+							<td class="ads_edit_value"><div id="ads_param_link_type_wrap">
+									<input id="ads_param_link_type" type="text" class="text ads_edit_value_ui" autocomplete="off">
+								</div>
+								<div id="ads_param_link_id_wrap" style="<? if(empty($ad_info['link_type'])) { ?>display: none;<? } ?>">
+									<input id="ads_param_link_id" type="text" class="text ads_edit_value_ui" autocomplete="off">
+								</div>
+								<div id="ads_param_link_url_wrap" style="display: none;">
+									<input id="ads_param_link_url" type="text" class="text" value="" placeholder="http://yoursite.com/" autocomplete="off">
+								</div>
+								<div id="ads_param_link_apps_tip" class="ads_edit_value_tip" style="display: none;">Рекомендованная цена для объявлений, рекламирующих Ваши собственные приложения, будет снижена вдвое.</div></td>
+						</tr><tr id="ads_edit_ad_row_link_domain" style="display: none;">
+							<td class="ads_edit_label"><div class="ads_edit_label_input">Домен:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_param_link_domain" type="text" class="text disabled" value="" readonly disabled placeholder="yoursite.com" autocomplete="off">
+									</div>
+									<div class="fl_l">
+										<img src="/images/upload.gif" id="ads_param_link_domain_progress" style="display: none;">
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_ad_row_upload_video" style="display: none;">
+							<td class="ads_edit_label"><div class=""></div></td>
+							<td class="ads_edit_value"><div class="button_green"><button onclick="AdsEdit.showUploadVideoBox();">Загрузить видеозапись</button></div></td>
+						</tr><tr id="ads_edit_ad_row_view_header" style="">
+							<td class="ads_edit_label"><div class=""></div></td>
+							<td class="ads_edit_value"><div class="ads_edit_value_header">Объявление</div></td>
+						</tr><tr id="ads_edit_ad_row_title" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_textarea">Заголовок:</div></td>
+							<td class="ads_edit_value"><textarea id="ads_param_title" maxlength="25" class="text "><?=$ad_info['name']?></textarea>
+								<div class="ads_param_title_remain_wrap">
+									Осталось символов: <span id="ads_param_title_remain_length">25</span>
+									<a id="ads_param_title_reduce" class="fl_r" style="display: none;" href="#">Уменьшить</a>
+								</div></td>
+						</tr><tr id="ads_edit_ad_row_description" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_textarea">Описание:</div></td>
+							<td class="ads_edit_value"><textarea id="ads_param_description" maxlength="60" class="text"><?=$ad_info['text']?></textarea>
+								<div class="ads_param_description_remain_wrap">
+									Осталось символов: <span id="ads_param_description_remain_length">60</span>
+								</div></td>
+						</tr><tr id="ads_edit_ad_row_upload_photo" style="">
+							<td class="ads_edit_label"><div class=""></div></td>
+							<td class="ads_edit_value"><div class="button_green"><button onclick="AdsEdit.showUploadPhotoBox();">Загрузить изображение</button></div></td>
+						</tr><tr id="ads_edit_ad_row_stats_url" style="display: none;">
+							<td class="ads_edit_label"><div class="ads_edit_label_input">Ссылка на счётчик показов:</div></td>
+							<td class="ads_edit_value"><div id="ads_param_stats_url_wrap">
+									<input id="ads_param_stats_url" type="text" class="text" value="" placeholder="https://yourcounter.com/" autocomplete="off">
+								</div></td>
+						</tr><tr id="ads_edit_ad_row_additional" style="display: none;">
+							<td class="ads_edit_label"><div class="ads_edit_label_checkbox">Дополнительно:</div></td>
+							<td class="ads_edit_value"><div class="ads_edit_value_checkbox_wrap" id="ads_param_disclaimer_medical_wrap" style="display: none;">
+									<div class="ads_edit_value_checkbox_wrap2">
+										<div class="ads_edit_value_checkbox_wrap3">
+											<input type="hidden" id="ads_param_disclaimer_medical" autocomplete="off">
+										</div>
+									</div>
+								</div><div class="ads_edit_value_checkbox_wrap" id="ads_param_disclaimer_specialist_wrap" style="display: none;">
+									<div class="ads_edit_value_checkbox_wrap2">
+										<div class="ads_edit_value_checkbox_wrap3">
+											<input type="hidden" id="ads_param_disclaimer_specialist" autocomplete="off">
+										</div>
+									</div>
+								</div></td>
+						</tr>
+					</table>
+				</div>
+				<div class="fl_r ads_edit_panel_preview">
+					<div class="ads_edit_ad_view_wrap">
+						<div>
+							<div class="ads_ad_box ver repeat_ver size_site first" id="ads_ad_box_ad_433973441"><div class="ads_ad_box_border repeat_ver first"></div><a class="ads_ad_box2 ver repeat_ver size_site first" id="ads_ad_box2_ad_433973441" target="_blank"><div class="ads_ad_box3 ver"><div class="ads_ad_box4 ver"><div class="ads_ad_box5 ver repeat_ver"><div class="ads_ad_box5_spacer ver repeat_ver size_site"></div><div class="ads_ad_box6 ver"><div class="ads_ad_text_box ver repeat_ver size_site"><div class="ads_ad_title_box"><div class="ads_ad_title_spacer1"><div class="ads_ad_title_spacer2"></div></div><div class="ads_ad_title"><? if(empty($ad_info['name'])) { ?>Реклама ВСети<? } else { echo $ad_info['name']; } ?></div></div><div class="ads_ad_domain ver" style="display: none;"></div><div class="ads_ad_photo_box ver"><img class="ads_ad_photo ver" src="<? if(empty($ad_info['photo'])) { ?>/images/ads_size_s.png<? } else { echo $ad_info['photo']; } ?>"><div class="ads_ad_play ver empty" style="display: none;"></div></div><div class="ads_ad_description ver"><? if(empty($ad_info['text'])) { ?>Образец описания<? } else { echo $ad_info['text']; } ?></div><div class="ads_ad_community_join" style="display: none;"></div><div class="ads_ad_disclaimers"><div class="ads_ad_disclaimer_medical ver" style="display: none;">Есть противопоказания. Требуется консультация врача.</div><div class="ads_ad_disclaimer_specialist ver" style="display: none;">Необходима консультация специалистов.</div></div></div></div></div></div></div></a></div>
+
+						</div>
+						<div class="ads_edit_ad_view_controls">
+							<!--<div style="">
+								<a href="#" onclick="AdsEdit.showLastAdsBox(1600560983); return false;">Выбрать внешний вид</a>
+							</div>-->
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="ads_edit_separator_big"></div>
+			<div id="ads_edit_error_targeting" class="error" style="display: none;"></div>
+			<div class="ads_edit_panel_edit">
+				<table class="ads_edit_table">
+					<tr id="ads_edit_audience_row" style="">
+						<td class="ads_edit_label"><div class=""></div></td>
+						<td class="ads_edit_value"><div id="ads_edit_audience_count">Целевая аудитория &ndash; <?=nf($setting['total_users'])?> <?=$langpack->dln($setting['total_users'], array('человек', 'человека',  'человек'))?></div></td>
+					</tr>
+				</table><div>
+					<table class="ads_edit_table">
+						<tr>
+							<td class="ads_edit_label"></td>
+							<td class="ads_edit_value ads_edit_hider_row">
+								<div onclick="AdsEdit.toggleTargetingGroup(this, 'geography', 'ads_targeting_group_geography');" class="ads_edit_hider_on">География</div>
+								<div class="ads_edit_hider_separator"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="ads_targeting_group_geography" class="ads_targeting_group" style="">
+					<table class="ads_edit_table">
+						<tr id="ads_edit_criterion_row_country" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Страна:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_country" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_cities" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Города и регионы:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_cities" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+										<a class="ads_edit_value_help" href="#" onclick="return AdsEdit.showTargetingCriterionHelp(event, 'cities');">(?)</a>
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_cities_not" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">За исключением:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_cities_not" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr>
+					</table>
+				</div><div>
+					<table class="ads_edit_table">
+						<tr>
+							<td class="ads_edit_label"></td>
+							<td class="ads_edit_value ads_edit_hider_row">
+								<div onclick="AdsEdit.toggleTargetingGroup(this, 'demography', 'ads_targeting_group_demography');" class="ads_edit_hider_on">Демография</div>
+								<div class="ads_edit_hider_separator"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="ads_targeting_group_demography" class="ads_targeting_group" style="">
+					<table class="ads_edit_table">
+						<tr id="ads_edit_criterion_row_sex" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Пол:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_sex" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_age_from_to" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Возраст:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix ads_edit_value_range">
+									<div class="fl_l ads_edit_value_range_from">
+										<input id="ads_targeting_criterion_age_from" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_range_sep"> - </div>
+									<div class="fl_l ads_edit_value_range_to">
+										<input id="ads_targeting_criterion_age_to" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr>
+						<!--<tr id="ads_edit_criterion_row_birthday" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_checkbox">День рождения:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix ads_edit_value_checkbox_wrap">
+									<div class="fl_l ads_edit_value_birthday_today ads_edit_value_checkbox_wrap2">
+										<div class="ads_edit_value_checkbox_wrap3">
+											<input type="hidden" id="ads_targeting_criterion_birthday_today" autocomplete="off">
+										</div>
+									</div>
+									<div class="fl_l ads_edit_value_birthday_tomorrow ads_edit_value_checkbox_wrap2">
+										<div class="ads_edit_value_checkbox_wrap3">
+											<input type="hidden" id="ads_targeting_criterion_birthday_tomorrow" autocomplete="off">
+										</div>
+									</div>
+								</div></td>
+						</tr>-->
+						<tr id="ads_edit_criterion_row_statuses" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Семейное положение:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_statuses" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr>
+					</table>
+				</div>
+				<!--
+				<div>
+					<table class="ads_edit_table">
+						<tr>
+							<td class="ads_edit_label"></td>
+							<td class="ads_edit_value ads_edit_hider_row">
+								<div onclick="AdsEdit.toggleTargetingGroup(this, 'interests', 'ads_targeting_group_interests');" class="ads_edit_hider_on">Интересы</div>
+								<div class="ads_edit_hider_separator"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="ads_targeting_group_interests" class="ads_targeting_group" style="">
+					<table class="ads_edit_table">
+						<tr id="ads_edit_criterion_row_interests" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Интересы:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_interests" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+										<a class="ads_edit_value_help" href="#" onclick="return AdsEdit.showTargetingCriterionHelp(event, 'interests');">(?)</a>
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_group_types" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Категории групп:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_group_types" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+										<a class="ads_edit_value_help" href="#" onclick="return AdsEdit.showTargetingCriterionHelp(event, 'group_types');">(?)</a>
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_groups" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Сообщества:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_groups" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_apps" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Приложения и сайты:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_apps" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_apps_not" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">За исключением:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_apps_not" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_religions" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Мировоззрение:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_religions" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_travellers" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_checkbox"></div></td>
+							<td class="ads_edit_value"><div class="ads_edit_value_checkbox_wrap">
+									<div class="ads_edit_value_checkbox_wrap2">
+										<div class="ads_edit_value_checkbox_wrap3">
+											<input type="hidden" id="ads_targeting_criterion_travellers" autocomplete="off">
+										</div>
+									</div>
+								</div></td>
+						</tr>
+					</table>
+				</div>
+				-->
+				<!--
+				<div>
+					<table class="ads_edit_table">
+						<tr>
+							<td class="ads_edit_label"></td>
+							<td class="ads_edit_value ads_edit_hider_row">
+								<div onclick="AdsEdit.toggleTargetingGroup(this, 'geography_ex', 'ads_targeting_group_geography_ex');" class="ads_edit_hider_off">Расширенная география</div>
+								<div class="ads_edit_hider_separator"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="ads_targeting_group_geography_ex" class="ads_targeting_group" style="display: none;">
+					<table class="ads_edit_table">
+						<tr id="ads_edit_criterion_row_districts" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Районы:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_districts" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_stations" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Станции метро:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_stations" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_streets" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Улицы:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_streets" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr>
+					</table>
+				</div>
+				-->
+				<!--
+				<div>
+					<table class="ads_edit_table">
+						<tr>
+							<td class="ads_edit_label"></td>
+							<td class="ads_edit_value ads_edit_hider_row">
+								<div onclick="AdsEdit.toggleTargetingGroup(this, 'graduation', 'ads_targeting_group_graduation');" class="ads_edit_hider_off">Образование и работа</div>
+								<div class="ads_edit_hider_separator"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="ads_targeting_group_graduation" class="ads_targeting_group" style="display: none;">
+					<table class="ads_edit_table">
+						<tr id="ads_edit_criterion_row_schools" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Учебные заведения:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_schools" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+										<a class="ads_edit_value_help" href="#" onclick="return AdsEdit.showTargetingCriterionHelp(event, 'schools');">(?)</a>
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_school_from_to" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Годы окончания школы:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix ads_edit_value_range">
+									<div class="fl_l ads_edit_value_range_from">
+										<input id="ads_targeting_criterion_school_from" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_range_sep"> - </div>
+									<div class="fl_l ads_edit_value_range_to">
+										<input id="ads_targeting_criterion_school_to" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_uni_from_to" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Годы окончания ВУЗа:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix ads_edit_value_range">
+									<div class="fl_l ads_edit_value_range_from">
+										<input id="ads_targeting_criterion_uni_from" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_range_sep"> - </div>
+									<div class="fl_l ads_edit_value_range_to">
+										<input id="ads_targeting_criterion_uni_to" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_positions" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Должности:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_positions" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+										<a class="ads_edit_value_help" href="#" onclick="return AdsEdit.showTargetingCriterionHelp(event, 'positions');">(?)</a>
+									</div>
+								</div></td>
+						</tr>
+					</table>
+				</div>
+				-->
+				<!--
+				<div>
+					<table class="ads_edit_table">
+						<tr>
+							<td class="ads_edit_label"></td>
+							<td class="ads_edit_value ads_edit_hider_row">
+								<div onclick="AdsEdit.toggleTargetingGroup(this, 'additional', 'ads_targeting_group_additional');" class="ads_edit_hider_off">Дополнительные параметры</div>
+								<div class="ads_edit_hider_separator"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="ads_targeting_group_additional" class="ads_targeting_group" style="display: none;">
+					<table class="ads_edit_table">
+						<tr id="ads_edit_criterion_row_operators" style="display: none;">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Сотовые операторы:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_operators" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_browsers" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Браузеры и устройства:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_browsers" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+										<a class="ads_edit_value_help" href="#" onclick="return AdsEdit.showTargetingCriterionHelp(event, 'browsers');">(?)</a>
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_pays_money" style="display: none;">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Платежи:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_pays_money" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+										<a class="ads_edit_value_help" href="#" onclick="return AdsEdit.showTargetingCriterionHelp(event, 'pays_money');">(?)</a>
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_retargeting_groups" style="display: none;">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Группы ретаргетинга:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_retargeting_groups" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_retargeting_groups_not" style="display: none;">
+							<td class="ads_edit_label"><div class="ads_edit_label_input_ui">За исключением:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_targeting_criterion_retargeting_groups_not" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+
+									</div>
+								</div></td>
+						</tr><tr id="ads_edit_criterion_row_tags" style="">
+							<td class="ads_edit_label"><div class="ads_edit_label_textarea">Ключевые слова:</div></td>
+							<td class="ads_edit_value"><div class="clear_fix">
+									<div class="fl_l">
+										<textarea id="ads_targeting_criterion_tags" maxlength="1000" class="text"></textarea>
+									</div>
+									<div class="fl_l ads_edit_value_help_wrap">
+										<a class="ads_edit_value_help" href="#" onclick="return AdsEdit.showTargetingCriterionHelp(event, 'tags');">(?)</a>
+									</div>
+								</div>
+								<div id="ads_targeting_criterion_tags_remain" style="display: none;">
+									Осталось символов: <span id="ads_targeting_criterion_tags_remain_length">1000</span>.
+								</div></td>
+						</tr>
+					</table>
+				</div>-->
+			</div>
+			<div class="ads_edit_separator_big"></div>
+			<div id="ads_edit_error_behavior" class="error" style="display: none;"></div>
+			<div class="ads_edit_panel_edit ads_paned_edit_behavior">
+				<table class="ads_edit_table">
+					<!--
+					<tr id="ads_edit_ad_row_views_places" style="">
+						<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Рекламные площадки:</div></td>
+						<td class="ads_edit_value"><div id="ads_param_views_places_wrap">
+								<input id="ads_param_views_places" type="text" class="text ads_edit_value_ui" autocomplete="off">
+							</div></td>
+					</tr>-->
+					<tr id="ads_edit_ad_row_cost_type" style="">
+						<td class="ads_edit_label"><div class="ads_edit_label_radiobutton">Способ оплаты:</div></td>
+						<td class="ads_edit_value"><div class="ads_edit_value_cost_type_wrap" style="height: 55px;">
+								<input type="hidden" id="ads_param_cost_type" autocomplete="off">
+								<div class="clear_fix">
+									<div class="fl_l">
+										<input type="hidden" name="ads_param_cost_type" id="ads_param_cost_type_views" value="0" autocomplete="off">
+									</div>
+								</div>
+								<div class="clear_fix">
+									<div class="fl_l">
+										<input type="hidden" name="ads_param_cost_type" id="ads_param_cost_type_clicks" value="1" autocomplete="off">
+									</div>
+								</div>
+								
+								<div class="clear_fix" id="ads_param_cost_type_views_exclusive_wrap" style="display: none;">
+									<div class="fl_l">
+										<input type="hidden" name="ads_param_cost_type" id="ads_param_cost_type_views_exclusive" value="2" autocomplete="off">
+									</div>
+								</div>
+								<!--<div class="clear_fix" id="ads_param_cost_type_clicks_promotion_community_wrap" style="">
+									<div class="fl_l">
+										<input type="hidden" name="ads_param_cost_type" id="ads_param_cost_type_clicks_promotion_community" value="3" autocomplete="off">
+									</div>
+								</div>-->
+							</div></td>
+					</tr>
+					<tr id="ads_edit_ad_row_cost_per_click" style="">
+						<td class="ads_edit_label"><div class="ads_edit_label_input ads_edit_label_cost_per_click"><?=$ad_info['type'] == 1 ? 'Стоимость перехода' : 'Стоимость 1000 показов' ?>:</div></td>
+						<td class="ads_edit_value"><div class="ads_edit_value_cost_per_click_wrap">
+								<div class="clear_fix">
+									<div class="fl_l">
+										<input id="ads_param_cost_per_click" type="text" class="text" value="<?=$ad_info['ad_price']?>" autocomplete="off">
+									</div>
+									<div class="fl_l ads_param_cost_per_click_currency_wrap">
+										<span id="ads_param_cost_per_click_currency">рублей</span>
+									</div>
+								</div>
+								<div id="ads_param_cost_per_click_recommended">Рекомендованное значение – от <b>2000</b> до <b>4000 рублей</b></b></div>
+							</div></td>
+					</tr><tr id="ads_edit_ad_row_views_limit" >
+						<td class="ads_edit_label"><div class="ads_edit_label_input_ui">Ограничение показов:</div></td>
+						<td class="ads_edit_value"><div class="ads_edit_value_checkbox_wrap" id="ads_param_views_limit_flag_wrap">
+								<div class="ads_edit_value_checkbox_wrap2">
+									<div class="ads_edit_value_checkbox_wrap3">
+										<input type="hidden" id="ads_param_views_limit_flag" autocomplete="off">
+									</div>
+								</div>
+							</div><div id="ads_param_views_limit_exact_wrap" style="display: none;">
+								<input id="ads_param_views_limit_exact" type="text" class="text ads_edit_value_ui" autocomplete="off">
+							</div></td>
+					</tr>
+								<?=$user_no_campaigns ? 1 : 0?>
+					<tr id="ads_edit_ad_row_campaign" style="">
+						<td class="ads_edit_label"><div class="ads_edit_label_radiobutton">Рекламная кампания:</div></td>
+						<td class="ads_edit_value"><div class="ads_edit_value_campaign_type_wrap" style="">
+								<input type="hidden" id="ads_param_campaign_type" autocomplete="off">
+								<div class="clear_fix">
+									<div class="fl_l">
+										<input type="hidden" name="ads_param_campaign_type" id="ads_param_campaign_type_select" value="0" autocomplete="off">
+									</div>
+								</div>
+								<div class="clear_fix">
+									<div class="fl_l">
+										<input type="hidden" name="ads_param_campaign_type" id="ads_param_campaign_type_input" value="1" autocomplete="off">
+									</div>
+								</div>
+								<div class="clear_fix" style="display: none;">
+									<div class="fl_l">
+										<input type="hidden" name="ads_param_campaign_type" id="ads_param_campaign_type_app" value="2" autocomplete="off">
+									</div>
+								</div>
+							</div>
+							<div class="ads_edit_value_campaign_special_wrap" style="">
+								<div class="clear_fix">
+									<div id="ads_param_campaign_id_wrap" class="fl_l" style="<? if($user_no_campaigns) { ?>display: none;<? }?>">
+										<input id="ads_param_campaign_id" type="text" class="text ads_edit_value_ui" autocomplete="off">
+									</div>
+									<div id="ads_param_campaign_name_wrap" class="fl_l" style="<? if(!$user_no_campaigns) { ?>display: none;<? }?>">
+										<input id="ads_param_campaign_name" type="text" class="text" value="" placeholder="Имя новой рекламной кампании" autocomplete="off">
+									</div>
+								</div>
+								<div id="ads_param_campaign_tip_app_only" class="ads_edit_value_tip" style="display: none;">В выбранной рекламной кампании Вы можете рекламировать только администрируемые Вами приложения.</div>
+								<div id="ads_param_campaign_tip_no_app_bonus" class="ads_edit_value_tip" style="display: none;">В выбранной рекламной кампании скидка на рекламу выбранного приложения не распространяется.</div>
+							</div></td>
+					</tr>
+				</table><div class="ads_edit_separator_big" style=""></div>  <table class="ads_edit_table">
+					<tr id="ads_edit_terms_row" style="">
+						<td class="ads_edit_label"><div class=""></div></td>
+						<td class="ads_edit_value"><div class="ads_edit_value_terms">Сохраняя объявление, Вы безоговорочно принимаете<br><a href="/ads?section=terms" target="_blank">Правила размещения рекламных объявлений</a>.</div></td>
+					</tr><tr id="ads_edit_controls_row" style="">
+						<td class="ads_edit_label"><div class=""></div></td>
+						<td class="ads_edit_value"><div class="clear_fix">
+								<div class="button_green fl_l" style=""><button id="ads_edit_save_button" onclick="AdsEdit.saveAd();">Сохранить</button></div>
+								<div class="button_gray fl_l"><button onclick="AdsEdit.cancelAd(&quot;\/ads?act=office&amp;union_id=1600560983&quot;, event);">Отмена</button></div>
+							</div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

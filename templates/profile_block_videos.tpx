@@ -1,0 +1,20 @@
+<?php
+global $video_total,$video_html,$langpack,$owner;
+if($video_total > 0){
+?>
+<div class="module clear video_module" id="profile_videos">
+ <a href="/videos<?=$owner->id?>" class="module_header" onclick="return nav.go(this, event)">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/video.php?id=<?=$owner->user_info['user_id']?>'"><?=nf($video_total)?></span>
+   Видеозаписи
+  </div>
+  <div class="p_header_bottom">
+   <span class="fl_r">Все</span>
+   <?=$video_total?> видеозапис<?=$langpack->dln($video_total,'zap')?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+ <?=$video_html?>
+ </div>
+</div>
+<? } ?>

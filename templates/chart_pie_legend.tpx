@@ -1,0 +1,19 @@
+<?php
+$graph = $var['graph'];
+
+?><table cellspacing="0" cellpadding="0" class="piechart_table fl_l">
+	<tbody><?
+	
+	if(!empty($graph->groups)) {
+		$groups = array_flip($graph->groups);
+		echo '<tr class="piechart_col_header"><th class="piechart_col_header_first">'.$groups[$var['group']].'</th><th class="piechart_col_header_second"></th></tr>';
+	}
+	
+	
+	foreach($graph->data[$var['group']] as $line) {
+	?><tr onmouseout="if (cur.svgData['<?=$graph->name?>']) cur.invokeSvgFunction('<?=$graph->name?>', 'highlightSlice', [<?=$line['id']?>, 0]); return false;" onmouseover="if (cur.svgData['<?=$graph->name?>'])
+				cur.invokeSvgFunction('<?=$graph->name?>', 'highlightSlice', [<?=$line['id']?>, 1]);
+			return false;" id="piechart_row_<?=$graph->name?>_<?=$line['id']?>" style="opacity: 1;">
+		<td class="piechart_stat_name"><div style="background-color: <?=$line['color']?>" class="piechart_stat_color"></div><?=$line['l']?></td>
+		<td class="piechart_stat_info"><?=round($line['p'], 1)?>%</td>
+	</tr><? } ?></tbody></table>

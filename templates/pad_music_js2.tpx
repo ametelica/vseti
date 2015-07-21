@@ -1,0 +1,461 @@
+<?php
+global $all, $user;
+if(!empty($all)) {
+?>
+if (!padAudioPlaylist() && window.audioPlayer && window.audioPlayer.genPlaylist) {
+  var res = {"all":<?=jenc($all)?>};
+	console.log(res);
+  audioPlayer.genPlaylist(res.all, true, true);
+  if (window.onPlaylistLoaded) {
+    onPlaylistLoaded();
+  }
+}
+<? } ?>
+if (!Pads.audioTpl) {
+  Pads.audioTpl = "<div class=\"audio %rowclass% fl_l\" id=\"audio%audio_id%\" onmouseover=\"addClass(this, 'over');\" onmouseout=\"removeClass(this, 'over');\">\n  <a name=\"%audio_id%\"><\/a>\n  <div class=\"area clear_fix\" onclick=\"if (cur.cancelClick){ cur.cancelClick = false; return false;} %onclick%\">\n    <div class=\"play_btn fl_l\">\n      <div class=\"play_btn_wrap\"><div class=\"play_new\" id=\"play%audio_id%\"><\/div><\/div>\n      <input type=\"hidden\" id=\"audio_info%audio_id%\" value=\"%url%,%playtime%\" \/>\n    <\/div>\n    <div class=\"info fl_l\">\n      <div class=\"title_wrap fl_l\" onmouseover=\"setTitle(this);\"><b><a %attr%>%performer%<\/a><\/b> &ndash; <span class=\"title\">%title% <\/span><span class=\"user\" onclick=\"cur.cancelClick = true;\">%author%<\/span><\/div>\n      <div class=\"actions\">\n        %actions%\n      <\/div>\n      <div class=\"duration fl_r\">%duration%<\/div>\n    <\/div>\n  <\/div>\n  <div id=\"lyrics%audio_id%\" class=\"lyrics\" nosorthandle=\"1\"><\/div>\n<\/div>";
+}
+if (!Pads.audioRow) {
+  Pads.audioRow = function(audio, opts) {
+    opts = opts || {};
+    var aid = audio.full_id || audio[0]+'_'+audio[1], actions = '';
+    var performer = audio[5].split('<span>').join('').split('</span>').join('').replace(/\$/g, "\&#36;");
+    var _a = window.audioPlayer, cur_aid = (_a && _a.isPlaylistGlobal()) ? ls.get('audio_id') || currentAudioId() : currentAudioId();
+    if (vs.id != audio[0] || audio[9] && intval(audio[9])) {
+      if (cur.addedIds && cur.addedIds[audio[0]+'_'+audio[1]]) {
+        actions += '<div class="audio_add_wrap added fl_r" onclick="return cancelEvent(event);"><div class="audio_add"></div></div>';
+      } else {
+        actions += '<div class="audio_add_wrap fl_r" onmouseover="Audio.rowActive(this, \'Добавить в мои аудиозаписи\', [9, 5, 0]);" onmouseout="Audio.rowInactive(this);" onclick="Pads.addAudio(this, '+audio[1]+', '+audio[0]+', \'<?=hash_get($user->id, 12, 'adda')?>\'); return cancelEvent(event);"><div class="audio_add"></div></div>';
+      }
+    }
+    // if (!opts.recSource) {
+    //   actions += '<div class="audio_rec_wrap fl_r" onmouseover="Audio.rowActive(this, \'Показать похожие\', [8, 5, 0]);" onmouseout="Audio.rowInactive(this);" onclick="Pads.loadAudioRecommendations(this, \''+aid+'\'); return cancelEvent(event);"><div class="audio_rec"></div></div>';
+    // }
+
+    return rs(Pads.audioTpl, {
+      audio_id: (aid.substr(-4) == '_pad') ? aid : aid+'_pad',
+      performer: performer,
+      title: audio[6].replace(/\$/g, "\&#36;"),
+      url: audio[2],
+      playtime: audio[3],
+      duration: audio[4],
+      attr: 'href="/search?c[q]='+performer+'&c[section]=audio&c[performer]=1" onclick="if (checkEvent(event)) return; Pads.selectPerformer(event, \''+performer.replace(/&#39;/g, "\\\&#39;")+'\'); return false"',
+      actions: actions,
+      author: '',
+      onclick: (opts.recPlist ? '' : 'window.padPlClicked = true; ') + 'playAudioNew(\''+aid+'\')',
+      rowclass: (actions ? '' : 'no_actions') + (cur_aid == aid ? (opts.thisTab && currentAudioId() == aid ? ' current' : ' tab_current') : '')
+    });
+  }
+}
+if (!Pads.loadAudioRecommendations) {
+  Pads.loadAudioRecommendations = function(el, aid) {
+    if (el.tt) el.tt.hide();
+    stManager.add('audioplayer.js', function() {
+      if (!window.audioPlayer) return;
+      audioPlayer.showRec(aid, true);
+    })
+  }
+}
+if (!Pads.showMyAudios) {
+  Pads.showMyAudios = function(el) {
+    stManager.add('audioplayer.js', function() {
+      if (!window.audioPlayer) return;
+      audioPlayer.showMyAudios(el);
+    });
+    return false;
+  }
+}
+if (!Pads.addAudio) {
+  Pads.addAudio = function(el, aid, oid, hash) {
+    if (cur.addedIds && cur.addedIds[oid+'_'+aid]) return false;
+    if (el.tt) el.tt.hide();
+    if (window.Audio) {
+      Audio.animateAdded(el, 200);
+      var addEl = ge('audio'+oid+'_'+aid) && geByClass1('audio_add_wrap', ge('audio'+oid+'_'+aid));
+      if (addEl && !hasClass(addEl, 'anim')) {
+        Audio.animateAdded(addEl, 200);
+      }
+    } else {
+      var c = se('<div class="audio_add_wrap added fl_r" onclick="return cancelEvent(event);"><div class="audio_add"></div></div>');
+      el.parentNode.replaceChild(c, el);
+    }
+    var query = {act: 'add', aid: aid, oid: oid, hash: hash};
+    if (Pads.audioSearchStr) query.search = 1;
+    ajax.post(Audio.address, query, {
+      onDone: function (data, res) {
+        if (data && window.Audio && cur.id == vs.id && cur.audiosIndex && cur.audiosList && cur.audiosList['all'] && cur.aSearch) {
+          var aobj = eval('('+data+')');
+          aobj = aobj['all'][0];
+          setTimeout(function(){
+            var all_list = cur.audiosList['all'];
+            if (all_list && all_list.length) {
+              aobj._order = all_list[0]._order - 1;
+              cur.audiosList['all'].splice(0,0,aobj);
+            } else {
+              aobj._order = 0;
+              cur.audiosList['all'] = [aobj];
+            }
+            cur.audios[aobj[1]] = aobj;
+            cur.audiosIndex.add(aobj);
+          }, 0);
+        }
+        cur.addedIds = cur.addedIds || {};
+        cur.addedIds[oid+'_'+aid] = 1;
+        if (window.audioPlayer && currentAudioId()) {
+          var cur_aids = currentAudioId().split('_');
+          if (cur_aids[0] == oid && cur_aids[1] == aid) {
+            audioPlayer.showCurrentAdded();
+          }
+        }
+      }
+    });
+  }
+}
+if (!Pads.onAudioReorder) {
+  Pads.onAudioReorder = function(audio, before, after) {
+    var aid = audio.id.substr(5);
+    var before_id = (before && before.id || '').substr(5);
+    var after_id = (after && after.id || '').substr(5);
+    var padPlist = padAudioPlaylist();
+    if (aid && padPlist && !padPlist[aid]) {
+      aid = aid.replace('_pad', '');
+      before_id = before_id.replace('_pad', '');
+      after_id = after_id.replace('_pad', '');
+    }
+    if (aid && padPlist && padPlist[aid]) {
+      if (!before_id && after_id && padPlist[after_id]) {
+        before_id = padPlist[after_id]._next;
+      } else if (!after_id && before_id && padPlist[before_id]) {
+        after_id = padPlist[before_id]._prev;
+      }
+      var pl = ge('pad_playlist');
+      if (pl && pl.sorter && pl.sorter.elems) {
+        var newStart = (pl.sorter.elems[0].id || '').substr(5);
+        if (newStart && !padPlist[newStart]) {
+          newStart = newStart.replace('_pad', '');
+        }
+        padPlist.start = newStart;
+      }
+      var prev_id = padPlist[aid]._prev, next_id = padPlist[aid]._next;
+      if (prev_id && padPlist[prev_id] && next_id && padPlist[next_id] &&
+        before_id && padPlist[before_id] && after_id && padPlist[after_id] && after_id != aid && before_id != aid) {
+        padPlist[prev_id]._next = next_id;
+        padPlist[next_id]._prev = prev_id;
+        padPlist[aid]._prev = after_id;
+        padPlist[after_id]._next = aid;
+        padPlist[aid]._next = before_id;
+        padPlist[before_id]._prev = aid;
+      }
+      if (window.audioPlaylist && audioPlaylist[aid]) {
+        window.audioPlaylist = padPlist;
+      }
+      ls.set('pad_playlist', padPlist);
+      ls.set('pad_pltime', vsNow());
+    }
+  }
+}
+if (!Pads.setAudioCurPos) {
+  Pads.setAudioCurPos = function(speed) {
+    var _a = window.audioPlayer, audio_id = (_a && _a.isPlaylistGlobal()) ? ls.get('audio_id') || currentAudioId() : currentAudioId();
+    if (!audio_id) return;
+    if (audio_id.substr(-4) != '_pad') {
+      audio_id += '_pad';
+    }
+    if (ge('audio'+audio_id)) {
+      var h = 430;
+      if (window.lastWindowHeight) {
+        h = Math.min(h, lastWindowHeight - 104 - (hasClass(ge('pad_arrow'), 'right') ? 13 : 46));
+        if (h < 200) h = 200;
+      }
+      var sTop = ge('audio'+audio_id).offsetTop - Math.min(ge('pad_cont').offsetHeight, h) / 2 + 17;
+      if (ge('pad_content') && sTop > 0) {
+        if (speed) {
+          animate(ge('pad_content'), {scrollTop: sTop}, speed, function() {
+            Pads.update();
+          })
+        } else {
+          ge('pad_content').scrollTop = sTop;
+          Pads.update();
+        }
+      }
+    }
+  }
+}
+if (!Pads.showAudios) {
+  Pads.showAudios = function() {
+    var self = this, _a = window.audioPlayer, pList = self.audioSearchCleared ? cur.nextPlaylist || {} : ((!window.audioPlaylist || window.curNotifier && (padPlData = ls.get('pad_pldata')) && padPlData.source == curNotifier.instance_id) ? ls.get('pad_playlist') || window.audioPlaylist : padAudioPlaylist()), pl = ge('pad_playlist');
+    if (self.audioSearchStr && (!pList || pList.searchStr != self.audioSearchStr || geByClass('audio', pl).length >= (pList.length || 0))) {
+      self.searchAudios(self.audioSearchStr || '', self.audioSearchOffset || 0);
+      return;
+    }
+    if (pList) {
+      var el = domLC(pl), aid = '', first_id = '', showRowsCnt = 25, rowsCnt = geByClass('audio', pl).length, _a, audio_id = ((_a = window.audioPlayer) && _a.isPlaylistGlobal()) ? ls.get('audio_id') || currentAudioId() : currentAudioId();
+
+      if (el) {
+        first_id = geByClass1('audio', pl).id.substr(5).replace('_pad', '');
+        var last_id = el.id.substr(5).replace('_pad', '');
+        if (pList[last_id] && pList[last_id]._next) {
+          aid = pList[last_id]._next;
+        }
+      } else if (audio_id && pList[audio_id] && !self.audioSearchStr) {
+        aid = audio_id;
+        for (var i = 0; i < 100; i++) {
+          if (!aid || aid == pList.start) break;
+          aid = pList[aid]._prev;
+          showRowsCnt++;
+        }
+        first_id = aid;
+      } else {
+        aid = first_id = pList.start;
+        if (self.audioSearchStr && audio_id  && pList[audio_id]) {
+          var cur_id = first_id;
+          for (var i = 0; i < 1000; i++) {
+            if (!cur_id || cur_id == audio_id) break;
+            cur_id = pList[cur_id]._prev;
+            showRowsCnt++;
+          }
+        }
+      }
+      if (!pList.my) {
+        ge('pad_footer_text').innerHTML = '<a id="pad_audio_link" href="/audio" onclick="return Pads.showMyAudios(this)">Показать мои аудиозаписи</a>';
+      }
+      if (!first_id) {
+        if (audio_id) {
+          var m = audio_id.match(/^-?\d+_\d+_s(-?\d+)(?:_|$)/);
+          if (m && m[1] && _a.statusData && _a.statusData[m[1]]) {
+            var data = _a.statusData[m[1]];
+            pl.appendChild(se('<div class="pad_audio_status">' + data.audio_litening_to_user + '</div>'));
+            ge('pad_footer_text').innerHTML = data.audio_goto_user;
+          }
+        }
+        hide('pad_more_audio');
+      } else {
+        if (first_id) {
+          var m = first_id.match(/^-?\d+_\d+_s(-?\d+)(?:_|$)/);
+          if (m && m[1] && _a.statusData && _a.statusData[m[1]] && !pList[first_id]._next) {
+            var data = _a.statusData[m[1]];
+            pl.appendChild(se('<div class="pad_audio_status">' + (first_id != audio_id ? data.audio_listen_to_user : data.audio_litening_to_user) + '</div>'));
+            ge('pad_footer_text').innerHTML = data.audio_goto_user;
+            hide('pad_more_audio');
+            return;
+          }
+        }
+        var k = 0;
+        if (aid) {
+          var thisTab = pList && window.curNotifier && pList.instance == curNotifier.instance_id;
+          do {
+            var recSource = pList.rec && pList.start == aid;
+            var rowEl = se(Pads.audioRow(pList[aid], {thisTab: thisTab, recSource: recSource, recPlist: self.audioSearchCleared && pList.rec}));
+            pl.appendChild(rowEl);
+            if (pList[aid]._next) aid = pList[aid]._next;
+            k++;
+          } while (aid && aid !== first_id && k < showRowsCnt);
+        }
+        if (aid == first_id) {
+          var more = ge('pad_more_audio');
+          if (self.audioSearchStr) {
+            if (isVisible(more) && _pads.content.scrollTop + _pads.content.offsetHeight > more.offsetTop) {
+              self.searchAudios(self.audioSearchStr, self.audioSearchOffset || 0);
+            }
+          } else {
+            hide(more);
+          }
+        }
+        if (!browser.mobile) {
+          if (el && pl.sorter) {
+            setTimeout(sorter.added.pbind(pl), 0);
+          } else {
+            setTimeout(function(){
+              sorter.init(pl, {onReorder: Pads.onAudioReorder, noMoveCursor: 1});
+              if (!el && !_a.recsLoaded) Pads.setAudioCurPos();
+            }, 0);
+          }
+        }
+        if (!el && !_a.recsLoaded) Pads.setAudioCurPos();
+      }
+      Pads.update();
+    }
+  }
+}
+if (!Pads.updateAudioPlaylist) {
+  Pads.updateAudioPlaylist = function() {
+    var _a = window.audioPlayer;
+    if (!_a || !window._pads || !Pads.showAudios || _pads.shown != 'mus') return;
+
+    ge('pad_playlist').innerHTML = '';
+    _pads.content.scrollTop = 0;
+    show('pad_more_audio');
+    Pads.showAudios();
+    _a.showCurrentTrack();
+    Pads.updateHeight();
+    delete _a.recsLoaded;
+  }
+}
+if (!Pads.searchAudios) {
+  Pads.searchAudios = function(val, offset) {
+    if (Pads.isAudioLoading) return;
+    if (!val) {
+      Pads.clearAudioSearch(ge('pad_audio_reset'));
+      return;
+    }
+    if (val[val.length - 1] == ' ') {
+      val[val.length - 1] = '_';
+    }
+    var self = this, inputWrap = ge('pad_audio_search'), reset = ge('pad_audio_reset'),
+        pl = ge('pad_playlist'), _a = window.audioPlayer;
+    addClass(inputWrap, 'loading');
+    setStyle(reset, {opacity: .6});
+    if (self.audioSearchPreload) {
+      var au = ce('div', {innerHTML: self.audioSearchPreload});
+      while (au.firstChild) {
+        var el = au.firstChild;
+        pl.appendChild(el);
+      }
+    }
+    if (!self.audioSearchMore) {
+      hide('pad_more_audio');
+    }
+    var query = {act: 'search', q: val, offset: offset, id: vs.id, from: 'pad', performer: self.audioSearchType ? self.audioSearchType.val() : 0};
+    if (self.audioAutoComplete) query.autocomplete = 1;
+    ajax.post('/audio', query, {onDone: function(res, preload, options) {
+        removeClass(inputWrap, 'loading');
+        var newVal = self.audioSearchStr;
+        if (newVal[newVal.length - 1] == ' ') {
+          newVal[newVal.length - 1] = '_';
+        }
+        if (val != newVal) {
+          return;
+        }
+        self.audioSearchOffset = options.searchOffset || 0;
+        self.audioSearchMore = options.has_more || false;
+        if (!offset) {
+          pl.innerHTML = '';
+        }
+        if (res) {
+          var au = ce('div', {innerHTML: res});
+          while (au.firstChild) {
+            var el = au.firstChild;
+            pl.appendChild(el);
+          }
+        }
+        var padPlist = padAudioPlaylist();
+        if (_a) {
+          var firstEl = geByClass1('audio', pl), firstId = firstEl && firstEl.id.substr(5) || '',
+              copyToMain = padPlist && self.audioSearchStr == padPlist.searchStr,
+              rowsCnt = geByClass('audio', pl).length, pList = copyToMain ? padPlist : cur.nextPlaylist || {};
+          if (rowsCnt > (pList.length || 0)) {
+            _a.createDynamicPlaylist(firstId, copyToMain, offset);
+          }
+        }
+        toggle('pad_more_audio', options.has_more && (res || preload));
+        if (preload) {
+          self.audioSearchPreload = preload;
+        } else {
+          delete self.audioSearchPreload;
+        }
+        if (!options.searchCount && !res && !preload) {
+          msg = getLang('audio_no_audios_found').split('{query}').join('<b>'+val.replace(/([<>&#]*)/g, '')+'</b>');
+          pl.innerHTML = '<div class="pad_no_audios">'+msg+'</div>';
+        }
+        if (!browser.mobile && padPlist && self.audioSearchStr == padPlist.searchStr) {
+          if (offset) {
+            setTimeout(sorter.added.pbind(pl), 0);
+          } else {
+            setTimeout(function(){
+              sorter.init(pl, {onReorder: Pads.onAudioReorder, noMoveCursor: 1});
+            }, 0);
+          }
+        }
+        if (_a && _a.showCurrentTrack) _a.showCurrentTrack();
+        Pads.updateHeight();
+      },
+      onFail: function() {
+        removeClass(inputWrap, 'loading');
+      },
+      showProgress: function () {
+        self.isAudioLoading = true;
+      },
+      hideProgress: function () {
+        self.isAudioLoading = false;
+      }
+    });
+  }
+}
+if (!Pads.clearAudioSearch) {
+  Pads.clearAudioSearch = function(el, event) {
+    setStyle(el, {opacity: .6});
+    val('pad_search', '');
+    ge('pad_search').focus();
+    ge('pad_playlist').innerHTML = '';
+    removeClass(ge('pad_audio_reset'), 'shown');
+    delete this.audioSearchStr;
+    delete this.audioSearchOffset;
+    delete this.audioSearchPreload;
+    delete this.audioSearchMore;
+    this.audioSearchCleared = true;
+    cur.nextPlaylist = clone(window.lastPlaylist || {});
+    Pads.showAudios();
+    Pads.updateHeight();
+    animate(_pads.content, {scrollTop: 0}, 200);
+    if (window.audioPlayer) {
+      audioPlayer.showCurrentTrack();
+    }
+  }
+}
+if (!Pads.updateAudioList) {
+  Pads.updateAudioList = function(e, el) {
+    var self = this;
+    if (e && (e.keyCode == 10 || e.keyCode == 13) || cur.forceNoAutoComplete) {
+      delete cur.forceNoAutoComplete
+      delete self.audioAutoComplete;
+    } else {
+      self.audioAutoComplete = 1;
+    }
+    if (el) {
+      el.focus();
+    }
+    clearTimeout(this.searchAudiosTO);
+    this.searchAudiosTO = setTimeout(function() {
+      var str = trim(ge('pad_search').value), reset = ge('pad_audio_reset');
+      if (str == self.audioSearchStr && self.audioAutoComplete) {
+        return;
+      }
+      toggleClass(reset, 'shown', str);
+      self.audioSearchStr = str;
+      delete self.audioSearchOffset;
+      delete self.audioSearchMore;
+      delete self.audioSearchPreload;
+      delete self.audioSearchCleared;
+      self.searchAudios(str, 0);
+      animate(_pads.content, {scrollTop: 0}, 200);
+    }, 300);
+  }
+}
+if (!Pads.selectPerformer) {
+  Pads.selectPerformer = function(event, name) {
+    val('pad_search', name);
+    cur.forceNoAutoComplete = true;
+    Pads.updateAudioList(null);
+    if (event) cancelEvent(event);
+  }
+}
+if (!Pads.playLastStatus) {
+  Pads.playLastStatus = function() {
+    var _a = audioPlayer, pl = ge('pad_playlist');
+    if (cur.nextPlaylist && cur.nextPlaylist.start) {
+      var m = cur.nextPlaylist.start.match(/^-?\d+_\d+_s(-?\d+)(?:_|$)/);
+      if (m && m[1] && _a.statusData && _a.statusData[m[1]]) {
+        var data = _a.statusData[m[1]];
+        window.audioPlaylist = clone(cur.nextPlaylist);
+        if (window.audioPlayer) {
+          audioPlayer.setPadPlaylist();
+        }
+        playAudioNew(audioPlaylist.start);
+        pl.innerHTML = '<div class="pad_audio_status">'+data.audio_litening_to_user+'</div>';
+        ge('pad_footer_text').innerHTML = data.audio_goto_user;
+        hide('pad_more_audio');
+      }
+    }
+  }
+}
+Pads.audioInited = true;
+_pads.hash = '5251c94ee9299ae479';

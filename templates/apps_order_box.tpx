@@ -1,0 +1,5 @@
+<a id="apps_paymentbox_close_lnk" class="fl_r" onclick="curBox().hide();">Закрыть</a>
+<div id="apps_paymentbox_progress" style="display: block;">
+  <img src="/images/progress7.gif" />
+  <div id="apps_paymentbox_progress_msg_wrap"><span id="apps_paymentbox_progress_msg">Ожидание информации о товаре..</span></div>
+</div>

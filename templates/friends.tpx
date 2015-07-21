@@ -1,0 +1,218 @@
+<?php
+global $friends, $friendlists, $langpack, $section, $user, $owner, $summary, $template, $total_requests, $total_online, $total_common, $total_fans, $section, $new_design, $total_friends;
+
+$ins_id = $user->is_me($owner) ? '' : 'id='.$owner->id.'&';
+
+if($new_design) echo tpx('header_design');
+
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content"><div id="friends">
+<? if(!$new_design) { ?><div class="tabs t_bar clear_fix">
+  <ul id="friends_tabs" class="t0">
+   <li id="tab_all" class="<? if($section == 'phonebook' or $section == 'all' or substr($section, 0, 4) == 'list') { ?>active_link<? } ?>">
+    <a href="/friends?<?=$ins_id?>section=all" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('all', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Все друзья</b>
+    </a>
+   </li>
+   <li id="tab_online" class="<? if($section == 'online') { ?>active_link<? } ?>">
+		 <a href="/friends?<?=$ins_id?>section=online" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('online', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Друзья ВСети<span class="count"></span></b>
+    </a>
+   </li>
+   <li id="tab_requests" class="<? if($section == 'requests' or $section == 'all_requests') { ?>active_link<? } ?> count" style="<? if($total_requests < 1 and $total_fans == 0) { ?>display: none;<? } ?>">
+    <a href="/friends?section=requests" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('requests', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Заявки в друзья<? if($user->usersetting_info['new_friends'] > 0) { ?><span class="count">+<?=$user->usersetting_info['new_friends']?></span><? } ?></b>
+    </a>
+   </li>
+   <li id="tab_common" class="<? if($section == 'common') { ?>active_link<? } ?>" style="<? if($user->is_me($owner) or $total_common == 0) {?>display:none;<? } ?>">
+    <a href="/friends?<?=$ins_id?>section=common" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('common', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Общие друзья<span class="count"></span></b>
+    </a>
+   </li>
+   <li id="tab_members" class="" style="display: none;">
+    <a href="/friends?section=members" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('members', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word"></b>
+    </a>
+   </li>
+   <!--<li class="t_r"><a onclick="Friends.searchForFriends()">Поиск друзей</a></li>-->
+  </ul>
+</div>
+<div class="search top_search_wrap" id="friends_search" style="<? if($section == 'requests' or $section == 'all_requests') { ?>display: none<? } ?>">
+  <div class="fl_r button_green button_wide" id="invite_button"><button onclick="window.location = '/invite.php?act=sms'" onclick2="nav.go('/invite', false, {showProgress: lockButton.pbind(this), hideProgress: unlockButton.pbind(this)})">Пригласить друга</button></div>
+<div id="friends_loading"></div>
+<div id="friends_reset_search" onmouseover="setStyle(this, {opacity: 1});" onmouseout="setStyle(this, {opacity: 0.6});" onclick="Friends.updateList(event, false);" style="opacity: 0.6; "></div>
+<input placeholder="Начните вводить имя друга" onkeydown="Friends.updateList(event, this);" id="s_search" type="text" class="text top_search_inp s_search_inv" value="" />
+</div>
+<div id="friends_req_tabs" style="<? if($section == 'requests' or $section == 'all_requests') { ?>display: block;<? } ?>" class="summary_tabs clear_fix">
+  <div class="fl_l summary_tab<? if($section == 'requests') { ?>_sel<? } ?>">
+		<a class="summary_tab2" href="/friends?section=requests" onclick="return checkEvent(event)" onmousedown="Friends.switchTab('requests', event)"id="sum_tab_requests" <? if($total_requests < 1) { ?>style="display: none"<? } ?>>
+    <div class="summary_tab3">
+      <nobr>Новые заявки</nobr>
+    </div>
+  </a>
+</div><div class="fl_l summary_tab<? if($section == 'all_requests') { ?>_sel<? } ?>">
+  <a class="summary_tab2" href="/friends?section=all_requests" onclick="return checkEvent(event)" onmousedown="Friends.switchTab('all_requests', event)" id="sum_tab_all_requests" <? if($total_fans == 0) { ?>style="display: none"<? } ?>>
+    <div class="summary_tab3">
+      <nobr>Все подписчики</nobr>
+    </div>
+  </a>
+</div><div class="fl_l summary_tab">
+  <a class="summary_tab2" href="/friends?section=out_requests" onclick="return checkEvent(event)" onmousedown="Friends.switchTab('out_requests', event)" id="sum_tab_out_requests" style="display: none">
+    <div class="summary_tab3">
+      <nobr>Исходящие заявки</nobr>
+    </div>
+  </a>
+</div><div class="button_green fl_r" id="friends_hide_all" style="<? if($section == 'requests' and $total_requests > 1) { ?>display: block;<? } else { ?>display: none;<? } ?>">
+  <button onclick="Friends.subscribeAllRequests(this, '<?=hash_get($user->id , 12, 'clf')?>')">
+    Оставить всех в подписчиках
+  </button>
+</div>
+</div>
+<div class="summary_wrap">
+  
+  <div class="summary" id="friends_summary"><?=$summary?></div>
+</div><? } /* ND0 */ ?>
+<div id="main_class" class="<? if($section == 'requests' or $section == 'common' or $section == 'all_requests') { ?>wide<? } ?>">
+<table cellspacing="0" cellpadding="0" id="main_table">
+  <tr>
+    <td class="main_panel">
+
+<? if($new_design) { ?><div class="tabs t_bar clear_fix">
+  <ul id="friends_tabs" class="t0">
+   <li id="tab_all" class="<? if($section == 'phonebook' or $section == 'all' or substr($section, 0, 4) == 'list') { ?>active_link<? } ?>">
+    <a href="/friends?<?=$ins_id?>section=all" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('all', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Все друзья<span class="count"><? if($total_friends > 0) { ?> (<?=$total_friends?>)<? } ?></span></b>
+    </a>
+   </li>
+   <li id="tab_online" class="<? if($section == 'online') { ?>active_link<? } ?>">
+		 <a href="/friends?<?=$ins_id?>section=online" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('online', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Сейчас на сайте<span class="count"><? if($total_online > 0) { ?> (<?=$total_online?>)<? } ?></span></b>
+    </a>
+   </li>
+   <li id="tab_requests" class="<? if($section == 'requests' or $section == 'all_requests') { ?>active_link<? } ?> count" style="<? if($total_requests < 1 and $total_fans == 0) { ?>display: none;<? } ?>">
+    <a href="/friends?section=requests" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('requests', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Заявки в друзья<? if($user->usersetting_info['new_friends'] > 0) { ?> <span class="count">+<?=$user->usersetting_info['new_friends']?></span><? } ?></b>
+    </a>
+   </li>
+   <li id="tab_common" class="<? if($section == 'common') { ?>active_link<? } ?>" style="<? if($user->is_me($owner) or $total_common == 0) {?>display:none;<? } ?>">
+    <a href="/friends?<?=$ins_id?>section=common" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('common', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word">Общие друзья<span class="count"></span></b>
+    </a>
+   </li>
+   <li id="tab_members" class="" style="display: none;">
+    <a href="/friends?section=members" onclick="return checkEvent(event);" onmousedown="return Friends.switchTab('members', event);"><b class="tl1"><b></b></b><b class="tl2"></b>
+     <b class="tab_word"></b>
+    </a>
+   </li>
+   <!--<li class="t_r"><a onclick="Friends.searchForFriends()">Поиск друзей</a></li>-->
+  </ul>
+</div>
+<div class="search top_search_wrap" id="friends_search" style="<? if($section == 'requests' or $section == 'all_requests') { ?>display: none<? } ?>">
+<div id="friends_loading"></div>
+<div id="friends_reset_search" onmouseover="setStyle(this, {opacity: 1});" onmouseout="setStyle(this, {opacity: 0.6});" onclick="Friends.updateList(event, false);" style="opacity: 0.6; "></div>
+<input placeholder="Начните вводить имя друга" onkeydown="Friends.updateList(event, this);" id="s_search" type="text" class="text top_search_inp s_search_inv" value="" />
+</div>
+<div id="friends_req_tabs" style="<? if($section == 'requests' or $section == 'all_requests') { ?>display: block;<? } ?>" class="summary_tabs clear_fix">
+  <div class="fl_l summary_tab<? if($section == 'requests') { ?>_sel<? } ?>">
+		<a class="summary_tab2" href="/friends?section=requests" onclick="return checkEvent(event)" onmousedown="Friends.switchTab('requests', event)"id="sum_tab_requests" <? if($total_requests < 1) { ?>style="display: none"<? } ?>>
+    <div class="summary_tab3">
+      <nobr>Новые заявки</nobr>
+    </div>
+  </a>
+</div><div class="fl_l summary_tab<? if($section == 'all_requests') { ?>_sel<? } ?>">
+  <a class="summary_tab2" href="/friends?section=all_requests" onclick="return checkEvent(event)" onmousedown="Friends.switchTab('all_requests', event)" id="sum_tab_all_requests" <? if($total_fans == 0) { ?>style="display: none"<? } ?>>
+    <div class="summary_tab3">
+      <nobr>Все подписчики</nobr>
+    </div>
+  </a>
+</div><div class="fl_l summary_tab">
+  <a class="summary_tab2" href="/friends?section=out_requests" onclick="return checkEvent(event)" onmousedown="Friends.switchTab('out_requests', event)" id="sum_tab_out_requests" style="display: none">
+    <div class="summary_tab3">
+      <nobr>Исходящие заявки</nobr>
+    </div>
+  </a>
+</div><div class="button_green fl_r" id="friends_hide_all" style="<? if($section == 'requests' and $total_requests > 1) { ?>display: block;<? } else { ?>display: none;<? } ?>">
+  <button onclick="Friends.subscribeAllRequests(this, '<?=hash_get($user->id , 12, 'clf')?>')">
+    Оставить всех в подписчиках
+  </button>
+</div>
+</div>
+<div class="summary_wrap">
+  
+  <div class="summary" id="friends_summary"><?=$summary?></div>
+</div><? } /* ND1 */ ?>
+
+
+
+
+
+
+
+      <div id="friends_list">
+        <div id="list_content">
+          <div><?=tpx($template, array('friends' => $friends, 'no_deny' => ($section == 'suggestions' or $section == 'all_requests')))?></div>
+        </div>
+        <div id="show_more" class="show_more" style="">
+          <a onclick="Friends.showMore()" class="more">
+            Показать больше друзей
+          </a>
+        </div>
+        <div id="friends_search_cont">
+        </div>
+        <div id="friends_search_more" class="show_more">
+          <a onclick="Friends.serverSearchMore()" class="more">
+            Загрузить ещё
+          </a>
+        </div>
+        <div id="not_found" class="info_msg" style="display: none;">
+          <span class="empty" id="not_found_text">Ни одного друга не найдено.</span>
+          <span class="by_search">По запросу <b><span id="search_ph"></span></b> не найдено ни одного друга.</span>
+        </div>
+      </div>
+      <div id="page_end"></div>
+    </td>
+    <td class="side_panel">
+      <div id="sections_block" class="sections_block">
+        <div class="friends_fltr" style="">
+<div id="friends_fltr_progress" class="fl_r"></div>
+	<? if($new_design) { ?><div class="fl_r button_green button_wide" id="invite_button"><button onclick="window.location = '/invite.php?act=sms'" onclick2="nav.go('/invite', false, {showProgress: lockButton.pbind(this), hideProgress: unlockButton.pbind(this)})">Пригласить друга</button></div><? } ?>
+	<div style="display: none">
+		<div class="friends_fltr_label">Город</div>
+		<div class="friends_fltr_sel"><input id="friends_fltr_city" class="text friends_fltr_field" /></div>
+	</div>
+  <div class="friends_fltr_label">Возраст</div>
+  <div class="friends_fltr_sel clear_fix">
+    <div class="friends_age_from fl_l">
+      <input id="friends_age_from" class="text" />
+    </div>
+    <div class="friends_age_sep fl_l"> - </div>
+    <div class="friends_age_to fl_l">
+      <input id="friends_age_to" class="text" />
+    </div>
+  </div>
+  <div class="friends_fltr_label">Пол</div>
+  <div class="friends_fltr_sel friends_fltr_last" id="friends_sex_radio">
+    <div class="radiobtn" onclick="Friends.radioFilter(this, 1);"><div></div>Женский</div>
+    <div class="radiobtn" onclick="Friends.radioFilter(this, 2);"><div></div>Мужской</div>
+    <div id="friends_radio_any" class="radiobtn on" onclick="Friends.radioFilter(this, 0);"><div></div>Любой</div>
+  </div>
+</div><div class="sep"></div><a href="/friends?section=all" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'all'});" id="section_all" class="side_filter <? if($section == 'all' or $section == 'online') { ?>cur_section<? } ?>">Все друзья</a><? if($user->is_me($owner)) { ?><a href="/friends?section=phonebook" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'phonebook'});" id="section_phonebook" class="side_filter <? if($section == 'phonebook') { ?>cur_section<? } ?>">Телефонная книга</a><a href="/friends?section=recent" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'recent'});" id="section_recent" class="side_filter">Новые друзья</a><!--<a href="/friends?w=calendar" onclick="return nav.change({w: 'calendar'})" id="section_birthdays" class="side_filter <? if($section == 'birthdays') { ?>cur_section<? } ?>">Дни рождения</a>--><div class="sep"></div><a href="/friends?section=suggestions" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'suggestions'});" id="section_suggestions" class="side_filter <? if($section == 'suggestions') { ?>cur_section<? } ?>">Возможные друзья</a><div class="friends_sections_lists">
+<div class="sep"></div><? } ?><a href="/friends?section=list28" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'list28'});" id="section_list28" class="side_filter <? if($section == 'list28') { ?>cur_section<? } ?>">Лучшие друзья</a><a href="/friends?section=list29" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'list29'});" id="section_list29" class="side_filter <? if($section == 'list29') { ?>cur_section<? } ?>">Родственники</a><a href="/friends?section=list27" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'list27'});" id="section_list27" class="side_filter <? if($section == 'list27') { ?>cur_section<? } ?>">Коллеги</a><a href="/friends?section=list25" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'list25'});" id="section_list25" class="side_filter <? if($section == 'list25') { ?>cur_section<? } ?>">Друзья по вузу</a><a href="/friends?section=list26" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'list26'});" id="section_list26" class="side_filter <? if($section == 'list26') { ?>cur_section<? } ?>">Друзья по школе</a><? if($user->is_me($owner)) { ?><div class="sep"></div><?
+
+	if(!empty($friendlists)) {
+		foreach($friendlists as $k => $v) {
+			if($k >= 25) continue;
+			?><a href="/friends?section=list<?=$k?>" onclick="return checkEvent(event)" onmousedown="return checkEvent(event) || nav.change({'0': 'friends', section: 'list<?=$k?>'});" id="section_list<?=$k?>" class="side_filter <? if($section == 'list' . $k) { ?>cur_section<? } ?>"><?=$v?></a><?
+		}
+	}
+}
+?></div><? if($user->is_me($owner)) { ?><a onclick="return checkEvent(event)" onmousedown="Friends.createList()" id="friends_create_list" class="side_filter">Создать список</a><? } ?>
+      </div>
+    </td>
+  </tr>
+</table>
+</div>
+</div></div>
+  </div>
+</div>

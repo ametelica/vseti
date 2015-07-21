@@ -1,0 +1,30 @@
+<?php
+global $owner;
+
+$_lists = $owner->oid > 0 ? $owner->friendlists() : array();
+
+$extend = $owner->privacy4js();
+$extend['album0'] = array(0, 1, array(0), array());
+$extend['albumcomm0'] = array(0, 1, array(0), array());
+
+?>
+cur.privacy = extend(cur.privacy || {}, <?=jenc($extend)?>);
+cur.saveNewAlbum = function() {
+  var title = trim(ge('new_album_title').value);
+  if (!title) return notaBene('new_album_title');
+  ajax.post('al_photos.php', {
+    act: 'new_album',
+    oid: <?=$owner->oid?>,
+    title: title,
+    desc: ge('new_album_description').value,
+    view: (<?=$owner->oid?> > 0) ? Privacy.getValue('album0') : false,
+    comm: (<?=$owner->oid?> > 0) ? Privacy.getValue('albumcomm0') : false,
+    only: (<?=$owner->oid?> < 0) ? isChecked('album_only_check') : false,
+    hash: '<?=hash_get($owner->oid, 12, 'acr')?>'
+  }, {progress: box.progress});
+};
+autosizeSetup('new_album_description', {minHeight: 70});
+box.setOptions({bodyStyle: 'padding: 1px 14px'});
+if (cur.onNewAlbum) cur.onNewAlbum();
+box.removeButtons().addButton('Отмена', box.hide, 'no').addButton('Создать альбом', cur.saveNewAlbum);
+setTimeout(elfocus.pbind('new_album_title', false, false), 0);

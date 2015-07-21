@@ -1,0 +1,97 @@
+<?php 
+	global $new_design, $topics, $langpack, $limit, $board, $order;
+	if($new_design) echo tpx('header_design');
+	
+	$topics_tpx = $topics['comments'];
+	if($topics['total'] > $limit) {
+		$topics_tpx = array_slice($topics_tpx, 0, $limit);
+	}
+?><div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page"><div class="tabs t_bar clear_fix">
+  <ul class="t0">
+    <li class="active_link">
+      <a href="/board<?=$board->oid?>" onclick="return nav.go(this, event, {back: true})">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Обсуждения</b>
+      </a>
+    </li>
+    <li class=" bt_unshown" style="">
+      <a href="/board<?=$board->oid?>?act=search&q=" onclick="return nav.go(this, event, {back: true})">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Результаты поиска</b>
+      </a>
+    </li>
+    <li class=" bt_unshown">
+      <a href="/board<?=$board->oid?>?act=create" onclick="return nav.go(this, event)">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Новая тема</b>
+      </a>
+    </li>
+    <li class=" bt_unshown">
+      <a href="/topic-<?=$board->oid?>_0" onclick="return nav.go(this, event)">
+        <b class="tl1"><b></b></b>
+        <b class="tl2"></b>
+        <b class="tab_word">Просмотр темы</b>
+      </a>
+    </li>
+    <li class="t_r" style="<? if(!$board->access_send) { ?>display: none<? } ?>">
+      <a href="/board<?=$board->oid?>?act=create" onclick="return nav.go(this, event)">
+        Создать тему
+      </a>
+    </li>
+    <li class="t_r" style="display: none">
+      <a onclick="return Privacy.show(this, event, 'topic_action', [0, 0])" id="privacy_edit_topic_action">
+        Редактировать
+      </a>
+      <div class="progress" id="edit_topic_prg"></div>
+    </li>
+  </ul>
+</div><div class="summary_tabs clear_fix">
+  <div class="fl_r summary_tab<? if($order == 2) { ?>_sel<? } ?>">
+  <a class="summary_tab2" href="/board<?=$board->oid?>?order=2" onclick="return nav.go(this, event)">
+    <div class="summary_tab3">
+      <nobr>По дате создания</nobr>
+    </div>
+  </a>
+</div><div class="fl_r summary_tab<? if($order != 2) { ?>_sel<? } ?>">
+  <a class="summary_tab2" href="/board<?=$board->oid?>" onclick="return nav.go(this, event)">
+    <div class="summary_tab3">
+      <nobr>По дате обновления</nobr>
+    </div>
+  </a>
+</div>
+  <div id="board_q_wrap">
+  <input
+    id="board_q"
+    type="text"
+    class="text "
+    placeholder="Поиск по обсуждениям в группе"
+    value=""
+    onkeyup="if ((event.keyCode == 10 || event.keyCode == 13) && this.value) nav.go({0: 'board' + cur.gid, act: 'search', q: this.value});"
+  />
+</div>
+</div>
+<?
+	$messages = array(
+		1 => '<b>Тема открыта.</b><br>Все участники сообщества смогут оставлять сообщения в этой теме.',
+		2 => '<b>Тема закрыта.</b><br>Участники сообщества больше не смогут оставлять сообщения в этой теме.',
+		3 => '<b>Тема удалена.</b><br>Тема удалена из списка обсуждений группы.',
+	);
+	$m = rq('m');
+	if(array_key_exists($m, $messages)) {
+		echo '<div id="bt_msg" class="msg">' . $messages[$m] . '</div>';
+	}
+?>
+<div class="summary_wrap">
+  <div class="summary" id="board_summary"><a class="fl_r sort_rev_icon" onmouseover="showTooltip(this, {text: 'Показать в обратном порядке'})" href="/board<?=$board->oid?>?order=-1" onclick="return nav.go(this, event)"></a>В группе <?=$topics['total']?> тем<?=$langpack->dln($topics['total'], array('a','ы',''))?>.</div>
+</div>
+<div id="blst_cont"><?=tpx('board_rows', array('topics' => $topics_tpx))?></div>
+<a id="blst_load_more" onclick="Board.load()" style="<? if($topics['total'] <= $limit) { ?>display: none<? } ?>"><span>Показать ещё темы</span>
+  <div id="blst_more_progress" class="progress"></div>
+</a></div>
+  </div>
+    </div>

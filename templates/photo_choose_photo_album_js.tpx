@@ -1,0 +1,405 @@
+<?php
+	global $vs_album, $photos_list, $photos_on_page;
+
+	$photos_assign = array(
+		'photos' => $photos_list['data'],
+	);
+?>cur.chooseParams = cur.chooseParams || {};
+extend(cur.chooseParams, {
+  maxFiles: 10,
+  offset: <?=$photos_on_page?>,
+  params: {"to_id":<?=$var['to_id']?>,"mail_add":0,"status_add":0,"al_wiki_editor":0,"wk_mode":0,"album":"<?=$vs_album->uid?>","max_files":10,"tab":"user_photos"}
+});
+var startOffset = cur.chooseParams.offset;
+extend(cur, {
+  selectedPhotos: {},
+  chooseAlbum: cur.chooseParams.params.album,
+  chooseLoading: false
+});
+var chooseBack = false;
+var multiselect = false;
+var startHTML =  ge('photos_choose_wrap').innerHTML;
+cur.photosSearchStr = '';
+cur.photosSearchEnabled = false;
+
+cur.togglePhotoUpload = function(obj) {
+  if (cur.photosSearchEnabled) {
+    cur.photosSearchEnabled = false;
+    hide('photos_attach_search_cont');
+    show('photos_choose_upl');
+    obj.innerHTML = cur.docsTitleSearchBack;
+  } else {
+    cur.photosSearchEnabled = true;
+    show('photos_attach_search_cont');
+    hide('photos_choose_upl');
+    if (!cur.docsTitleSearchBack) {
+      cur.docsTitleSearchBack = obj.innerHTML;
+      placeholderSetup('choose_photos_query', {back: true});
+    }
+    var oldW = getSize(obj)[0];
+    obj.innerHTML = 'Отмена';
+    if (getSize(obj)[0] < oldW) {
+      setStyle(obj, {width: oldW});
+    }
+    elfocus(ge('choose_photos_query'));
+  }
+}
+
+cur.updateChooseList = function(e, obj) {
+  clearTimeout(cur.photosSearchTimeout);
+  cur.photosSearchTimeout = setTimeout((function() {
+    var str = trim(obj.value);
+    if (str == cur.chooseDocsQuery) {
+      return;
+    }
+    toggleClass(ge('choose_query_reset'), 'shown', !!str);
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout((function() {
+      cur.choosePhotosSearch(obj);
+    }).bind(this), obj.value ? 300 : 0);
+  }).bind(this), 10);
+}
+
+cur.chooseClearSearch = function() {
+  var obj = ge('choose_photos_query');
+  val(obj, '');
+  removeClass(ge('choose_query_reset'), 'shown');
+  cur.choosePhotosSearch(obj);
+}
+
+cur.choosePhotosSearch = function(obj) {
+  var str = trim(obj.value);
+  if (str == cur.photosSearchStr) {
+    return;
+  }
+  cur.photosSearchStr = str;
+  if (str) {
+    cur.chooseParams.offset = 0;
+    cur.chooseAlbum = '';
+    cur.photosChooseMore();
+  } else {
+    cur.chooseParams.offset = startOffset;
+    ge('photos_choose_wrap').innerHTML = startHTML;
+    if (chooseBack) {
+      var objMore = ge('photos_choose_more' + cur.chooseAlbum);
+      objMore.innerHTML = chooseBack;
+    }
+  }
+}
+
+cur.choosePhotoMulti = function(photoRaw, callback, event) {
+  if (!multiselect) {
+    if (cur.chooseAlbum) boxQueue.hideLast();
+    return callback();
+  }
+
+  cur.chooseToggleSelected(photoRaw, callback, event);
+  return false;
+}
+cur.chooseFromAlbum = function(album) {
+  cur.lastBoxScroll = boxLayerWrap.scrollTop;
+  cur.lastChooseParams = clone(cur.chooseParams);
+  if (cur.chooseUploadData) {
+    cur.lastChooseUploadData = clone(cur.chooseUploadData);
+  }
+  cur.chooseLoading = true;
+  var params = clone(cur.chooseParams.params);
+  return !showBox('al_photos.php', extend(params, {act: 'choose_photo', album: album, offset: 0}), {cache: 1, stat: ['photos.js', 'photos.css', 'upload.js'], params: {dark: 1}})
+}
+cur.chooseAlbumOver = function(obj, id) {
+  addClass(obj, 'over');
+  clearTimeout((cur.pcHideTO || {})[id]);
+  var title = geByClass1('photos_choose_album_title', obj), r = title.previousSibling, descY = getSize(geByClass1('photos_choose_album_desc', obj))[1];
+  if (descY < 5) return;
+
+  animate(title, {marginTop: 159 - (descY + 7)}, {duration: 200, transition: Fx.Transitions.easeOutCirc});
+}
+cur.chooseAlbumOut = function(obj, id) {
+  removeClass(obj, 'over');
+  if (!cur.pcHideTO) cur.pcHideTO = {};
+  cur.pcHideTO[id] = setTimeout(function() {
+    var title = geByClass1('photos_choose_album_title', obj), r = title.previousSibling;
+    animate(title, {marginTop: 159}, 200);
+  }, 150);
+}
+cur.selectedCount = function() {
+  var cnt = 0;
+  for (var i in cur.selectedPhotos) cnt++;
+  return cnt;
+}
+cur.cancelMultiple = function() {
+  for (var i in cur.selectedPhotos) {
+    cur.chooseToggleSelected(i);
+  }
+  multiselect = false;
+  hide('photos_choose_bottom' + cur.chooseAlbum);
+}
+cur.chooseToggleSelected = function(photoRaw, onclick, event) {
+  if (event) {
+    event.cancelBubble = true;
+    cancelEvent(event);
+  }
+  multiselect = true;
+  var row = ge('photos_choose_row' + photoRaw + '_' + cur.chooseAlbum);
+  if (cur.selectedPhotos[photoRaw]) {
+    delete cur.selectedPhotos[photoRaw];
+    removeClass(row, 'selected');
+  } else {
+    if (cur.selectedCount() < (cur.chooseParams.maxFiles || 10) - (cur.attachCount && cur.attachCount() || 0)) {
+      cur.selectedPhotos[photoRaw] = onclick;
+      addClass(row, 'selected');
+    } else if (!geByClass1('top_result_baloon_wrap')) {
+      showDoneBox((cur.chooseParams.maxFiles == 2) ? 'Вы не можете прикрепить более <b>2 вложений</b> к одному комментарию.' : 'Вы не можете прикрепить более <b>10 вложений</b> к одной записи.', {w: 420});
+    }
+  }
+  var newCnt = cur.selectedCount(), btn = ge('photos_choose_button' + cur.chooseAlbum);
+  show('photos_choose_bottom' + cur.chooseAlbum);
+  if (btn) {
+    if (newCnt && cur.uploaderLang && cur.uploaderLang.photos_attach_X_photos) {
+      btn.innerHTML = langNumeric(newCnt, cur.uploaderLang.photos_attach_X_photos);
+    } else {
+      btn.innerHTML = 'Выберите фотографию';
+    }
+    disableButton(btn, newCnt <= 0);
+  }
+  cur.choosePhotoScroll();
+}
+cur.chooseAllSelected = function() {
+  multiselect = false;
+  var cnt = 0, needClose = !!cur.chooseAlbum;
+  cur.preventBoxHide = true;
+  for (var i in cur.selectedPhotos) {
+    if (cnt++ < (cur.chooseParams.maxFiles || 10)) cur.selectedPhotos[i]();
+  }
+  cur.preventBoxHide = false;
+  cur.selectedPhotos = {};
+  box.hide();
+  if (needClose) boxQueue.hideLast();
+}
+cur.photosChooseMore = function() {
+  var objMore = ge('photos_choose_more' + cur.chooseAlbum);
+  if (!chooseBack) {
+    chooseBack = objMore.innerHTML;
+  }
+  if (cur.chooseLoading) {
+    return false;
+  }
+  cur.chooseLoading = true;
+  var offset = cur.chooseParams.offset, params = clone(cur.chooseParams.params);
+  ajax.post('al_photos.php', extend(params, {act: 'choose_photo', offset: offset, q: cur.photosSearchStr}), {
+    onDone: function(rows, newOffset, showMore) {
+      if (cur.photosSearchStr) {
+        if (offset) {
+          ge('photos_choose_rows' + cur.chooseAlbum).insertBefore(cf(rows), ge('photos_choose_clear' + cur.chooseAlbum));
+        } else {
+          ge('photos_choose_wrap').innerHTML = rows;
+        }
+        objMore.innerHTML = 'Показать остальные фотографии';
+        setTimeout(cur.choosePhotoScroll, 0);
+      } else {
+        if (!ge('photos_choose_rows' + cur.chooseAlbum)) return;
+        ge('photos_choose_rows' + cur.chooseAlbum).insertBefore(cf(rows), ge('photos_choose_clear' + cur.chooseAlbum));
+      }
+      cur.chooseParams.offset = newOffset;
+      if (showMore) {
+        hide(objMore);
+      } else {
+        show(objMore);
+      }
+      cur.chooseLoading = false;
+    },
+    onFail: function() {
+      cur.chooseLoading = false;
+    },
+    showProgress: function() {
+      if (offset) {
+        objMore.innerHTML = '<img width="32" height="8" src="/images/upload'+(window.devicePixelRatio >= 2 ? '_2x' : '')+'.gif">';
+      } else {
+        addClass(ge('photos_attach_search_cont'), 'loading');
+      }
+    },
+    hideProgress: function() {
+      if (offset) {
+        objMore.innerHTML = chooseBack;
+      } else {
+        removeClass(ge('photos_attach_search_cont'), 'loading');
+      }
+    }
+  })
+}
+var switchBack = false;
+cur.photosChooseSwitch = function(obj) {
+  if (cur.chooseParams.params.tab !== 'group_photos') {
+    cur.chooseParams.params.tab = 'group_photos';
+  } else {
+    cur.chooseParams.params.tab = 'user_photos';
+  }
+  if (switchBack) {
+    return false;
+  }
+
+  var obj = ge('choose_photos_query');
+  if (obj) {
+    val(obj, '');
+    removeClass(ge('choose_query_reset'), 'shown');
+  }
+
+  cur.albumsAutoload = false;
+  var objMore = ge('photos_choose_more' + cur.chooseAlbum);
+  switchBack = obj.innerHTML;
+  var params = clone(cur.chooseParams.params);
+  ajax.post('al_photos.php', extend({act: 'choose_photo', offset: 0, switch_tab: 1}, params), {
+    onDone: function(rows, newOffset, showMore, moreStr, albumRows, newAlbumsOffset, showMoreAlbums, moreAlbums, albumsPreload, rightLink) {
+      cur.cancelMultiple();
+      ge('photos_choose_rows' + cur.chooseAlbum).innerHTML = rows;
+      ge('photos_choose_more' + cur.chooseAlbum).innerHTML = moreStr;
+      if (ge('photos_choose_album_rows')) {
+        ge('photos_choose_album_rows').innerHTML = albumRows;
+      }
+      if (ge('photos_choose_more_albums')) {
+        ge('photos_choose_more_albums').innerHTML = moreAlbums;
+        toggle(ge('photos_choose_more_albums'), !showMoreAlbums);
+      }
+      cur.albumsOffset = newAlbumsOffset;
+      if (albumsPreload) {
+        ajax.preload('al_photos.php', extend(clone(cur.chooseAlbumParams || {}), {act: 'choose_photo', load_albums: 1, offset: cur.albumsOffset, tab: cur.chooseParams.params.tab}), albumsPreload);
+      }
+      if (rightLink) {
+        ge('photos_choose_right_link' + cur.chooseAlbum).innerHTML = rightLink;
+      }
+      cur.chooseParams.offset = newOffset;
+      if (showMore) {
+        hide(objMore);
+      } else {
+        show(objMore);
+      }
+      switchBack = false;
+    },
+    onFail: function() {
+      switchBack = false;
+    },
+    showProgress: function() {
+      obj.innerHTML = '<img src="/images/upload.gif">';
+    },
+    hideProgress: function() {
+      obj.innerHTML = switchBack;
+    }
+  })
+}
+cur.choosePhotoScroll = function() {
+  var st = boxLayerWrap.scrollTop, mx = 200, vis = cur.lSTLWas || (st > mx), o = 0;
+  var objMore = ge('photos_choose_more' + cur.chooseAlbum),
+      albumsObjMore = ge('photos_choose_more_albums');
+  cur.lSTL.style.marginTop = st + 'px';
+  if (!vis) {
+    if (cur.lSTLShown !== 0) {
+      hide(cur.lSTL);
+      cur.lSTLShown = 0;
+    }
+  } else {
+    if (cur.lSTLShown !== 1) {
+      show(cur.lSTL);
+      cur.lSTLShown = 1;
+    }
+    if (cur.lSTLWas && st > 500) {
+      cur.lSTLWas = 0;
+    }
+    if (st > mx) {
+      o = (st - mx) / mx;
+      if (cur.lSTLWasSet) {
+        cur.lSTLWasSet = 0;
+        val(domLC(cur.lSTL), getLang('global_to_top'));
+        removeClass(domLC(cur.lSTL), 'down');
+      }
+    } else {
+      o = (mx - st) / mx;
+      if (cur.lSTLWas) {
+        if (!cur.lSTLWasSet) {
+          cur.lSTLWasSet = 1;
+          val(domLC(cur.lSTL), '');
+          addClass(domLC(cur.lSTL), 'down');
+        }
+      }
+    }
+  }
+  setStyle(cur.lSTL, {opacity: Math.min(Math.max(o, 0), 1)});
+
+  var uploadWrap = ge('photos_choose_upload_area_wrap' + cur.chooseAlbum), uploadCont = ge('photos_choose_upload_area_cont' + cur.chooseAlbum);
+  var bottomWrap = ge('photos_choose_bottom_wrap' + cur.chooseAlbum), bottomCont = ge('photos_choose_bottom' + cur.chooseAlbum);
+
+  var pos = getXY(bottomWrap)[1], h = getSize(bottomCont)[1];
+  toggleClass(bottomCont, 'fixed', pos + h > scrollGetY() + lastWindowHeight);
+
+  var pos = getXY(uploadWrap)[1], h = getSize(uploadCont)[1];
+  if (!cur.uplWrapHeight) {
+    setStyle(uploadWrap, {height: h});
+    cur.uplWrapHeight = true;
+  }
+  toggleClass(uploadCont, 'fixed', pos < scrollGetY());
+
+  var bt = lastWindowHeight;
+
+  if (isVisible(objMore) && (bt > getXY(objMore, true)[1] - (cur.module == 'im' || browser.msie6 ? 0 : scrollGetY()) - bt)) {
+    objMore.click();
+  }
+
+  if (!cur.chooseAlbum && cur.albumsAutoload && isVisible(albumsObjMore) && (bt > getXY(albumsObjMore, true)[1] - (cur.module == 'im' || browser.msie6 ? 0 : scrollGetY()) - bt)) {
+    albumsObjMore.click();
+  }
+}
+cur.lSTLDown = function(e) {
+  e = e || window.event;
+  if (checkEvent(e)) return;
+
+  if (!__afterFocus) {
+    var to = 0, st = boxLayerWrap.scrollTop;
+    if (cur.lSTLWasSet && cur.lSTLWas) {
+      to = cur.lSTLWas;
+      cur.lSTLWas = 0;
+    } else {
+      cur.lSTLWas = st;
+    }
+    boxLayerWrap.scrollTop = to;
+  }
+  return cancelEvent(e);
+}
+var initlSTL = function() {
+  if (cur.lSTL) re(cur.lSTL);
+  extend(cur, {
+    lSTL: boxLayerWrap.appendChild(ce('div', {id: 'layer_stl', innerHTML: '<div id="layer_stl_bg" class="fixed"></div><div id="layer_stl_cl"></div><nobr id="layer_stl_text" class="fixed">' + getLang('global_to_top') + '</nobr>', el: box.bodyNode, onclick: cancelEvent, onmousedown: cur.lSTLDown, sc: cur.chooseVideoScroll})),
+    lSTLShown: 0,
+    lSTLWas: 0,
+    lSTLWasSet: 0
+  });
+  setTimeout(onBodyResize, 0);
+}
+initlSTL();
+
+box.setOptions({hideButtons: true, width: 590, title: false, bodyStyle: 'padding: 0px; border: 0px;', onClean: function() {
+  removeEvent(boxLayerWrap, 'scroll', cur.choosePhotoScroll);
+  re(cur.lSTL);
+}, onBeforeHide: function() {
+  cur.cancelMultiple();
+  boxLayerWrap.scrollTop = 0;
+}, onShow: function() {
+  if (cur.lastBoxScroll) {
+    boxLayerWrap.scrollTop = cur.lastBoxScroll;
+    cur.lastBoxScroll = false;
+  }
+  if (cur.lastChooseParams) {
+    cur.chooseParams = cur.lastChooseParams;
+    delete cur.lastChooseParams;
+    cur.chooseAlbum = cur.chooseParams.params.album;
+  }
+  if (cur.lastChooseUploadData) {
+    cur.chooseUploadData = cur.lastChooseUploadData;
+    delete cur.lastChooseUploadData;
+  }
+  if (cur.initChooseUpload) {
+    cur.initChooseUpload();
+  }
+  initlSTL();
+  multiselect = false;
+}});
+boxLayerWrap.scrollTop = 0;
+addEvent(boxLayerWrap, 'scroll', cur.choosePhotoScroll);

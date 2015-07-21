@@ -1,0 +1,13 @@
+<?=tpx('apps_order_common_js')?>
+box.setOptions({title: false, width: 520, bodyStyle: 'padding: 0;', hideButtons: true, onHide: function() {
+  if (cur.paymentGetOrderItemTO) {
+    clearTimeout(cur.paymentGetOrderItemTO);
+  }
+}, onShow: function() {
+  if (cur.isPaymentAttemted !== undefined) box.hide();
+}, onClean: function() {
+  if (cur.onAppOrderCancel && (!cur.paymentsPreferVotes || cur.paymentsPreferVotes == '0')) {
+    cur.onAppOrderCancel();
+  }
+}});
+cur.paymentGetOrderItemTO = setTimeout(cur.paymentsProcessOrder, 1000);

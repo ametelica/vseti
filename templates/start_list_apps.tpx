@@ -1,0 +1,6 @@
+<?php
+
+foreach($var['apps'] as $a) {
+	?><div class="app_entry"><img src="<?=$a->app_photo('b')?>"></div><?
+}
+?>

@@ -1,0 +1,44 @@
+<?php
+global $datetime, $new_design, $user;
+$comments = $var['comments'];
+
+//dmp($var);
+
+foreach($comments['comments'] as $comment) {
+    $post_id = $var['oid'] . '_' . $comment['id'];
+    $author = pdata($comment['aid']);
+?>
+<div id="postpone<?=$post_id?>" class="post post_online" onmouseover="wall.postOver('<?=$post_id?>', 'postpone')" onmouseout="wall.postOut('<?=$post_id?>', 'postpone')">
+  <div class="post_table">
+    <div class="post_image">
+        <a class="post_image" href="<?=$author->lnk?>"><img src="<?=$author->photo()?>" width="50" height="50"/></a>
+      <span class="online"><?=(empty($author->user_info['online']) or !empty($new_design))?'':'ВСети'?></span>
+    </div>
+    <div class="post_info">
+
+
+<div class="fl_r post_actions_wrap">
+	<div class="post_actions">
+		<div id="postpone_delete<?=$post_id?>" class="post_delete_button fl_r" onmouseout="wall.deactiveDeletePost('<?=$post_id?>', 'postpone_delete')" onmouseover="wall.activeDeletePost('<?=$post_id?>', 'Удалить запись', 'postpone_delete')" onclick="wall.deletePost('<?=$post_id?>', '<?=hash_get($post_id, 16, 'wd')?>', 1);"></div>
+        <div id="postpone_edit<?=$post_id?>" class="post_edit_button fl_r" onmouseout="wall.deactiveDeletePost('<?=$post_id?>', 'postpone_edit')" onmouseover="wall.activeDeletePost('<?=$post_id?>', 'Редактировать', 'postpone_edit')" onclick="wall.editPost('<?=$post_id?>', { postpone: 1 })"></div>
+    </div>
+</div>
+<div class="wall_text"><a class="author" href="<?=$author->lnk?>"><?=$author->title?></a><?= (empty($author->user_info['online']) or empty($new_design)) ? '' : '<b class="online">•</b>' ?>
+	<div id="wpt<?=$post_id?>"><? 
+		if(empty($r) or $comment['date'] > 1385244744) {
+			echo tpx('wall_post_body', array('comment' => $comment));
+		}
+	  ?>
+	</div>
+</div>
+      
+      <div class="replies"><div class="reply_link_wrap" id="wpe_bottom<?=$post_id?>">
+  <small><a href="" onclick="return false;"><span class="rel_date"><?=$datetime->sdate($comment['date'])?></span></a></small><span class="divide">|</span><a onclick="wall.publishPostponedPost('<?=$post_id?>', '<?=hash_get($user->id . $comment['id'], 12, 'ppp')?>')">Опубликовать сейчас</a>
+  	   <span style="display: none" id="wpe_prg<?=$post_id?>" class="progress_inline wpe_prg"></span>
+</div>
+    </div>
+  </div>
+</div></div>
+<?
+}
+?>

@@ -1,0 +1,53 @@
+<?php
+global $params,$html,$path_css,$path_js,$params2;
+echo tpx('header_css');
+echo tpx('header_func');
+?>
+<div id="page_body" class="fl_r">
+ <div id="header_wrap2">
+  <div id="header_wrap1">
+   <div id="header" style="">
+    <h1 id="title">
+     <a href="/start.php">Главная</a> &raquo; Тестовое приложение
+    </h1>
+   </div>
+  </div>
+ </div>
+
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content">
+    <div class="apps_options_bar ta_l">
+     <span class="fl_r">
+      <a id="apps_install_btn" onclick="Apps.approveInstall('3da1a5299e7ba4744a', 0, this);">Добавить приложение</a>
+      <a id="apps_show_settings" style="display: none;" onmouseover="Apps.loadSettings();" onclick="Apps.showSettings(this)">Настройки</a>
+     </span>
+     <b class="app_summary_name">Application example for Flash Wrapper</b>
+     <span class="divider">|</span>
+     <a id="apps_help_link" onmouseover="Apps.loadHelp();" onclick="Apps.showHelp(this);">Помощь</a>
+    </div>
+    <div id="apps_user_settings_cont"></div>
+    <div id="apps_user_warning_cont" style="display: none;">
+     <div class="app_warning"></div>
+    </div>
+    <div id="flash_api_external_cont"></div>
+    <div class="apps_main ">
+     <div id="app_<?=$params['api_id']?>_container" class="app_container" style="width: <?=$params2['width']?>px; height: <?=$params2['height']?>px;padding: 10px 0px;"><?=$html?></div>
+    </div>
+   	<div id="apps_check_history"></div>
+   </div>
+  </div>
+ </div>  
+<?
+	//echo $html;
+	dmp($params);
+?>  
+
+  
+   </div><!--/content-->
+  </div><!--/wrap1-->
+ </div><!--/wrap2-->
+</div><!--/page_body-->
+<?
+echo tpx('footer');
+?>

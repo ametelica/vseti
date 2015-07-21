@@ -1,0 +1,17 @@
+<?
+global $act;
+echo '<a href="/books" onclick="return nav.go(this, event)" class="pad' . ($act == '' ? ' active' : '') . '" >Библиотека</a>';
+echo '<a href="/books?act=my" onclick="return nav.go(this, event)" class="pad' . ($act == 'my' ? ' active' : '') . '" >Мои книги</a>';
+echo '<a href="/books?act=genres" onclick="return nav.go(this, event)" class="pad' . ($act == 'genres' ? ' active' : '') . '" >Жанры</a>';
+?>
+<div style="margin-top: 10px; padding: 10px 0 5px 10px;"> </div>
+
+<?
+	/*
+	foreach($categories as $k => $v) {
+		if($k > 0 and !$v['cnt']) continue;
+		//echo '<div class="pad' . ($cat == $k ? ' active' : '') . ($v['level'] == 2 ? ' level2' : ' level1') . '" ><a href="/bazar' . ($k > 0 ? $k : '') . '" onclick="return nav.go(this, event)">' . $v['name'] . ' '.($k > 0 ? '<span class="cnt">('.$v['cnt'].')</span>' : '').'</a></div>';
+		echo '<a href="/bazar' . ($k > 0 ? $k : '') . '" onclick="return nav.go(this, event)" class="pad' . ($cat == $k ? ' active' : '') . ($v['level'] == 2 ? ' level2' : ' level1') . '" >' . $v['name'] . ' '.($k > 0 ? '<span class="cnt">('.$v['cnt'].')</span>' : '').'</a>';
+	}
+	*/
+?>

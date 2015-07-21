@@ -1,0 +1,43 @@
+<?php
+	global $setting;
+?>
+
+var qinit = function() {
+  setTimeout(function() {
+    ql.insertBefore(ce('div', {innerHTML: '<iframe class="upload_frame" id="quick_login_frame" name="quick_login_frame" src="http://login.<?=$setting['host']?>/?act=login&auto=1&to=<?=urlencode(preg_replace('/[^0-9a-z\.\?\=\&]/','',$_SERVER['REQUEST_URI']))?>"></iframe>'}), qf);
+    qf.target = 'quick_login_frame';
+  }, 1);
+}
+
+if (window.top && window.top != window) {
+  window.onload = qinit;
+} else {
+  setTimeout(qinit, 0);
+}
+
+qf.onsubmit = function() {
+  if (!ge('quick_login_frame')) return false;
+  if (!trim(qe.value)) {
+    elfocus(qe);
+    return false;
+  } else if (!trim(qp.value)) {
+    elfocus(qp);
+    return false;
+  }
+  lockButton(window.__qfBtn = prgBtn);
+  prgBtn = qlb;
+  return true;
+};
+window.onLoginDone = function(href) {
+    location.href = href;
+};
+window.onReLoginFailed = function() {};
+
+window.onLoginFailed = function(code, opts) {
+  switch (code) {
+    case 2: location.href = '/login.php?r=1&email=' + opts.email; break;
+    case 3: location.href = '/register.php?hash=' + opts.regh + '&gid=' + opts.inv; break;
+    case 4: showDoneBox('Указан неверный логин или пароль'); /* location.href = '/login.php?m=1&email=' + opts.email;*/ break;
+    default: location.href = '/login.php'; break;
+  }
+};

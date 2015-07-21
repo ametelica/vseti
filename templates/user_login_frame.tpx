@@ -1,0 +1,41 @@
+<?php
+	global $setting,$user,$sid,$act,$to,$email,$auto;
+?>
+<script type="text/javascript">
+var _ua = navigator.userAgent;
+var locDomain = '<?=$setting['host']?>'.match(/[a-zA-Z]+\.[a-zA-Z]+\.?$/)[0];
+if (/opera/i.test(_ua) || !/msie 6/i.test(_ua) || document.domain != locDomain) {
+  document.domain = locDomain;
+}
+function setCookieEx(n, v, s) {
+  var d = new Date();
+  d.setTime(d.getTime() + 1000 * 60 * 60 * 24 * 365);
+  var e = s ? ('; expires=' + d.toGMTString()) : '';
+  document.cookie = 'vs' + n + '=' + escape(v) + e + '; path=/; domain=.' + locDomain;
+}
+<?
+
+if($act=='slogin'){
+	if(empty($to)){
+		//$lnk = $user->lnk;
+		//$lnk = '/start.php';
+		$lnk = '/feed';
+	} else {
+		$lnk = '/'.preg_replace('/[^0-9a-zA-Z\.\?\=_\&\-]/','',$to); 
+	}
+} else {
+	$sid = '';
+	$lnk = '/';
+}
+
+if($user->user_exists){?>
+setCookieEx('sid', '<?=$sid?>', 1); setCookieEx('reg_sid', '', 1); setCookieEx('rec_sid', '', 1);	
+parent.onLoginDone('<?=$lnk?>');
+<?} elseif($auto==1) {?>
+parent.onReLoginFailed(true);	
+<?} else {
+$opts = array('email'=>$email);	
+?>
+parent.onLoginFailed(4, <?=jenc($opts)?>);	
+<?} ?>	
+</script>

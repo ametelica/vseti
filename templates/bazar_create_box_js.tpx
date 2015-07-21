@@ -1,0 +1,58 @@
+<?php
+	global $item_cats, $all_cats;
+?>
+var uiItemCats = <?=jenc($item_cats)?>;
+cur.uiAllCats = <?=jenc($all_cats)?>;
+
+uiCats = new Dropdown(ge('item_cat'), uiItemCats, {
+  zeroPlaceholder: true,
+  introText: 'Введите категорию',
+  placeholder: 'Выбор тематики',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '',
+  width: 380,
+  onChange: function() {
+  	  cur.uiSubCats.disable(false);
+  	  cur.uiSubCats.clear(); 
+  	  cur.uiSubCats.setData(cur.uiAllCats[cur.uiCats.val()]); 
+  },
+});
+cur.uiCats = uiCats;
+
+uiSubCats = new Dropdown(ge('item_subcat'), [], {
+  zeroPlaceholder: true,
+  introText: 'Введите подкатегорию',
+  placeholder: '-- Сначала выберите категорию',
+  zeroPlaceholder: true,
+  placeholderColor: '#777',
+  selectedItems: '',
+  width: 380,
+});
+cur.uiSubCats = uiSubCats;
+cur.uiSubCats.disable(true);
+
+box.setOptions({bodyStyle: 'padding: 1px 14px 16px'});
+box.removeButtons().addButton('Отмена', box.hide, 'no');
+box.addButton('Создать объявление', function() {
+	
+  if (!cur.uiSubCats.val()) {
+  	  alert('Не выбрана подкатегория');
+    return;
+  }
+  ajax.post('al_bazar.php', {
+    act: 'create',
+    subcat: cur.uiSubCats.val(),
+    hash: '493d35b41bfd67cf05'
+  }, {onDone: function(text) {
+    if (text == 'title') {
+      notaBene(ge('group_create_title'));
+    }
+  }, onFail: function(text) {
+    if (text) {
+      setTimeout(showFastBox(getLang('global_error'), text).hide, 3000);
+      return true;
+    }
+  }, progress: box.progress});
+});
+setTimeout(elfocus.pbind('group_create_title'), 0);

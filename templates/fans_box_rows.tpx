@@ -1,0 +1,13 @@
+<?php
+foreach($var['fans'] as $f) { 
+	$fan = pdata($f);
+?><div class="fans_fan_row inl_bl" id="fans_fan_row<?=$fan->id?>">
+  <div class="fans_fanph_wrap" onmouseover="FansBox.bigphOver(this, <?=$fan->id?>)">
+    <a class="fans_fan_ph" href="<?=$fan->lnk?>"><div class="fans_fan_bl_wrap" onmouseover="FansBox.blacklistTip(this)" onclick="return FansBox.blacklist(this, <?=$fan->id?>, event)">
+  <div class="fans_fan_bl"></div>
+</div>
+      <img class="fans_fan_img" src="<?=$fan->photo('b')?>" />
+    </a>
+  </div>
+  <div class="fans_fan_name"><a class="fans_fan_lnk" href="<?=$fan->lnk?>"><?=$fan->title?></a></div>
+</div><? } ?>

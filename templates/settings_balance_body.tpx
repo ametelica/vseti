@@ -1,0 +1,9 @@
+<? if($var['plog']['total']>0) { ?><div class="settings_votes_history_wrap" class="clear_fix">
+  <table id="settings_votes_history" cellpadding="0" cellspacing="0">
+		<?=tpx('settings_balance_rows',$var)?>
+  </table>
+  <div class="settings_votes_history_next" <? if($var['plog']['total']<=5) { ?>style="display: none;"<? } ?>  >
+    <img id="settings_votes_history_progress" src="/images/upload.gif" style="display: none;" />
+    <a href="#" onclick="return Settings.showNextVotesHistory(this);">Показать предыдущие платежи</a>
+  </div>
+</div><? } ?>

@@ -1,0 +1,35 @@
+<?php
+	global $poll, $board, $user;
+	if($poll and $poll->error == 0) {
+?><div class="bv_title">
+  <div class="fl_r bv_actions"><? if($poll->aid == $user->id or $poll->can_edit) { ?><a id="privacy_edit_voting_action" onclick="Privacy.show(this, event, 'voting_action', [0, 0])">Настройки опроса</a><? } ?></div>
+  <div class="fl_r progress" id="bv_progress"></div>
+  <?=$poll->title?>
+</div>
+<div class="bv_table" id="vote_option<?=$poll->id?>"><?
+	if(!$poll->can_vote or $poll->close) {
+		$total_votes = 0;
+		foreach($poll->answers as $answer) {
+			$total_votes += $answer['cnt'];
+		}
+		echo '<table cellspacing="0" cellpadding="0">';
+		foreach($poll->answers as $answer_id => $answer) {
+			$pers = round($answer['cnt'] / $total_votes * 100);
+			echo '<tr><td colspan="2" class="bv_text">' . $answer['title'] . '</td></tr>
+<tr>
+  <td class="bv_row_wrap"><div class="bv_row"><div class="bv_percent" style="width: '.$pers.'%"></div></div></td>
+  <td class="bv_row_desc"><nobr><b>'.nf($answer['cnt']).'</b> ('.$pers.'%)</nobr></td>
+</tr>';
+		}
+		echo '</table>';
+	} else {
+		foreach($poll->answers as $answer_id => $answer) {
+			echo '<div
+	  class="radiobtn bv_radio_first"
+	  onclick="radiobtn(this, ' . $answer_id . ', \'vote_option' . $poll->id . '\'); Board.vote(this, \'' . $poll->oid . '\', \'' .$poll->id  . '\', ' . $answer_id . ');">
+	  <div></div>' . $answer['title'] . '
+	</div>';
+		}
+	}
+	?></div>
+<br class="clear" /><? } ?>

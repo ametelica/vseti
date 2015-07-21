@@ -1,0 +1,20 @@
+<?php
+global $user, $group;
+
+$admin_list = array();
+
+foreach($group->admins as $k => $v) {
+	if($k != $user->id) {
+		$admin = pdata($k);
+		$admin_list[] = array($k, $admin->title, $v['s']);
+	}
+}
+
+?>box.setOptions({bodyStyle: 'padding: 14px 15px'});
+box.removeButtons().addButton('Отмена', box.hide, 'no');
+box.addButton('Передать права' , GroupsEdit.uDoneMainAdmin.pbind('<?=hash_get($user->id . $group->oid, 18, 'cch')?>'));
+
+admin_list = <?=jenc($admin_list)?>;
+window.new_creator = new Dropdown(ge('new_creator'), admin_list, {
+	width: 300
+});

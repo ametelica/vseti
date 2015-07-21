@@ -1,0 +1,39 @@
+<?php global $user; ?><div id="send_report_error"></div>
+Пожалуйста, выберите причину, по которой Вы хотите сообщить администрации сайта об этой видеозаписи.
+<div style="padding: 10px 0">
+  <input type="hidden" name="report_reason" id="report_reason" />
+</div>
+<div id="report_comment" style="display: none">
+  <div style="margin-top: 10px">Комментарий:</div>
+  <textarea id="report_comment_text" onchange="curBox().changed=true;" rows="5" style="width: 200px; margin-top: 10px"></textarea>
+</div><!>var dd = new Dropdown(ge('report_reason'), [
+  [1, 'Материал для взрослых'],
+  [4, 'Сцены насилия'],
+  [3, 'Нецензурная брань'],
+], {width: 208, onChange: function(val) {
+  val = parseInt(val);
+  toggle('report_comment', val && val != 5);
+}});
+box.setOptions({onClean: function() {
+  dd.destroy();
+}});
+box.removeButtons().addButton('Закрыть', box.hide, 'no');
+box.addButton(getLang('box_send'), function() {
+  if (isVisible(box.progress)) return;
+
+  ge('send_report_error').innerHTML = '';
+  ajax.post('reports.php', {act: 'report', item_type: 3, item_id: <?=$var['vid']?>, place_id: <?=$var['oid']?>, hash: '<?=hash_get($user->id.$var['oid'],12,'rep')?>', comment: ge('report_comment_text').value, reason: ge('report_reason').value}, {
+    onFail: function(t) {
+      if (t) {
+        ge('send_report_error').innerHTML = t;
+      }
+      return true;
+    },
+    onDone: function(t) {
+      box.hide();
+      hide('mv_complain_wrap');
+      setTimeout(showFastBox('Спасибо', t).hide, 2000);
+    },
+    progress: box.progress
+  });
+});

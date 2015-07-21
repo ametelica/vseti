@@ -1,0 +1,27 @@
+<?php
+global $gifts_total,$privacy_gifts,$langpack,$gifts_html,$owner,$user;
+
+if($gifts_total > 0 and $privacy_gifts) {
+?>
+<div class="module clear" id="profile_gifts">
+ <a href="/gifts.php?id=<?=$owner->user_info['user_id']?>" class="module_header">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/gifts.php?id=<?=$owner->user_info['user_id']?>'"></span>
+   Подарки
+  </div>
+  <div class="p_header_bottom">
+   <span class="fl_r">Все</span>
+   <?=$gifts_total?> подар<?=$langpack->gifts($gifts_total)?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+ <?
+	$gifts_html = tpx('profile_block_gifts_body');
+	if($user->byfly == 0){
+		$gifts_html = str_replace('/images','http://g2.vseti.by/images', $gifts_html);
+	}
+	echo $gifts_html;
+ ?>
+ </div>
+</div>
+<? } ?>

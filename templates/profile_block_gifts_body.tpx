@@ -1,0 +1,10 @@
+<?php
+global $gifts_html, $owner, $new_design;
+$i = 0;
+
+foreach($gifts_html as $g) {
+	$src = '/images/gifts/' . ($g['new'] ? 'new/' . sprintf("%03d", $g['gift']) . '_m.png' : '96/' . $g['gift'] . '.png');
+?><a href="/gifts.php?id=<?=$owner->id?>"><img class="giftImg" src="<?=$src?>" align=""></a><? 
+	$i++;
+	if(empty($new_design) and $i > 3) break;
+} ?>

@@ -1,0 +1,12 @@
+<?php
+global $oaid, $album;
+?>
+<input type="hidden" id="pvsa_album" value="<?= $oaid ?>" />
+<input type="hidden" id="pvsa_scroll" value="0" />
+<div id="pvsa_wrap">
+  <div class="pvsa_summary_author"><a href="<?=$album->owner->lnk?>" class="group_link"><?=$album->owner->title?></a></div>
+  <div id="pvsa_content_photos"><?=tpx('box_album_rows', $var)?></div>
+  <a id="pvsa_more_photos" onclick="Photoview.loadAlbumPhotos()" style="<? if(empty($var['more'])) echo 'display: none' ?>"><span>Показать больше фотографий</span>
+    <div id="pvsa_more_photos_prg" class="progress"></div>
+  </a>
+</div>

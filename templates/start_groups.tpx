@@ -1,0 +1,91 @@
+<?php
+global $topgroups,$user_region_club,$regions,$smenu, $xhost, $act;
+?>
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content" style="background: #bad8f2 url(<?=$xhost?>images/start_bg.jpg) no-repeat;">
+    <div id="main">
+   
+     <div id="start_menu"><?=start_menu($smenu, $act)?></div>
+   
+   <!--
+   <div class="leftColumn" style="width: 396px;">
+    <div style="float: left; width: 100px; height: 140px; background: url({$user->user_photo('','b')}) no-repeat;"></div>
+    Вы вошли как <a href="{$user->lnk}">{$user->user_info.fio}</a>
+   
+   </div>
+   -->
+   <!-- /leftColumn -->
+  
+   
+   <div class="rightColumn2" style="padding: 0;">
+
+    <div class="pb bc3">
+       
+        <div class="pbt">
+         <div><h2>Популярные группы</h2></div>
+       </div>
+       <div class="c">
+       <div class="bp5">
+       <? foreach($topgroups as $tg) { ?>
+        <div style="white-space: nowrap; overflow: hidden;">
+            <a href="/club<?=$tg['stat_group_id']?>"><?=$tg['group_title']?></a><br />
+        </div>
+       <? } ?>
+    </div>
+    </div>
+    </div>
+
+
+   </div><!-- /rightColumn2 -->
+   
+   <!--
+   <div class="leftColumn" style="float: right; margin-right: 0px;">
+   123
+   </div>
+   -->
+   <!-- /rightColumn -->
+   
+   
+   
+   <div class="leftColumn2">
+    
+    <div class="pb bc5" id="belarus">
+       
+        <div class="pbt">
+         <div><h2>Региональные группы</h2></div>
+       
+       </div>
+    
+       <div class="c">
+       <div class="flexBox1 clearFix1 aPad1">
+       <div id="region_map">
+       <div class="fallback" style="width: 160px; padding: 3px 10px 3px 10px; text-align: justify; margin-left: 5px;">
+       Идея региональных групп заключается в вынесении на карту лучшей группы соответствующего региона. Группа региона назначается <a href="http://vseti.by/pages.php?id=224986">администрацией ВСети</a>.
+       </div>
+       
+       <? foreach($regions as $r) { ?>
+        <div class="rg_item" style="top: <?=$r['region_y']?>px; left: <?=$r['region_x']?>px; font-size: <?=($r['region_size']+8)?>px;">
+            <a href="/club<?=$r['region_club_id']?>" <? if($r['region_club_id']==$user_region_club['region_club_id']) echo 'style="color:#ff3600;"';?>><?=$r['region_name']?></a>
+        </div>
+       <? } ?>
+       
+       </div>
+    </div>
+    </div>
+    </div>
+    
+   </div><!-- /leftColumn2 -->
+   
+   <div class="leftColumn" style="clear: left">
+   </div><!-- /leftColumn -->
+   
+   
+   <div class="rightColumn" style="float: left">
+   </div><!-- /rightColumn -->
+<br style="clear: both">   
+   </div>
+  </div>
+ </div>
+</div>
+

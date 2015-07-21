@@ -1,0 +1,112 @@
+<?php
+global $owner,$user,$datetime,$langpack,$privacy_places,$show_full_info, $range, $range_txt, $lastphotos,
+$new_design;
+
+if($new_design == 1) {
+?>
+<div class="profile_info">
+ <div id="lastphotos">
+  Свежие фото
+  <div id="lastphotos_wrap"><?
+//dmp($lastphotos);
+	
+foreach ($lastphotos['data'] as $photo) {
+	$lnk = $photo->view('m');
+
+	echo '<a href="/photo' . $photo->uid . '?list=photos' . $owner->id . '&from=profile" onclick="" style="height: 80px; margin-right: 7px;" class="al_photo"><img src="' . $lnk . '" data-photo="' . $lnk . '|604|453" height="80" /></a>';
+}
+
+ ?></div></div> <? } ?>
+ <? if($owner->profile_info['sex']>0) { ?>
+ <div class="clear_fix">
+  <div class="label fl_l">Пол:</div>
+  <div class="labeled fl_l">
+   <a href="/gsearch.php?from=people&c%5Bsex%5D=<?=$owner->profile_info['sex']?>">
+    <?=($owner->profile_info['sex']==1)?'женский':'мужской'?>
+   </a>
+  </div>
+ </div>
+ <? } ?>
+ <? if($owner->profile_info['bday_visibility']) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">День рождения:</div>
+  <div class="labeled fl_l">
+   <? if($owner->profile_info['bday_visibility']>0) { ?>
+   <a href="/gsearch.php?from=people&c%5Bbmonth%5D=<?=$datetime->cdate("m", $owner->profile_info['b_date3'])?>&c%5Bbday%5D=<?=$datetime->cdate("j", $owner->profile_info['b_date3'])?>">
+    <?=$datetime->cdate("j F", $owner->profile_info['b_date3'])?>
+   </a>
+   <? } ?>
+   <? if($owner->profile_info['bday_visibility']==1 and $owner->profile_info['b_date3']>1900) { ?>
+    <a href="/gsearch.php?from=people&c%5Bbyear%5D=<?=$datetime->cdate("Y", $owner->profile_info['b_date3'])?>">
+    <?=$datetime->cdate("Y", $owner->profile_info['b_date3'])?></a>
+    <span style="color:silver;"><?=$owner->profile_info['age']?> <?=$langpack->years($owner->profile_info['age'])?></span>
+   <? } ?>
+  </div>
+ </div>
+ <? } ?>
+ <? if($owner->profile_info['home_town']!='') { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Родной город:</div>
+  <div class="labeled fl_l"><a href="/gsearch.php?from=people&c%5Bhome_town%5D=<?=$owner->profile_info['home_town']?>"><?=$owner->profile_info['home_town']?></a></div>
+ </div>
+ <? } ?>
+ <? if($owner->profile_info['status']>0 and $owner->profile_info['status']<9) { ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l">Семейное положение</div>
+  <div class="labeled fl_l">
+   <a href="/gsearch.php?from=people&c%5Bstatus%5D=<?=$owner->profile_info['status']?>">
+    <? 
+    if($owner->profile_info['status']==1) { 
+    	echo ($owner->profile_info['sex']==2?'Не женат':'Не замужем').'</a>';
+    } 
+    if($owner->profile_info['status']==2 and ($owner->user_info['with']->profile_info['with'] != $owner->id or $owner->profile_info['status'] != $owner->user_info['with']->profile_info['status'])) {
+    	echo ($owner->profile_info['sex']==2?'Есть подруга':'Есть друг').'</a>';
+    }
+    if($owner->profile_info['status']==3) {
+    	echo 'Помолвлен'.($owner->profile_info['sex']==2?'':'а').'</a>';
+    }
+    if($owner->profile_info['status']==4) {
+    	echo ($owner->profile_info['sex']==2?'Женат':'Замужем').'</a>';
+    }
+    if($owner->profile_info['status']==5) {
+    	echo 'Безвыходное</a>';
+    }
+    if($owner->profile_info['status']==6) {
+    	echo 'В активном поиске</a>';
+    }
+    if($owner->profile_info['status']==8) {
+    	echo 'жду чуда</a>';
+    }
+    if($owner->profile_info['status']==7) {
+    	echo ($owner->profile_info['sex']==2?'Влюблён':'Влюблена').'</a>';
+    }
+    if($owner->user_info['with']->profile_info['with'] == $owner->id and $owner->profile_info['status'] == $owner->user_info['with']->profile_info['status'] and $owner->profile_info['status'] != 7){
+    	if($owner->profile_info['status']==3 or $owner->profile_info['status']==5) echo ' c ';
+    	if($owner->profile_info['status']==2) echo 'Встречается с';
+    	if($owner->profile_info['status']==4){
+    		echo ($owner->profile_info['sex']==2?' на ':' за ');
+    	}
+    	echo ' <a href="/id'.$owner->user_info['with']->id.'">'.$owner->user_info['with']->user_info['fio'].'</a>';
+    }
+				
+    if($owner->profile_info['status'] == 7 and $owner->user_info['with']->id>0){
+    	echo ' в <a href="/id'.$owner->user_info['with']->id.'">'.$owner->user_info['with']->user_info['fio'].'</a>';
+    }
+    ?>
+  </div>
+ </div>
+ <? } ?>
+ <? if(($privacy_places==1 and $owner->user_info['user_lat'] > 0) or $user->is_me($owner)) {  ?>
+ <div class="clear_fix miniblock">
+  <div class="label fl_l"><?=$user->is_me($owner)?'Где я сейчас':'Карта'?>:</div>
+  <div class="labeled fl_l">
+   <a onclick="Profile.showMap(<?=$owner->id?>)">показать на карте <? if($range>0) echo '('.$range_txt.')'; ?>
+  </div>
+ </div>
+ <? } ?>
+</div>
+<? if($show_full_info) { ?>
+<a class="profile_info_link noselect" onclick="Profile.hideFull()">скрыть подробную информацию</a>
+<? } else { ?>
+<a class="profile_info_link noselect" onclick="Profile.showFull()">показать подробную информацию</a>
+<? } ?>

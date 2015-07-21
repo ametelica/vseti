@@ -1,0 +1,4 @@
+<?php
+global $sizes, $photo;
+?>
+AdsEdit.initCropPhotoBox(box, <?=$sizes[$photo['size']][0]?>, <?=$sizes[$photo['size']][1]?>, "0,0,<?=$sizes[$photo['size']][0]?>,<?=$sizes[$photo['size']][1]?>");

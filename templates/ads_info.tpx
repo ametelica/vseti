@@ -1,0 +1,40 @@
+<?php
+global $new_design, $section;
+if($new_design) echo tpx('header_design');
+?><div id="wrap2">
+  <div id="wrap1">
+		<div id="content"> 
+			<div id="ads_page_simple">
+				<table style="border-collapse: collapse; width: 100%;">
+					<tr>
+						<td id="ads_unions_content" class="ad_help h100">
+							<?=tpx('ads_info_' . $section)?>
+						</td>
+						<td id="unions_navigation" class="h100 ads_unions_navigation_about">
+							<div style="padding: 20px">
+								<a class="button_link" href="/adscreate">
+									<div class="button_green button_wide"><button>Создать объявление</button></div>
+								</a>
+							</div>
+							<div class="nav_separator" style="margin-top: 8px;"></div>
+							<a class="nav " href="/ads?act=office">Ваш личный кабинет</a>
+							<div class="nav_separator" style=""></div>
+							<a class="nav <? if($section == 'target') { ?>nav_selected<? } ?>" href="/ads?section=target">Таргетинг</a>
+							<a class="nav <? if($section == 'terms') { ?>nav_selected<? } ?>" href="/ads?section=terms">Правила размещения</a>
+							<a class="nav <? if($section == 'balance') { ?>nav_selected<? } ?>" href="/ads?section=balance">Конвертация баланса</a>
+
+							<!--<a class="nav " href="/ads?section=agencies">Рекламным агентствам</a>
+							<a class="nav " href="/ads?section=apps">Рекламные приложения</a>
+							<a class="nav " href="/ads?section=contacts">Контакты</a>
+							<div class="ad_box_new ad_box_preview" style="margin: 20px auto;">
+								<div class="ad_title_new" id="preview_title">Реклама ВСети</div>
+								<img id="preview_image" src="https://pp.userapi.com/c9453/u83813/75628422/s_17a625369ex:001.jpg" />
+								<div class="ad_desc_new" id="preview_desc">Оплата за показы или переходы. Непревзойденная точность.</div>
+							</div>-->
+						</td>
+					</tr>
+				</table>
+			</div></div>
+  </div>
+</div>
+

@@ -1,0 +1,3 @@
+stManager.add(["apps.js","ui_controls.js","privacy.js"], function () {ge('msg_back_button').onclick = function() {
+  history.go(-1);
+};});

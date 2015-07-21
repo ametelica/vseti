@@ -1,0 +1,185 @@
+extend(cur, {
+  getAppTransactions: function(offset, admin, user_id) {
+    var query = {act: 'get_transactions', offset: offset, id: cur.aid, admin: admin, minus: 0};
+    if (user_id) {
+      query.user_id = user_id;
+    } else {
+      var f = ge(admin ? 'admin_filter' : 'user_filter');
+      if (f.value) {
+        query.user_id = f.value;
+      }
+    }
+    ajax.post('editapp', query, {
+      onDone: function(res){
+        el = ge(admin ? 'app_admin_cont' : 'app_user_cont');
+        el.innerHTML = res;
+      }
+    });
+    return false;
+  },
+  resetFilter: function(admin) {
+    var uf = ge(admin ? 'admin_filter' : 'user_filter');
+    uf.setValue('');
+    placeholderSetup(uf, {back: true});
+    uf.focus();
+  }
+});
+var uf = ge('user_filter');
+placeholderSetup(uf, {back: true});
+addEvent(uf, 'keydown', function(e){
+  if (e.keyCode == KEY.RETURN || e.keyCode == 10) {
+    cur.getAppTransactions(0);
+  }
+});
+
+<?
+global $app, $db;
+$app_admins = $db->join_users($app->app_admins());
+$app_testers = array();
+foreach($app_admins as $a) {
+	$app_testers[] = array($a->id, $a->user_info['fio']);
+}
+?>
+
+extend(cur, {"paymentsTesters":<?=jenc($app_testers)?>,"paymentsTesters_sel":"<?=$app->app_info['app_pay_testers']?>"}, {
+  linkCache: {},
+  testersGetUser: function(url) {
+    var onComplete = function(newUser) {
+      hide('app_testers_prgs');
+
+      var usersList = cur.uiAppPaymentsTesters.currentList;
+      var userExists = false;
+      for (var i = 0; i < usersList.length; i++) {
+        if (usersList[i][0] == newUser[0]) {
+          userExists = true;
+        }
+      }
+
+      if (!userExists) {
+        usersList.push(newUser);
+        cur.uiAppPaymentsTesters.setData(usersList);
+      }
+
+      cur.skipOnChange = true;
+      cur.uiAppPaymentsTesters.selectItem(newUser[0]);
+      cur.linkCache[url] = newUser;
+    }
+
+    if (!trim(url).length) { return; }
+    if (cur.linkCache[url] != undefined) {
+      onComplete(cur.linkCache[url]);
+    } else {
+      show('app_testers_prgs');
+      ajax.post('editapp', {act:'get_testers_person', page:url}, {
+        onDone: onComplete,
+        onFail: function(error) {
+          hide('app_testers_prgs');
+          ge('app_payments_settings_err').innerHTML = error;
+          if (error) {
+            if (!isVisible('app_payments_settings_err')) {
+              slideDown('app_payments_settings_err', 100);
+            }
+          } else {
+            if (isVisible('app_payments_settings_err')) {
+              slideUp('app_payments_settings_err', 100);
+            }
+          }
+          return true;
+        }
+      });
+    }
+  },
+  requestPayback: function(aid, hash) {
+  	if (isVisible('app_payments_requests_err')) {
+      slideUp('app_payments_requests_err', 100);
+    }
+    ajax.post('editapp', {act:'request_payback', id:aid, hash:hash, cnt:val('app_payback_cnt')}, {
+      onDone: function(result) {
+        nav.go(extend(nav.objLoc));
+        console.log(result);
+      },
+      onFail: function(error) {
+        ge('app_payments_requests_err').innerHTML = error;
+        if (error) {
+          if (!isVisible('app_payments_requests_err')) {
+            slideDown('app_payments_requests_err', 100);
+          }
+        } else {
+          if (isVisible('app_payments_requests_err')) {
+            slideUp('app_payments_requests_err', 100);
+          }
+        }
+        return true;
+      }
+    });
+    
+    
+  },
+  savePaymentsOptions: function(aid, hash) {
+    if (isVisible('app_payments_settings_err')) {
+      slideUp('app_payments_settings_err', 100);
+    }
+    ajax.post('editapp', {act:'save_payments_options', id:aid, callback_url:val('app_callback_url'), testers: cur.uiAppPaymentsTesters.val(), hash:hash}, {
+      onDone: function(result) {
+        nav.go(extend(nav.objLoc, {m: 3}));
+      },
+      onFail: function(error) {
+        ge('app_payments_settings_err').innerHTML = error;
+        if (error) {
+          if (!isVisible('app_payments_settings_err')) {
+            slideDown('app_payments_settings_err', 100);
+          }
+        } else {
+          if (isVisible('app_payments_settings_err')) {
+            slideUp('app_payments_settings_err', 100);
+          }
+        }
+        return true;
+      }
+    });
+  }
+});
+
+cur.uiAppPaymentsTesters = Dropdown(ge('app_payments_testers'), cur.paymentsTesters, {
+  width: 258,
+  introText: 'Начните вводить имя пользователя',
+  noResult: '',
+  placeholder: 'Введите ссылку на страницу или выберите из списка',
+  placeholderColored: true,
+  multiselect: true,
+  enableCustom: true,
+  autocomplete: true,
+  selectedItems: cur.paymentsTesters_sel,
+  onBlur: function() {
+    var val = cur.uiAppPaymentsTesters.input.value;
+    if (val.length && val != 'Введите ссылку на страницу или выберите из списка') {
+      if (isVisible('app_payments_settings_err')) {
+        slideUp('app_payments_settings_err', 100);
+      }
+
+      cur.testersGetUser(val);
+    }
+  },
+  onChange: function(val) {
+    if (cur.skipOnChange) {
+      cur.skipOnChange = false;
+      return;
+    }
+
+    if (isVisible('app_payments_settings_err')) {
+      slideUp('app_payments_settings_err', 100);
+    }
+
+    var testers = cur.uiAppPaymentsTesters.val_full();
+    for (i in testers) {
+      var tester = testers[i];
+      if (!tester[0] || tester[1] == 'Введите ссылку на страницу или выберите из списка') {
+        return;
+      } else if (tester[0] == -1) {
+        cur.uiAppPaymentsTesters._clear();
+        cur.testersGetUser(tester[1]);
+        return false;
+      }
+    }
+  }
+});

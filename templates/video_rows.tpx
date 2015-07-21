@@ -1,0 +1,27 @@
+<?php
+global $edit, $user, $section, $comments;
+
+if($section != 'comments') {
+foreach($var['videolist']['data'] as $v) {
+	$sizes = $v->sizes();
+?><div id="video_cont<?=$v->uid?>" class="video_row_cont"><div class="video_row_inner_cont <? if($edit) { ?>video_can_edit<? } ?>"><a href="/video<?=$v->uid?>" class="video_row_relative" id="video_row<?=$v->uid?>" onmouseover="Video.rowOver(this);" onmouseout="Video.rowOut(this)" onclick="if (cur.cancelClick) return (cur.cancelClick = false); return Video.show(event, '<?=$v->uid?>', {}, this);">
+    
+    <div class="video_row_info_line"><div class="video_raw_info_name"><?=$v->title?><? if(!empty($v->privacy)) { ?><span class="video_is_private" onclick="return Video.privateClick(this, event);" onmouseover="return Video.privateTooltip(this);"></span><? } ?></div><div class="video_row_duration"><?=$v->dur?></div></div>
+    <div class="video_row_info_play"></div>
+    
+    <? if($edit) {?><div class="video_row_controls">
+      <div class="video_row_icon_edit fl_l" onmouseover="Video.activate(this);" onmouseout="Video.deactivate(this);" onclick="return videoview.showEditBox(<?=$v->id?>, <?=$v->oid?>, event);"><div class="video_row_icon"></div></div>
+      <div class="video_row_icon_delete fl_l" onmouseover="Video.activate(this);" onmouseout="Video.deactivate(this);" onclick="return Video.onDeleteClick(<?=$v->id?>, <?=$v->oid?>, '<?=hash_get($v->oid . $v->id, 16, 'vid')?>', this, event);"><div class="video_row_icon"></div></div>
+      <br class="clear" />
+    </div><? } ?>
+		<? if($user->id != $v->oid and $v->can_view()) { ?><div class="video_row_add"><div class="video_row_icon_add fl_l" onmouseover="Video.activate(this, 'Добавить в Мои Видеозаписи', 1);" onmouseout="Video.deactivate(this);" onclick="return Video.addFromList('<?=$v->uid?>', '<?=hash_get($user->id, 16, 'vid')?>', event);"><div class="video_row_icon"></div></div></div><? } ?>
+		
+    <div class="video_image_div" style="background-image: url('<?=$sizes['l'][0]?>');"></div>
+  </a></div>
+</div><? } 
+} else {
+	//dmp($comments);
+	echo tpx('video_comment_rows', array('comments' => $comments['data']));
+	
+}
+?>

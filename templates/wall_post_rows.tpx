@@ -1,0 +1,79 @@
+<?php
+global $datetime, $new_design;
+$comments = $var['comments'];
+
+foreach($comments['comments'] as $comment) {
+    $post_id = $var['oid'].'_'.$comment['id'];
+    $author = pdata($comment['aid']);
+?>
+<div id="post<?=$post_id?>" class="post post_online" onmouseover="wall.postOver('<?=$post_id?>')" onmouseout="wall.postOut('<?=$post_id?>')" onclick="wall.postClick('<?=$post_id?>', event)">
+  <div class="post_table">
+    <div class="post_image">
+        <a class="post_image" href="<?=$author->lnk?>"><img src="<?=$author->photo()?>" width="50" height="50"/></a>
+      <span class="online"><?=(empty($author->user_info['online']) or !empty($new_design))?'':'ВСети'?></span>
+    </div>
+    <div class="post_info">
+
+
+<div class="fl_r post_actions_wrap">
+
+
+
+<div class="post_actions">
+
+<div id="post_delete<?=$post_id?>" class="post_delete_button fl_r" onmouseout="wall.deactiveDeletePost('<?=$post_id?>', 'post_delete')" onmouseover="wall.activeDeletePost('<?=$post_id?>', '<?=_e('g_wall_delete')?>', 'post_delete')" onclick="wall.deletePost('<?=$post_id?>', '6f9f0c57ebfdd616f1');" style="opacity: 0;"></div>
+
+<div id="post_edit<?=$post_id?>" class="post_edit_button fl_r" onmouseout="wall.deactiveDeletePost('<?=$post_id?>', 'post_edit')" onmouseover="wall.activeDeletePost('<?=$post_id?>', '<?=_e('g_edit')?>', 'post_edit')" onclick="wall.editPost('<?=$post_id?>')" style="opacity: 0;"></div>
+
+</div>
+</div>
+
+      <div class="wall_text"><a class="author" href="<?=$author->lnk?>"><?=$author->title?></a><?= (empty($author->user_info['online']) or empty($new_design)) ? '' : '<b class="online">•</b>' ?> <!--<span class="explain">обновил фотографию на странице:</span>-->
+          <div id="wpt<?=$post_id?>"><? 
+				if(empty($r) or $comment['date'] > 1385244744) {
+					echo tpx('wall_post_body', array('comment' => $comment));
+				}
+		  ?></div>
+              
+              </div></div>
+      <div class="post_like_wrap fl_r" onmouseover="wall.postLikeOver('<?=$post_id?>')" onmouseout="wall.postLikeOut('<?=$post_id?>')" onclick="wall.like('<?=$post_id?>', '850270c0d7d22d9416'); event.cancelBubble = true;">
+  <div class="post_like">
+    <span class="post_like_link fl_l" id="like_link<?=$post_id?>"><?=_e('g_like')?></span>
+    <i class="post_like_icon <?=empty($comment['like'])?'no_likes':''?> fl_l" id="like_icon<?=$post_id?>"></i>
+    <span class="post_like_count fl_l" id="like_count<?=$post_id?>"><?=empty($comment['like'])?'':$comment['like']?></span>
+  </div>
+</div>
+      <div class="replies"><div class="reply_link_wrap" id="wpe_bottom<?=$post_id?>">
+  <small><a href="/wall<?=$post_id?>"><span class="rel_date"><?=$datetime->sdate($comment['date'])?></span></a></small>
+<? if($comment['cw_total']==0) {?>
+  <span id="reply_link<?=$post_id?>" class="reply_link">
+<span class="divide">|</span>
+<a class="reply_link" onclick="wall.showEditReply('<?=$post_id?>')"><?=_e('g_wall_comment')?></a>
+</span>
+<? } ?>
+</div>
+<div class="replies_wrap clear" id="replies_wrap<?=$post_id?>" style="<?=$comment['cw_total']>0?'':'display:none'?>">
+  <div id="replies<?=$post_id?>"><?
+
+    if($comment['cw_total']==0) {
+        echo '<input type="hidden" id="start_reply'.$post_id.'" value=""/>';
+    } else {
+        $assign = array(
+            'cid' => $comment['id'],
+            'obj_id' => $var['oid'],
+            'can_edit' => $var['can_edit'],
+            'wcomments' => $comment['cw'],
+            'total_wcomments' => $comment['cw_total'],
+        );
+        echo tpx('wall_comment_rows_short',$assign);
+    }
+?>
+  </div>
+  <div class="reply_fakebox_wrap" id="reply_fakebox<?=$post_id?>" onclick="wall.showEditReply('<?=$post_id?>')"><div class="reply_fakebox"><?=_e('g_wall_comment')?></div></div>
+</div></div>
+    </div>
+  </div>
+</div>
+<?
+}
+?>

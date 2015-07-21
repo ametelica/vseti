@@ -1,0 +1,125 @@
+<?php
+	global $app, $hash, $user;
+?>
+<div id="app_edit_cont">
+<div id="apps_options_saved" class="apps_edit_success">
+</div>
+<table class="apps_edit_table apps_edit_info"><tr>
+
+<td class="apps_edit_info_r" valign="top">
+  <table width="100%">
+    <tr><td class="apps_edit_label ta_r">Название:</td>
+    <td><input class="text" type="text" id="app_name" value="<?=$app->app_info['app_title']?>"/></td></tr>
+    <tr><td class="apps_edit_label ta_r">Описание:</td><td><textarea class="text" id="app_desc"><?=$app->app_info['app_desc']?></textarea></td></tr>
+
+    <tr>
+  <td class="label ta_r">Тип:</td>
+  <td class="clear_fix" id="app_category">
+    <div id="app_category_0" class="apps_edit_cat radiobtn fl_l" onclick="cur.checkAppCat(0);"><div></div>Игра</div>
+    <div id="app_category_1" class="apps_edit_cat radiobtn fl_l" onclick="cur.checkAppCat(1);"><div></div>Приложение</div>
+  </td>
+</tr>
+
+    <tr style="">
+      <td class="label ta_r">Категория:</td>
+      <td><input class="text" type="hidden" id="app_subcategory"/></td>
+    </tr>
+
+    <tr style="display: none;"><td class="label ta_r">Адрес приложения:</td><td class="apps_edit">
+    <div id="apps_addr_result"></div>
+    <table id="apps_addr_table" cellspacing="0" cellpadding="0">
+
+      <tr>
+        <td class="apps_edit_addr_label noselect" onclick="elfocus('app_domain', 0, 0)"><nobr>http://vseti.by/</nobr></td>
+        <td class="apps_addr_field"><input id="app_domain" maxlength="32" type="text" class="text apps_edit_addr" onkeyup="AppsEdit.checkAddress(1000)" onblur="AppsEdit.checkAddress()" value="app<?=$app->app_info['app_id']?>" />
+      </tr>
+    </table>
+    </td></tr>
+
+    <tr><td class="label ta_r">Иконка 16x16:</td><td id="app_icon_cont" class="apps_edit_i" style="background-image: url('/images/icons/app_icon.gif');"><a  onclick="AppsEdit.uploadIcon();">Выбрать файл</a></td></tr>
+		<!--
+    <tr style=""><td class="label ta_r">Страница помощи:</td><td class="apps_edit_t"><a id="privacy_edit_help" onclick="Privacy.show(this, event, 'help')">Выключена</a></td></tr>-->
+
+    <tr><td class="label ta_r"></td><td class="apps_edit_header">Контактная информация</td></tr>
+
+    <tr style="display: none;"><td class="label apps_edit_wide ta_r">Пользовательское соглашение:</td><td class="apps_edit">
+      <input type="text" class="text" placeholder="http://" onfocus="AppsEdit.urlFocus(this, 'terms_hint');" onblur="AppsEdit.urlBlur(this);" value="" id="app_agreement"/>
+    </td></tr>
+
+    <tr style="display: none;"><td class="label apps_edit_wide ta_r">Политика конфиденциальности:</td><td class="apps_edit">
+      <input type="text" class="text" placeholder="http://" onfocus="AppsEdit.urlFocus(this, 'policy_hint');" onblur="AppsEdit.urlBlur(this);" value="" id="app_policy" />
+    </td></tr>
+
+    <tr><td class="label ta_r">Группа приложения:</td><td><input class="text" type="hidden" id="app_group"/></td></tr>
+
+    <tr><td class="label ta_r"></td><td class="apps_edit_info_save">
+    <input type="hidden" id="app_id" value="<?=$app->app_info['app_id']?>">
+    <input type="hidden" id="app_hash" value="<?=$hash->get_hash($app->app_info['app_id'].$user->user_info['user_id'],16,'ape')?>">
+    <input type="hidden" id="app_info_save" value="1">
+    <div class="button_green fl_l"><button id="app_save_btn" onclick="AppsEdit.saveOptions('save_info');">Сохранить изменения</button></div>
+    </td></tr>
+  </table>
+</td>
+
+<td class="apps_edit_info_narrow" valign="top">
+  <div class="apps_edit_img_block">
+    <img src="<?=$app->app_photo('b')?>" align="left" id="apps_edit_img_small" class="apps_edit_img_small">
+  </div>
+  <div id="apps_edit_upload_small"></div>
+</td>
+</tr></table>
+</div>
+
+<div class="apps_edit_other apps_edit_imgs">
+
+<div class="apps_edit_screenshot_cont">
+<table><tr><td class="apps_edit_screen_l" id="apps_edit_screens_list" valign="top">
+  <?
+	for($i = 0; $i < 4; $i++) {
+		if(!empty($app->app_info['app_screenshots'][$i])) {
+			echo '<div style="background: url('.$app->app_screenshot($app->app_info['app_screenshots'][$i], 'n').') no-repeat;" rel="'.$app->app_info['app_screenshots'][$i].'" class="apps_edit_screen fl_l" onclick="AppsEdit.ssClick(this);" onmouseover="AppsEdit.ssOver(this);" onmouseout="AppsEdit.ssOut(this)"></div>';
+		} else {
+			echo '<div style="background: url(/images/screenshot_c.gif);" class="apps_edit_screen apps_empty_screen fl_l" onclick="AppsEdit.ssClick(this);" onmouseover="AppsEdit.ssOver(this);" onmouseout="AppsEdit.ssOut(this)"></div>';
+		}
+		
+	}
+	?>
+</td><td valign="top" class="apps_edit_screen_r">
+  <h4>Добавить скриншот</h4>
+  <div class="apps_edit_banner_no_upload" id="apps_edit_ss_reason" style="<? if(count($app->app_info['app_screenshots']) < 4) {?>display: none<? } ?>">Вы загрузили максимальное число скриншотов приложения. Удалите одно из изображений для того, чтобы иметь возможность загрузить новое.</div>
+  <div id="apps_edit_ss_limit" style="<? if(count($app->app_info['app_screenshots']) >= 4) {?>display: none<? } ?>">
+    <ul class="listing apps_edit_info_restrictions">
+      <li><span>Файл не должен превышать 5 Мб.</span></li>
+      <li><span>Файл должен быть в формате jpg, png, gif или bmp.</span></li>
+
+      <li><span>Размер изображения <b>607x376px</b>.</span></li>
+    </ul>
+    <div class="apps_edit_imgs_info">
+      <div id="apps_edit_upload_screenshot"></div>
+    </div>
+  </div>
+</td></tr>
+</table>
+
+
+</div><div class="apps_edit_screen_line"></div>
+
+
+<table class="apps_edit_imgs_row"><tr><td class="apps_edit_imgs_l" valign="top">
+
+  <img src="<?=$app->app_banner()?>" id="apps_edit_banner" class="apps_edit_banner">
+</td><td valign="top">
+  <h4>Большое изображение</h4>
+  <div class="apps_edit_banner_no_upload" style="display: none;"></div>
+  <ul class="listing apps_edit_info_restrictions" style="">
+    <li><span>Файл не должен превышать 5 Мб.</span></li>
+    <li><span>Файл должен быть в формате jpg, png, gif или bmp.</span></li>
+
+    <li><span>Размер изображения <b>186x116px</b>.</span></li>
+  </ul>
+  <div class="apps_edit_imgs_info">
+    <div id="apps_edit_upload_banner"></div>
+  </div>
+</td></tr>
+</table>
+</div>

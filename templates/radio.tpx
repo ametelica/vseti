@@ -1,0 +1,97 @@
+<?php
+global $new_design;
+if ($new_design) echo tpx('header_design');
+?>
+
+<style>
+    .page_radio {
+        color: white;
+        font-size: 13px;
+        background: url("images/allback.png") repeat scroll 0 0 black;
+        line-height: 22px;
+    }
+
+    .page_radio td {
+        text-align: left;
+    }
+
+    .page_radio span.date {
+        color: gray;
+        font-size: 11px;
+    }
+
+    .page_radio a.ntitle {
+        display: block;
+    }
+
+    .page_radio .ntext {
+        background-image:url(/images/dotes.gif);
+        background-repeat:repeat-x;
+        background-position:bottom;
+        padding-bottom: 5px;
+    }
+</style>
+
+<script>
+    var opera = Boolean(window["opera"]);
+    var ie = (navigator.appName.indexOf("Microsoft") != -1) && !opera;
+
+    function mju_play_track(num) {
+        if (num <= 0) return false;
+        var mc = ie ? window.mju : window.document.mju;
+        mc.SetVariable("play_track",num);
+    }
+
+    function mju_play_file(chars) {
+        if (!chars.length) return false;
+        var mc = ie ? window.mju : window.document.mju;
+        mc.SetVariable("play_file",chars);
+    }
+
+    function mju_do(cmd) {
+        if (!cmd.length) return false;
+        var mc = ie ? window.mju : window.document.mju;
+        mc.SetVariable("do_"+cmd," ");
+    }
+</script>
+
+<div id="content" class="page_radio">
+    <table cellspacing="0" cellpadding="10" border="0">
+        <tr valign="top" align="center">
+            <td style="width: 120px; height: 170px; line-height: 22px;">
+                <a style="color:#107ab5" onclick="mju_play_track(1);">@plus первый</a><br>
+                <a style="color:#da251c" onclick="mju_play_track(2);">@plus рок</a><br>
+                <a style="color:#e67817" onclick="mju_play_track(3);">@plus по-русски</a><br>
+                <a style="color:#FFFF00" onclick="mju_play_track(4);">@plus хип хоп</a><br>
+                <a style="color:#049341" onclick="mju_play_track(5);">@plus релакс</a><br>
+                <a style="color:#00FF00" onclick="mju_play_track(6);">@plus beat</a><br>
+            </td>
+            <td style="width: 280px; background: url('images/apluslogo.png') -12px 13px no-repeat;">
+                <div class="mju">
+                <object width="150" height="150" id="mju" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0">
+                    <param name="allowScriptAccess" value="sameDomain" />
+                    <param name="swLiveConnect" value="true" />
+                    <param name="movie" value="http://vseti.by/include/mju/mju.swf" />
+                    <param name="flashvars" value="playlist=http://vseti.by/include/mju/playlist.mpl&auto_run=0&repeat=1&shuffle=0" />
+                    <param name="loop" value="false" />
+                    <param name="menu" value="false" />
+                    <param name="quality" value="high" />
+                    <param name="wmode" value="transparent" />
+                    <embed src="http://vseti.by/include/mju/mju.swf" flashvars="playlist=http://vseti.by/include/mju/playlist.mpl&auto_run=0&repeat=1&shuffle=0" loop="false" menu="false" quality="high" wmode="transparent" bgcolor="#ffffff" width="150" height="150" name="mju" allowScriptAccess="sameDomain" swLiveConnect="true" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+                </object>
+                </div>
+            </td>
+            <td style="width: 392px;" rowspan="2">
+                <b>НОВОСТИ РАДИО АПЛЮС</b>
+                <?=$var[news] ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2 style="vertical-align: top; width: 440px;">
+                <a href="http://radio.aplus.by">Радио @Плюс</a> - первое интернет-радио Беларуси.<br /><br />
+                Это - наши друзья. Ты можешь проводить время ВСети наслаждаясь свежей и разнообразной музыкой, быть в курсе новостей и участвовать в конкурсах, регулярно проводящихся <a href="http://radio.aplus.by">Радио @Плюс</a>. Прослушивать радио с нашего сайта пользователи <span style="color: #ed6d00;">by</span><span style="color: #698dd2">fly</span> могут <span style="color: lime">совершенно бесплатно</span> по гостевому доступу<br/><br/>
+                <a href="http://radio.aplus.by">@Плюс Радио</a> - станция с таким многообразием и экслюзивностью музыкального материала, которое не снилось ни одной эфирной радиостанции. У нас всегда найдут свою музыку люди с широким музыкальным кругозором: те, кто любит старый и новый рок, те, кто любит клубную танцевальную музыку, те, кто любит горяченькие европейские хиты, те, кто любит кое-что эсклюзивное.
+            </td>
+        </tr>
+    </table>
+</div>

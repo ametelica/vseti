@@ -1,0 +1,344 @@
+<?php
+global $vs_album;
+?>
+var offset = 60;
+var albumRaw = '<?=$vs_album->uid?>';
+var objMore = ge('photos_choose_more');
+var loading = false;
+var chooseBack = false;
+var uploadWrap = ge('photos_choose_upload_area_wrap'), uploadCont = ge('photos_choose_upload_area_cont');
+cur.addProgress = function() {
+  var el = ge('photos_choose_upload_area_label');
+  if (el) {
+    el.parentNode.appendChild(se('<div id="photos_choose_upload_progress"></div>'));
+    setStyle(ge('photos_choose_upload_progress'), {height: getSize(el.parentNode)[1]})
+  }
+}
+setTimeout(cur.addProgress, 0);
+cur.photosChooseMore = function() {
+  if (!chooseBack) {
+    chooseBack = objMore.innerHTML;
+  }
+  if (loading) {
+    return false;
+  }
+  loading = true;
+  ajax.post('al_photos.php', {act: 'change_thumb_box', offset: offset, album: albumRaw}, {
+    onDone: function(rows, newOffset, showMore) {
+      ge('photos_choose_rows').insertBefore(cf(rows), ge('photos_choose_clear'));
+      offset = newOffset;
+      if (showMore) {
+        hide(objMore);
+      }
+      loading = false;
+    },
+    onFail: function() {
+      loading = false;
+    },
+    showProgress: function() {
+      objMore.innerHTML = '<img width="32" height="8" src="/images/upload'+(window.devicePixelRatio >= 2 ? '_2x' : '')+'.gif">';
+    },
+    hideProgress: function() {
+      objMore.innerHTML = chooseBack;
+    }
+  })
+}
+cur.choosePhotoScroll = function() {
+  var st = boxLayerWrap.scrollTop, mx = 200, vis = cur.lSTLWas || (st > mx), o = 0;
+  cur.lSTL.style.marginTop = st + 'px';
+  if (!vis) {
+    if (cur.lSTLShown !== 0) {
+      hide(cur.lSTL);
+      cur.lSTLShown = 0;
+    }
+  } else {
+    if (cur.lSTLShown !== 1) {
+      show(cur.lSTL);
+      cur.lSTLShown = 1;
+    }
+    if (cur.lSTLWas && st > 500) {
+      cur.lSTLWas = 0;
+    }
+    if (st > mx) {
+      o = (st - mx) / mx;
+      if (cur.lSTLWasSet) {
+        cur.lSTLWasSet = 0;
+        val(domLC(cur.lSTL), getLang('global_to_top'));
+        removeClass(domLC(cur.lSTL), 'down');
+      }
+    } else {
+      o = (mx - st) / mx;
+      if (cur.lSTLWas) {
+        if (!cur.lSTLWasSet) {
+          cur.lSTLWasSet = 1;
+          val(domLC(cur.lSTL), '');
+          addClass(domLC(cur.lSTL), 'down');
+        }
+      }
+    }
+  }
+  setStyle(cur.lSTL, {opacity: Math.min(Math.max(o, 0), 1)});
+
+  var pos = getXY(uploadWrap)[1], h = getSize(uploadCont)[1];
+  toggleClass(uploadCont, 'fixed', pos < scrollGetY());
+  setStyle(ge('photos_choose_wrap'), {marginTop: (pos < scrollGetY() ? h : 0)});
+
+  var bt = lastWindowHeight;
+
+  if (isVisible(objMore) && (bt > getXY(objMore, true)[1] - (browser.msie6 ? 0 : scrollGetY()) - bt)) {
+    objMore.click();
+  }
+}
+cur.chooseThumb = function(photo, addRow) {
+  ajax.post('al_photos.php', {act: 'change_thumb', photo: photo, hash: '0879dde5ba3d337d31'}, {
+    onDone: function(src, row) {
+      ge('album_thumb_img').src = src;
+      if (addRow && row) {
+        var cont = ge('photos_container');
+        cont.appendChild(se(row));
+        if (cont.sorter) {
+          sorter.added(cont);
+        }
+      }
+      box.hide();
+    },
+    progress: box.progress
+  });
+  return false;
+}
+box.setOptions({hideButtons: true, title: false, width: 590, bodyStyle: 'padding: 0px; border: 0px;', onClean: function() {
+  removeClass(boxLayerBG, 'bg_dark');
+  removeEvent(boxLayerWrap, 'scroll', cur.choosePhotoScroll);
+}});
+addClass(boxLayerBG, 'bg_dark');
+addEvent(boxLayerWrap, 'scroll', cur.choosePhotoScroll);
+
+
+show('photos_choose_upload_area_wrap');
+cur.uploadPhotos = function(obj, ev) {
+  if (cur.uplId !== undefined && window.Upload && Upload.checked && Upload.checked[cur.uplId] && photos.checkHtml5Uploader()) {
+    ge('choose_photo_upload').click();
+    return false;
+  }
+  return true;
+}
+
+cur.choosePhotoUploaded = function(info, params) {
+  ajax.post('al_photos.php', extend({act: 'choose_uploaded'}, params), {
+    onDone: function(media, data) {
+      var addRow = false;
+      if (cur.offset >= cur.count) {
+        addRow = true;
+      } else {
+        delete(ajaxCache['/album<?=$vs_album->uid?>#' + ajx2q({act: 'edit', offset: cur.offset, part: 1})]);
+      }
+      cur.chooseThumb(media, addRow);
+    },
+    onFail: cur.choosePhotoUploadFailed.pbind(info),
+    progress: box.progress
+  });
+}
+
+cur.choosePhotoUploadFailed = function(info, code) {
+  var i = info.ind !== undefined ? info.ind : info;
+  if (!Upload.types[i] || Upload.types[i] == 'fileApi' && !Upload.options[i].wiki_editor) {
+    setTimeout(showFastBox('Ошибка', 'Не удалось загрузить изображение').hide, 2000);
+  }
+  show('photos_choose_upload_area_label');
+  hide('photos_choose_upload_progress');
+  topError('Upload failed', {dt: -1, type: 102, url: (ge('file_uploader_form'+i) || {}).action});
+  Upload.embed(i);
+}
+
+
+var files = {};
+var uploadFlash = false;
+var uploadKey = false;
+
+function uploadStart(info, res) {
+  var i = info.ind !== undefined ? info.ind : info, options = Upload.options[i];
+  var type = Upload.types[i];
+  files[i] = res || info;
+  hide('photos_choose_upload_area_label');
+  show('photos_choose_upload_progress');
+  box.changed = true;
+  ge('choose_photo_upload').disabled = true;
+}
+
+function uploadComplete(info, res) {
+  var params;
+  try {
+    params = eval('(' + res + ')');
+  } catch(e) {
+    params = q2ajx(res);
+  }
+  if (!params.photos) {
+    Upload.onUploadError(info);
+    return;
+  }
+  cur.choosePhotoUploaded(info, params);
+}
+
+cur.maxFiles = 10;
+cur.uploaderLang = {"max_files_warning":"Вы можете прикрепить к сообщению не более 10 файлов."};
+if (Upload.checkFileApi()) {
+  cur.initHTML5Lite = function() {
+    var max_files = cur.maxFiles - (cur.savedPhotos || []).length;
+    cur.html5LiteUrl = 'http://cs9311.vs.com/upload.php';
+    cur.html5LiteVars = {"act":"do_add","aid":149672634,"gid":0,"mid":4803497,"hash":"b473853159b593544792956a67453cd4","rhash":"c7237658bac15ded8941ecca879c944b","vs":1,"from_host":"vs.com"};
+    cur.html5LiteVars.jpeg_quality = 89;
+    cur.html5LiteOptions = {
+      file_name: 'photo',
+
+      file_size_limit: 1024*1024*25, // 5Mb
+      file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
+      file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF;*.bmp;*.BMP',
+
+      lang: cur.uploaderLang,
+
+      onUploadStart: uploadStart,
+      onUploadComplete: uploadComplete,
+      onUploadError: cur.choosePhotoUploadFailed,
+
+      clear: 1,
+      noFlash: 1,
+      type: 'photo',
+      max_attempts: 3,
+      server: 9311,
+      error: 1,
+      error_hash: 'a3a80b2c6cadc6a432848c8507587eed',
+      dropbox: boxLayerWrap,
+      dragEl: boxLayerWrap,
+      visibleDropbox: true,
+      multiple: true,
+      multi_progress: true,
+      force_max_files: true,
+      max_files: max_files,
+      accept: 'image/jpeg,image/png,image/gif',
+      file_match: "\\.(gif|jpg|jpeg|png)$",
+      noEmbed: true
+    }
+    cur.uplId = Upload.init('choose_photo_upload', cur.html5LiteUrl, cur.html5LiteVars, cur.html5LiteOptions);
+  }
+  cur.initHTML5Lite();
+} else {
+  uploadKey = 'lite_photo_uploader_'+((window.uploadInterface || 0) + 1);
+  re(uploadKey);
+  var area = ge('box_layer');
+  var areaWrap = ge('photos_choose_upload_area_wrap');
+  var s = getSize(areaWrap);
+  var p = getXY(areaWrap, true);
+  var el = ce('div', {
+    innerHTML: '<div id="'+uploadKey+'" style="position: absolute; height: '+s[1]+'px; width: '+s[0]+'px; cursor: pointer; z-index: 1000; margin-top: '+p[1]+'px; margin-left: '+p[0]+'px;"></div>'
+  }).firstChild;
+  area.parentNode.insertBefore(el, area);
+  cur.initFlashLite = function() {
+    var max_files = cur.maxFiles - (cur.savedPhotos || []).length;
+    cur.flashLiteUrl = 'http://cs9311.vs.com/upload.php';
+    cur.flashLiteVars = {"act":"do_add","aid":149672634,"gid":0,"mid":4803497,"hash":"b473853159b593544792956a67453cd4","rhash":"c7237658bac15ded8941ecca879c944b","vs":1,"from_host":"vs.com"};
+    cur.flashLiteVars.jpeg_quality = 89;
+    cur.flashLiteVars.max_files = max_files;
+    cur.flashLiteOptions = {
+      file_name: 'photo',
+      fieldEl: 'photos_choose_upload_area',
+
+      file_size_limit: 1024*1024*25, // 5Mb
+      file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
+      file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF;*.bmp;*.BMP',
+
+      lang: cur.uploaderLang,
+      wiki_editor: 0,
+
+      onUploadStart: uploadStart,
+      onUploadComplete: uploadComplete,
+      onUploadError: cur.choosePhotoUploadFailed,
+
+      flashPath: '/swf/photo_uploader_lite.swf',
+      clear: 1,
+      type: 'photo',
+      max_attempts: 3,
+      server: 9311,
+      error: 1,
+      error_hash: 'a3a80b2c6cadc6a432848c8507587eed',
+      dropbox: boxLayerWrap,
+      dragEl: boxLayerWrap,
+      visibleDropbox: true,
+      multiple: true,
+      multi_progress: true,
+      flash_lite: 1
+    }
+
+    cur.uplId = Upload.init(uploadKey, cur.flashLiteUrl, cur.flashLiteVars, cur.flashLiteOptions);
+  };
+
+  cur.flash_lite = true;
+  cur.initFlashLite();
+}
+
+cur.uploadDroped = false;
+
+function onBoxDragEnter(ev) {
+  if (cur.uploadDroped) {
+    return;
+  }
+  if (cur.dragTimeout) {
+    clearTimeout(cur.dragTimeout);
+    delete cur.dragTimeout;
+  }
+  addClass(ge('photos_choose_upload_area_wrap'), 'photos_choose_upload_area_enter');
+  return cancelEvent(ev);
+}
+function onBoxDragLeave(ev) {
+  if (cur.dragTimeout) {
+    clearTimeout(cur.dragTimeout);
+    delete cur.dragTimeout;
+  }
+  cur.dragTimeout = setTimeout(function() {
+    removeClass(ge('photos_choose_upload_area_wrap'), 'photos_choose_upload_area_enter');
+  }, 100);
+  return cancelEvent(ev);
+}
+function onBoxDragDrop(ev) {
+  removeClass(ge('photos_choose_upload_area_wrap'), 'photos_choose_upload_area_enter');
+  cur.uploadDroped = true;
+  if (cur.uplId !== undefined && window.Upload && Upload.checked && Upload.checked[cur.uplId]) {
+    Upload.onFileApiSend(cur.uplId, ev.dataTransfer.files);
+  } else {
+    photos.onUploadSelect(ev.dataTransfer.files);
+  }
+  return cancelEvent(ev);
+}
+cur.lSTLDown = function(e) {
+  e = e || window.event;
+  if (checkEvent(e)) return;
+
+  if (!__afterFocus) {
+    var to = 0, st = boxLayerWrap.scrollTop;
+    if (cur.lSTLWasSet && cur.lSTLWas) {
+      to = cur.lSTLWas;
+      cur.lSTLWas = 0;
+    } else {
+      cur.lSTLWas = st;
+    }
+    boxLayerWrap.scrollTop = to;
+  }
+  return cancelEvent(e);
+}
+
+if (cur.lSTL) re(cur.lSTL);
+extend(cur, {
+  lSTL: boxLayerWrap.appendChild(ce('div', {id: 'layer_stl', innerHTML: '<div id="layer_stl_bg" class="fixed"></div><div id="layer_stl_cl"></div><nobr id="layer_stl_text" class="fixed">' + getLang('global_to_top') + '</nobr>', el: box.bodyNode, onclick: cancelEvent, onmousedown: cur.lSTLDown, sc: cur.chooseVideoScroll})),
+  lSTLShown: 0,
+  lSTLWas: 0,
+  lSTLWasSet: 0
+});
+setTimeout(onBodyResize, 0);
+addEvent(boxLayerWrap, "dragenter dragover", onBoxDragEnter);
+addEvent(boxLayerWrap, "dragleave", onBoxDragLeave);
+addEvent(boxLayerWrap, "drop", onBoxDragDrop);
+box.setOptions({onHide: function() {
+  removeEvent(boxLayerWrap, "dragenter dragover", onBoxDragEnter);
+  removeEvent(boxLayerWrap, "dragleave", onBoxDragLeave);
+  removeEvent(boxLayerWrap, "drop", onBoxDragDrop);
+  re(cur.lSTL);
+}});

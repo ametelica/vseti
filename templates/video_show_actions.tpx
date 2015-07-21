@@ -1,0 +1,21 @@
+<?php
+global $langpack, $author, $user;
+$vid = $var['video']->id;
+$oid = $var['video']->oid;
+$lnk = $var['video']->movie();
+
+?><div class="info mv_num_views"><?=nf($var['video']->view_cnt)?> <?=$langpack->dln($video_info['video_view'], array('просмотр', 'просмотрa', 'просмотров'))?></div>
+<div class="info mv_num_views"><?=nf($var['video']->add_cnt)?> <?=$langpack->dln($video_info['video_add'], array('добавление', 'добавления', 'добавлений'))?></div>
+<div class="info">Отправитель:</div><div id="mv_author"><a class="mem_link" href="<?=$author->lnk?>" onclick="return nav.go(this, event)"><?=$author->user_info['fio']?></a></div>
+<div id="mv_actions">
+<? if($var['video']->author_id == $user->id) { ?>
+	<a onclick="return videoview.showEditBox(<?=$vid?>, <?=$oid?>, event)">Редактировать</a>
+	<a onclick="return videoview.deleteVideo(<?=$vid?>, <?=$oid?>, '<?=hash_get($oid . $vid, 16, 'vid')?>', false, 'videoviewer', this)">Удалить</a>
+<? } ?>
+<a onclick="videoview.report(' . $oid . ', ' . $vid . ');">Пожаловаться</a>
+<a onclick="videoview.sendVideo(true);">Поделиться</a>
+<? if($user->hr('user_video_delete')) { ?>
+	<a href="#" onclick="if(confirm('Лишить пользователя прав загрузки?')) {window.location='admin.php?act=video_block&cid=<?=$var['video']->clip?>&vb=1'}else{window.location='admin.php?act=video_block&cid=<?=$var['video']->clip?>'}; return false;"/>Блокировать</a>
+<? } ?>	
+<a href="<?=$var['video']->movie()?>">Скачать</a>
+</div>

@@ -1,0 +1,100 @@
+<?php
+global $user, $group, $group_params;
+
+$group_subjects = array(
+	1 => "Авто/мото",
+	2 => "Активный отдых",
+	19 => "Безопасность",
+	3 => "Бизнес",
+	44 => "Благотворительность",
+	43 => "ВСети",
+	42 => "Дизайн и графика",
+	29 => "Дом и семья",
+	4 => "Домашние животные",
+	5 => "Здоровье",
+	6 => "Знакомство и общение",
+	7 => "Игры",
+	8 => "ИТ (компьютеры и софт)",
+	9 => "Кино",
+	10 => "Красота и мода",
+	11 => "Кулинария",
+	12 => "Культура и искусство",
+	13 => "Литература",
+	14 => "Мобильная связь и интернет",
+	15 => "Музыка",
+	16 => "Наука и техника",
+	17 => "Недвижимость",
+	18 => "Новости и СМИ",
+	20 => "Образование",
+	21 => "Обустройство и ремонт",
+	41 => "Общество, гуманитарные науки",
+	22 => "Политика",
+	23 => "Продукты питания",
+	24 => "Промышленность",
+	25 => "Путешествия",
+	26 => "Работа",
+	27 => "Развлечения",
+	28 => "Религия",
+	30 => "Спорт",
+	31 => "Страхование",
+	32 => "Телевидение",
+	33 => "Товары и услуги",
+	34 => "Увлечения и хобби",
+	35 => "Финансы",
+	36 => "Фото",
+	37 => "Эзотерика",
+	38 => "Электроника и бытовая техника",
+	39 => "Эротика",
+	40 => "Юмор"
+);
+
+if($group->user_level >= 3) {
+
+$subjects = array();
+foreach($group_subjects as $k => $v) {
+	$subjects[] = array($k, $v);
+}
+
+?>
+showBackLink('<?=$group->lnk?>', '<?=$group->title?>');
+extend(cur, {
+  gid: <?=$group->id?>,
+  hash: '<?=hash_get($user->id . $group->id, 18, 'ginfo')?>',
+  lang: extend(cur.lang || {}, {
+    groups_no_donation_widget: 'Не отображать блок пожертвований',
+    groups_status_export: 'Экспорт статуса',
+    groups_status_confirm: 'Вы действительно хотите отключить экспорт в Twitter?',
+    groups_twitter_desc: 'Авторизуйтесь в Twitter для того, чтобы настроить экспорт',
+    groups_authorize_please: 'Пожалуйста, авторизуйтесь в <b>Twitter</b>&#33;',
+    groups_external_site_request: 'Подождите, выполняется запрос к стороннему сервису.',
+    groups_auth_in_twitter: 'Авторизоваться в Twitter',
+    groups_start_typing_subject: 'Начните вводить тематику',
+    groups_choose_subject: 'Выберите тематику'
+  })
+});
+GroupsEdit.init({"cls":"0","subjects":<?=jenc($subjects)?>,"subject":"<?=intval($group->group_info['group_subject'])?>"});
+var lnk = ge('name_service1');
+if (lnk && !lnk.href) {
+  cur.twitterCheckTimer = setTimeout(GroupsEdit.checkTwitter, 1000);
+}
+cur.checkAlias = function(oid) {
+  ajax.post('/al_groups.php', {act: 'a_check_alias', oid: oid, alias: ge('group_alias').value}, {
+    onDone: function (is_error, text) {
+      //link.innerHTML = 'Видеозапись отмечена как спам.';
+      ge('group_alias_desc').style.color = is_error ? 'red' : 'green';
+      ge('group_alias_desc').innerHTML = text;
+      //alert(text);
+    }});
+
+}
+<?
+	foreach($group_params as $type => $data) {
+		$tmp = array(
+			'g_' . $type . '_types' => $data['types'],
+			'g_' . $type . '_help' => $data['help'],
+			'g_' . $type => array($data['val'], 1, array(), array())
+		);
+		echo 'extend(cur.privacy, ' . jenc($tmp) . ');';
+	}
+}
+?>

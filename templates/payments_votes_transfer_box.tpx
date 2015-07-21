@@ -1,0 +1,38 @@
+<?php
+global $user, $langpack;
+?>
+<div id="payments_box">
+  <div id="payments_box_summary" class="clear_fix">
+    <img class="payments_summary_phumb" src="<?=$user->photo()?>" width="50" height="50" />
+    <div class="payments_summary_cont">Вы можете отправить в подарок или передать часть зайчиков Вашим друзьям.<br/>Ваш текущий баланс: <b><?=$user->credits?> зайчик<?=$langpack->dln($user->credits,'file')?></b></div>
+  </div>
+  <div id="payments_box_error" class="error"></div>
+  <div id="payments_transfer_wrap">
+    <table class="payments_tform">
+      <tr class="tform_row">
+        <td class="label">ID получателя:</td>
+        <td class="labeled">
+          <input type="hidden" id="transfer_to" name="transfer_to" />
+        </td>
+        <td rowspan="3">
+          <a href="#" onfocus="cur.uiTransferTo.focus()">
+            <img id="transfer_to_photo" src="/images/question_s.gif" width="50" height="50" />
+          </a>
+        </td>
+      </tr>
+      <tr class="tform_row">
+        <td class="label">Количество зайчиков:</td>
+        <td class="labeled">
+          <input type="text" class="text" id="transfer_amount" name="transfer_amount" onkeyup="cur.transferCleanAmount(this);" onkeydown="if (event.keyCode==13) { cur.transferSend(); }" />
+          <small id="limit_message" style="display: none;">Сегодня Вы можете передать еще 100 зайчиков</small>
+        </td>
+      </tr>
+      <!--<tr>
+        <td class="label">Сообщение:</td>
+        <td class="labeled">
+          <textarea id="transfer_comment" name="transfer_comment"></textarea>
+        </td>
+      </tr>-->
+    </table>
+  </div>
+</div>

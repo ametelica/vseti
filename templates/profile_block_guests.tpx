@@ -1,0 +1,22 @@
+<?php
+global $langpack,$total_quests,$guest_ids;
+?>
+<div id="myguests" class="module">
+ <a class="module_header" href="/newsfeed.php?section=myguests">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r">все</span>
+   Мои гости
+  </div>
+  <div class="p_header_bottom">
+   <? echo $total_quests>0?'<a href="#" onclick="return Profile.guestReset()"><span class="fl_r">[сброс]</span></a>
+   '.$total_quests.' гост'.$langpack->dln($total_quests,'gst'):'Нет гостей'; ?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+ <? if($total_quests > 0) { 
+     echo tpx('people_rows',array('users'=>$guest_ids));
+     } else {  ?>
+  <div class="fallback">Список тех, кто заходил на вашу страничку. Пока никого не было.</div>
+  <? } ?>
+ </div>
+</div>

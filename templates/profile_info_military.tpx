@@ -1,0 +1,12 @@
+{if $total_military>0}
+ {foreach from=$military item=mil}
+  <div class="clear_fix {if $first_mil>0}block{/if}">
+   <div class="label fl_l">{$profile114}:</div>
+   <div class="labeled fl_l">
+    {$mil.military_place}<br>{if $mil.country_name!=''}{$mil.country_name}, {/if}{$mil.time_period}
+   </div>
+  </div>
+ {assign var="first_mil" value=1}
+{/foreach}
+{/if}
+<!--m-->

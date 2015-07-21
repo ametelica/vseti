@@ -1,0 +1,54 @@
+<?php
+	global $user;
+?><div class="abx_content">
+  <div id="abx_error_wrap">
+    <div id="abx_error" class="msg"></div>
+  </div>
+  <h2 class="abx_header">Жалоба</h2>
+  <div class="abx_description">
+    Пожалуйста, сообщите нам причину, по которой страница <a class="mem_link" href="<?=$var['abuse_obj']->lnk?>"><?=$var['abuse_obj']->title?></a> должна быть заблокирована:
+    <div id="abx_radiobtns">
+      <div class="radiobtn" onclick="radiobtn(this, 1, 'abx_reason');"><div></div>Порнография</div>
+      <div class="radiobtn" onclick="radiobtn(this, 2, 'abx_reason');"><div></div>Рассылка спама</div>
+			<div class="radiobtn" onclick="radiobtn(this, 5, 'abx_reason');"><div></div>Мошенничество</div>
+      <div class="radiobtn" onclick="radiobtn(this, 3, 'abx_reason');"><div></div>Мат в нике или на странице</div>
+    </div>
+  </div>
+
+  <h2 class="abx_header">Комментарий</h2>
+  <div class="abx_addinfo">
+    <textarea class="text" id="abx_comment" placeholder="Здесь стоит описать проблему.." onkeydown="onCtrlEnter(cur.sendAbuse);"></textarea>
+    <div class="abx_blacklist_cb_wrap">
+  <div class="checkbox" id="abx_blacklist_cb" onclick="checkbox(this);"><div></div>Закрыть <a target="_blank" class="mem_link" href="<?=$var['abuse_obj']->lnk?>"><?=$var['abuse_obj']->title?></a> доступ к моей странице</div>
+</div>
+  </div>
+</div><!>cur.sendAbuse = function () {
+  val('abx_error', '');
+	if (val('abx_comment') == '') {
+		val('abx_error', 'Дополните жалобу комментариями, ссылками, объяснениями. Админы должны видеть ЧТО именно не так.');
+		show('abx_error_wrap');
+		return false;
+	}
+	box.showProgress();
+  hide('abx_error_wrap');
+  ajax.post('reports.php', {act: 'report', place_id: <?=$var['abuse_obj']->id?>, comment: val('abx_comment'), bl: isChecked('abx_blacklist_cb'), reason: radioBtns.abx_reason.val, item_type: 1, hash: '<?=hash_get($user->id.$var['abuse_obj']->id,12,'rep')?>'}, {
+    onDone: function (text) {
+      box.hideProgress();
+      box.hide();
+      showDoneBox(text);
+    },
+    onFail: function (msg) {
+      box.hideProgress();
+      val('abx_error', msg);
+      show('abx_error_wrap');
+      animate(ge('abx_error'), {backgroundColor: '#F9F6E7'}, 2000);
+      return true;
+    }
+  });
+};
+radioBtns.abx_reason = {val: 0, els: geByClass('radiobtn', ge('abx_radiobtns'), 'div')};
+box.removeButtons();
+box.addButton(getLang('global_cancel'), null, 'no');
+box.addButton('Отправить', cur.sendAbuse);
+placeholderSetup(ge('abx_comment'));
+autosizeSetup(ge('abx_comment'), {maxHeight: 100});

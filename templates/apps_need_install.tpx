@@ -1,0 +1,99 @@
+<?php
+global $langpack,$hash,$user,$ref,$app,$oid;
+
+$ai = $app->app_info;
+
+//echo $oid;
+
+if(empty($user)) { 
+
+if(empty($oid)) {
+	$oid = $user->id;
+	$wk_view = 1;
+} else {
+	$wk_view = 0;
+}
+} else {
+	$wk_view = 0;
+}
+
+
+?>
+<div class="apps_i_panel clear_fix">
+<table class="apps_i_layer_info" cellspacing="0" border="0">
+    <tr>
+      <td class="app_image" width="75">
+        <img src="<?=$app->app_photo()?>" class="app_i_icon" />
+     </td>
+     <td class="app_search_info">
+        <div class="app_layer_name">
+         <?=$ai['app_title']?>
+        </div>
+        <?=$ai['app_desc']?>
+        <div class="app_users">Приложение установили <?=nf($ai['app_rate'])?> человек<?=$langpack->dln($ai['app_rate'],'cnt')?></div>
+     </td>
+    </tr>
+  </table>
+
+  <div class="apps_layer_friends clear_fix">
+    <? 
+		$app_users = $app->app_users();
+		foreach($app_users as $u) {
+			echo '<a class="apps_ss_friend_img fl_l" onmouseover="return Apps.ttScore(this, \''.$u->user_info['fio'].'\');" href="'.$u->lnk.'">
+			<img class="apps_ss_friend fl_l" src="'.$u->photo().'">
+		</a>';
+		}
+		
+		
+		
+		/* ?><a href="/id4186518"><img src="http://cs5712.vk.com/u4186518/e_24997e3b.jpg" class="apps_ss_friend fl_l"/></a><a href="/cooper_max"><img src="http://cs10032.vk.com/u4909373/e_952d7b8c.jpg" class="apps_ss_friend fl_l"/></a><a href="/one_photo"><img src="http://cs10530.vk.com/u5155335/e_6bfcc68a.jpg" class="apps_ss_friend fl_l"/></a><a href="/vlturizm"><img src="http://cs9965.vk.com/u5333791/e_5b275dd0.jpg" class="apps_ss_friend fl_l"/></a><a href="/k_lever"><img src="http://cs10126.vk.com/u6629608/e_faef60f9.jpg" class="apps_ss_friend fl_l"/></a><a href="/id10011083"><img src="http://cs4475.vk.com/u10011083/e_a024483b.jpg" class="apps_ss_friend fl_l"/></a><div class="apps_ss_playing fl_l">Играют 18 Ваших друзей</div><? */ ?>
+    <div class="button_green fl_r"><button id="apps_i_btn" onclick="Apps.runApp(this, '<?=substr($app->lnk,1)?>', '<?=$hash->get_hash($ai['app_id'].$user->id,16,'ap')?>', <?=$ai['app_settings']?>, <?=intval($ref)?>, <?=$oid?>);"><div class="apps_i_btn_bg">Запустить игру</div></button></div>
+  </div>
+</div>
+
+<? if(!empty($app->app_info['app_screenshots'])) {
+
+$count_scr = count($app->app_info['app_screenshots']);
+
+if(!$wk_view) echo '<div class="app_i_page_screen">';
+	
+?>
+
+<!-- <div class="app_i_page_screen"> -->
+<div class="apps_i_screenshots">
+<div class="apps_i_act_slider" onclick="Apps.runApp(this, '<?=substr($app->lnk,1)?>', '<?=$hash->get_hash($ai['app_id'].$user->user_info['user_id'],16,'ap')?>', <?=$ai['app_settings']?>, <?=intval($ref)?>, <?=$oid?>);" onmouseout="Apps.runOut();" onmouseover="Apps.runOver();">
+<div id="apps_i_run_box" class="apps_i_run_box apps_i_single_run" style="opacity: 0.8;">Запустить игру</div>
+<div id="apps_i_slider">
+<div style="width: <?=intval($count_scr*607)?>px;">
+<?
+	foreach($app->app_info['app_screenshots'] as $image) {
+		echo '<div class="apps_i_sl fl_l"><img class="apps_i_sl_img" src="'.$app->app_screenshot($image, 'x').'"></div>';
+	}
+
+if(!$wk_view) echo '</div>';
+?>
+<!-- </div> -->
+</div>
+</div>
+</div>
+<? 
+if($count_scr > 1) { 
+	
+	echo '<div id="apps_i_th_contr">';
+	foreach($app->app_info['app_screenshots'] as $n => $image) {
+		echo '<span class="apps_i_th_cont"><img src="'.$app->app_screenshot($image, 'j').'" rel="'.$n.'" onclick="Apps.ssChange(this)" class="apps_i_th_img '.($n == 0 ? 'apps_i_th_first apps_i_th_act' : '' ).'" /></span>';
+	}
+	echo '</div>';
+}	
+?>	
+
+</div>
+
+<? } ?>
+
+<div class="apps_i_cont clear_fix">
+  <div class="apps_ss_items" style="">
+	<h2>Права доступа</h2>
+   <?  echo tpx('apps_rights'); ?>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+<?php
+	global $board, $posts, $limit, $topic_id, $topic, $user, $post_id, $topic_open, $search;
+	$preload = array($limit * 2);
+	if($posts['total'] <= $limit) {
+		$preload[] = '';
+	} else {
+		$preload[] = tpx('board_search_rows', array('posts' => array_slice($posts['comments'], $limit, $limit)));
+	}
+	$preload[] = array();
+?>
+showBackLink('<?=$board->owner->lnk?>', '<?=$board->owner->title?>');
+
+
+showBackLink('<?=$board->owner->lnk?>', '<?=$board->owner->title?>');
+var msg = ge('blst_msg');
+if (msg) {
+  msg.style.backgroundColor = '#F4EBBD';
+  animate(msg, {backgroundColor: '#F9F6E7'}, 2000);
+}
+extend(cur, {
+  offset: <?=intval($limit)?>,
+  gid: <?=intval($board->oid)?>,
+  query: '<?=$search?>',
+  count: <?=intval($posts['total'])?>,
+  _back: {text: 'Результаты поиска', show: [Board.initScroll], hide: [Board.deinitScroll]}
+});
+
+if (vs.version) {
+  addEvent(window, 'load', Board.initScroll);
+} else {
+  Board.initScroll();
+}
+var preload = <?=jenc($preload)?>;
+
+ajax.preload('/board' + cur.gid, {act: 'search', q: cur.query, offset: cur.offset, part: 1}, preload);

@@ -1,0 +1,18 @@
+<?php
+global $datetime, $new_design, $setting, $user;
+
+$i = 0;
+echo '<div class="news_entries">';
+$var['news'] = array_slice($var['news'], 0, 5);
+
+foreach($var['news'] as $n) {
+	if(strstr($n['title'], 'Tuffle') or strstr($n['title'], 'ВКонтакте')) continue;
+	$lnk = 	'http://' . $setting['host'] . '/news_ext.php?act=redirect&nid=' . $n['id'] . '&hash=' . hash_get($n['id'].$user->id, 8, 'news');
+?><div class="news_entry <? if($i == 0) {?>full<? } ?>">
+	<?=$n['img']?>
+	<a class="title" href="<?=$lnk?>" target="blank"><?=strcut($n['title'], 120)?></a>
+	<? if($i == 0) echo '<br />'.$n['desc']; ?>
+</div><?
+$i++;
+}
+?><br class="clear"></div>

@@ -1,0 +1,247 @@
+<?php
+global $profilepage,$path_css,$owner,$user,$colors,$is_online,$last_login,$greetings,
+        $profilebg,$xhost,$banner5,$is_profile_private,$privacy_friends,$total_friends,
+        $total_friends_online,$privacy_wall,$privacy_gifts,$error_header,$error_message,
+        $profile_al, $path_js, $new_design, $interests2;
+
+$profilepage = 1;
+
+?>
+
+<!-- HTML c0de -->
+<div id="f14" style="display:none">
+    <img src="/images/f14.png" alt="f14"/>
+    <span id="f14_counter"><?=$owner->user_info['user_valentine']?></span>
+    <div id="f14_send">Подарить</div>   
+</div>
+<div id="f14_blanc" class="tooltip endArrow" style="display:none">
+    <b>Подарить валентинку <?=$owner->user_info['user_name_dat']?></b> <br/>
+    <br/> 
+    Немного теплых слов: <small>(не обязательно)</small> <br/>
+    <textarea id="f14_message"></textarea> <br/>
+    <input type="hidden" id="f14_to" value="<?=$owner?>"/>
+    <input type="hidden" id="f14_hash" value="<?=hash_get($user->id . $owner->id,'12','vd')?>"/>
+    <input type="checkbox" id="f14_anonym_on" /> 
+    <label for="f14_anonym_on" title="Получатель не увидит Вашего имени"><small>Подарить анонимно</small></label> 
+    <br/>
+    <div id="f14_actions">
+        <span id="f14_actions_send" class="tooltip_ok">Подарить</span> 
+        <span id="f14_actions_cancel" class="tooltip_cancel">Отмена</span>
+    </div>
+</div>  
+<div id="f14_error" style="display:none">
+<b>Ошибка при отправке Валентинки</b> <br/>
+<br/>
+{error} <br/><br/>
+</div> 
+
+<?
+if(empty($new_design)) {
+?>
+
+<?
+if($colors!='') echo tpx('header_design');
+?>
+
+<? /*
+<div id="ny" style="display:none">
+    <img src="/images/gift_green.png" alt="Новый год"/>
+    <span id="ny_counter"><?=$owner->user_info['user_ny_gifts']?></span>
+    <div id="ny_send">Подарить</div>   
+</div>
+*/ ?>
+
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content">
+    <input type="hidden" id="mid" value="<?=$owner->user_info['user_id']?>">
+    <input type="hidden" id="faveHash" value="<?=hash_get($owner->user_info['user_id'],18)?>" />
+    <div id="profile" class="clearFix" <?=$profilebg?>>
+     <div id="profile_left" class="dgray">
+<?
+
+echo tpx('profile_block_photo');
+
+if(empty($error_header)) {
+	if($is_profile_private==0){
+		if($privacy_friends){
+			if(!$user->is_me($owner)){
+				echo tpx('profile_block_friends_our');
+			}
+			if($total_friends>0) {
+				echo tpx('profile_block_friends');
+			} 
+			if($total_friends_online>0) {
+				echo tpx('profile_block_friends_online');
+			}
+		}
+		echo tpx('profile_block_groups');
+	}
+?>
+<? } ?>
+     </div><!-- /profile_left -->
+     <div id="profile_narrow" class="narrow_column fl_l">
+     
+<? if($owner->user_info['user_real']>0) { ?>
+	<div style="padding: 15px 50px;">
+<object style="margin: 30px auto;" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0" width="100" height="100">
+      <param name="movie" value="<?=$xhost?>swf/real<?=$owner->user_info['user_real']?>.swf">
+      <param name="quality" value="high">
+      <param name="wmode" value="transparent" />
+      <embed src="<?=$xhost?>swf/real<?=$owner->user_info['user_real']?>.swf" quality="high" pluginspage="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" type="application/x-shockwave-flash" width="100" height="100" wmode="transparent"></embed>
+</object>
+</div>
+<? } ?>     
+
+<? /* if($owner->user_info['user_reallove']>-1 and $owner->user_info['user_reallove']<100) { ?>
+<div style="padding: 15px 50px;">
+	<?=draw_heart(round(100-$owner->user_info['user_reallove']/345*100))?>
+</div>	
+<? } */ ?>
+<?
+if(empty($error_header)) {
+	if($user->is_me($owner)) echo tpx('profile_block_guests');
+	else echo $banner5;
+	
+	if($is_profile_private == 0){
+		echo tpx('profile_block_albums');
+		echo tpx('profile_block_videos');
+		if($owner->profile_info['type']==0) {
+			echo tpx('profile_block_blog');
+		} else {
+			echo tpx('profile_block_blogger_nav');
+			echo tpx('profile_block_audio');
+		}
+		echo tpx('profile_block_pools');
+	}
+	
+	if($user->is_me($owner)){
+		echo tpx('profile_block_news');
+		/*
+		if($user->usersetting_info['usersetting_bonus']>0){
+			echo tpx('profile_block_discounts');
+		}*/
+	}
+}
+?>
+     </div><!-- /profile_right -->
+     <div id="profile_wide">
+<?
+if(empty($error_header)) {
+	echo tpx('profile_block_name');
+	if($is_profile_private == 0) {
+	 	  
+	  if($owner->profile_info['type']==0) { //:: Обычная стена
+	  	if($privacy_gifts){
+	  		echo tpx('profile_block_gifts');
+	  	}
+	  	echo tpx('profile_block_audio');
+		  if($privacy_wall){
+		  	echo tpx('profile_block_comments');
+		  }
+	  } else { //:: Блог
+	  	echo tpx('profile_block_blogger');
+	  }
+	}
+} else {
+	echo '<div class="error" style="font-size: 14px;">'.$error_message.'</div>';
+}
+?>
+     </div><!--/profile_wide-->
+    </div><!--/userProfile-->
+   </div><!--/content-->
+  </div><!--/wrap1-->
+ </div><!--/wrap2-->
+
+<? } else { 
+
+// Новый дизайн
+
+?>
+
+<?
+if($colors!='' or $new_design) echo tpx('header_design');
+?>
+
+<div id="wrap2">
+  <div id="wrap1">
+   <div id="content">
+    <input type="hidden" id="mid" value="<?=$owner->user_info['user_id']?>">
+    <input type="hidden" id="faveHash" value="<?=hash_get($owner->user_info['user_id'],18)?>" />
+    <div id="profile_wrap" class="h100">
+    <div id="profile" class="clearFix" <?=$profilebg?>>
+     <div id="profile_left" class="dgray h100">
+<?
+
+echo tpx('profile_block_photo2');
+
+if(empty($error_header)) {
+	if($is_profile_private==0){
+		global $elka_h;
+		if($elka_h > 0) {
+			echo tpx('profile_block_elka');
+		}
+
+		if($privacy_friends){ ?>
+		    <div class="friends_scroll" style="width: 230px; position: relative; overflow: hidden;">
+			<div class="scroll_x">
+		<?	
+			if($total_friends_online>0) {
+				echo tpx('profile_block_friends_online');
+			}
+			if($total_friends>0) {
+				echo tpx('profile_block_friends');
+			} 
+			if(!$user->is_me($owner)){
+				echo tpx('profile_block_friends_our');
+			} else {
+				echo tpx('profile_block_guests');
+			}
+		?> </div></div> <?
+		}
+
+		echo tpx('profile_block_albums');
+		echo tpx('profile_block_videos');
+		if($owner->profile_info['type']==0) {
+			echo tpx('profile_block_blog');
+		} else {
+			echo tpx('profile_block_blogger_nav');
+			
+		}
+		echo tpx('profile_block_audio');
+		echo tpx('profile_block_pools');
+
+		echo tpx('profile_block_groups');
+	}
+?>
+<? } ?>
+     </div><!-- /profile_left -->
+     <div id="profile_wide" class="h100 <? if(!empty($error_header)) { ?>wall_module<? } ?>">
+<?
+if(empty($error_header)) {
+	echo tpx('profile_block_name');
+	if($is_profile_private == 0) {
+	  
+	  if($owner->profile_info['type']==0) { //:: Обычная стена
+	  	if($privacy_gifts){
+	  		echo tpx('profile_block_gifts');
+	  	}
+	  	
+		  if($privacy_wall){
+		  	echo tpx('profile_block_comments');
+		  }
+	  } else { //:: Блог
+	  	echo tpx('profile_block_blogger');
+	  }
+	}
+} else {
+	echo '<div class="error" style="font-size: 14px;">'.$error_message.'</div>';
+}
+?>
+     </div><!--/profile_wide-->
+    </div><!--/userProfile-->
+   </div><!--/profile_wrap-->
+   </div><!--/content-->
+  </div><!--/wrap1-->
+ </div><!--/wrap2-->
+<? } ?>

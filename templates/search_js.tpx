@@ -1,0 +1,35 @@
+<?php
+	global $section, $hasmore, $offset, $on_page, $search;
+
+	$init = array(
+		'section' => $section,
+		'has_more' => $hasmore,
+		'offset' => $offset + $on_page,
+		'q' => $search
+	);
+?>
+window.lang = extend(window.lang || {}, {
+  search_back_to: 'Результаты поиска',
+  head_search: 'поиск',
+  search_audio_added: 'Добавлено',
+  global_photo_full_size: 'Увеличить'
+});
+searcher.init(<?=jenc($init)?>);
+
+<?=$var['js']?>
+
+cur.videoMarkSpam = function(link, oid, vid, hash) {
+  var loadEl = ce('span', {className: 'loading'});
+  ajax.post('/al_video.php', {act: 'video_mark_spam', vid: vid, oid: oid, hash: hash}, {
+  onDone: function () {
+    link.innerHTML = 'Видеозапись отмечена как спам.';
+  },
+  showProgress: function () {
+    link.parentNode.replaceChild(loadEl, link);
+  },
+  hideProgress: function () {
+    if (loadEl.parentNode) {
+      loadEl.parentNode.replaceChild(link, loadEl);
+    }
+  }});
+};

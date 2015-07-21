@@ -1,0 +1,29 @@
+<?php
+global $rcont, $user;
+$photo = $var['photo'];
+$uplink = $rcont->uplink('rotate_photo', 0, '', $photo->cs, 1);
+
+$rotate = array(
+	'rotate' => array(
+		'0' => $uplink['link'],
+		'act' => $uplink['act'],
+		'mid' => $uplink['mid']->id,
+		'aid' => $photo->album_id,
+		'photo' => empty($photo->name) ? $photo->id : $photo->name,
+		'fid' => $photo->uid,
+		'angle' => 0,
+		'orig_url' => '',
+		'hash' => $uplink['hash'],
+		'rhash' => $uplink['rhash'],
+		'list_id' => 'photo_add',
+		'rot1' => 0, 
+		'rot3' => 0,
+		'server' => $uplink['server'],
+		'from_host' => 'vseti.by',
+	)
+);
+
+/*
+"0":"http:\/\/cs9311.vk.com\/upload.php","act":"rotate_photo","mid":4803497,"aid":107262959,"photo":"b86580fdb6:y","fid":"4803497_308234174","orig_url":"http:\/\/127.0.0.1\/v9311497\/2629\/kopjUpur1XU.jpg","angle":0,"hash":"0fa90877b8448ef6521f6d2884e246ad","rhash":"ffb7d20dc759cd03c9d82b6446e5007f","list_id":"photo_add","rot1":0,"rot3":0,"server":"9311","from_host":"vk.com"*/
+
+?>cur.photoData['<?=$photo->uid?>'] = <?=jenc($rotate)?>;

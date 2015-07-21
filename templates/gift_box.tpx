@@ -1,0 +1,26 @@
+<?php
+global $show_sections,$gifts,$cur_tab,$gprice,$langpack;
+
+$html = '';
+$tabs = array();
+foreach($show_sections as $k=>$v){
+	if($cur_tab==$k){
+		$html .= '<div id="gifts_box_'.$k.'" class="gifts_section clear_fix">';
+		foreach($v['gifts'] as $gid){
+			$src = $gprice[$gid]['new'] ? '/images/gifts/new/' . sprintf("%03d", $gid) . '_m.png' : '/images/gifts/96/'.$gid.'.png';
+
+			if(empty($gprice[$gid]['price'])) continue;
+			$html .= '<a class="gift_cell fl_l" onmouseover="cur.showGiftPrice(this, \'' . $gprice[$gid]['price'] . ' зайчик' . $langpack->dln($gprice[$gid]['price'], 'file') . '\')" onmouseout="cur.hideGiftPrice()" onclick="cur.showGift('.$gid.', this, 1, 0, \'\', '.intval($gprice[$gid]['new']).'); return false;"><img class="gift_img png" src="'.$src.'" width="96" height="96"/></a>';
+		}
+		$html .= '</div>';
+	} else {
+		$html .= '<div id="gifts_box_'.$k.'" class="gifts_section clear_fix" style="display: none;"></div>';
+	}
+}
+echo $html;
+?><div id="gift_price">
+  <span id="gift_price_str"></span>
+  <b class="rbottom">
+    <b class="r"></b>
+  </b>
+</div>

@@ -1,0 +1,126 @@
+<?php
+global $oid, $tb_id, $on_page;
+
+$fans_data = array(
+	'ownerId' => $oid,
+	'tab' => 'fans',
+	'offset' => $on_page,
+	'hash' => 'dc8be866f7eaa0aabe',
+	'preload' => array(
+		tpx('fans_box_rows', $var),
+		$on_page * 2,
+		true
+	)
+);
+/*
+{
+  ownerId: <?=$oid?>,
+  tab: 'fans',
+  offset: 60,
+  hash: 'dc8be866f7eaa0aabe',
+  preload: ["",120,true]
+}
+*/
+?>addClass(boxLayerBG, 'bg_dark');
+box.setOptions({bodyStyle: 'padding: 0; border: 0px;', hideButtons: true, onClean: function() {
+  removeClass(boxLayerBG, 'bg_dark');
+  removeEvent(boxLayerWrap, 'scroll', box.tbScroll);
+  if (box.tbDeinit) box.tbDeinit();
+}});
+extend(box, {
+  tbId: '<?=$tb_id?>',
+  tbCur: 'fans',
+  tbVis: 'fans',
+  tbUrl: 'al_fans.php?act=box&oid=<?=$oid?>',
+  tbInitial: 'fans',
+  tbTabs: ge('tb_tabs<?=$tb_id?>'),
+  tbTabsWrap: ge('tb_tabs_wrap<?=$tb_id?>'),
+
+  tbLoaded: {},
+  tbToggle: function(newTab) {
+    var ot = box.tbCur;
+    show('tb_' + box.tbId + '_' + newTab);
+    box.tbCur = newTab;
+    if (newTab != ot) hide('tb_' + box.tbId + '_' + ot);
+    val('tb_title' + box.tbId, box.tbLoaded[newTab]);
+    if (box.tbcOnLoad) box.tbcOnLoad();
+
+    box.tbToTop();
+  },
+  tbToTop: function() {
+    var ds = getXY(box.tbTabsWrap, true)[1];
+    if (cur.lSTL && cur.lSTL.el == box.bodyNode) {
+      cur.lSTLWas = 0;
+    }
+    if (ds < 0) {
+      boxLayerWrap.scrollTop += ds + 1;
+    }
+    box.tbScroll();
+    if (cur.lSTL && cur.lSTL.el == box.bodyNode) {
+      cur.lSTL.sc();
+    }
+  },
+  tbTab: function(newTab) {
+    replaceClass(domPN(ge('tbt_' + box.tbId + '_' + box.tbVis)), 'summary_tab_sel', 'summary_tab');
+    box.tbVis = newTab;
+    replaceClass(domPN(ge('tbt_' + box.tbId + '_' + box.tbVis)), 'summary_tab', 'summary_tab_sel');
+    if (box.tbLoaded[newTab] !== undefined) {
+      if (box.tbLoaded[newTab] !== true) {
+        box.tbToggle(newTab);
+      }
+    } else {
+      box.tbLoaded[newTab] = true;
+      ajax.post(box.tbUrl, {tab: newTab, part: 1}, {
+        onDone: function(title, html, script) {
+          val('tb_' + box.tbId + '_' + newTab, html);
+          box.tbLoaded[newTab] = title;
+          box.evalBox(script);
+          if (box.tbVis != newTab) return;
+
+          box.tbToggle(newTab);
+        }, cache: 1, showProgress: box.tbShowProgress, hideProgress: box.tbHideProgress
+      });
+    }
+  },
+  tbShowProgress: function() {
+    ge('tb_' + box.tbId + '_prg').style.visibility = 'visible';
+    if (box.tbcShowProgress) box.tbcShowProgress();
+  },
+  tbHideProgress: function() {
+    ge('tb_' + box.tbId + '_prg').style.visibility = 'hidden';
+    if (box.tbcHideProgress) box.tbcHideProgress();
+  },
+  tbScroll: function() {
+    if (getXY(box.tbTabsWrap, true)[1] < 0) {
+      if (!box.tbFixed) {
+        setStyle(box.tbTabsWrap, 'height', domFC(box.tbTabs).offsetHeight);
+        setStyle(domFC(box.tbTabs), 'width', intval(getStyle(domFC(box.tbTabs), 'width')));
+        addClass(box.tbTabs, 'tb_fixed');
+        box.tbFixed = true;
+      }
+    } else {
+      if (box.tbFixed) {
+        removeClass(box.tbTabs, 'tb_fixed');
+        box.tbFixed = false;
+      }
+    }
+  }
+});
+if (!browser.msie || browser.version > 7) {
+  addEvent(boxLayerWrap, 'scroll', box.tbScroll);
+}
+box.tbLoaded[box.tbCur] = val('tb_title' + box.tbId);;cur.lang = extend(cur.lang || {}, {
+  fans_block_fan: 'Заблокировать',
+  global_photo_full_size: 'Увеличить',
+  fans_no_idols: 'Этот пользователь еще не подписан ни на одну страницу.',
+  fans_idols_not_found: 'Не найдено ни одной страницы.',
+  groups_you_can_find: 'Вы можете попробовать найти {term} в {link}поиске{/link}',
+  public_N_followers: ["","%s подписчик","%s подписчика","%s подписчиков"],
+  public_subscribe: 'Подписаться',
+  public_unsubscribe: 'Отписаться',
+  profile_own_profile: 'Личная страница',
+  public_feedunblock: 'Не скрывать из новостей',
+  groups_type_public: 'Публичная страница'
+});
+
+FansBox.init(box, <?=jenc($fans_data)?>);

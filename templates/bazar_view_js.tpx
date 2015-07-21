@@ -1,0 +1,86 @@
+<?php
+	global $user, $item, $bazar;
+?>
+showBackLink('/bazar', 'Доска объявлений'); 
+extend(cur, {
+  item_id: <?=$item->get('id')?>,
+});
+cur.bazarFave = function(obj, id, fave) {
+	ajax.post('al_bazar.php', {
+		id: id,
+	  	act: 'fave',
+	    fave: fave,
+	    hash: '<?=hash_get($user->id, 16, 'vf')?>'
+	  }, {onDone: function(text) {
+	    obj.parentNode.innerHTML = text;
+	  }, onFail: function(text) {
+	    
+	  }});
+};
+
+cur.bazarUp = function(obj, id) {
+	ajax.post('al_bazar.php', {
+		id: id,
+	  	act: 'up',
+	  }, {onDone: function(text) {
+	      addClass(obj.parentNode, 'button_gray');
+	      removeClass(obj.parentNode, 'button_green');
+	      obj.parentNode.innerHTML = text;
+	  }, onFail: function(text) {
+	    
+	  }});
+}
+
+cur.bazarDelete = function(id, hash) {
+	showFastBox(
+      'Удаление объявления',
+      'Вы уверены, что хотите удалить это объявление?',
+      'Удалить',
+      ajax.post.pbind('al_bazar.php', {act: 'delete_item', id: id, hash: hash}),
+      getLang('global_cancel')
+    );
+};
+
+cur.bazarAccept = function(id, accept) {
+	ajax.post('al_bazar.php', {
+		id: id,
+	  	act: 'accept',
+	  	text: ge('bazar_accept_text').value,
+	  	cat: cur.item_cats.val(),
+	    accept: accept,
+	    hash: '<?=hash_get($user->id, 16, 'vf')?>'
+	  }, {onDone: function(text) {
+	    obj.parentNode.innerHTML = text;
+	  }, onFail: function(text) {
+	    
+	  }});
+};
+
+cur.bazarMove = function(id) {
+	ajax.post('al_bazar.php', {
+		id: id,
+	  	act: 'move',
+	  	cat: cur.item_cats.val(),
+	    hash: '<?=hash_get($user->id, 16, 'vf')?>'
+	  }, {onDone: function(text) {
+	    
+	  }, onFail: function(text) {
+	    
+	  }});
+}
+
+<?
+$cats = $bazar->categories(-1);
+$cats_arr = array();
+
+foreach($cats as $c) {
+	if($c['parent_id'] == 0) continue;
+	$cats_arr[] = array($c['type_id'], $cats[$c['parent_id']]['name'] . ' - ' . $c['name']);
+}	
+?>
+
+cur.item_cats = new Dropdown(ge('item_cat'), <?=jenc($cats_arr)?>, {
+  width: '358px',
+  selectedItems: '<?=$item->get('type')?>',
+  multiselect: false
+});

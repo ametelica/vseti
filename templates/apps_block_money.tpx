@@ -1,0 +1,79 @@
+<div class="stats_head">Выплаты приложению</div>
+	<div id="app_payments_requests_err" class="error" style="display: none; margin: 0 0 15px 0;"></div>
+	<table class="apps_edit_table">
+		<tr>
+			<td class="label ta_r">Тип выплаты:</td>
+			<td class="apps_edit_desc"><?
+				global $app, $user;
+				if($app->app_info['app_pay_type'] == 1) {
+					
+					//dmp($app);
+					
+					echo '<b>По запросу</b> - этот тип рассчётов используется, когда на счету приложения всегда необходимо поддерживать некоторое количество зайчиков.';
+					echo '</td></tr><tr><td class="label ta_r">Запросить вывод:</td><td class="apps_edit_desc">
+						<input id="app_payback_cnt" class="text" type="text" placeholder="Количество зайчиков" /> (всего на счету <b>'.$app->app_info['app_votes'].'</b>)</td></tr>
+					<tr><td></td><td><div class="button_green fl_l">
+<button id="app_save_btn" onclick="cur.requestPayback('.$app->app_id.', \'' . hash_get($user->id . $app->app_id, 16, 'rqp') . '\');">Отправить</button>
+</div>';
+				} else {
+					echo '<b>Полный</b> - Этот тип расчётов обнуляет внутрений счёт приложения в зайчиках во время рассчёта ВСети с владельцем приложения.';
+				}
+			?></td>
+		<tr>
+	</table>
+		
+<? if(empty($var['payments'])) {
+	
+	echo '<center>Выплат не производилось</center>';
+
+} elseif($app->app_info['app_pay_type'] == 1) { ?>
+
+<table class="wk_table" cellspacing="0" cellpadding="0">
+<tr>
+	<th>Месяц</th>
+	<th>Цена зайчика</th>
+	<th>Получено</th>
+	<th>Выведено</th>
+	<th>Запрошено</th>
+	<th>Сумма</th>
+	<th>Статус</th>
+</tr>
+<?php
+foreach($var['payments'] as $p){
+	echo '<tr>
+		<td>'.$p['c_year'].'-'.$p['c_month'].'</td>
+		<td>'.nf($p['c_vote_price']).'</td>
+		<td>'.nf($p['c_input']).'</td>
+		<td>'.nf($p['c_output']).'</td>
+		<td>'.nf($p['c_price']).'</td>
+</tr>';
+}
+?>
+</table>
+<?
+	
+	
+	
+} else { ?>
+
+<table class="wk_table" cellspacing="0" cellpadding="0">
+<tr>
+	<th>Месяц</th>
+	<th>Цена зайчика</th>
+	<th>Получено</th>
+	<th>Выведено</th>
+	<th>Сумма</th>
+</tr>
+<?php
+foreach($var['payments'] as $p){
+	echo '<tr>
+		<td>'.$p['c_year'].'-'.$p['c_month'].'</td>
+		<td>'.nf($p['c_vote_price']).'</td>
+		<td>'.nf($p['c_input']).'</td>
+		<td>'.nf($p['c_output']).'</td>
+		<td>'.nf($p['c_price']).'</td>
+</tr>';
+}
+?>
+</table>
+<? } ?>

@@ -1,0 +1,27 @@
+<?php
+global $new_design, $item, $bazar, $user, $datetime, $cur_chars, $owner;
+
+if (!empty($new_design))
+	echo tpx('header_design');
+	
+	//$parent_cat = $bazar->categories[$item['type']]['parent_id'];
+	
+	//$album_uid = $album->oid . '_' . $album->id;
+	//$photo_uid = $album->oid . '_' . $album->cover;	
+?>
+<div id="wrap2">
+	<div id="wrap1">
+		<div id="content" class="white_page books_page">
+			<div class="books_main_panel">
+				<div class="book_search">
+  					<input onkeyup="Book.updateList(event, this);" id="book_search" placeholder="Начните вводить название книги или автора" type="text" class="text"/>
+  				</div>
+			</div>
+			
+			<div class="books_side_panel">
+				<?=tpx('books_nav_panel')?>
+			</div>
+
+		</div>
+	</div>
+</div>

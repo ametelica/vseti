@@ -1,0 +1,18 @@
+<?php
+	global $tb_height;
+?>
+<div class="tabbed_box">
+  <div class="summary_tabs clear_fix "></div>
+  <div class="tabbed_sh tabbed_sh1"></div>
+  <div class="tabbed_sh tabbed_sh2"></div>
+  <div class="tabbed_sh tabbed_sh3"></div>
+  <div class="tabbed_sh tabbed_sh4"></div>
+  <div class="tabbed_container clear_fix <? if(!empty($var['class'])) echo $var['class']; ?>" style="height:<?=$tb_height>0?$tb_height.'px':'auto'?>;">
+  <?=$var['content']?>
+  </div>
+  <div class="tabbed_sh tabbed_sh4"></div>
+  <div class="tabbed_sh tabbed_sh3"></div>
+  <div class="tabbed_sh tabbed_sh2"></div>
+  <div class="tabbed_sh tabbed_sh1"></div>
+  <div class="tabbed_sh tabbed_sh0"></div>
+</div>

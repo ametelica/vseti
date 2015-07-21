@@ -1,0 +1,42 @@
+<?php
+global $fave_users, $user;
+
+$faveUsers = array();
+$userRows = array();
+
+foreach($fave_users['users'] as $uid) {
+	$u = pdata($uid);
+	$faveUsers[] = array(
+		'type' => 1,
+		'owner_id' => $user->id,
+		'item_id' => $uid,
+		'flag' => 0,
+		'date' => '',
+		'value' => '2000',
+		'text' => '',
+		'id' => $uid,
+		'online' => $user->is_online($uid),
+		'name' => $u->title,
+		'photo' => $u->photo('m'),
+	);
+
+	$userRows[$uid] = tpx('fave_user_rows', array('users' => array('users' => array($uid))));
+}
+
+$faveData = array(
+	'faveUsers' => $faveUsers,
+	'likes_photoPerPage' => 40,
+	'likes_videoPerPage' => 20,
+	'likes_postsPerPage' => 20,
+	'likes_notesPerPage' => 20,
+	'userRows' => $userRows,
+);
+?>
+cur.faveData = <?=jenc($faveData)?>;
+
+cur.section = 'users';
+cur.lang = extend(cur.lang || {}, {"fave_N_users":["","%s человек","%s человека","%s человек"],"fave_N_users_online":["","%s онлайн","%s онлайн","%s онлайн"],"fave_search_summary":["","Найден %s человек","Найдены %s человека","Найдены %s человек"],"fave_links_summary":["","У Вас в закладках %s ссылка","У Вас в закладках %s ссылки","У Вас в закладках %s ссылок"],"fave_search_not_found":"По Вашему запросу ничего не найдено","fave_search_query_not_found":"По запросу {search} ничего не найдено.","fave_link_added":"Ссылка успешно добавлена","fave_delete":"Удалить из закладок","fave_sure_delete":"Вы уверены, что хотите удалить {user} из закладок?","global_photo_full_size":"Увеличить"});
+cur.debug = false;
+extend(cur, {"share_timehash":"1377153201_63f0a4d98ba8097c95"});
+cur.options = extend(cur.options || {}, {"max_post_len":280});
+Fave.init();

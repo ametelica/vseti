@@ -1,0 +1,42 @@
+<?
+	//dmp($var);
+	$ah = 200;
+	foreach($var['events'] as $e) { 
+		//$e = $events_array[$eid];
+		$ueid = $e->group_info['group_id'];
+		$w = round($e->group_info['group_photo_w'] * $ah / $e->group_info['group_photo_h']);
+?>
+<div class="fl_l page_album_row afpost" onmouseout="page.albumOut(this, '<?=$ueid?>', true);" onmouseover="page.albumOver(this, '<?=$ueid?>');" style="width: <?=$w?>px">
+<a class="img_link" onclick="return nav.go(this, event)" href="<?=$e->lnk?>">
+<img class="page_photo_thumb_big" src="<?=$e->photo('a')?>">
+<div class="page_album_title_wrap" style="margin-top: <?=($ah - 23)?>px; width: <?=$w?>px;">
+<div class="clear_fix" style="margin: 0px">
+<div class="page_album_title fl_l" title="<?=$e->group_info['group_title']?>"><?=$e->group_info['group_title']?></div>
+</div>
+<div class="page_album_description"><?= htmlspecialchars(strcut($e->group_info['group_desc'], 300), ENT_COMPAT | ENT_HTML401, 'UTF-8', false)?></div>
+</div>
+</a>
+<a class="bg"></a>
+</div>
+
+<? 
+		$i++;
+} 
+
+/*
+<!--
+    <div class="bPad fl_l" class="" style="width: <?=$day_events==1?580:340?>px; <? if($i%2==1) {?>padding-left: 10px; border-left: silver 1px solid;<?}?> <? if($i>1) {?>margin-top: 5px; border-top: silver 1px solid;<?}?>">
+     <a href="<?=$e->lnk?>"><img src="<?=$e->photo('a')?>" width="<?=$day_events==1?2:1?>00" align="left" style="margin-right: 5px;"/></a>
+     <a href="<?=$e->lnk?>"><strong><?=$e->group_info['group_title']?></strong></a>
+       <p style="text-align: justify;"><?=str_replace("<br />\r\n<br />",'<br />',nl2br(strcut($e->group_info['group_desc'],$day_events==1?800:300)))?></p> 
+       <small style="color: gray;"><?=$e->group_info['begin_txt']?>
+       <span class="divide">|</span>
+       <?
+         if(!empty($e->group_info['group_address'])) {
+         	echo $e->group_info['group_address']. '<span class="divide">|</span>';
+         }
+        ?>
+       <?=$e->group_info['num_members']?> участник<?=$langpack->dln($e->group_info['num_members'],'file')?></small>
+    </div> -->
+*/
+?>

@@ -1,0 +1,28 @@
+<?php
+	global $act;
+?><ul id="pedit_filters" class="t0">
+  <li>
+<a href="profileEdit.php"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word">Основное</b></a>
+</li>				
+<li>
+<a href="profileEdit.php?page=contacts"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word">Контакты</b></a>
+</li>
+<li <? if($act == 'interests') { ?>class="active_link"<? } ?>>
+<a href="/edit?act=interests" onmousedown="return ProfileEditor.go(this, event)" onclick="return checkEvent(event)"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word">Интересы</b></a>
+</li>
+<li>
+<a href="profileEdit.php?page=education"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word">Образование</b></a>
+</li>
+<li>
+<a href="profileEdit.php?page=career"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word">Работа</b></a>
+</li>
+<li>
+<a href="profileEdit.php?page=military"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word">Армия</b></a>
+</li>
+<li>
+<a href="profileEdit.php?page=pets"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word">Питомцы</b></a>
+</li>
+<li>
+<a href="profileEdit.php?page=auto"><b class="tl1"><b></b></b><b class="tl2"></b><b class="tab_word">Гараж</b></a>
+</li>
+</ul>

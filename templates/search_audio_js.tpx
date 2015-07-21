@@ -1,0 +1,48 @@
+var filterTypes = [[0,"Вся музыка"],[1,"Зарубежная музыка"]];
+if (cur.typeDD) {
+  re(cur.typeDD.container);
+}
+cur.typeDD = new DropdownMenu(filterTypes, {
+  target: ge('search_type_dd'),
+  value: 0,
+  fadeSpeed: 0,
+  onSelect: function(event) {
+    cur.topType = event.target.index || 0;
+    searcher.switchSection('audio');
+  }
+});cur.audioTop = 1;window.radioBtns['performer'] = {
+  els: Array.prototype.slice.apply(geByClass('radiobtn', ge('cPerformer'))),
+  val: 0
+}
+cur.onLengthChanged = function(el, value) {
+  radiobtn(el, value, 'performer');
+  ge('c[performer]').value = value;
+  searcher.updResults();
+};
+new Checkbox(ge('lyrics'), {
+  width: 150,
+  label: 'Только с текстом',
+  onChange: searcher.updResults
+});
+cur.onSearchChange = function(params) {
+  if (params['c[q]']) {
+    slide_show('audio_lyrics_filter');
+  } else {
+    slide_hide('audio_lyrics_filter');
+  }
+};
+cur.videoMarkSpam = function(link, oid, vid, hash) {
+  var loadEl = ce('span', {className: 'loading'});
+  ajax.post('/al_video.php', {act: 'video_mark_spam', vid: vid, oid: oid, hash: hash}, {
+  onDone: function () {
+    link.innerHTML = 'Видеозапись отмечена как спам.';
+  },
+  showProgress: function () {
+    link.parentNode.replaceChild(loadEl, link);
+  },
+  hideProgress: function () {
+    if (loadEl.parentNode) {
+      loadEl.parentNode.replaceChild(link, loadEl);
+    }
+  }});
+};

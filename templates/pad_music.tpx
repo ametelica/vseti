@@ -1,0 +1,94 @@
+<div id="pad_controls"><div id="pd" class="">
+  <div class="ac_wrap clear_fix"><div id="pd_controls" class="fl_l">
+    <div id="pd_play" class="fl_l"></div>
+    <div class="next_prev fl_l">
+      <div id="pd_prev" class="ctrl_wrap">
+        <div class="prev ctrl"></div>
+      </div>
+      <div id="pd_next" class="ctrl_wrap">
+        <div class="next ctrl"></div>
+      </div>
+    </div>
+  </div>
+  <div class="info fl_l">
+    <div class="title_wrap clear_fix">
+      <div id="pd_name" class="ac_name fl_l">
+        <span id="pd_performer" class="performer"></span> &ndash;
+        <span id="pd_title" class="title"></span>
+      </div>
+      <span id="pd_duration" class="duration fl_r"></span>
+    </div>
+    <div class="player_wrap">
+      <div id="pd_line"><div></div></div>
+      <div id="pd_player" class="ac_player" ondragstart="return false;" onselectstart="return false;">
+        <table cellspacing="0" cellpadding="0" border="0" width="100%">
+          <tbody><tr>
+            <td style="width: 100%;">
+              <div id="pd_pr">
+                <div id="pd_white_line" class="ac_white_line"></div>
+                <div id="pd,back_line" class="ac_back_line"><!-- --></div>
+                <div id="pd_load_line" class="ac_load_line"><!-- --></div>
+                <div id="pd_pr_line" class="ac_progress_line">
+                  <div id="pd_pr_slider" class="ac_slider"><!-- --></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div id="pd_vol">
+                <div id="pd_vol_white_line" class="ac_vol_white_line"><!-- --></div>
+                <div id="pd_vol_back_line" class="ac_load_line"><!-- --></div>
+                <div id="pd_vol_line" class="ac_progress_line">
+                  <div id="pd_vol_slider" class="ac_slider"><!-- --></div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+  <div class="extra_ctrls fl_r">
+    <div id="pd_add" class="ctrl_wrap clear_fix fl_l">
+      <div class="add ctrl"></div>
+    </div>
+    <div id="pd_repeat" class="ctrl_wrap clear_fix fl_l">
+      <div class="repeat ctrl"></div>
+    </div>
+    <div id="pd_shuffle" class="ctrl_wrap clear_fix fl_l">
+      <div class="shuffle ctrl"></div>
+    </div>
+    <div id="pd_rec" class="ctrl_wrap clear_fix fl_l">
+      <div class="rec ctrl"></div>
+    </div>
+    <div id="pd_status" class="ctrl_wrap clear_fix fl_l">
+      <div class="status ctrl"></div>
+    </div>
+  </div></div>
+  <div class="shadow">
+    <div class="sh1"></div>
+    <div class="sh2"></div>
+    <div class="sh3"></div>
+    <div class="sh4"></div>
+  </div>
+</div></div>
+<div id="pad_content" class="music">
+  <div id="pad_rows" class="pad_mus_rows"><div id="pad_audio_search" class="clear_fix">
+  <div class="fl_l">
+    <input placeholder="Поиск" onpaste="Pads.updateAudioList(event, this);" onkeyup="Pads.updateAudioList(event, this);" id="pad_search" type="text" class="pad_search text" value="" />
+  </div>
+  <div class="pad_progress fl_l"></div>
+  <div id="pad_audio_reset" class="pad_reset fl_l" onmouseover="if (isVisible(this)) animate(this, {opacity: 1}, 100)" onmouseout="if (isVisible(this)) animate(this, {opacity: .6}, 100)" onclick="Pads.clearAudioSearch(this, event)"></div>
+  <div class="abutton_wrap fl_l">
+    <div class="button_green"><button>по композициям<span class="arrow"></span></button></div>
+  </div>
+</div>
+<div id="pad_playlist" class="clear_fix"></div></div><a id="pad_more_audio" href="#" onclick="if (Pads.showAudios) Pads.showAudios()">
+  Показать больше аудиозаписей</span>
+</a>
+</div>
+<div id="pad_footer_wrap" class="music">
+  <div id="pad_footer">
+    <div class="pad_close_btn button_green fl_r"><button onclick="Pads.hide()">Закрыть</button></div>
+    <div id="pad_footer_text"></div>
+  </div>
+</div>

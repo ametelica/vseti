@@ -1,0 +1,33 @@
+<?php
+	global $uplink, $photo, $user, $setting, $ads_title, $sizes;
+	//size:m|server:405227|owner_id:16980882|photo_hash:d2c6a4b269|name:d2c6a4b269x|width:450|height:253|kid:|hash:4590849728c138ded6203b17f83dd798
+	//dmp($photo);
+	
+?>
+<iframe class="upload_frame" id="ads_edit_crop_photo_frame" name="ads_edit_crop_photo_frame"></iframe>
+<form id="ad_edit_crop_photo_form" name="ad_edit_crop_photo_form" class="upload_form" action="<?=$uplink['link']?>" method="POST" target="ads_edit_crop_photo_frame">
+  <input type="hidden" autocomplete="off" name="act" value="ads_crop">
+  <input type="hidden" autocomplete="off" name="size" value="<?=$photo['size']?>" id="ads_edit_crop_photo_size">
+  <input type="hidden" autocomplete="off" name="mid" value="<?=$uplink['mid']?>">
+  <input type="hidden" autocomplete="off" name="photo" value="<?=$photo['name']?>">
+  <input type="hidden" autocomplete="off" name="rhash" value="<?=$uplink['rhash']?>">
+  <input type="hidden" autocomplete="off" name="hash" value="<?=$uplink['hash']?>">
+  
+  <input type="hidden" autocomplete="off" name="crop" value="" id="ads_edit_crop_photo_crop">
+  <input type="hidden" autocomplete="off" name="al" value="1">
+  <input type="hidden" autocomplete="off" name="ondone" value="AdsEdit.onSaveCropPhotoComplete">
+</form>
+<div class="ads_edit_crop_photo_box">
+  <div class="error" id="ads_edit_crop_photo_error" style="display: none;"></div>
+  <div class="info_msg">Вы можете выбрать область фотографии, которая будет показана в объявлении.<br>Размер результирующего изображения: <?=$sizes[$photo['size']][0]?>x<?=$sizes[$photo['size']][1]?></div>
+  <div class="clear_fix" id="ads_edit_crop_photo_wrap">
+    <div class="fl_l" style="min-height: 253px">
+      <div class="fl_l">
+        <img src="http://cs<?=$uplink['server']?>.<?=$setting['host']?>/u<?=$uplink['mid']?>/l_<?=$photo['name']?>.jpg" id="ads_edit_crop_photo_big">
+      </div>
+    </div>
+    <div class="fl_l ads_edit_crop_photo_ad">
+      <div class="ads_ad_box ver repeat_ver size_site first" id="ads_ad_box_ad_261999262"><div class="ads_ad_box_border repeat_ver first"></div><a class="ads_ad_box2 ver repeat_ver size_site first" id="ads_ad_box2_ad_261999262" target="_blank"><div class="ads_ad_box3 ver"><div class="ads_ad_box4 ver"><div class="ads_ad_box5 ver repeat_ver"><div class="ads_ad_box5_spacer ver repeat_ver size_site"></div><div class="ads_ad_box6 ver"><div class="ads_ad_text_box ver repeat_ver size_site"><div class="ads_ad_title_box"><div class="ads_ad_title_spacer1"><div class="ads_ad_title_spacer2"></div></div><div class="ads_ad_title"><?=$ads_title?></div></div><div class="ads_ad_domain ver">Группа</div><div class="ads_ad_photo_box ver"><div id="ads_edit_crop_photo_small_wrap" style="width: 90px;"><div id="ads_edit_crop_photo_small"></div></div><div class="ads_ad_play ver empty" style="display: none;"></div></div><? if($photo['size'] == 's') { ?><div class="ads_ad_description ver">Образец описания</div><? } ?><div class="ads_ad_community_join" style="display: none;"></div><div class="ads_ad_disclaimers"><div class="ads_ad_disclaimer_medical ver" style="display: none;"></div><div class="ads_ad_disclaimer_specialist ver" style="display: none;"></div></div></div></div></div></div></div></a></div>
+    </div>
+  </div>
+</div>

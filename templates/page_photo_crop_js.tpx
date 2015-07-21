@@ -1,0 +1,56 @@
+<?php
+global $owner, $user, $rcont;
+
+$uplink = $rcont->uplink('owner_photo_crop', 1, '', $owner->cs, 1);
+
+//dmp($uplink);
+
+if($owner->group_info['group_photo_w'] > 200 or $owner->group_info['group_photo_h'] > 200) {
+	if($owner->group_info['group_photo_w'] > $owner->group_info['group_photo_h']) {
+		$w = 200;
+		$h = $owner->group_info['group_photo_h'] * 200 / $owner->group_info['group_photo_w'];
+	} else {
+		$h = 200;
+		$w = 200 * $owner->group_info['group_photo_w'] / $owner->group_info['group_photo_h'];
+	}
+	$ratio = $owner->group_info['group_photo_w'] / $w;
+} else {
+	$w = $owner->group_info['group_photo_w'];
+	$h = $owner->group_info['group_photo_h'];
+	$ratio = 1;
+
+}
+
+
+$params = array(
+	'act' => 'owner_photo_crop',
+	'oid' => $owner->oid,
+	'ratio' => $ratio,
+	'mid' => $user->id, 
+	'server' => $uplink['server'],
+	'hash' => $uplink['hash'],
+	'rhash' => $uplink['rhash']
+);
+
+/*
+w1    w2
+-- = ---
+h1    200 
+*/
+
+$s = min($w, $h);
+
+$crop = array(
+	'thumbSize' => array($w, $h),
+	'thumb' => $owner->photo('a'),
+	'size' => array($w, $h),
+	'rect' => array(0, 0, $s),
+	'uploadUrl' => $uplink['link'] . '?_query=' . base64_encode(jenc($params)),
+);
+
+
+?>
+
+OwnerPhoto.init(box, {"global_sorry_error":"К сожалению, произошла ошибка","profile_oph_error_server":"{sorry}.<br>Не удалось сохранить файл на сервере. Пожалуйста, обновите страницу и попробуйте еще раз.<br>Если ошибка продолжает возникать, попробуйте сохранить оригинал фотографии и загрузить её повторно.","profile_oph_err_unknown":"{sorry}.<br>Произошла непредвиденная ошибка. Пожалуйста, обновите страницу и попробуйте еще раз, сейчас или позже.<br>Если ошибка продолжает возникать регулярно, {link}обратитесь в поддержку »{\/link}","profile_oph_err_size":"{sorry}.<br>Фотография должна иметь размер не меньше {min} точек и не больше {max} точек по каждой из сторон.<br>Кроме того, нельзя использовать фотографии, у которых одна из сторон в разы превышает другую.","profile_oph_err_format":"{sorry}.<br>Данный формат файлов не поддерживается.<br>Вы можете загрузить любое изображение в формате JPG, GIF или PNG.","profile_oph_err_upload":"{sorry}.<br>Не удалось загрузить фотографию на сервер. Попробуйте использовать фотографию меньшего размера.<br>Если ошибка продолжает возникать регулярно, {link}обратитесь в поддержку »{\/link}","profile_oph_camera_save":"Сохранить и продолжить","profile_oph_camera_back":"Вернуться назад","profile_no_camera":"Вебкамера не обнаружена","profile_no_camera_access":"Доступ к вебкамере не включен","profile_set_camera_access":"Открыть настройки доступа к вебкамере","profile_capture_image":"Сделать снимок","profile_to_video_mode":"Убрать снимок","profile_no_camera_back":"Вернуться к выбору файла","global_error_details":"Показать подробности »","global_error_hide_details":"Скрыть подробности"});
+
+OwnerPhoto.crop(<?=jenc($crop)?>);

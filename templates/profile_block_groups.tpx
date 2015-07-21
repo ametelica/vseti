@@ -1,0 +1,22 @@
+<?php
+global $groups_total,$langpack,$is_groups_private,$groups_html;
+if ($groups_total>0) {
+?>
+<div id="profile_groups" class="module">
+ <a class="module_header" href="#" onclick="return false;">
+  <div class="header_top clear_fix">
+   Сообщества
+  </div>
+  <div class="p_header_bottom">
+   <?=$groups_total?> групп<?=$langpack->dln($groups_total,'grp2')?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+ <? if($is_groups_private==0) {?>
+  <?=$groups_html?>
+ <? } else { ?>
+  <div class="fallback">Вы не можете просматривать группы этого пользователя.</div>
+ <? } ?>
+ </div>
+</div>
+<? } ?>

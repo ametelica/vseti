@@ -1,0 +1,7 @@
+<?php
+global $lead;
+if($lead['lead_time'] > 0) {
+	echo tpx('timer', array('msg' => 'Время вышло', 'time' => $lead['lead_time'] + 86400));
+}
+
+?>

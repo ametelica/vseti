@@ -1,0 +1,262 @@
+<?php
+global $owner, $vs_album, $vs_albums, $uplink, $user, $photos_on_page, $photos_list, $can_add;
+
+$albums = array(
+	array(0, " - Альбом фотографии - ")
+);
+
+$all_albums = $vs_albums->get_list();
+foreach($all_albums['data'] as $a) {
+	$albums[] = array(intval($a->id), $a->title);
+}
+
+if($can_add) {
+	$upload_vars = array(
+			'oid'	=> $owner->oid,
+			'aid' => $vs_album->id,
+			'gid' => $owner->oid < 0 ? $owner->id : 0,
+			'mid' => $user->id,
+			'hash' => $uplink['hash'],
+			'rhash' => $uplink['rhash'],
+			'act' => 'do_add'
+	);
+}
+
+
+$photos_assign = array(
+		'photos' => $photos_list['total'] > $photos_on_page ? array_slice($photos_list['data'], $photos_on_page) : array(),
+		'from' => 'album' . $vs_album->uid,
+		'part' => 1
+);
+
+?>
+showBackLink('albums<?=$owner->oid?>', 'Все фотографии');
+/* addEvent(document, 'click', onDocumentClick); */
+
+extend(cur, {
+  uplCont: ge('photos_add_cont'),
+  uplBox: ge('photos_add_cont'),
+  statsPhotoAddHash: '6db8da44ce92b2769d',
+  post_hash: 'dd05c656180d8af635',
+  maxFiles: 200
+});
+
+cur.photosAddBar = '<div id="photos_add_bar_cont" class="photos_add_bar_cont">\
+  <div id="photos_add_bar">\
+    <div class="photos_add_bar_shadow"></div>\
+    <div class="photos_add_bar_wrap photos_add_area_drop"><div>\
+      Отпустите, чтобы начать загрузку.\
+    </div></div>\
+    <div id="photos_add_bar_progress" class="photos_add_bar_wrap">\
+      <div id="photos_add_p_line"><div id="photos_add_p_inner"></div></div>\
+      <div id="photos_add_p_text"></div>\
+    </div>\
+    <div id="photos_add_bar_form" class="photos_add_bar_wrap">\
+      <span id="photos_upload_area">\
+        <div class="photos_upload_area_upload">\
+          <span id="photo_upload_area_label" class="photos_upload_area_img">\
+            Добавить еще фотографии\
+          </span>\
+        </div>\
+        <div class="photos_upload_area_drop">\
+          Отпустите, чтобы начать загрузку.\
+        </div>\
+      </span>\
+      <div id="photos_movedd_container" class="fl_l"><input id="photos_move_dd" name="photos_move_dd" type="hidden" /><span id="privacy_edit_photos_move"></span></div>\
+    </div>\
+  </div>\
+</div>';
+cur.photosAddWrap = '<div id="photos_add_wrap" class="photos_add_wrap">\
+  <div id="photos_add_cont" class="photos_add_cont">\
+    <div id="photos_add_error"></div>\
+      <div id="photos_add_list"></div>\
+      <div><div id="photos_go_to_album" class="photos_go_to_album">\
+        <div class="photos_done_bar_shadow"></div>\
+        <div id="photos_go_to_album_cont" class="photos_go_to_album_cont">\
+          <a href="/album<?=$vs_album->uid?>" onclick="return nav.go(this, event);"><div class="button_green"><button>Сохранить фотографии</button></div></a>\
+        </div>\
+      </div></div>\
+    </div>\
+  </div>\
+</div>';
+
+cur.photoData = {};
+
+var albums = <?=jenc($albums)?>;
+extend(cur, {
+  album: '<?=$vs_album->uid?>',
+  albums: albums,
+  onPrivacyChanged: photos.privacy
+});
+if (albums.length <= 1) cur.albums = false;
+
+if (albums.length > 1 && albums.length < 15) {
+  stManager.add(['privacy.css', 'privacy.js']);
+  cur.privacyPhotoMove = true;
+  var albumsArr = {};
+  for (var i in albums) {
+    if (albums[i][0] && albums[i][0] != "0") {
+      albumsArr[albums[i][0]] = albums[i][1];
+    }
+  }
+  cur.privacy = {
+    'photos_move': [<?=$vs_album->id?>, 1],
+    'photos_move_types': albumsArr
+  };
+}
+
+cur.lang = extend(cur.lang || {}, {
+  photos_privacy_description: 'Описание'
+});
+
+<? if($can_add) { ?>
+
+if (browser.flash > 9 && !(browser.msie && intval(browser.version) < 8)) {
+  re('lite_photo_uploader');
+  var area = ge('photos_upload_area'),
+      el = ce('div', {innerHTML: '<div id="lite_photo_uploader" style="position: absolute; height: 100%; width: 100%; cursor: pointer;"></div>'}).firstChild;
+  area.parentNode.insertBefore(el, area);
+  cur.initFlashLite = function() {
+    var max_files = cur.maxFiles - (cur.savedPhotos || []).length;
+    cur.uploaderLang = {"geolang":"ru","button_browse":"Выберите файл","photos_save_X_photos":["","Сохранить <b>%s<\/b> выбранную фотографию","Сохранить <b>%s<\/b> выбранных фотографий","Сохранить <b>%s<\/b> выбранных фотографий"],"photos_add_uploading":"Фотография загружается..","photos_add_uploading_X":"Загружается <b>1<\/b> фотография из <b>%s<\/b>.. ","photos_add_uploaded_X":["","Загружена <b>%s<\/b> фотография из <b>{count}<\/b>..","Загружено <b>%s<\/b> фотографии из <b>{count}<\/b>..","Загружено <b>%s<\/b> фотографий из <b>{count}<\/b>.. "],"photos_add_upload_finish":"Завершение загрузки..","photos_add_error":"Не удалось загрузить изображение","photos_successfully_added":["","<b>%s фотография<\/b> успешно загружена","<b>%s фотографии<\/b> успешно загружены","<b>%s фотографий<\/b> успешно загружены "]};
+    cur.flashLiteUrl = '<?=$uplink['link']?>';
+    cur.flashLiteVars = <?=jenc($upload_vars)?>;
+    cur.flashLiteVars.jpeg_quality = 89;
+    cur.flashLiteVars.max_files = max_files;
+    cur.flashLiteOptions = {
+      file_name: 'photo',
+
+      file_size_limit: 1024*1024*25, // 5Mb
+      file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
+      file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
+
+      lang: cur.uploaderLang,
+
+      onUploadStart: PhotosAdd.onUploadStart,
+      onUploadProgress: PhotosAdd.onUploadProgress,
+      onUploadComplete: PhotosAdd.onUploadComplete,
+      onUploadCompleteAll: PhotosAdd.onUploadCompleteAll,
+      customShowProgress: function(){},
+      customHideProgress: function(){},
+
+      flashPath: '/swf/photo_uploader_lite.swf',
+      clear: 1,
+      type: 'photo',
+      max_attempts: 3,
+      server: 1,
+      error: 1,
+      error_hash: '40dafbbc38dc78a475e3faec3db7117f',
+      dropbox: bodyNode,
+      dragEl: bodyNode,
+      visibleDropbox: true,
+      //photoBox: ge('photos_add_box'),
+      multiple: true,
+      multi_progress: true,
+      multi_sequence: true,
+      flash_lite: 1
+    }
+
+    cur.uplId = Upload.init('lite_photo_uploader', cur.flashLiteUrl, cur.flashLiteVars, cur.flashLiteOptions);
+  };
+
+  cur.flash_lite = true;
+  cur.initFlashLite();
+} else if (Upload.checkFileApi()) {
+  cur.html5AddLink = '<a id="photos_upload_area" href="/album<?=$vs_album->uid?>?act=add" onclick="return photos.upload(this, event);">\
+  <div class="photos_upload_area_upload">\
+    <span id="photo_upload_area_label" class="photos_upload_area_img">\
+      Добавить еще фотографии\
+    </span>\
+  </div>\
+  <div class="photos_upload_area_drop">\
+    Отпустите, чтобы начать загрузку.\
+  </div>\
+</a>';
+  cur.initHTML5Lite = function() {
+    var max_files = cur.maxFiles - (cur.savedPhotos || []).length;
+    cur.uploaderLang = {"geolang":"ru","button_browse":"Выберите файл","photos_save_X_photos":["","Сохранить <b>%s<\/b> выбранную фотографию","Сохранить <b>%s<\/b> выбранных фотографий","Сохранить <b>%s<\/b> выбранных фотографий"],"photos_add_uploading":"Фотография загружается..","photos_add_uploading_X":"Загружается <b>1<\/b> фотография из <b>%s<\/b>.. ","photos_add_uploaded_X":["","Загружена <b>%s<\/b> фотография из <b>{count}<\/b>..","Загружено <b>%s<\/b> фотографии из <b>{count}<\/b>..","Загружено <b>%s<\/b> фотографий из <b>{count}<\/b>.. "],"photos_add_upload_finish":"Завершение загрузки..","photos_add_error":"Не удалось загрузить изображение","photos_successfully_added":["","<b>%s фотография<\/b> успешно загружена","<b>%s фотографии<\/b> успешно загружены","<b>%s фотографий<\/b> успешно загружены "]};
+    cur.html5LiteUrl = '<?=$uplink['link']?>';
+    cur.html5LiteVars = <?=jenc($upload_vars)?>;
+    cur.html5LiteVars.jpeg_quality = 89;
+    cur.html5LiteOptions = {
+      file_name: 'photo',
+
+      file_size_limit: 1024*1024*25, // 5Mb
+      file_types_description: 'Image files (*.jpg, *.jpeg, *.png, *.gif)',
+      file_types: '*.jpg;*.JPG;*.jpeg;*.JPEG;*.png;*.PNG;*.gif;*.GIF',
+
+      lang: cur.uploaderLang,
+
+      onUploadStart: PhotosAdd.onUploadStart,
+      onUploadProgress: PhotosAdd.onUploadProgress,
+      onUploadComplete: PhotosAdd.onUploadComplete,
+      onUploadCompleteAll: PhotosAdd.onUploadCompleteAll,
+      customShowProgress: function(){},
+      customHideProgress: function(){},
+
+      clear: 1,
+      type: 'photo',
+      max_attempts: 3,
+      server: 9311,
+      error: 1,
+      error_hash: '40dafbbc38dc78a475e3faec3db7117f',
+      dropbox: bodyNode,
+      dragEl: bodyNode,
+      visibleDropbox: true,
+      multiple: true,
+      multi_progress: true,
+      multi_sequence: true,
+      force_max_files: true,
+      max_files: max_files,
+      file_match: '\.(gif|jpg|png|jpeg)$',
+      noEmbed: true
+    }
+
+    cur.uplId = Upload.init('photos_upload_area', cur.html5LiteUrl, cur.html5LiteVars, cur.html5LiteOptions);
+  }
+
+  cur.initHTML5Lite();
+}
+
+<? } ?>
+
+extend(cur, {
+  offset: <?=intval($photos_on_page)?>,
+  count: <?=intval($photos_list['total'])?>,
+  moreFrom: 'album<?=$vs_album->uid?>',
+  moreOpts: undefined
+});
+
+cur.lang = extend(cur.lang || {}, {
+  photos_deleting_album: 'Удаление альбома',
+  photos_sure_del_album: 'Вы уверены, что хотите удалить альбом?',
+  photos_stop_uploading: 'Прервать загрузку',
+  photos_uploading_warning: 'Загрузка фотографий еще продолжается. Вы уверены, что хотите покинуть страницу и прервать загрузку?'
+});
+
+if (vs.version) {
+  addEvent(window, 'load', photos.initScroll);
+} else {
+  photos.initScroll();
+}
+var preload = <?=jenc(array($photos_on_page * 2, tpx('photo_photos_rows', $photos_assign)))?>;
+
+ajax.preload(cur.moreFrom, extend({offset: cur.offset, part: 1}, cur.moreOpts || {}), preload);
+
+photos.registerDragZone({
+  on: function() {
+    addClass(ge('photos_upload_area'), 'photos_upload_area_enter');
+    if (ge('lite_photo_uploader')) setStyle(ge('lite_photo_uploader'), {width: '1px', height: '1px'});
+  },
+  un: function() {
+    removeClass(ge('photos_upload_area'), 'photos_upload_area_enter');
+    if (ge('lite_photo_uploader')) setStyle(ge('lite_photo_uploader'), {width: '100%', height: '100%'});
+  },
+  drop: function(files) {
+    if (cur.uplId !== undefined && window.Upload && Upload.checked && Upload.checked[cur.uplId]) {
+      Upload.onFileApiSend(cur.uplId, files);
+    } else {
+      photos.onUploadSelect(files);
+    }
+  }
+});  

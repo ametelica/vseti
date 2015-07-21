@@ -1,0 +1,21 @@
+<script type="text/javascript">
+  document.domain = location.host.toString().match(/[a-zA-Z]*\.[a-zA-Z]*$/)[0];
+  parent.onParseDone(<?=jenc($var)?>);
+/*
+{
+    title: 'Tiny Love - Развивающий мультфильм (ПОЛНАЯ ВЕРСИЯ)',
+    description: "Для детей от 6 месяцев до 3 лет.",
+    images: ['https://i.ytimg.com/vi/9eJZC4S_cME/sddefault.jpg#be6b5052','https://i.ytimg.com/vi/9eJZC4S_cME
+/hqdefault.jpg#7bdd75e0','https://i.ytimg.com/vi/9eJZC4S_cME/mqdefault.jpg#0f8e576c','https://i.ytimg
+.com/vi/9eJZC4S_cME/default.jpg#bba888f3'],
+    images_proxy: ['url=https%3A%2F%2Fi.ytimg.com%2Fvi%2F9eJZC4S_cME%2Fsddefault.jpg&hash=bdddcf4b4aa24867928a63488789a095'
+,'url=https%3A%2F%2Fi.ytimg.com%2Fvi%2F9eJZC4S_cME%2Fhqdefault.jpg&hash=8269987834cd7d93279e2fa05a4195d8'
+,'url=https%3A%2F%2Fi.ytimg.com%2Fvi%2F9eJZC4S_cME%2Fmqdefault.jpg&hash=18efcb5701c015cc47d4549d34f6113e'
+,'url=https%3A%2F%2Fi.ytimg.com%2Fvi%2F9eJZC4S_cME%2Fdefault.jpg&hash=e5ab65aad314ff58d6e2341698a63c67'
+],
+    url: 'https://www.youtube.com/watch?v=9eJZC4S_cME',
+    domain: 'www.youtube.com',
+    extra: 21,
+    extraData: '9eJZC4S_cME%3C!%3E3514%3C!%3E%3C!%3E%3C!%3E18796d1a3fa9100988dbda38f71557fc'
+  }*/
+</script>

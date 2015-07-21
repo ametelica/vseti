@@ -1,0 +1,79 @@
+<?php
+global $vs_photo;
+?><a onclick="curBox().hide();" class="pv_filters_close fl_r">
+  Закрыть
+</a>
+<div class="pv_filters_header">
+  Редактирование фотографии
+</div>
+<div class="pv_filtered_msg" style="display: none;">
+  Фотография уже была отредактирована. <a onclick="Filters.restoreOriginal(this, <?=$vs_photo->oid?>, <?=$vs_photo->id?>, '259c3d7754f5b24bbf')">Восстановить оригинал</a>
+</div>
+<div id="pv_filter_wrap" class="pv_filter_wrap" onmouseover="Filters.showSetts()" onmouseout="Filters.hideSetts();">
+  <div class="pv_filter_under" id="pv_filter_under">
+    <div id="pv_filter_photo_inner"></div>
+  </div>
+  <div id="pv_crop_actions">
+    <div class="pv_filter_icon pv_crop_apply" onmouseover="Filters.filtersAct(this, 1);" onmouseout="Filters.filtersAct(this, 0);" onclick="return Filters.doCrop(event);">
+    </div>
+    <div class="pv_filter_icon pv_crop_cancel" onmouseover="Filters.filtersAct(this, 1);" onmouseout="Filters.filtersAct(this, 0);" onclick="return Filters.cancelCrop(event);">
+    </div>
+  </div>
+  <div id="pv_filter_cont">
+  </div>
+  <div id="pv_filters_cont">
+    <div class="pv_filter_text" onmousedown="return Filters.showText(event)" onmouseover="Filters.filtersAct(this.firstChild, 1);" onmouseout="Filters.filtersAct(this.firstChild, 0);"><div class="pv_filter_icon"></div></div>
+    <div class="pv_filter_crop" onmousedown="return Filters.filterCrop(event)" onmouseover="Filters.filtersAct(this.firstChild, 1);" onmouseout="Filters.filtersAct(this.firstChild, 0);"><div class="pv_filter_icon"></div></div>
+    <div class="pv_filter_blur" onmousedown="return Filters.showBlur(event)" onmouseover="Filters.filtersAct(this.firstChild, 1);" onmouseout="Filters.filtersAct(this.firstChild, 0);"><div class="pv_filter_icon"></div></div>
+    <div id="pv_filter_blur_sl" class="no_select" onmousedown="return Filters.startSlideEdit(this, 1, event)">
+      <div class="pv_filter_icon pv_blur_switch" id="pv_blur_switch" onmouseover="Filters.filtersAct(this, 1);" onmouseout="Filters.filtersAct(this, 0);"></div>
+      <div id="pv_blur_back" class="pv_blur_back">
+        <div id="pv_blur_line" class="pv_blur_line">
+          <div id="pv_blur_slider" class="pv_blur_slider"></div>
+        </div>
+        <input type="text" id="pv_focus_blur" class="pv_focus_holder" onblur="Filters.hideBlur();" />
+      </div>
+    </div>
+    <div id="pv_filter_text_sl" class="no_select">
+      <a id="pv_filter_font" class="pv_filter_font" onmousedown="return cancelEvent(event);" onclick="return Filters.switchFont(this, event);"><div class="pv_filter_font_icon"></div></a>
+      <textarea id="pv_filter_text_ta" onblur="Filters.hideText();" oncut="Filters.updateText();" onpaste="Filters.updateText();" onkeydown="Filters.updateText(false, event);"></textarea>
+    </div>
+  </div>
+</div>
+<div class="pv_filter_panel noselect" id="pv_filter_panel">
+  <div id="pv_filter_roll">
+    <a class="pv_filter_cont pv_filter_sel" id="pv_filter_btn_0" onclick="Filters.applyFilter(0);" onmouseover="Filters.showName(this, 'Оригинал');">
+      <img class="pv_filter_img" align="middle" src="/images/filters/bk/0.jpg"/>
+    </a><a class="pv_filter_cont" id="pv_filter_btn_24" onclick="Filters.applyFilter(24);" onmouseover="Filters.showName(this, 'Купала');">
+      <img class="pv_filter_img" align="middle" src="/images/filters/bk/24.jpg"/>
+    </a><a class="pv_filter_cont" id="pv_filter_btn_10" onclick="Filters.applyFilter(10);" onmouseover="Filters.showName(this, 'Стрибог');">
+      <img class="pv_filter_img" align="middle" src="/images/filters/bk/10.jpg"/>
+    </a><a class="pv_filter_cont" id="pv_filter_btn_26" onclick="Filters.applyFilter(26);" onmouseover="Filters.showName(this, 'Ярило');">
+      <img class="pv_filter_img" align="middle" src="/images/filters/bk/26.jpg"/>
+    </a><a class="pv_filter_cont" id="pv_filter_btn_8" onclick="Filters.applyFilter(8);" onmouseover="Filters.showName(this, 'Макошь');">
+      <img class="pv_filter_img" align="middle" src="/images/filters/bk/8.jpg"/>
+    </a><a class="pv_filter_cont" id="pv_filter_btn_13" onclick="Filters.applyFilter(13);" onmouseover="Filters.showName(this, 'Перун');">
+      <img class="pv_filter_img" align="middle" src="/images/filters/bk/13.jpg"/>
+    </a><a class="pv_filter_cont" id="pv_filter_btn_22" onclick="Filters.applyFilter(22);" onmouseover="Filters.showName(this, 'Велес');">
+      <img class="pv_filter_img" align="middle" src="/images/filters/bk/22.jpg"/>
+    </a>
+  </div>
+  <div id="pv_other_settings">
+    
+    <div class="pv_other_settings_rows">
+      <div class="pv_filter_more_h">Описание фотографии</div>
+      <textarea id="pv_sett_desc" onchange="curBox().changed=true;" onkeyup="checkTextLength(255, this, 'pv_desc_warn')"><?=$vs_photo->desc?></textarea>
+      <div id="pv_desc_warn"></div>
+      <div class="pv_desc_place"><span id="pv_edit_place"></span> <!--<a class="pv_desc_edit_place" id="pv_desc_edit_place" onclick="Photoview.editPlace();">Указать место</a>--></div>
+      <div style="display: none;">
+        <div class="pv_filter_more_h">Альбом фотографии</div>
+        <div id="pv_sett_move_to"><input type="hidden" id="pv_move_to_album" name="pv_move_to_album" /></div>
+        <div id="pv_sett_to_cover" style=""><div class="checkbox fl_l" id="pv_cover_check" onclick="checkbox(this)"><div></div>Сделать обложкой альбома</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="pv_filter_buttons">
+  <div class="button_green"><button id="pv_filter_save" onclick="Filters.savePhotoFilter(this);">Сохранить</button></div>
+  <a class="pv_change_setting" onclick="Filters.showMoreSettings(this);">Показать дополнительные настройки</a>
+</div>

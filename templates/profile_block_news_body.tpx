@@ -1,0 +1,12 @@
+<?php
+global $datetime, $setting, $user;
+
+foreach ($var['news'] as $n) {
+	?>
+	<div class="clear_fix news_row">
+		<div class="info fl_r src<?= $n['source'] ?>">
+			<div><a href="http://<?= $setting['host'] ?>/news_ext.php?act=redirect&nid=<?= $n['id'] ?>&hash=<?= hash_get($n['id'] . $user->id, 8, 'news') ?>" target="_blank"><?= $n['title'] ?></a></div>
+			<div><small><?= $datetime->sdate($n['date'], 2) ?></small></div>
+		</div>
+	</div>
+<? } ?>

@@ -1,0 +1,14 @@
+<?php
+global $app,$sub;
+?>
+<div id="apps_edit_subtabs" class="clear_fix">
+	<div class="apps_edit_subtab1 <?=$sub=='pay'?'active':''?>" onmousedown="return (hasClass(this, 'active') || nav.go('/editapp?id=<?=$app->app_info['app_id']?>&section=stats&sub=pay')) && 0;">
+		<div class="apps_edit_subtab2"> Платежи </div>
+	</div>
+	<div class="apps_edit_subtab1 <?=$sub==''?'active':''?>" onmousedown="return (hasClass(this, 'active') || nav.go('/editapp?id=<?=$app->app_info['app_id']?>&section=stats')) && 0;">
+		<div class="apps_edit_subtab2"> Посещаемость </div>
+	</div>
+</div>
+<div id="stats_cont" class="white">
+<?=$var['html']?>
+</div>

@@ -1,0 +1,20 @@
+<?php
+global $is_profile_private,$blog_total,$blog_html,$owner,$langpack;
+if($blog_total > 0 and $is_profile_private == 0) {
+?>
+<div class="module clear notes_module" id="profile_notes">
+ <a href="/notes<?=$owner->user_info['user_id']?>" class="module_header">
+  <div class="header_top clear_fix">
+   <span class="right_link fl_r" onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/notes<?=$owner->user_info['user_id']?>'"><?=nf($blog_total)?></span>
+    Заметки
+  </div>
+  <div class="p_header_bottom">
+    <span class="fl_r">Все</span>
+    <?=$blog_total?> замет<?=$langpack->dln($blog_total,'ord')?>
+  </div>
+ </a>
+ <div class="module_body clear_fix">
+  <?=$blog_html?>
+ </div>
+</div>
+<? } ?>

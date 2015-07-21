@@ -1,0 +1,33 @@
+<?php
+	global $board, $topics, $limit, $order;
+	$preload = array($limit * 2);
+	if($topics['total'] <= $limit) {
+		$preload[] = '';
+	} else {
+		$preload[] = tpx('board_rows', array('topics' => array_slice($topics['comments'], $limit, $limit)));
+	}
+?>showBackLink('<?=$board->owner->lnk?>', '<?=$board->owner->title?>');
+var msg = ge('blst_msg');
+if (msg) {
+  msg.style.backgroundColor = '#F4EBBD';
+  animate(msg, {backgroundColor: '#F9F6E7'}, 2000);
+}
+extend(cur, {
+  offset: <?=$limit?>,
+  gid: <?=$board->oid?>,
+  order: <?=$order?>,
+  count: <?=intval($topics['total'])?>,
+  _back: {text: 'Обсуждения', show: [Board.initScroll], hide: [Board.deinitScroll]}
+});
+
+if (vs.version) {
+  addEvent(window, 'load', Board.initScroll);
+} else {
+  Board.initScroll();
+}
+
+var preload = <?=jenc($preload)?>;
+
+placeholderSetup('board_q', {back: true});
+elfocus('board_q');
+ajax.preload('/board' + cur.gid, {order: cur.order, offset: cur.offset, part: 1}, preload);

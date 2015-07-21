@@ -1,0 +1,72 @@
+<?php
+global $datetime, $user;
+
+$vars = array(
+		'comments' => 'массив с комментариями',
+		'oid' => 'id пользователя или группы',
+);
+
+$comments = $var['comments'];
+foreach($comments['comments'] as $subcomment) {
+    $subpost_id = $var['oid'].'_'.$subcomment['id'];
+		/*
+		if($subcomment['oid']<0 and !empty($subcomment['opt']['o'])) {
+				$rid = $subcomment['oid'];
+    } else {
+        $rid = $subcomment['aid'];
+    }
+		 * 
+		 */
+    $sub_author = pdata($subcomment['aid']);
+?><div id="post<?=$subpost_id?>" class="fw_reply"><table class="fw_reply_table wall_module" cellspacing="0" cellpadding="0"><tr>
+  <td class="fw_reply_thumb_td">
+      <a class="fw_reply_thumb" href="<?=$sub_author->lnk?>" onclick="return nav.go(this, event)">
+       <img src="<?=$sub_author->photo()?>" width="50" height="50"/>
+    </a>
+  </td>
+  <td class="fw_reply_info">
+      <a class="fw_reply_author" href="<?= $sub_author->lnk?>"><?= $sub_author->title?></a>
+    <div id="wpt<?=$subpost_id?>"><div class="fw_reply_text"><?= nl2br($subcomment[empty($subcomment['full'])?'body':'full']) ?></div>
+<?
+	//$comment = $subcomment;
+if ($subcomment['media'] != '') {
+	echo tpx('wall_media_block', $subcomment);
+}
+
+?></div>
+    <div id="wpe_bottom<?=$subpost_id?>" class="fw_reply_bottom">
+      <div class="fl_l fw_reply_date"><a class="fw_date_lnk" href="/wall<?=$subpost_id?>?reply=<?=$subcomment['id']?>" onclick="return nav.go(this, event)"><span class="rel_date"><?=$datetime->sdate($subcomment['date'])?></span></a><span class="divide">|</span>
+				<? if($var['can_edit'] or $user->id == $subcomment['aid']){ 
+					if(($user->id == $subcomment['aid'] or ($subcomment['aid'] < 0 and $subcomment['opt']['o'] == $user->id)) and ($_SERVER['REQUEST_TIME'] - $subcomment['date'] < 3600)) {
+				?>
+				<a class="reply_to_link" onmouseup="return wall.editPost('<?=$subpost_id?>')"><?=_e('g_edit')?></a><span class="divide">|</span>
+				<? } ?>
+				<a onclick="FullWall.deletePost('<?=$subpost_id?>', '<?=hash_get($subpost_id,16,'wd')?>');"><?=_e('g_delete')?></a>
+				<? } else { ?>
+				<a onclick="FullWall.markAsSpam('<?=$subpost_id?>', '<?=hash_get($subpost_id,16,'spm')?>');"><?=_e('g_is_spam')?></a><span class="divide">|</span><a class="reply_to_link" onmouseup="return FullWall.replyTo('', <?=$subcomment['id']?>, <?=$subcomment['aid']?>, event)"><?=_e('g_answer')?></a>
+			  <? } ?>
+				<span class="divide">|</span>
+			</div>
+			
+			<?
+				
+				$like_id = $var['oid'].'_wall_reply'.$subcomment['id'];
+				$like_icon_class = $subcomment['like'] == 0 ? 'no_likes' : ($subcomment['like_my'] == 1 ? 'my_like' : ''); 
+				$like_count = $subcomment['like'] == 0 ? '' : $subcomment['like'];
+				
+			?>
+			
+			<div class="like_wrap fl_l" onclick="wall.like('<?= $like_id ?>', '<?= hash_get('wall_reply' . $subpost_id . $user->id, 18, 'lk')?>'); event.cancelBubble = true;" onmouseout="wall.likeOut('<?= $like_id ?>')" onmouseover="wall.likeOver('<?= $like_id ?>')">
+<span id="like_link<?= $like_id ?>" class="like_link fl_l"><?=_e('g_like')?></span>
+<i id="like_icon<?= $like_id ?>" class="<?= $like_icon_class ?> fl_l"></i>
+<span id="like_count<?= $like_id ?>" class="like_count fl_l"><?= $like_count ?></span>
+</div>
+			
+			<?  ?>
+			
+      <div class="fl_l progress fw_reply_prg"></div>
+    </div>
+  </td>
+</tr></table></div><?
+}
+?>

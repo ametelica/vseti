@@ -1,0 +1,1 @@
+box.setOptions({bodyStyle: 'padding: 16px', width: 550});

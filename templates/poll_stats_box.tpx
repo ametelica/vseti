@@ -1,0 +1,77 @@
+<?php
+	global $poll, $langpack;
+?><div class="wk_poll_stats_wrap">
+  <div class="" id="wk_poll_tabs_wrap">
+    <div id="wk_poll_tabs"><div class="clear_fix wk_poll_tabs"><div class="fl_l summary_tab_sel">
+  <a class="summary_tab2" onclick="WkPoll.tab(0)" id="wk_poll_opt0">
+    <div class="summary_tab3">
+      <nobr><div id="wk_poll_opt_all">Все варианты</div></nobr>
+    </div>
+  </a>
+</div><?
+	foreach($poll->answers as $answer) { 
+?><div class="fl_l summary_tab">
+  <a class="summary_tab2" onclick="WkPoll.tab(<?=$answer['id']?>)" id="wk_poll_opt<?=$answer['id']?>">
+    <div class="summary_tab3">
+      <nobr><?=$answer['title']?></nobr>
+    </div>
+  </a>
+</div><? } ?></div><div class="wk_poll_tabs_sh"></div></div>
+  </div>
+  <div class="clear_fix wk_poll_tabs unshown" id="wk_poll_grtabs">
+    <div class="fl_l summary_tab_sel" id="wk_poll_tab_all">
+      <a class="summary_tab2" onclick="WkPoll.graphFilter(this, 0, 0);" id="members_menu_all">
+        <div class="summary_tab3">
+          <nobr>Все голоса</nobr>
+        </div>
+      </a>
+    </div>
+    <div class="fl_l summary_tab" id="wk_poll_tab_amount">
+      <a class="summary_tab2" onclick="WkPoll.graphFilter(this, 0, 1);" id="members_menu_abs">
+        <div class="summary_tab3">
+          <nobr>Новые голоса</nobr>
+        </div>
+      </a>
+    </div>
+    <div class="fl_l summary_tab" id="wk_poll_tab_percent">
+      <a class="summary_tab2" onclick="WkPoll.graphFilter(this, 1, 0);" id="members_menu_percent">
+        <div class="summary_tab3">
+          <nobr>Распределения долей</nobr>
+        </div>
+      </a>
+    </div>
+    <div id="wk_poll_stat_load" class="fl_r"><img src="/images/upload.gif"></div>
+  </div>
+  <div id="wk_poll_graph" style="display: none;"></div>
+  <div id="wk_poll_people" style="display: none"></div>
+  <div id="wk_poll_stats">
+    <table cellspacing="0" cellpadding="0" class="wk_poll_clickable"><?
+      	foreach($poll->answers as $answer) { ?>
+      
+      
+      <tr><td colspan="2" class="wk_poll_text"><?=$answer['title']?></td></tr>
+<tr onclick="WkPoll.tab(<?=$answer['id']?>, 1)">
+  <td class="wk_poll_row">
+    <div class="wk_poll_row_line" style="width: <?=round($answer['cnt']/$poll->max * 100)?>%;" id="wk_poll_row<?=$answer['id']?>"></div>
+    <div class="wk_poll_row_count"><span id="wk_poll_row_count<?=$answer['id']?>"><?=$answer['cnt']?></span></div>
+  </td>
+  <td class="wk_poll_row_percent ta_r"><nobr><b id="wk_poll_row_percent<?=$answer['id']?>"><?=round($answer['cnt']/$poll->total * 100, 1)?>%</b></nobr></td>
+</tr>
+<tr><td colspan="2"><div id="wk_poll_usrs<?=$answer['id']?>" class="wk_poll_usrs"><?
+		  
+		foreach($var['stats']['answer_users'][$answer['id']]['users'] as $vid) {
+			$vu = pdata($vid);
+			echo '<a class="wk_poll_usr inl_bl" title="'.$vu->title.'" href="'.$vu->lnk.'"><img class="wk_poll_usr_photo" src="'.$vu->photo().'" width="30" height="30" /></a>';
+		}
+		  ?></div></td></tr>
+		  
+		  <? } ?></table>
+  </div>
+  <div id="wk_poll_stats_total"><!--<a class="fl_r" onclick="WkPoll.exportBox()">Получить код</a>--><span class="unshown">
+  <span class="divider fl_r">&nbsp;|&nbsp;</span>
+  <a class="fl_r" id="wk_poll_show_graph" onclick="WkPoll.graph()">Показать график</a>
+  <a class="fl_r" id="wk_poll_hide_graph" style="display: none;" onclick="WkPoll.graphHide();">Скрыть график</a>
+  </span><span id="wk_poll_total">Проголосовал<?=$langpack->dln($poll->total, array('', 'о', 'и'))?> <b><?=$poll->total?></b> <?=$langpack->dln($poll->total, array('человек', 'человека', 'человек'))?></span></div>
+  <div id="wk_poll_dmgr">
+</div></div>
+</div><!><!json>{"wkRaw":"poll<?=$var['post_uid']?>","canEdit":false,"lang":[]}

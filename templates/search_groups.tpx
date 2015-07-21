@@ -1,0 +1,63 @@
+<?php
+	global $search;
+?><table id="search_table" class="search_table">
+  <tr>
+    <td id="results" class="results highlight communities_results">
+     <?=$var['result']?>
+    </td>
+    <td id="filters_td" class="filters">
+      <div id="search_filters">
+        
+  <form id="filter_form" name="filter_form">
+    <input type="hidden" id="q" name="c[q]" value="<?=$search?>" />
+    <input type="hidden" id="section" name="c[section]" value="communities" />
+    <div class="noselect clear_fix filter_main " onselectstart="return false">
+  <div class="text fl_l">Тип сообщества</div>
+</div><input type="hidden" id="c[type]" name="c[type]" value="" /><input type="hidden" id="c[brands]" name="c[brands]" value="" /><div class="inner_filter">
+  <div id="cType" class="control">
+    <div class="radiobtn on" onclick="cur.onTypeChanged(this, 0);"><div></div>Любой</div>
+    <div class="radiobtn " onclick="cur.onTypeChanged(this, 1);"><div></div>Группа</div>
+    <!--<div class="radiobtn " onclick="cur.onTypeChanged(this, 2);"><div></div>Страница</div>-->
+    <div class="radiobtn " onclick="cur.onTypeChanged(this, 3);"><div></div>Встреча</div>
+  </div>
+</div><div id="region_filters" style="">
+  <div class="noselect clear_fix filter_main city" onselectstart="return false">
+  <div class="text fl_l">Регион</div>
+</div><div class="inner_filter" id="city_filter">
+  <div id="cCountry" class="control">
+    <input id="country" name="c[country]" class="text" />
+  </div>
+  <div id="cCity" class="control" style="display: none">
+    <input id="city" name="c[city]" class="text" />
+  </div>
+</div>
+</div>
+	  
+<div id="cat_filters" style="">
+  <div class="noselect clear_fix filter_main city">
+  <div class="text fl_l">Тематика</div>
+</div><div class="inner_filter" id="cat_filter">
+  <div id="cCat" class="control">
+    <input id="cat" name="c[cat]" class="text" />
+  </div>
+</div>
+</div>
+	
+<div id="events_filters" style="display: none;">
+  <div class="noselect clear_fix filter_main " onselectstart="return false">
+    <div class="text fl_l">Дополнительно</div>
+  </div>
+  <div class="inner_filter" id="events_filter">
+    <input type="hidden" name="c[all]" id="all_events" value="0" />
+    <input type="hidden" name="future" id="future" value="1" />
+    
+  </div>
+</div>
+	
+	<input type="hidden" name="c[quality]" id="quality" value="<?=intval($c['quality'])?>" />
+
+  </form>
+      </div>
+    </td>
+  </tr>
+</table>

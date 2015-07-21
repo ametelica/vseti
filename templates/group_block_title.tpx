@@ -1,0 +1,36 @@
+<?php
+global $group;
+?>
+<h4 class="simple page_top">
+    <div class="top_header page_name"><?=$group->group_info['group_title']?></div>
+    <div class="clear" id="page_current_info"><? 
+    if($group->user_rank>0) {
+        if(trim($group->group_info['group_status'])!=''){
+            echo '<div onclick="Page.infoEdit()"><span id="current_info"><span class="my_current_info"><span class="current_text">'.$group->group_info['group_status'].'</span></span></span></div>';
+        } else {
+            echo '<div onclick="Page.infoEdit()"><span id="current_info"><span class="no_current_info">изменить статус</span></span></div>';
+        }
+?><div style="display: none"><span class="my_current_info"><span class="current_text">Комментирование стен в группах. Уже скоро.</span></span></div><div class="clear" onclick="cancelEvent(event)">
+    <table cellspacing="0" cellpadding="0" id="currinfo_editor">
+    <tr>
+    <td class="sidesh" rowspan="2"><div></div></td>
+    <td><div class="editor">
+    <input class="text" maxlength="140" id="currinfo_input" onkeydown="page.infoCheckSave(event)" onkeyup="page.infoCheck(this)" />
+    <div class="fl_r button_green"><button id="currinfo_save">Сохранить</button></div>
+    <div class="fl_l checkbox unshown" id="currinfo_audio" onclick="checkbox(this); profile.audioStatusUpdate(\'ab9534d9cb96400a18\');"><div></div>Транслировать в статус играющую музыку</div>
+    <div class="fl_l checkbox unshown" id="currinfo_app" onclick="checkbox(this); profile.appStatusUpdate(\'ab9534d9cb96400a18\')"><div></div>Показывать это приложение, когда я играю</div>
+    <div class="clear"></div>
+    </div></td>
+    <td class="sidesh" rowspan="2"><div></div></td>
+    </tr>
+    <tr><td class="bottomsh1"><div></div></td></tr>
+    <tr><td class="bottomsh2" colspan="3"><div></div></td></tr>
+    </table>
+    </div>
+    <? /* */              
+    } elseif(!empty($group->group_info['group_status'])) { 
+        echo '<span class="current_text">'.$group->group_info['group_status'].'</span>';
+    }
+    ?>
+    </div>
+</h4>

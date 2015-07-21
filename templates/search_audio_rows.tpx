@@ -1,0 +1,76 @@
+<?php
+global $setting, $user, $offset, $gid;
+
+if(!empty($var['audios'])) {
+	foreach($var['audios'] as $a) {
+		$muid = $a['music_user_id'] . '_' .$a['music_id'];
+		$url = 'http://cs' . $a['music_info']['music_cs'] . '.' . $setting['host'] . '/audio.php?mp3=' . $a['music_id'] . '&mid=' . $user->id . '&hash=' . hash_get($a['music_id'] . $user->id, 8, 'al');
+		$author = pdata($a['music_user_id']);
+//dmp($a);
+//http://cs{$track.music_cs}.vseti.by/audio.php?mp3={$track.music_id}&mid={$user->user_info.user_id}&hash={$hash->get_hash("`$track.music_id``$user->user_info.user_id`",8,'al')}
+		
+		
+?><div class="audio" id="audio<?=$muid?>" onmouseover="addClass(this, 'over');" onmouseout="removeClass(this, 'over');">
+  <a name="<?=$muid?>"></a>
+  <div class="area clear_fix" onclick="if (cur.cancelClick){ cur.cancelClick = false; return;} playAudioNew('<?=$muid?>')">
+    <table cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+        <td>
+          <div class="play_btn_wrap"><div class="play_new" id="play<?=$muid?>"></div></div>
+          <input type="hidden" id="audio_info<?=$muid?>" value="<?=$url?>,<?=$a['music_info']['music_duration_sec']?>" />
+          
+        </td>
+        <td class="info">
+          <div class="title_wrap fl_l" onmouseover="setTitle(this)"><b onclick="event.cancelBubble = true;"><a href="/search?c[section]=audio&c[q]=<?=rawurlencode($a['music_artist'])?>&c[performer]=1" onclick="return nav.go(this, event);"><?=$a['music_artist']?></a></b> &ndash; <span class="title" id="title<?=$muid?>"><?
+            if($a['music_text'] == '') {
+            	echo $a['music_title'];
+            } else {
+            	echo '<a onclick="searchActions.showLyrics(\''.$muid.'\',7258583,0); return cancelEvent(event);" href="#">' . $a['music_title'] . '</a>';
+            ?> <? } ?></span><span class="user" onclick="event.cancelBubble = true;"> <span class="user">(<a href="<?=$author->lnk?>" onclick="return nav.go(this, event);"><?=$author->title?></a>)</span></span></div>
+          <div class="actions" onclick="event.cancelBubble = true;">
+          	<? if($gid > 0) { 
+          	  $add_text = 'Добавить в аудиозаписи сообщества';
+       	   } else {  
+       	  	  $add_text = 'Добавить в мои аудиозаписи';
+       	   } ?>
+            <div id="audio_add<?=$a['music_id']?>" class="audio_add_wrap fl_r" onmouseover="addClass(this, 'over'); showTooltip(this, {text: '<?=$add_text?>', black: 1, shift: [9, 5, 0]});" onmouseout="removeClass(this, 'over'); removeClass(this, 'down');" onmousedown="addClass(this, 'down');" onmouseup="removeClass(this, 'down');" onclick="searchActions.addAudio(this, {act:'add',add:1,gid:<?=intval($gid)?>,aid:<?=$a['music_id']?>,oid:<?=$a['music_user_id']?>,album_id:0,hash:'<?=hash_get($user->id, 12, 'adda');?>',top:1,search:0}); return false;">
+  <div class="audio_add"></div>
+</div>
+          </div>
+          <div class="duration fl_r" onmousedown="if (window.audioPlayer) audioPlayer.switchTimeFormat('<?=$muid?>', event);" onclick="cancelEvent(event)"><?=$a['music_info']['music_duration']?></div>
+        </td>
+      </tr>
+    </table>
+    <div id="player<?=$muid?>" class="player" ondragstart="return false;" onselectstart="return false;" onclick="event.cancelBubble = true;">
+      <table cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tbody><tr>
+          <td style="width: 100%;">
+            <div id="audio_pr<?=$muid?>" class="audio_pr" onmouseover="addClass(this, 'over'); if (cur.hideTipTO) clearTimeout(cur.hideTipTO);" onmouseout="removeClass(this, 'over'); cur.hideTipTO = setTimeout(hide.pbind('audio_tip_wrap'), 100);" onmousedown="addClass(this, 'down'); audioPlayer.prClick(event);" onmouseup="removeClass(this, 'down')">
+              <div id="audio_white_line<?=$muid?>" class="audio_white_line" onmousedown="audioPlayer.prClick(event);"></div>
+              <div id="audio_back_line<?=$muid?>" class="audio_back_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>
+              <div id="audio_load_line<?=$muid?>" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"><!-- --></div>
+              <div id="audio_pr_line<?=$muid?>" class="audio_progress_line" onmousedown="audioPlayer.prClick(event);">
+                <div id="audio_pr_slider<?=$muid?>" class="audio_slider"><!-- --></div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div id="audio_vol<?=$muid?>" class="audio_vol" onmouseover="addClass(this, 'over')" onmouseout="removeClass(this, 'over'); removeClass(this, 'down')" onmousedown="addClass(this, 'down'); audioPlayer.volClick(event)" onmouseup="removeClass(this, 'down')">
+              <div id="audio_vol_white_line<?=$muid?>" class="audio_vol_white_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>
+              <div id="audio_vol_back_line<?=$muid?>" class="audio_load_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>
+              <div id="audio_vol_line<?=$muid?>" class="audio_progress_line" onmousedown="audioPlayer.volClick(event);">
+                <div id="audio_vol_slider<?=$muid?>" class="audio_slider" onmousedown="audioPlayer.volClick(event);"><!-- --></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+</div><? } if($offset == 0) { ?><a id="show_more_link" onclick="return searcher.showMore();" class="clear" style="<? if(!$var['more']) { ?>display: none;<? } ?>">
+  <div id="show_more_progress" class="progress"></div>
+  <div id="show_more">Показать ещё</div>
+</a><? } 
+} else { 
+	echo '<div id="no_results" class="">Ваш запрос не дал результатов</div>';
+}?>

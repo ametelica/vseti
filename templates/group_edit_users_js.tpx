@@ -1,0 +1,133 @@
+<?php
+global $group, $tab, $members, $user;
+
+$admins = array();
+/*
+if($user->id == 140095) {
+	dmp($members['admins']);
+	dmp($group->admins);
+	die();
+}*/
+
+uasort($group->admins, "admsort");
+
+foreach($group->admins as $mid => $admin_data) {
+	$member = pdata($mid, 1);
+	$admins[] = $group->member_data($member);
+}
+
+$init = array(
+		'id' => $group->id,
+		'tab' => $tab,
+		'counts' => array(
+				'members' => $members['members']['total'],
+				'invites' => $members['invites']['total'],
+				'admins' => $members['admins']['total']
+		),
+		'summaries' => array(
+				'members' => 'groups_group_quantity_nolink',
+				'unsure' => 'events_X_unsure',
+				'declined' => 'events_X_declined',
+				'requests' => 'groups_X_requests',
+				'invites' => 'groups_X_invitations',
+				'admins' => 'groups_X_officers'
+		),
+		'noSummaries' => array(
+				'members' => 'В сообществе нет участников',
+				'unsure' => 'В сообществе нет возможных участников',
+				'declined' => 'Нет отклонивших приглашения',
+				'requests' => 'В сообществе нет заявок на вступление',
+				'invites' => 'В сообщество нет приглашений',
+				'admins' => 'В сообществе нет руководителей'
+		),
+		'levels' => array(
+				1 => 'Модератор',
+				2 => 'Редактор',
+				3 => 'Администратор',
+				4 => 'Сообщество-организатор',
+				5 => 'Создатель',
+				6 => 'Создатель',
+		),
+		'nfound' => array(
+				'members' => 'Этот пользователь не найден среди участников.',
+				'unsure' => 'Этот пользователь не найден среди возможных участников.',
+				'declined' => 'Этот пользователь не найден среди отклонивших.',
+				'requests' => 'Этот пользователь не найден среди подавших заявку на вступление.',
+				'invites' => 'Этот пользователь не найден среди приглашенных.',
+				'admins' => 'Этот пользователь не найден среди руководителей.',
+		),
+		'hash' => hash_get($user->id . $group->id, 16, 'gadm'),
+		'data' => array('admins' =>	$admins),
+		'level' => $group->user_level,
+		'admin' => $group->user_level >= 3 ? true : false,
+		'lang' => array(
+				'groups_group_quantity_nolink' => array(
+						'',
+						'В сообществе %s участник',
+						'В сообществе %s участника',
+						'В сообществе %s участников',
+				),
+				'events_X_unsure' => NULL,
+				'events_X_declined' => NULL,
+				'groups_X_requests' =>	array(
+						'',
+						'В сообществе %s заявка на вступление',
+						'В сообществе %s заявки на вступление',
+						'В сообществе %s заявок на вступление',
+				),
+				'groups_X_invitations' => array(
+						'',
+						'В сообществе %s приглашенный участник',
+						'В сообществе %s приглашенных участника',
+						'В сообществе %s приглашенных участников',
+				),
+				'groups_X_officers' => array(
+						'',
+						'В сообществе %s руководитель',
+						'В сообществе %s руководителя',
+						'В сообществе %s руководителей',
+				),
+				'Edit' => 'Редактировать',
+				'change_main_admin' => 'Изменить создателя',
+				'global_online' => array(
+						'',
+						'ВСети',
+						'ВСети',
+				),
+				'global_cancel' => 'Отмена',
+				'global_photo_full_size' => 'Увеличить',
+				'groups_users_lnksearch' => 'Введите ссылку на страницу пользователя',
+				'groups_users_search' => 'Введите имя пользователя или ссылку на его страницу',
+				'groups_too_many_for_search' => 'Слишком много пользователей для мгновенного поиска.<br><br>Вы можете указать адрес страницы интересующего пользователя.',
+				'groups_too_many_enter' => 'Слишком много пользователей для мгновенного поиска.<br><br>Нажмите «Enter» для поиска или укажите адрес страницы интересующего пользователя.',
+				'groups_no_users_in_club' => 'В сообществе еще нет участников.',
+				'groups_no_users_found' => 'Не найдено ни одного пользователя.',
+				'groups_found_n_users' => array(
+						'',
+						'Найден %s пользователь',
+						'Найдены %s пользователя',
+						'Найдены %s пользователей',
+				),
+				'groups_members_application_admit' => 'Принять в группу',
+				'groups_members_application_decline' => 'Отклонить заявку',
+				'group_managers_demote' => 'Разжаловать',
+				'groups_members_appoint_manager' => 'Назначить админом',
+				'groups_members_delete' => 'Удалить из сообщества',
+				'groups_members_invitations_cancel' => 'Отменить приглашение',
+				'groups_restore_member' => 'Восстановить',
+                'groups_member_deleted' => 'Участник удалён',
+				'groups_send_invitation' => 'Выслать приглашение',
+				'groups_request_accepted' => 'Заявка на вступление одобрена.',
+				'groups_request_declined' => 'Заявка на вступление отклонена.',
+				'groups_back_to_people' => 'Список участников',
+				'groups_back_to_leaders' => 'Список руководителей',
+				'groups_approve_all' => 'Принять всех',
+				'groups_invitations_title' => 'Приглашения',
+				'groups_sure_approve_all' => 'Вы действительно хотите принять все заявки на вступление в группу?',
+		),
+);
+?>
+showBackLink('<?=$group->lnk?>', '<?=$group->title?>');
+<? if($group->user_level > 1) { ?>
+GroupsEdit.uInit(<?= jenc($init) ?>);
+<? } ?>

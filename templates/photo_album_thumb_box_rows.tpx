@@ -1,0 +1,5 @@
+<?php
+foreach($var['photos'] as $photo) {
+?><div class="photos_choose_row fl_l"><a href="photo<?=$photo->uid?>" onclick="return cur.chooseThumb('<?=$photo->uid?>');">
+  <img class="photo_row_img" src="<?=$photo->view('m')?>" />
+</a></div><? } ?>

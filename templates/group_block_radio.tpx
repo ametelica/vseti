@@ -1,0 +1,55 @@
+<?php
+global $group, $user, $setting;
+?>
+<? if($group->group_info['show_radio']) { ?>
+<div id="radio" class="module">
+  <a class="module_header">
+    <div class="header_top clear_fix">
+       Живое вещание
+    </div>
+  </a>
+
+    <div class="module_body clear_fix">
+        <div class="mju" style="width: 150px; margin:0 auto;">
+            <object width="150" height="150" id="mju">
+                <param name="allowScriptAccess" value="sameDomain" />
+                <param name="swLiveConnect" value="true" />
+                <param name="movie" value="http://g<?=$user->byfly?1:2?>.<?=$setting['host']?>/include/mju/mju.swf" />
+                <param name="flashvars" value="playlist=http://g<?=$user->byfly?1:2?>.<?=$setting['host']?>/include/mju/playlist/<?=$group->group_info['show_radio']?>.mpl&auto_run=<?=($user->usersetting_info['usersetting_autoplay']>0 and $group->group_info['radio_autoplay']>0)?1:0?>&repeat=1&shuffle=0&anti_cache=1&l=85C700&m=007A04&d=00451C&b=0A9600&p=005D6B&tt=006603&tbd=89D900&ptp=E05200"/>
+                <param name="loop" value="false" />
+                <param name="menu" value="false" />
+                <param name="quality" value="high" />
+                <param name="wmode" value="transparent" />
+                <embed src="http://g<?=$user->byfly?1:2?>.<?=$setting['host']?>/include/mju/mju.swf" flashvars="playlist=http://g<?=$user->byfly?1:2?>.<?=$setting['host']?>/include/mju/playlist/<?=$group->group_info['show_radio']?>.mpl&auto_run=<?=($user->usersetting_info['usersetting_autoplay']>0 and $group->group_info['radio_autoplay']>0)?1:0?>&repeat=1&shuffle=0&anti_cache=1&l=85C700&m=007A04&d=00451C&b=0A9600&p=005D6B&tt=006603&tbd=89D900&ptp=E05200" loop="false" menu="false" quality="high" wmode="transparent" bgcolor="#ffffff" width="150" height="150" name="mju" allowScriptAccess="sameDomain" swLiveConnect="true" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+            </object>
+        </div>
+    </div>
+</div>    
+    
+<?
+/*
+
+   
+
+    <script>
+    var opera = Boolean(window["opera"]);
+    var ie = (navigator.appName.indexOf("Microsoft") != -1) && !opera;
+
+    function mju_do(cmd) {literal}{
+    if (!cmd.length) return false;
+    var mc = ie ? window.mju : window.document.mju;
+    mc.SetVariable("do_"+cmd," ");
+    }{/literal}
+
+    {if $user->usersetting_info.usersetting_autoplay>0 and $group->group_info.radio_autoplay>0}
+    mju_do('play');
+    {else}
+    mju_do('stop');
+    {/if}
+    </script>
+    {else}
+    <div class="fallback">{$group_main59}</div>
+    {/if}
+    </div>
+</div>
+<? */ } ?>

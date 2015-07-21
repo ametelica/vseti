@@ -1,0 +1,18 @@
+<?php
+global $group, $total_friends_in, $langpack, $friends_in;
+?>
+<div class="module clear people_module" id="friends_in">
+    <a href="/gsearch.php?from=people&basic=1&c[group]=<?=$group->id?>&c[myfriends]=1" class="module_header">
+    <div class="header_top clear_fix">
+        <span class="right_link fl_r"  onmouseover="this.parentNode.parentNode.href=''" onmouseout="this.parentNode.parentNode.href='/gsearch.php?from=people&basic=1&c[group]=<?=$group->id?>&c[myfriends]=1'"></span>
+        Друзья в группе
+    </div>
+    <div class="p_header_bottom">
+        <span class="fl_r"></span>
+        <?=nf($total_friends_in)?> <?=$langpack->humans($total_friends_in)?>
+    </div>
+    </a>
+    <div class="module_body clear_fix">
+        <?=tpx('people_rows',array('users'=>$friends_in))?>
+    </div>
+</div>

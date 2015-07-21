@@ -1,0 +1,55 @@
+<?php
+global $ad_info, $user;
+
+if(!empty($ad_info['id'])) {
+?>
+<div id="send_report_error"></div>
+Пожалуйста, выберите причину, по которой Вы хотите сообщить администрации сайта об объявлении <b><?=$ad_info['name']?></b>:
+<div style="padding: 10px 0">
+  <input type="hidden" name="report_reason" id="report_reason" />
+</div>
+<div id="report_comment" style="display: none">
+  <div style="margin-top: 10px">Комментарий:</div>
+  <textarea id="report_comment_text" onchange="curBox().changed=true;" rows="5" style="width: 200px; margin-top: 10px"></textarea>
+</div><!>extend(cur, {
+  showReportComment: function() {
+    show('report_comment');
+  }
+});
+
+new Dropdown(ge('report_reason'), [
+  [0, 'Выберите причину...'],
+  [1, 'Мошеннический сайт'],
+  [2, 'Порнография'],
+  [3, 'Оскорбительное содержание'],
+  [4, 'Я против любой рекламы'],
+  [100, 'Другая причина']
+], {
+  width: 208,
+  onChange: cur.showReportComment
+});
+box.removeButtons().addButton(getLang('global_close'), box.hide, 'no');
+box.addButton(getLang('box_send'), function() {
+  if (isVisible(box.progress)) return;
+  ge('send_report_error').innerHTML = '';
+  ajax.post('reports.php', {
+    act: 'a_report_ad',
+    ad_id: <?=$ad_info['id']?>,
+    hash: '<?=hash_get($user->id . $ad_info['id'], 16, 'adr')?>',
+    comment: ge('report_comment_text').value,
+    reason: ge('report_reason').value
+  }, {
+    onFail: function(t) {
+      ge('send_report_error').innerHTML = t || 'Неизвестная ошибка';
+      return true;
+    },
+    onDone: function(t) {
+      box.hide();
+      setTimeout(showFastBox({title: 'Спасибо'}, t).hide, 2000);
+    },
+    progress: box.progress
+  });
+});
+<? } else {
+	echo 'Объявление не найдено';
+}?>

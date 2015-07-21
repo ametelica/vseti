@@ -1,0 +1,23 @@
+<?php
+echo tpx('header_css');
+echo tpx('header_func');
+?>
+<div id="page_body" class="fl_r">
+ <div id="header_wrap2">
+  <div id="header_wrap1">
+   <div id="header" style="display: none">
+    <h1 id="title"></h1>
+   </div>
+  </div>
+ </div>
+ <div id="wrap_between"></div>
+ <div id="wrap3">
+
+<?=$var['html']?>
+ 
+ </div>
+</div>
+<?
+//
+echo tpx('footer');
+?>

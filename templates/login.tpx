@@ -1,0 +1,59 @@
+<?php
+	global $setting, $error_message, $email;
+	//dmp($setting);
+?><div id="trees">
+		<?
+			if($error_message != '') {
+				echo '<div id="login_messages" class="error">'.$error_message.'</div>';
+			}
+
+		?>
+		<h1 id="login_header">ВСети <span>- социальная сеть Беларуси</span></h1>
+		<div id="content">
+		</div>
+		<a href="/" id="logo"></a>
+		<div id="faces">
+			<form id="login" action="http://login.<?=$setting['host']?>/?act=login" method="post" name="login" target="quick_login_frame">
+				<div id="login_form">
+					<div class="login_block">
+						<h2>Вход на сайт</h2>
+						<input type="text" value="<?=$email?>" id="login" name="email" maxlength="40" placeholder="Электронный адрес" class="login_input" />
+						<input type="password" value="" id="pass" name="password" maxlength="40" placeholder="Пароль" class="login_input"/>
+						<input type="checkbox" id="save_pass"> <label for="save_pass">Сохранить пароль</label>
+						<button onmouseout="this.className=''" onmouseover="this.className='green_over'" onclick="ge('login').submit()">Войти</button>
+						<a href="/login.php?op=forgot">Забыли пароль?</a> 
+					</div>
+				
+					<div class="login_block">
+						<h2>Присоединиться к нам</h2>
+						<input type="text" value="" placeholder="Ваше имя" class="login_input" id="reg_name"/>
+						<input type="text" value="" placeholder="Ваша фамилия" class="login_input" id="reg_lastname" />
+						<button class="blue" onmouseout="this.className='blue'" onmouseover="this.className='blue_over blue'" onclick="return go2register();">Зарегистрироваться</button>
+					</div>
+				</div>
+			</form>
+			<div id="fx100"></div>
+		</div>
+
+		<div id="reasons">
+			<h2>Причины присоединиться</h2>
+			<?
+				$is_by = btk($_SERVER['REMOTE_ADDR']);
+			?>
+			<div class="info">
+				<strong>1</strong> Социальная сеть <?=$is_by[0] ? '<span style="color: #6ba03f"><b>ТВОЕЙ</b></span> страны' : '<span style="color: #6ba03f"><b>Беларуси</b></span>'?><br />
+				<strong>2</strong> Доброжелательная атмосфера для таких же людей<br />
+				<strong>3</strong> Уникальные возможности настройки странички
+			</div>
+			
+			
+		</div>
+
+		<div id="info">
+			<h2>Нас уже <strong><?=nf($setting['total_users'])?></strong></h2>
+			<span class="video">26 674 546 видеозаписей</span>
+			<span class="audio">723 583 аудиозаписей</span>
+			<span class="books">52 458 книг</span>
+			<span class="groups"><?=nf($setting['total_groups'])?> групп</span>
+		</div>
+	</div>

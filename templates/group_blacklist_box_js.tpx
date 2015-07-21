@@ -1,0 +1,75 @@
+<?php
+	global $group, $datetime, $block_user, $block_info;
+	$intervals = array();
+	
+	if(!empty($block_info['bl_end_time'])) {
+		$intervals[] = array(-1, "Разблокировка " . $datetime->sdate($block_info['bl_end_time']), "");
+	}
+	
+	$intervals[] = array(0, "Навсегда","Разблокировка администратором");
+	$intervals[] = array(1, "На год", "Разблокировка " . $datetime->sdate(unix_interval('P1Y'))); 
+	$intervals[] = array(2, "На месяц","Разблокировка " . $datetime->sdate(unix_interval('P1M')));
+	$intervals[] = array(3, "На неделю","Разблокировка " . $datetime->sdate(unix_interval('P7D')));
+	$intervals[] = array(4, "На день","Разблокировка " . $datetime->sdate(unix_interval('P1D')));
+	$intervals[] = array(5, "На час","Разблокировка " . $datetime->sdate(unix_interval('PT1H')));
+	
+?>addClass(boxLayerBG, 'bg_dark');
+box.setOptions({hideButtons: true, width: 502, bodyStyle: 'padding: 0px', onClean: function() {
+  if (cur.blbType) cur.blbType.destroy();
+  if (cur.blbReason) cur.blbReason.destroy();
+}});
+box.removeButtons();
+placeholderSetup(ge('group_blb_comment'), {back: true});
+
+extend(cur, {
+  blbSave: function() {
+    if (buttonLocked(ge('group_blb_save'))) return;
+    ajax.post('al_groups.php', {
+      act: 'bl_user',
+      gid: <?=$group->id?>,
+      name: '<?=$block_user->id?>',
+      hash: '<?=hash_get($group->oid, 18, 'block')?>',
+      reason: cur.blbReason.val(),
+      type: cur.blbType.val(),
+      comment: val('group_blb_comment'),
+      comment_visible: isChecked('group_blb_comment_vis')
+    }, {
+      onDone: GroupsEdit.updateBlacklist.pbind(<?=$group->id?>),
+      showProgress: lockButton.pbind('group_blb_save'),
+      hideProgress: unlockButton.pbind('group_blb_save')
+    });
+  },
+  blbRemove: function(el) {
+    if ((domFC(el) || {}).className == 'progress_inline') return;
+    ajax.post('al_groups.php', {
+      act: 'bl_user',
+      gid: <?=$group->id?>,
+      name: '<?=$block_user->id?>',
+      hash: '<?=hash_get($group->oid, 18, 'block')?>',
+      remove: 1
+    }, {
+      onDone: GroupsEdit.updateBlacklist.pbind(<?=$group->id?>),
+      showProgress: function() {
+        if (!el._s) el._s = val(el);
+        val(el, '<span class="progress_inline"></span>');
+      },
+      hideProgress: function() {
+        if (el._s) {
+          val(el, el._s);
+          el._s = false;
+        }
+      }
+    });
+  },
+  blbType: new Dropdown(ge('group_blb_type'), <?=jenc($intervals)?>, {
+    width: 240,
+    big: 1,
+    selectedItems: [<?=empty($block_info['bl_end_time']) ? '0' : '-1'?>]
+  }),
+  blbReason: new Dropdown(ge('group_blb_reason'), [[0,"Другое"],[1,"Спам"],[2,"Оскорбление участников"],[3,"Нецензурные выражения"],[4,"Сообщения не по теме"]], {
+    width: 190,
+    big: 1,
+    selectedItems: [<?=empty($block_info['bl_type']) ? '0' : intval($block_info['bl_type'])?>]
+  })
+});
+elfocus('group_blb_comment');

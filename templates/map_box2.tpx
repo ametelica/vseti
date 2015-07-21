@@ -1,0 +1,43 @@
+<?php
+	//dmp($var);
+?><div id="page_add_place_box" class="page_add_place_box no_type">
+  <div id="add_place_data" class="search_bar clear_fix">
+    <div id="country_row" class="row">
+      <div class="label fl_l ta_r">Страна:</div>
+      <div class="labeled fl_l">
+        <input type="text" name="place_country" id="place_country" value="" />
+      </div>
+      <div class="details fl_l" id="country_details"></div>
+      <br class="clear"/>
+    </div>
+    <div id="city_row" class="row">
+      <div class="label fl_l ta_r">Город:</div>
+      <div class="labeled fl_l">
+        <input type="text" name="place_city" id="place_city" value="" />
+      </div>
+      <div class="details fl_l" id="city_details"></div>
+      <br class="clear"/>
+    </div>
+    <div id="address_row" class="row">
+      <div class="label fl_l ta_r">Адрес*:</div>
+      <div class="labeled fl_l">
+        <input type="text" name="place_address" id="place_address" value="<?=$var['pl_address']?>" />
+      </div>
+      <div class="details fl_l" id="address_details"></div>
+      <br class="clear"/>
+    </div>
+    <div id="title_row" class="row">
+      <div class="label fl_l ta_r">Место:</div>
+      <div class="labeled fl_l">
+        <input type="text" class="text" name="place_title" id="place_title" value="<?=$var['pl_title']?>" />
+      </div>
+      <div class="details fl_l" id="title_details"></div>
+      <br class="clear"/>
+    </div>
+  </div>
+  <div id="public_place_map" class="places_map">
+    <div id="place_map_yandex" class="places_map"></div>
+    <div id="place_map_google" class="places_map"></div>
+    <div id="place_map_mapbox" class="places_map"></div>
+  </div>
+</div>

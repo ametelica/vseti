@@ -1,0 +1,76 @@
+<?php
+global $datetime, $user, $group, $fixed_comment, $is_group_private, $new_design;
+
+if ($fixed_comment && !$is_group_private) {
+  $post_id = $fixed_comment['oid'].'_'.$fixed_comment['id'];
+  $author = pdata($fixed_comment['aid']);
+  ?>
+  <div class="group_fixed_post module wall_module">
+	<div id="post<?= $post_id ?>" class="post all own post_copy post_online"
+		 onmouseover="wall.postOver('<?= $post_id ?>')" onmouseout="wall.postOut('<?= $post_id ?>')"
+		 onclick="wall.postClick('<?= $post_id ?>', event)">
+	  <div class="post_table">
+		<div class="post_image">
+		  <a class="post_image" href="<?=$author->lnk?>"><img src="<?=$author->photo()?>" width="<?=$new_design ? 100 : 50?>" height="<?=$new_design ? 100 : 50?>"/></a>
+		  <span class="online"><?=(empty($author->user_info['online']) or !empty($new_design))?'':'ВСети'?></span>
+		</div>
+		<div class="post_info">
+		  
+		  <? if($group->user_rank > 0) { ?>
+		  <div class="fl_r post_actions_wrap">
+<div class="post_actions">
+<div id="post_delete<?= $post_id ?>" class="post_delete_button fl_r" onmouseout="wall.deactiveDeletePost('<?= $post_id ?>', 'post_delete')" onmouseover="wall.activeDeletePost('<?= $post_id ?>', 'Открепить', 'post_delete')" onclick="wall.fixPost(this, '<?=$post_id ?>', '<?=hash_get($fixed_comment['id']  . $user->id, 16, 'fix_post') ?>', 0);" style="opacity: 0;"></div>
+</div>
+</div>
+		  <? } ?>
+		  
+		  <div class="wall_text">
+		  	<a class="author" onclick="return nav.go(this, event)" href="<?=$author->lnk?>"><?=$author->title?></a>
+			<div id="wpt<?= $post_id ?>">
+			  <?= tpx('wall_post_body', array('comment' => $fixed_comment, 'show_full' => 1)) ?>
+			</div>
+		  </div>
+
+		  <div class="post_full_like_wrap fl_r">
+			<div class="post_full_like">
+			  <div class="post_like fl_r" onclick="wall.like('<?= $post_id ?>', '<?= hash_get('wall' . $post_id . $user->id, 18, 'lk') ?>'); event.cancelBubble = true;" onmouseout="wall.likeOut('<?= $post_id ?>')" onmouseover="wall.likeOver('<?= $post_id ?>')">
+				<span id="like_link<?= $post_id ?>" class="post_like_link fl_l">Мне нравится</span>
+				<i id="like_icon<?= $post_id ?>" class="post_like_icon fl_l <?= $fixed_comment['like'] == 0 ? 'no_likes' : '' ?><?= $fixed_comment['like_my'] == 1 ? 'my_like' : '' ?>"></i>
+				<span id="like_count<?= $post_id ?>" class="post_like_count fl_l"><?= $fixed_comment['like'] == 0 ? '' : $fixed_comment['like'] ?></span>
+			  </div>
+			  <? if($new_design and $fixed_comment['aid'] != $user->id) { ?>
+				<div class="post_share fl_r" onclick="wall.likeShareCustom('<?= $post_id ?>'); event.cancelBubble = true;" onmouseout="wall.postShareOut('<?= $post_id ?>', event)" onmouseover="wall.postShareOver('<?= $post_id ?>')">
+				  <span id="share_link<?= $post_id ?>" class="post_share_link fl_l">Поделиться</span>
+				  <i id="share_icon<?= $post_id ?>" class="post_share_icon sp_main fl_l"></i>
+				  <span id="share_count<?= $post_id ?>" class="post_share_count fl_l"></span>
+				</div>
+			  <? } ?>
+			     
+			  	
+			  	<a class="post_comment fl_r" href="/wall<?= $post_id ?>" onclick="return nav.go(this, event); event.cancelBubble = true;">
+				  <span id="comment_link<?= $post_id ?>" class="post_comment_link fl_l">Комментарии</span>
+				  <i id="comment_icon<?= $post_id ?>" class="post_comment_icon sp_main fl_l"></i>
+				  <span id="share_count<?= $post_id ?>" class="post_share_count fl_l"><?=$fixed_comment['cw_total'] ?></span>
+				</a>
+			  	
+			  
+			  	  
+			  	  
+			</div>
+		  </div>
+
+		  <div class="replies">
+			<div id="wpe_bottom<?= $post_id ?>" class="reply_link_wrap">
+			  <small>
+				<a href="/wall<?= $post_id ?>" onclick="return nav.go(this, event)">
+				  <span class="rel_date"><?=$datetime->sdate($fixed_comment['date'])?></span>
+				</a>
+			  </small>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+    <a class="group_wiki_hider" href="/wall<?= $post_id ?>" onclick="return nav.go(this, event)">Перейти к записи &raquo;</a>
+  </div>
+<? } ?>

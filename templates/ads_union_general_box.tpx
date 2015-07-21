@@ -1,0 +1,75 @@
+<?php
+global $info, $union_id;
+
+?>
+<div class="ads_unions_box">
+  <table>
+    <tr style="">
+      <td class="label">Название:</td>
+      <td class="labeled">
+        <input type="text" class="text" name="union_name" id="union_name" value="<?=$info['name']?>" onkeydown="cur.onKeyDownUnionName(event);"/>
+      </td>
+      <td style="width: 10px;">&nbsp;</td>
+    </tr>
+  </table>
+</div><!>box.removeButtons();
+box.addButton(getLang('box_cancel'), false, 'no');
+box.addButton(getLang('box_save'), function() { cur.saveUnionsGeneralInfo(); });
+box.setControlsText('<img id="progress_general_info_box" src="/images/upload.gif" style="top: 1px; display: none;">');
+
+onDomReady(function() {
+  //box.setOptions({width: 'auto'});
+  elfocus('union_name');
+});
+
+cur.onKeyDownUnionName = function(event) {
+  if (event.keyCode == KEY.RETURN) {
+    cur.saveUnionsGeneralInfo();
+  }
+}
+
+var generalInfoSavingLocked = false;
+
+cur.lockGeneralInfoSaving = function() {
+  if (generalInfoSavingLocked) {
+    return false;
+  }
+  generalInfoSavingLocked = true;
+  show('progress_general_info_box');
+  return true;
+}
+
+cur.unlockGeneralInfoLocked = function() {
+  generalInfoSavingLocked = false;
+  hide('progress_general_info_box');
+}
+
+cur.saveUnionsGeneralInfo = function() {
+  if (!cur.lockGeneralInfoSaving()) {
+    return;
+  }
+
+  function fail(message) {
+    showFastBox(getLang('ads_error_box_title'), message);
+  }
+
+  var ajaxParams = {"union_id":"<?=$union_id?>","filter":"name","from_header":"true","hash":"224e48dc3b4aa3b369"};
+  ajaxParams.name = ge('union_name').value;
+
+  ajax.post('/ads?act=a_unions_general_info_save', ajaxParams, {onDone: onRequestComplete, onFail: onRequestComplete});
+
+  function onRequestComplete(response) {
+    cur.unlockGeneralInfoLocked();
+    if (isObject(response)) {
+      if (response.error) {
+        fail(response.error);
+      } else if (!response.not_changed) {
+        if (response.name_text) {
+          Ads.updateUnionName(ajaxParams.union_id, response.name_text);
+        }
+      }
+    }
+    box.hide(200);
+    return true;
+  };
+}

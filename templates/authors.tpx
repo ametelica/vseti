@@ -1,0 +1,190 @@
+<?php
+global $path_css,$path_js,$hash,$user,$langpack,$datetime,$setting,$new_design;
+?>
+<style>
+#content img {
+	border-radius: 7px;
+	float: left;
+	margin-right: 12px;
+}
+#content {
+	padding: 0px !important;
+	margin: 0px !important;
+	position: relative;
+}
+
+#content p {
+	font-size: 14px;
+	*padding-left: 10px;
+	/* text-indent: 30px; */
+	line-height: 160%;
+}
+#content h4{
+	font-size: 21px;
+	margin: 10px 0;
+}
+#content h1{
+	border-bottom: 1px solid #E8EBEE;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  padding: 0 0 3px;
+  margin-bottom: 10px;
+}
+#button_green {
+	margin: 0px auto;
+}
+#main_panel {
+
+	width: 550px;
+	padding: 12px 20px;
+	
+}
+#right_panel {
+		bottom: 0;
+    float: right;
+    padding: 12px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 230px;
+}
+#bxxt1{
+	font-size: 25px; 	
+	text-shadow: #000 0px -2px 0px;
+	font-weight: bold;
+}
+table.prt td a {
+    display: block;
+    margin-right: 20px;
+    float: left; 
+}
+
+div.prt {
+    height: 70px;
+    width: 220px;
+    background: #f6f6f6;
+    padding: 5px;
+    margin: 0 10px 10px 0;
+    float: left;
+}
+
+.prt div.plogo {
+    width: 100px;
+    text-align: center;
+    height: 70px;
+    float: left;
+    margin-right: 10px;
+}
+</style>
+
+<script type="text/javascript">
+function create_mail(nama, domain, tld) {
+	var mail;
+	var fnama = nama;
+	fnama += '@' + domain + '.' + tld;
+	mail = '<a class="wikiVsLink" href="' + 'ma' + 'il' + 'to:' + fnama;
+	mail += '">' + fnama + '<' + '/a>';
+	document.write(mail);
+}
+</script>
+<script src="<?=$path_js?>/common.js"></script>
+<link rel="stylesheet" href="<?=$path_css?>/al/common<? if($new_design) {?>_new<? } ?>.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/rustyle<? if($new_design) {?>_new<? } ?>.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/al/page<? if($new_design) {?>_new<? } ?>.css" type="text/css" />
+<link rel="stylesheet" href="<?=$path_css?>/al/wiki3.css" type="text/css" />
+<?
+if($new_design) echo tpx('header_design');
+?>
+ <div id="wrap2">
+  <div id="wrap1">
+   <div id="content" class="white_page">
+		 
+		 
+		 <div id="right_panel" class="white_page">
+			 <!--<h4>Наши партнёры</h4>
+			<div class="prt">
+     <div class="plogo"><a href="http://radio.aplus.by/" target="_blank"><img src="http://g<? if ($user->byfly==1) {?>1<? } else { ?>2<? } ?>.vseti.by/images/partners/aplus.png" alt=""/></a></div>
+     <div class="info"><a href="http://radio.aplus.by/" target="_blank">radio.aplus.by</a><br />Первое интернет-радио в Беларуси</div>
+    </div>
+    
+    <div class="prt">
+     <div class="plogo"><a href="http://map.by" target="_blank"><img src="http://g<? if ($user->byfly==1) {?>1<? } else { ?>2<? } ?>.vseti.by/images/partners/mapby.png" alt=""/></a></div>
+     <div class="info"><a href="http://map.by" target="_blank">map.by</a><br />Основа геолокационного сервиса</div>
+    </div>
+    
+    <div class="prt">
+     <div class="plogo"><a href="http://smskin.by" target="_blank"><img src="http://g<? if ($user->byfly==1) {?>1<? } else { ?>2<? } ?>.vseti.by/images/partners/smskin.png" alt=""/></a></div>
+     <div class="info"><a href="http://smskin.by" target="_blank">smskin.by</a><br />SMS-уведомления об изменениях на странице</div>
+    </div> -->
+    
+			 
+			<h4>Активные пользователи</h4>
+			<p>вносят значительный вклад в развитие ВСети:<br /><br />
+			<a class="wikiVsLink" href="/id208802">Михаил Лахвич</a><br />
+      <a class="wikiVsLink" href="/sl">Руслан Галиахметов</a><br />
+      <a class="wikiVsLink" href="/id187555">Денис Пискунович</a><br />
+      <a class="wikiVsLink" href="/egerasimenko">Евгений Герасименко</a><br />
+      <a class="wikiVsLink" href="/id78509">Елена Калита</a><br />
+			<a class="wikiVsLink" href="/id299668">Андрeй Борук</a><br />
+			<a class="wikiVsLink" href="/id520444">Александр Кошикевич</a><br />
+			<a class="wikiVsLink" href="/id256883">Роман Кожевников</a><br />			
+      
+      Может быть Вы?<br />
+      </p>
+
+		</div>
+		 
+   <div id="main_panel">
+		<p align="justify" style="margin-top: 0px;">ВСети.by - белорусское интернет-сообщество, частный и полностью независимый социальный проект. Авторы ставят перед собой задачи развития байнета и предоставления пользователям удобного инструмента для общения, развлечения, образования и бизнеса.</p>
+		<p>Мы поддерживаем идеи здорового образа жизни, трезвости, счастливой семьи, материнства, экологии, умеренного увлечения спортом и предоставляем дополнительное продвижение людям и сообществам, затрагивающие эти и другие важные социальные темы.</p>
+	 	<h4>Контакты</h4>
+		 	<p>
+		 	<script>create_mail('support','vseti','by');</script> по техническим вопросам и для прессы<br />
+		 	<script>create_mail('reklama','vseti','by');</script> партнерские программы, информационная поддержка, размещение рекламы<br />
+		 	</p>
+			
+			<h4>Реквизиты</h4>
+			<p>
+			ООО «ВСетиБай»<br />
+			220113 г. Минск, а/я 530<br />
+			р/с № 3012009750011<br />
+			в отделении №526 г. Минск ОАО «Белинвестбанк»<br />
+			адрес банка: г. Минск, пр-т Независимости, д. 77<br />
+			код банка: 739<br />
+			УНП 191442683<br />
+			</p>
+			
+			<h4>Логотип ВСети</h4>
+			<p>
+			<img src="/images/vsetibylogo200.png" width="300" height="61" title="logo" alt="логотип ВСети" style="float: none;"/><br>
+			<a class="wikiVsLink" href="http://g<? if ($user->byfly==1) {?>1<? } else { ?>2<? } ?>.vseti.by/static/logo.png" target="_blank">.png</a>, <a class="wikiVsLink" href="http://g<? if ($user->byfly==1) {?>1<? } else { ?>2<? } ?>.vseti.by/static/logo.psd" target="_blank">.psd</a>
+			</p>	
+			
+			
+    <br class="clear"/>
+    
+		<!--<h4>Информационные партнёры</h4>
+    
+    <table class="prt">
+     <tr>
+      <td>
+      <a href="http://naviny.by" target="_blank"><img src="http://g<? if ($user->byfly==1) {?>1<? } else { ?>2<? } ?>.vseti.by/images/partners/naviny.png" alt=""/></a>
+      <a href="http://investweekend.by/" target="_blank"><img src="http://g<? if ($user->byfly==1) {?>1<? } else { ?>2<? } ?>.vseti.by/images/partners/invest.png" alt=""/></a>
+      <a href="http://startupweekend.by/" target="_blank"><img src="http://g<? if ($user->byfly==1) {?>1<? } else { ?>2<? } ?>.vseti.by/images/partners/startup.png" alt=""/></a>
+      </td>
+     </tr>
+    </table>-->
+			
+		 	<br />
+			
+			<br />
+			<br />
+			<center>vseti.by &copy; 2008-<? echo date('Y'); ?> ООО "ВСетиБай"</center>
+			
+		</div>
+		
+		 
+   </div><!--/content-->
+  </div><!--/wrap1-->
+ </div><!--/wrap2-->

@@ -1,0 +1,261 @@
+<?php
+	global $demo_stat;
+	
+	foreach($demo_stat as $k => $v) {
+		echo $v['js'];
+	}
+	/*
+?>
+if (!('cur' in window)) {
+  window.cur = {};
+}
+
+(function() {
+  var timer = setInterval(function() {
+    if ('svgData' in cur && 'clicks_sex' in cur.svgData && cur.svgData['clicks_sex']) {
+      clearInterval(timer);
+      extend(cur.svgData['clicks_sex'], {
+        width: 150,
+        height: 150
+      });
+      cur.invokeSvgFunction('clicks_sex', 'setOptions', [{
+          showLegend: false
+        }]);
+      cur.invokeSvgFunction('clicks_sex', 'loadData', [[{"l":"Men","q":"800","p":42.500000,"id":0,"color":"#597BA8"},{"l":"Women","q":"1082","p":57.500000,"id":1,"color":"#82A2CD"}]]);
+    }
+  }, 100);
+	
+	console.log(cur.svgData);
+})();
+
+
+(function() {
+  var timer = setInterval(function() {
+    if ('svgData' in cur && 'clicks_age' in cur.svgData && cur.svgData['clicks_age']) {
+      clearInterval(timer);
+      extend(cur.svgData['clicks_age'], {
+        width: 100,
+        height: 100
+      });
+      cur.invokeSvgFunction('clicks_age', 'setOptions', [{
+          showLegend: false
+        }]);
+      cur.invokeSvgFunction('clicks_age', 'loadData', [[{"l":"under 18","q":"574","p":38.000000,"id":0,"color":"#597BA8"},{"l":"from 18 to 21","q":"217","p":14.400000,"id":1,"color":"#82A2CD"},{"l":"from 21 to 24","q":"279","p":18.500000,"id":2,"color":"#BF68A6"},{"l":"from 24 to 27","q":"186","p":12.300000,"id":3,"color":"#78B27C"},{"l":"from 27 to 30","q":"77","p":5.100000,"id":4,"color":"#E7E271"},{"l":"from 30 to 35","q":"50","p":3.300000,"id":5,"color":"#F3B200"},{"l":"from 35 to 45","q":"54","p":3.600000,"id":6,"color":"#D75C56"},{"l":"over 45","q":"73","p":4.800000,"id":7,"color":"#B6D15E"}]]);
+    }
+  }, 100);
+})();
+
+(function() {
+  var timer = setInterval(function() {
+    if ('svgData' in cur && 'clicks_sexage' in cur.svgData && cur.svgData['clicks_sexage']) {
+      clearInterval(timer);
+      extend(cur.svgData['clicks_sexage'], {
+        width: 300,
+        height: 300
+      });
+      cur.invokeSvgFunction('clicks_sexage', 'setOptions', [{
+          showLegend: false
+        }]);
+      cur.invokeSvgFunction('clicks_sexage', 'loadData', [[
+			{"l":"under 18","q":"300","p":19.900000,"c":"Men","id":0,"color":"#597BA8"},
+			{"l":"from 18 to 21","q":"96","p":6.400000,"c":"Men","id":1,"color":"#82A2CD"},
+			{"l":"from 21 to 24","q":"108","p":7.200000,"c":"Men","id":2,"color":"#BF68A6"},
+			{"l":"from 24 to 27","q":"55","p":3.600000,"c":"Men","id":3,"color":"#78B27C"},
+			{"l":"from 27 to 30","q":"27","p":1.800000,"c":"Men","id":4,"color":"#E7E271"},
+			{"l":"from 30 to 35","q":"14","p":0.900000,"c":"Men","id":5,"color":"#F3B200"},
+			{"l":"from 35 to 45","q":"19","p":1.300000,"c":"Men","id":6,"color":"#D75C56"},
+			{"l":"over 45","q":"31","p":2.100000,"c":"Men","id":7,"color":"#B6D15E"},
+			{"l":"under 18","q":"274","p":18.100000,"c":"Women","id":8,"color":"#74D2B2"},
+			{"l":"from 18 to 21","q":"121","p":8.000000,"c":"Women","id":9,"color":"#6BC3D3"},{"l":"from 21 to 24","q":"171","p":11.300000,"c":"Women","id":10,"color":"#586EA9"},{"l":"from 24 to 27","q":"131","p":8.700000,"c":"Women","id":11,"color":"#837FCF"},{"l":"from 27 to 30","q":"50","p":3.300000,"c":"Women","id":12,"color":"#8866C9"},{"l":"from 30 to 35","q":"36","p":2.400000,"c":"Women","id":13,"color":"#98CD9E"},{"l":"from 35 to 45","q":"35","p":2.300000,"c":"Women","id":14,"color":"#CECC8D"},{"l":"over 45","q":"42","p":2.800000,"c":"Women","id":15,"color":"#AE914C"}]]);
+    }
+  }, 100);
+})();
+
+(function() {
+  var timer = setInterval(function() {
+    if ('svgData' in cur && 'clicks_cities' in cur.svgData && cur.svgData['clicks_cities']) {
+      clearInterval(timer);
+      extend(cur.svgData['clicks_cities'], {
+        width: 150,
+        height: 150
+      });
+      cur.invokeSvgFunction('clicks_cities', 'setOptions', [{
+          showLegend: false
+        }]);
+      cur.invokeSvgFunction('clicks_cities', 'loadData', [[{"l":"Минск","q":"403","p":24.400000,"id":0,"color":"#597BA8"},{"l":"Витебск","q":"104","p":6.300000,"id":1,"color":"#82A2CD"},{"l":"Могилев","q":"96","p":5.800000,"id":2,"color":"#BF68A6"},{"l":"Гомель","q":"87","p":5.300000,"id":3,"color":"#78B27C"},{"l":"Брест","q":"60","p":3.600000,"id":4,"color":"#E7E271"},{"l":"Other cities","q":null,"p":54.500000,"id":5,"color":"#F3B200"}]]);
+    }
+  }, 100);
+})();
+
+(function() {
+  var timer = setInterval(function() {
+    if ('svgData' in cur && 'views_cities' in cur.svgData && cur.svgData['views_cities']) {
+      clearInterval(timer);
+      extend(cur.svgData['views_cities'], {
+        width: 150,
+        height: 150
+      });
+      cur.invokeSvgFunction('views_cities', 'setOptions', [{
+          showLegend: false
+        }]);
+      cur.invokeSvgFunction('views_cities', 'loadData', [[{"l":"Минск","q":"146977","p":33.100000,"id":0,"color":"#597BA8"},{"l":"Гомель","q":"28675","p":6.500000,"id":1,"color":"#82A2CD"},{"l":"Витебск","q":"25117","p":5.700000,"id":2,"color":"#BF68A6"},{"l":"Могилев","q":"21535","p":4.900000,"id":3,"color":"#78B27C"},{"l":"Гродно","q":"20376","p":4.600000,"id":4,"color":"#E7E271"},{"l":"Other cities","q":null,"p":45.300000,"id":5,"color":"#F3B200"}]]);
+    }
+  }, 100);
+})();
+
+(function() {
+  var timer = setInterval(function() {
+    if ('svgData' in cur && 'views_sex' in cur.svgData && cur.svgData['views_sex']) {
+      clearInterval(timer);
+      extend(cur.svgData['views_sex'], {
+        width: 150,
+        height: 150
+      });
+      cur.invokeSvgFunction('views_sex', 'setOptions', [{
+          showLegend: false
+        }]);
+      cur.invokeSvgFunction('views_sex', 'loadData', [[{"l":"Men","q":"241343","p":37.900000,"id":0,"color":"#597BA8"},{"l":"Women","q":"394628","p":62.100000,"id":1,"color":"#82A2CD"}]]);
+    }
+  }, 100);
+})();
+
+(function() {
+  var timer = setInterval(function() {
+    if ('svgData' in cur && 'views_age' in cur.svgData && cur.svgData['views_age']) {
+      clearInterval(timer);
+      extend(cur.svgData['views_age'], {
+        width: 150,
+        height: 150
+      });
+      cur.invokeSvgFunction('views_age', 'setOptions', [{
+          showLegend: false
+        }]);
+      cur.invokeSvgFunction('views_age', 'loadData', [[{"l":"under 18","q":"77587","p":14.800000,"id":0,"color":"#597BA8"},{"l":"from 18 to 21","q":"128594","p":24.500000,"id":1,"color":"#82A2CD"},{"l":"from 21 to 24","q":"170379","p":32.400000,"id":2,"color":"#BF68A6"},{"l":"from 24 to 27","q":"83523","p":15.900000,"id":3,"color":"#78B27C"},{"l":"from 27 to 30","q":"26919","p":5.100000,"id":4,"color":"#E7E271"},{"l":"from 30 to 35","q":"12783","p":2.400000,"id":5,"color":"#F3B200"},{"l":"from 35 to 45","q":"7949","p":1.500000,"id":6,"color":"#D75C56"},{"l":"over 45","q":"17979","p":3.400000,"id":7,"color":"#B6D15E"}]]);
+    }
+  }, 100);
+})();
+
+(function() {
+  var timer = setInterval(function() {
+    if ('svgData' in cur && 'views_sexage' in cur.svgData && cur.svgData['views_sexage']) {
+      clearInterval(timer);
+      extend(cur.svgData['views_sexage'], {
+        width: 300,
+        height: 300
+      });
+      cur.invokeSvgFunction('views_sexage', 'setOptions', [{
+          showLegend: false
+        }]);
+      cur.invokeSvgFunction('views_sexage', 'loadData', [[{"l":"under 18","q":"34298","p":6.500000,"c":"Men","id":0,"color":"#597BA8"},{"l":"from 18 to 21","q":"47031","p":8.900000,"c":"Men","id":1,"color":"#82A2CD"},{"l":"from 21 to 24","q":"64840","p":12.300000,"c":"Men","id":2,"color":"#BF68A6"},{"l":"from 24 to 27","q":"32990","p":6.300000,"c":"Men","id":3,"color":"#78B27C"},{"l":"from 27 to 30","q":"11206","p":2.100000,"c":"Men","id":4,"color":"#E7E271"},{"l":"from 30 to 35","q":"5124","p":1.000000,"c":"Men","id":5,"color":"#F3B200"},{"l":"from 35 to 45","q":"2559","p":0.500000,"c":"Men","id":6,"color":"#D75C56"},{"l":"over 45","q":"8374","p":1.600000,"c":"Men","id":7,"color":"#B6D15E"},{"l":"under 18","q":"43289","p":8.200000,"c":"Women","id":8,"color":"#74D2B2"},{"l":"from 18 to 21","q":"81563","p":15.500000,"c":"Women","id":9,"color":"#6BC3D3"},{"l":"from 21 to 24","q":"105539","p":20.100000,"c":"Women","id":10,"color":"#586EA9"},{"l":"from 24 to 27","q":"50533","p":9.600000,"c":"Women","id":11,"color":"#837FCF"},{"l":"from 27 to 30","q":"15713","p":3.000000,"c":"Women","id":12,"color":"#8866C9"},{"l":"from 30 to 35","q":"7659","p":1.500000,"c":"Women","id":13,"color":"#98CD9E"},{"l":"from 35 to 45","q":"5390","p":1.000000,"c":"Women","id":14,"color":"#CECC8D"},{"l":"over 45","q":"9605","p":1.800000,"c":"Women","id":15,"color":"#AE914C"}]]);
+    }
+  }, 100);
+})();
+
+if (!cur.togglePiechartTooltip) {
+  document.body.appendChild(ce('div', {id: 'piechart_tooltip', className: 'piechart_tooltip'}));
+  addEvent(ge('piechart_tooltip'), 'mouseover', function(e) {
+      cur.onPiechartMousemove(e);
+    });
+
+  cur.onWindowMessageFromSVG = function(e) {
+    if (!e.origin.match(/^https?:\/\/([a-zA-Z0-9\-\.]+\.)?vseti\.local$/)) {
+      return false;
+    }
+    var data = e.data;
+    switch (data.act) {
+      case 'init':
+        if (!('svgData' in cur)) cur.svgData = {};
+        cur.svgData[data.svgUid] = {
+          ref: e.source
+        };
+        break;
+      case 'invoke':
+        var parts = data.method.split('.');
+        var ref = window;
+        for (var i = 0; i < parts.length - 1; i++) {
+          ref = ref[parts[i]];
+        }
+        ref[parts.pop()].apply({}, data.args);
+        break;
+    }
+  };
+  window.addEventListener('message', cur.onWindowMessageFromSVG, false);
+
+  cur.invokeSvgFunction = function(id, method, args) {
+    var menu = cur.svgData[id];
+    if (menu.ref) {
+      menu.ref.postMessage({
+        act: method,
+        data: args
+      }, '*');
+    } else {
+      menu[method].apply({}, args);
+    }
+  }
+
+  cur.highlightChartRowList  = function(svgUid, id, len, isIn) {
+    for (var i = 0; i < len; i++) {
+      var hList = ge('piechart_row_' + svgUid + '_' + i);
+      if (!hList) continue;
+      fadeTo(hList, 200, id == i || !isIn ? 1 : 0.5);
+    }
+  }
+
+  // function for fixing zoom in webkit browsers
+  if (browser.chrome || browser.safari) {
+
+    cur.webkitSVGZoomFixTimer = setInterval((function() {
+        var curZoom = getZoom();
+        return function() {
+          var zoom = getZoom();
+          if (zoom == curZoom) return;
+          curZoom = zoom;
+          if (!('svgData' in cur)) return;
+          for (var id in cur.svgData) {
+            cur.svgData[id].container.documentElement.setAttribute('width', (cur.svgData[id].width) + 'px');
+            cur.svgData[id].container.documentElement.setAttribute('height', (cur.svgData[id].height) + 'px');
+          }
+        }
+      })(), 50);
+  }
+
+
+  cur.onPiechartMousemove = function(e, id) {
+    var xy = getXY(ge('svg_embed_' + id)) || [0, 0];
+    var x = intval(e.clientX || e.pageX) + xy[0],
+        y = intval(e.clientY || e.pageY) + xy[1],
+        s = getSize(ge('piechart_tooltip').firstChild);
+
+    extend(ge('piechart_tooltip').style, {
+        left: (x - s[0] - 10) + 'px',
+        top: (y - s[1]) + 'px'
+      });
+  }
+
+  cur.togglePiechartTooltip = function(data, isOn) {
+    var text = ['<b>', data.l, '</b>', ' — ', Number(data.p).toPrecision(3), '%'].join('');
+    if (data.c) {
+      text = ['<b>', data.c, '</b><br />', text].join('');
+    }
+    ge('piechart_tooltip').innerHTML = ['<div class="background">', text, '</div><div>', text, '</div>'].join('');
+    window[isOn ? 'show' : 'hide']('piechart_tooltip');
+  }
+
+  cur.destroy.push(function() {
+    document.body.removeChild(ge('piechart_tooltip'));
+    window.removeEventListener('message', cur.onWindowMessageFromSVG, false);
+
+    delete cur.onWindowMessageFromSVG;
+    delete cur.invokeSvgFunction;
+    delete cur.highlightChartRowList;
+    if (cur.webkitSVGZoomFixTimer) delete cur.webkitSVGZoomFixTimer;
+    delete cur.onPiechartMousemove;
+    delete cur.togglePiechartTooltip;
+  });
+}
+
+*/
+?>	
+cur.demographyDelayed = true;
+cur.isDemographySvg = 1;
+	 

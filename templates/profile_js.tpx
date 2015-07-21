@@ -1,0 +1,624 @@
+<?php
+global $db, $owner, $setting, $user, $privacy_wall_send, $show_full_info, $new_design, $interests2, $wall;
+
+$media_types = array (
+	array (
+		'photo',
+		'Фотографию'
+	),
+	array (
+		'video',
+		'Видеозапись'
+	),
+	array (
+		'audio',
+		'Аудиозапись'
+	),
+	array (
+		'doc',
+		'Документ'
+	),
+	array (
+		'poll',
+		'Опрос',
+		array(
+			'lang' => array(
+				'q' => "Тема опроса",
+				'a' => "Варианты ответа",
+				'i' => "Добавить вариант",
+				'd' => "Удалить вариант",
+				'c' => "Анонимное голосование"
+			)
+		)
+	),
+	array (
+		'graffiti',
+		'Граффити'
+	),
+	array (
+		'map',
+		'Карта'
+	),
+);
+
+if($user->is_me($owner) and $wall->can_edit) {
+	$media_types[] = array(
+		'postpone',
+		'Таймер',
+		array(
+			'lang' => array(
+				'profile_choose_timer' => 'Время публикации',
+				'profile_wall_postpone_at' => 'в',
+				'profile_wall_postpone_btn' => 'В очередь',
+				'export_to_twitter' => 'экспорт в Twitter',
+				'export_to_facebook' => 'экспорт в Facebook',
+				'friends_only' => 'только для друзей',
+			),
+			'date' => time(),
+		)
+	);
+}
+
+$wall_counts = array (
+	'',
+	'%s запись',
+	'%s записи',
+	'%s записей'
+);
+
+$spot_1 = $db->spotn($owner->id);
+$spot_2 = $db->spotn($user->id);
+
+$si_1 = spot_info($spot_1);
+$si_2 = spot_info($spot_2);
+
+if ($si_1['status'] == 1 and $si_2['status'] == 1) {
+	$mail_html = '<div class="mail_box_content clear_fix">
+ <div class="label fl_l ta_r">Кому:</div>
+ <div class="labeled fl_l"><a class="mem_link" href="/id' . $owner->user_info['user_id'] . '" onclick="return nav.go(this, event)">' . $owner->user_info['fio'] . '</a></div>
+ <div class="label fl_l ta_r">Сообщение:</div>
+ <div class="labeled fl_l"><textarea id="write_box_text" maxlength="2000" name="write_box_text" onkeydown="if (event.ctrlKey && event.keyCode == 13) cur.submitBoxMessage();" onchange="curBox().changed=true;"></textarea></div>
+ <div class="fl_l" id="mail_box_add_row" '.($new_design ? '' : 'style="display: none"').'><a class="link" id="mail_box_add_link">Прикрепить</a></div>
+ <div class="label fl_l"></div>
+ <div class="labeled fl_l">
+		<div id="mail_box_added_row" class="media_preview"></div>
+ </div>
+</div>';
+} else {
+	$mail_html = '<div class="mail_box_content clear_fix">
+ 	<div class="error">Отправка сообщения этому пользователю временно недоступна. Идёт обслуживание базы данных.</div>
+	<div id="mail_box_added_row" class="media_preview"></div>
+</div>';
+}
+
+$mail_js = 'cur.addMailBoxMedia = null;
+cur.decodedHashes = {};
+cur.dec_hash = function(hash) {
+    (function(_){cur.decodedHashes[_]=(function(__){var ___=ge?\'\':\'___\';for(____=0;____<__.length;++____)___+=__.charAt(__.length-____-1);return geByClass?___:\'___\';})(_.substr(_.length-5)+_.substr(4,_.length-12));})(hash);
+  }
+cur.decodehash = function(hash) {
+  cur.dec_hash(hash);
+  return cur.decodedHashes[hash];
+}
+
+cur.mediaTypes = [["photo","Фотографию"],["video","Видеозапись"],["audio","Аудиозапись"]];
+
+cur.submitBoxMessage = function() {
+  if (isVisible(ge(\'sending_progress\'))) return;
+
+  if (trim(ge(\'write_box_text\').value).length || cur.addMailBoxMedia.chosenMedias) {
+    box.showProgress();
+    var params = {act: \'a_send\', ajax: 1, chas: cur.decodehash(\'' . hash_get($owner->user_info['user_id'], 18, 'msg') . '\'), to_id: ' . $owner->user_info['user_id'] . ', title: \'\', message: ge(\'write_box_text\').value, from: \'box\'};
+    if (cur.addMailBoxMedia.chosenMedias) {
+    	var media = [];
+		each (cur.addMailBoxMedia.chosenMedias, function (k, v) {
+          if (!v) return;
+          media.push(v[0] + \',\' + v[1]);
+        });
+        params.media = media.join(\';\');
+    }
+    ajax.post(\'al_mail.php\', params, {onDone: function(text) {
+      box.hideProgress();
+      box.hide();
+      showDoneBox(text);
+    }});
+  } else {
+    ge(\'write_box_text\').focus();
+  }
+}
+
+box.removeButtons();
+box.addButton(getLang(\'global_cancel\'), null, \'no\');
+box.addButton(\'Отправить\', cur.submitBoxMessage);
+box.setControlsText(\'<a id="send_msg_to_history" href="/write' . $owner->id . '?hist=1">Показать историю переписки</a>\');
+
+window.writeFullPage = function(e) {
+  if (checkEvent(e)) return true;
+  box.showProgress();
+  var query = {\'0\': \'write' . $owner->id . '\', hist: 1, message: val(\'write_box_text\'), title: val(\'write_box_subj\'), media: \'\'};
+  /*
+  debugLog(query, cur.addMailBoxMedia.chosenMedias, cur.addMailBoxMedia.chosenMediaData);
+  if (cur.addMailBoxMedia.chosenMedia) {
+    query.media = cur.addMailBoxMedia.chosenMedia.join(\'*\') + \';\' + ((isArray(cur.addMailBoxMedia.chosenMediaData) ? cur.addMailBoxMedia.chosenMediaData.join(\'*\') : cur.addMailBoxMedia.chosenMediaData) || \'\');
+  }*/
+  nav.go(query, null, {noframe: 1});
+  return false;
+}
+setTimeout(function() {
+  ge(\'write_box_text\').focus();
+}, 0);
+
+var tmp = cur.postTo;
+cur.postTo = false;
+box.setOptions({onHide: function() { cur.postTo = tmp; }});
+
+stManager.add([\'page.js\', \'page.css\'], function() {
+  cur.addMailBoxMedia = initAddMedia(\'mail_box_add_link\', \'mail_box_added_row\', cur.mediaTypes);
+  cur.addMailBoxMedia.onChange = function() {
+    box.changed = true;
+  }
+});';
+
+$wall_tpl = array ( 
+    'reply_form' => '<div id="reply_box%post_id%" class="reply_box clear_fix" onclick="return cancelEvent(event)">
+  <a class="reply_form_image" href="'.$user->lnk.'"><img src="'.$user->photo().'" class="reply_form_image" /></a>
+  <div class="reply_form">
+    <input type="hidden" id="reply_to%post_id%" value="" />
+    <div class="reply_field_wrap clear_fix">
+      <div class="reply_field_tail"></div>
+      <div id="reply_smile%post_id%" class="emoji_smile fl_l" style="right: 1px; opacity: 0.7;" onclick="return cancelEvent(event);" onmousedown="return wall.showEmojiTT(\'%post_id%\', this, event);" onmouseout="if (window.Emoji) Emoji.ttOut(this);" onmouseover="if (window.Emoji) Emoji.ttOver(this);" title="Используйте TAB, чтобы быстрее открывать смайлы">
+        <div class="emoji_smile_icon_on"></div>
+        <div class="emoji_smile_icon"></div>
+      </div>
+      <div id="reply_field%post_id%" class="reply_field" onfocus="return wall.showEditReply(\'%post_id%\', event);" contenteditable="true" placeholder="Комментировать.."></div>
+    </div>
+    <div id="reply_media_preview%post_id%" class="reply_media_preview clear_fix media_preview"></div>
+    <div class="reply_warn clear" id="reply_warn%post_id%"></div>
+    <div id="submit_reply%post_id%" class="submit_reply clear">
+      <div class="fl_l reply_button_wrap"><div class="button_green"><button id="reply_button%post_id%" onclick="wall.sendReply(\'%post_id%\', event);">Отправить</button></div></div>
+      <div class="reply_as_group_wrap fl_l ">
+        <div class="checkbox" id="reply_as_group%post_id%" onclick="checkbox(this)"><div></div>от имени сообщества</div>
+      </div>
+      <div id="reply_to_title%post_id%" class="reply_to_title fl_l"></div>
+      <div id="reply_media_lnk%post_id%" class="reply_media_lnk fl_r"><span class="add_media_lnk">Прикрепить</span></div>
+    </div>
+  </div>
+</div>',
+     'reply_multiline' => $user->user_info['multiline']==1?true:false,
+     'reply_multiline_intro' => false,
+     'reply_fast' => '<div id="post%reply_id%" class="reply reply_dived clear " onmouseover="wall.replyOver(\'%reply_id%\')" onmouseout="wall.replyOut(\'%reply_id%\')" >
+  <div class="reply_table">
+    <a class="reply_image" href="'.$user->lnk.'">
+      <img src="'.$user->photo().'" width="50" height="50" class="reply_image" />
+    </a>
+    <div class="reply_info">
+      
+      <div class="reply_text">
+        <a class="author" href="'.$user->lnk.'">'.$user->title.'</a>
+        <div class="wall_reply_text">%message%</div>
+        
+      </div>
+      <div class="info_footer">
+        
+        %date% 
+      </div>
+    </div>
+  </div>
+</div>',
+     'reply_multiline_hint' => '<div class="reply_submit_hint_wrap" onclick="event.cancelBubble = true;">
+  <div class="reply_submit_hint_title">Настройки отправки</div>
+  <div id="reply_submit_hint_opts">
+    <div class="radiobtn %disabled%" onclick="radiobtn(this, 0, \'reply_submit\'); wall.onReplySubmitChanged(0);"><div></div><b>Enter</b> — отправка сообщения<br><b>Shift+Enter</b> — перенос строки</div>
+    <div class="radiobtn %enabled%" onclick="radiobtn(this, 1, \'reply_submit\'); wall.onReplySubmitChanged(1);"><div></div><b>Ctrl+Enter</b> — отправка сообщения<br><b>Enter</b> — перенос строки</div>
+  </div>
+</div>',
+     'own_reply_link' => '<span class="divide">|</span><a class="reply_link" onclick="showBox(\'al_wall.php\', {act: \'own_reply\', post: \'%post_id%\'}, {stat: [\'ui_controls.css\', \'ui_controls.js\', \'mentions.js\']})">Ответить</a>',
+     'post' => '<div id="post%post_id%" class="post" onmouseover="wall.postOver(\'%post_id%\')" onmouseout="wall.postOut(\'%post_id%\')" onclick="wall.postClick(\'%post_id%\', event);">
+  <div class="post_table">
+    <div class="post_image">
+      <a class="post_image" href="%link%"><img src="%photo%" width="50" height="50"/></a>
+      %online%
+    </div>
+    <div class="post_info">
+      %del%
+      <div class="wall_text">%name% %text%</div>
+      <div class="post_like_wrap fl_r" onmouseover="wall.postLikeOver(\'%post_id%\')" onmouseout="wall.postLikeOut(\'%post_id%\')" onclick="wall.like(\'%post_id%\', \'1348729937_ac652e07d3220dfc21\'); event.cancelBubble = true;">
+  <div class="post_like">
+    <span class="post_like_link fl_l" id="like_link%post_id%">Мне нравится</span>
+    <i class="post_like_icon no_likes fl_l" id="like_icon%post_id%"></i>
+    <span class="post_like_count fl_l" id="like_count%post_id%"></span>
+  </div>
+</div>
+      <div class="replies"><div class="reply_link_wrap" id="wpe_bottom%post_id%">
+  <small><a href="%post_url%" onclick="return nav.go(this, event)">%date%</a>%date_postfix%</small><span id="reply_link%post_id%" class="reply_link"><span class="divide">|</span><a class="reply_link" onclick="wall.showEditReply(\'%post_id%\')">Комментировать</a></span>
+</div>
+<div class="replies_wrap clear" id="replies_wrap%post_id%" style="display: none;">
+  <div id="replies%post_id%"><input type="hidden" id="start_reply%post_id%" value=""/></div>
+  <div class="reply_fakebox_wrap" id="reply_fakebox%post_id%" onclick="wall.showEditReply(\'%post_id%\')"><div class="reply_fakebox">Комментировать..</div></div><input type="hidden" id="post_hash%post_id%" value="1348729937_54a443e069ab228251" can_reply_as_group="" />
+</div></div>
+    </div>
+  </div>
+  
+</div>',
+     'reply' => '<div id="post%reply_id%" class="reply reply_dived clear %classname%" onmouseover="wall.replyOver(\'%reply_id%\')" onmouseout="wall.replyOut(\'%reply_id%\')" %attr%>
+  <div class="reply_table">
+    <a class="reply_image" href="%link%">
+      <img src="%photo%" width="50" height="50" class="reply_image" />
+    </a>
+    <div class="reply_info">
+      %delete_link%
+      <div class="reply_text">
+        <a class="author" href="%link%">%name%</a>
+        <div class="wall_reply_text">%text%</div>
+        %media%
+      </div>
+      <div class="info_footer">
+        <div class="like_wrap fl_r" onclick="wall.like(\'%like_id%\', \'1348729937_ac652e07d3220dfc21\'); event.cancelBubble = true;" onmouseover="wall.likeOver(\'%like_id%\')" onmouseout="wall.likeOut(\'%like_id%\')">
+  <span class="like_link fl_l" id="like_link%like_id%">Мне нравится</span>
+  <i class="no_likes fl_l" id="like_icon%like_id%"></i>
+  <span class="like_count fl_l" id="like_count%like_id%"></span>
+</div>
+        <a class="wd_lnk" href="/wall%post_id%?reply=%reply_msg_id%" onclick="return nav.go(this, event)">%date%</a> %to_link%
+      </div>
+    </div>
+  </div>
+</div>',
+     'del' => '<div class="fl_r delete_post_wrap">
+  <div class="delete_post">
+    <div id="delete_post%post_id%" onclick="wall.deletePost(\'%post_id%\', \'1348729937_344e9829d26d5d75b0\');" onmouseover="wall.activeDeletePost(\'%post_id%\', \'Удалить запись\')" onmouseout="wall.deactiveDeletePost(\'%post_id%\')"></div>
+  </div>
+</div>',
+     'spam' => '<div class="fl_r delete_post_wrap">
+  <div class="delete_post">
+    <div id="delete_post%post_id%" onclick="wall.markAsSpam(\'%post_id%\', \'1348729937_9c134c48137e06b37c\');" onmouseover="wall.activeDeletePost(\'%post_id%\', \'Отметить как спам\')" onmouseout="wall.deactiveDeletePost(\'%post_id%\')"></div>
+  </div>
+</div>',
+     'del_reply' => '<div class="fl_r delete_post_wrap">
+  <div class="delete_post">
+    <div id="delete_post%reply_id%" onclick="wall.deletePost(\'%reply_id%\', \'1348729937_344e9829d26d5d75b0\');" onmouseover="wall.activeDeletePost(\'%reply_id%\', \'Удалить\')" onmouseout="wall.deactiveDeletePost(\'%reply_id%\')"></div>
+  </div>
+</div>',
+     'spam_reply' => '<div class="fl_r delete_post_wrap">
+  <div class="delete_post">
+    <div id="delete_post%reply_id%" onclick="wall.markAsSpam(\'%reply_id%\', \'1348729937_9c134c48137e06b37c\');" onmouseover="wall.activeDeletePost(\'%reply_id%\', \'Это спам\')" onmouseout="wall.deactiveDeletePost(\'%reply_id%\')"></div>
+  </div>
+</div>',
+     'answer_reply' => '<a class="reply_to_link" href="#" onmouseup="return wall.replyTo(\'%post_id%\', %reply_msg_id%, %reply_uid%, event);" onclick="cancelEvent(event);return false;">Ответить</a>',
+     'poll_stats' => '<tr><td colspan="2" class="page_poll_text">%option_text%</td></tr>
+<tr>
+  <td class="page_poll_row">
+    <div class="page_poll_percent" style="width: %css_percent%%"></div>
+    <div class="page_poll_row_count">%count%</div>
+  </td>
+  <td class="page_poll_row_percent ta_r"><nobr><b>%percent%%</b></nobr></td>
+</tr>',
+     'poll_hash' => '1348729937_477f895109c5f95518',
+     'date_format' => 'сегодня в {hour}:{minute}',
+     'time_system' => false,
+     'abs_timestamp' => $_SERVER['REQUEST_TIME'],
+     'lang' => array( 
+       'wall_M_replies_of_N' => 
+      array (
+        0 => '',
+        1 => '%s комментарий из {link}{all}{/link}',
+        2 => '%s последних комментария из {link}{all}{/link}',
+        3 => '%s последних комментариев из {link}{all}{/link}',
+      ),
+       'wall_hide_replies' => 'Скрыть комментарии',
+       'wall_show_n_of_m_last' => 
+      array (
+        0 => '',
+        1 => 'Показать последние %s комментарий из {count}',
+        2 => 'Показать последние %s комментария из {count}',
+        3 => 'Показать последние %s комментариев из {count}',
+      ),
+       'wall_show_all_n_replies' => 
+      array (
+        0 => '',
+        1 => 'Показать %s комментарий',
+        2 => 'Показать все %s комментария',
+        3 => 'Показать все %s комментариев',
+      ),
+       'wall_N_replies' => 
+      array (
+        0 => '',
+        1 => '%s комментарий',
+        2 => '%s комментария',
+        3 => '%s комментариев',
+      ),
+       'wall_three_last_replies' => 'три последних комментария',
+       'wall_all_replies' => 'все комментарии',
+       'wall_x_new_replies_more' => 
+      array (
+        0 => '',
+        1 => 'Добавлен %s новый комментарий',
+        2 => 'Добавлены %s новых комментария',
+        3 => 'Добавлены %s новых комментариев',
+      ),
+       'wall_X_people_voted' => 
+      array (
+        0 => '',
+        1 => 'Проголосаовал <b>%s</b> человек.',
+        2 => 'Проголосовало <b>%s</b> человека.',
+        3 => 'Проголосовало <b>%s</b> человек.',
+      ),
+       'wall_reply_submit_hint_1' => 'Shift+Enter – перевод строки',
+       'wall_reply_submit_hint_2' => 'Ctrl+Enter – отправка сообщения',
+       'wall_reply_submit_hint_1_more' => 'Enter – отправка сообщения, Shift+Enter – перевод строки',
+       'wall_reply_submit_hint_2_more' => 'Enter – перевод строки, Ctrl+Enter – отправка сообщения',
+       'wall_just_now' => 
+      array (
+        0 => '',
+        1 => 'только что',
+        2 => 'две секунды назад',
+        3 => 'три секунды назад',
+        4 => 'четыре секунды назад',
+        5 => 'пять секунд назад',
+      ),
+       'wall_X_seconds_ago_words' => 
+      array (
+        0 => '',
+        1 => 'только что',
+        2 => 'две секунды назад',
+        3 => 'три секунды назад',
+        4 => 'четыре секунды назад',
+        5 => 'пять секунд назад',
+      ),
+       'wall_X_seconds_ago' => 
+      array (
+        0 => '',
+        1 => '%s секунду назад',
+        2 => '%s секунды назад',
+        3 => '%s секунд назад',
+      ),
+       'wall_X_minutes_ago_words' => 
+      array (
+        0 => '',
+        1 => 'минуту назад',
+        2 => 'две минуты назад',
+        3 => 'три минуты назад',
+        4 => '4 минуты назад',
+        5 => '5 минут назад',
+      ),
+       'wall_X_minutes_ago' => 
+      array (
+        0 => '',
+        1 => '%s минуту назад',
+        2 => '%s минуты назад',
+        3 => '%s минут назад',
+      ),
+       'wall_X_hours_ago_words' => 
+      array (
+        0 => '',
+        1 => 'час назад',
+        2 => 'два часа назад',
+        3 => 'три часа назад',
+        4 => 'четыре часа назад',
+        5 => 'пять часов назад',
+      ),
+       'wall_X_hours_ago' => 
+      array (
+        0 => '',
+        1 => '%s час назад',
+        2 => '%s часа назад',
+        3 => '%s часов назад',
+      ),
+    ),
+);
+
+$info = array ();
+$tmp = $show_full_info;
+
+$show_full_info = 0;
+$info[0] = tpx('profile_block_info_short');
+
+$show_full_info = 1;
+$info[1] = tpx('profile_block_info_short');
+
+//dmp($info);
+
+$show_full_info = $tmp;
+
+//$smarty->assign('show_full_info', 0);
+
+$reply_names = array ();
+
+global $comments;
+if(!empty($comments['subcomment_authors'])){
+    foreach($comments['subcomment_authors'] as $uid){
+        $u = pdata($uid);
+        $reply_names[$uid] = array($u->title, current(explode(' ',$u->title)).', ');
+    }
+}
+
+$cs_share = array (
+	'url' => 'http://' . ($user->byfly ? '' : 'v') . 'cs' . ($user->user_info['user_cs']) . '.' . $setting['host'] . '/upload.php'
+);
+
+$init = array (
+	'user_id' => $owner->user_info['user_id'],
+	'loc' => str_replace('/', '', $owner->lnk),
+	'back' => $owner->user_info['fio'],
+	'reply_names' => $reply_names,
+	'max_post_len' => 1000,
+	'post_hash' => hash_get($user->id, 16, 'post'),
+	'wall_tpl' => $wall_tpl,
+	'wall_type' => 'all',
+	'wall_counts' => $wall_counts,
+	'all_link' => 'к записям ' . $name_gen,
+	'own_link' => 'ко всем записям',
+	'share' => $cs_share,
+	'photos_count' => 1,
+	'skip_one' => 0,
+	'photos' => array (),
+	'info' => $info,
+	'mail_cache' => array (
+		'Новое сообщение',
+		$mail_html,
+		$mail_js
+	),
+	'qversion' => 3,
+	'wall_oid' => $owner->user_info['user_id'],
+	'info_hash' => hash_get($user->user_info['user_id'], 16, 'act'),
+	'photo_hash' => hash_get($user->user_info['user_id'], 16, 'ph'),
+	'profph_hash' => 'b5d55596fa6e94e968',
+	
+);
+
+if ($privacy_wall_send) {
+	$init['media_types'] = $media_types;
+}
+
+$page_js = 'Profile.init(' . jenc($init) . ');';
+
+if ($owner->user_info['user_ava_effect'] > 0) {
+	$effect_ava_js = 'var _ava_effect = \'<div id="ava_effect"><object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://pdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" id="lecteur" height="' . $owner->user_info['user_photo_h'] . '" width="' . $owner->user_info['user_photo_w'] . '"><param name="wmode" value="transparent"><param name="movie" value="' . $xhost . 'images/effects/eff_' . $owner->user_info['user_ava_effect'] . '.swf"><param name="allowScriptAccess" value="never"><embed allowscriptaccess="never" type="application/x-shockwave-flash" src="' . $xhost . 'images/effects/eff_' . $owner->user_info['user_ava_effect'] . '.swf" wmode="transparent" height="' . $owner->user_info['user_photo_h'] . '" width="' . $owner->user_info['user_photo_w'] . '"></object></div>\';';
+} else {
+	$effect_ava_js = 'var _ava_effect = \'\';';
+}
+
+$page_js .= $effect_ava_js;
+
+if (empty($new_design) and $owner->user_info['user_video_to'] > $_SERVER['REQUEST_TIME'] and $owner->user_info['user_video'] != '') {
+	$video_ava_js = 'if (!/opera mini/i.test(navigator.userAgent.toLowerCase())) {
+	var _video_cont = \'profile_avatar\';
+	var _video_sizes = [' . $owner->user_info['user_video_w'] . ', ' . $owner->user_info['user_video_h'] . '];
+	var _video_poster = \'http://' . ($user->byfly ? '' : 'v') . 'cs' . $owner->user_info['user_cs'] . '.' . $setting['host'] . '/u' . $owner->user_info['user_id'] . '/va_' . $owner->user_info['user_video'] . '.jpg\';
+	var _video_src = [ 
+		\'http://' . ($user->byfly ? '' : 'v') . 'cs' . $owner->user_info['user_cs'] . '.' . $setting['host'] . '/u' . $owner->user_info['user_id'] . '/va_' . $owner->user_info['user_video'] . '.mp4\',
+		\'http://' . ($user->byfly ? '' : 'v') . 'cs' . $owner->user_info['user_cs'] . '.' . $setting['host'] . '/u' . $owner->user_info['user_id'] . '/va_' . $owner->user_info['user_video'] . '.ogv\'
+	]; 
+	var _video_ctrl = (/ipad/i.test(navigator.userAgent.toLowerCase())) ? \'controls \' : \'\';
+	var v = document.createElement("video");var _vs = false;
+		if (!!v.canPlayType) {
+			_vs = (v.canPlayType(\'video/webm; codecs="vp8, vorbis"\') == \'probably\' || v.canPlayType(\'video/ogg; codecs="theora, vorbis"\') == \'probably\' || v.canPlayType(\'video/mp4; codecs="avc1.42E01E, mp4a.40.2"\') == \'probably\');
+		}
+	$(\'#\'+_video_cont).html(\'<div id="vava"><img src="\'+_video_poster+\'" alt="" /></div>\'+_ava_effect);
+	if(_ava_effect!=\'\'){
+		$(\'#ava_effect\').css({\'display\':\'none\'});
+	}
+	if (_vs) {
+		var _vccs = {\'cursor\':\'pointer\', \'width\' : _video_sizes[0]+\'px\', \'height\' : _video_sizes[1]+\'px\'};
+		var _vccs2 = {\'width\' : _video_sizes[0]+\'px\', \'height\' : _video_sizes[1]+\'px\'};
+		var _vt = "<video "+_video_ctrl+" id=\'profile_avatar_vplayer\' preload=\'metadata\' width=\'"+_video_sizes[0]+"\' height=\'"+_video_sizes[1]+"\' poster=\'"+_video_poster+"\' onended=\'this.play()\' loop>"+
+				  "<source src=\'"+_video_src[0]+"\' type=\'video/mp4\' />" + "<source src=\'"+_video_src[1]+"\' type=\'video/ogg\' />" + "</video>";
+		$(\'#\'+_video_cont).css(_vccs2);
+		$(\'#\'+_video_cont+\' > #vava\').css(_vccs).html(_vt).click(function() {
+			document.getElementById(\'profile_avatar_vplayer\').muted = true; document.getElementById(\'profile_avatar_vplayer\').play();
+			setTimeout(function(){
+				if (!document.getElementById(\'profile_avatar_vplayer\').readyState) {
+					$(\'#\'+_video_cont).css({\'width\' : _video_sizes[0]+\'px\', \'height\' : _video_sizes[1]+\'px\', \'cursor\': \'default\'});
+					$(\'#profile_avatar_vplayer\').attr(\'poster\', \'http://' . ($user->byfly ? 'g1' : 'g2') . '.' . $setting['host'] . '/images/vava404.jpg\').css({\'width\' :\'200px\', \'height\' : \'300px\'});
+				}
+			}, 5000);
+		});
+		' . ($user->usersetting_info['av_auto'] == 1 ? 'document.getElementById(\'profile_avatar_vplayer\').play();' : '') . '	
+	} else {
+		$(\'#\'+_video_cont).width(_video_sizes[0]);
+		$(\'#\'+_video_cont).height(_video_sizes[1]);
+		var vplayerswf_start = function(){
+			$(\'#\'+_video_cont+\' > #vava\').html(\'<object width="\'+_video_sizes[0]+\'" height="\'+_video_sizes[1]+\'" id="profile_avatar_vplayerswf" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000">\'+
+				\'<param name="movie" value="http://' . ($user->byfly ? 'g1' : 'g2') . '.' . $setting['host'] . '/swf/vava.swf" /><param name="quality" value="high" /><param name="menu" value="false" /><param name="allowFullScreen" value="false" /> <param name="scale" value="noscale" /><param name="allowScriptAccess" value="always" /><param name="swLiveConnect" value="true" />\'+
+				\'<param name="flashVars" value="GHost=' . ($user->byfly ? '1' : '2') . '&VAvaURL=\'+_video_src[0]+ \'"/>\'+
+				\'<!-- [if !IE] -->\'+
+				\'<object width="\'+_video_sizes[0]+\'" height="\'+_video_sizes[1]+\'" data="http://' . ($user->byfly ? 'g1' : 'g2') . '.' . $setting['host'] . '/swf/vava.swf" type="application/x-shockwave-flash" id="vavaPlayer">\'+
+				\'<param name="quality" value="high" /><param name="menu" value="false" /> <param name="allowFullScreen" value="false" /> <param name="scale" value="noscale" /><param name="allowScriptAccess" value="always" /> <param name="swLiveConnect" value="true" />\'+
+				\'<param name="flashVars" value="GHost=' . ($user->byfly ? '1' : '2') . '&VAvaURL=\'+_video_src[0]+\'"/>\'+
+				\'</object> <!-- [endif] --> </object>\'
+			);
+		}
+		$(\'#\'+_video_cont+\' > #vava\').css(\'cursor\', \'pointer\').click(vplayerswf_start);
+		' . ($user->usersetting_info['av_auto'] == 1 ? 'vplayerswf_start();' : '') . '
+	}
+	}';
+	$page_js .= $video_ava_js;
+	
+} elseif ($owner->user_info['user_ava_effect'] > 0) {
+	$page_js .= $video_ava_js . '$(\'#profile_avatar\').html(_ava_effect);';
+}
+/*
+$page_js .= 'setTimeout(function() {document.title = replaceEntities(stripHTML("'.html2js($owner->user_info['fio']).'"));}, browser.chrome ? 50 : 100);';
+*/
+
+$page_js .= '
+cur.view_note_part = function(elem, nid) {
+  hide(elem.parentNode);
+  ge(nid).style.display = \'inline\';
+};';
+
+echo $page_js;
+
+
+// NY
+/*
+$snow_preview = rq('snow', 'r', 1);
+if($snow_preview > 0) {
+	$owner->usersetting_info['ny_snow'] = $snow_preview;
+}
+
+if($owner->usersetting_info['ny_snow'] > 0) {
+	$ny_js = 'snowStorm = new SnowStorm();';
+	if($owner->usersetting_info['ny_snow'] == 2){
+		$ny_js .= 'snowStorm.followMouse = true; snowStorm.snowCharacter = [\'$\',\'&euro;\'];';
+	} else {
+		$ny_js .= 'snowStorm.followMouse = false; snowStorm.snowCharacter = \'*\';';
+	}
+	$ny_js .= 'snowStorm.toggleSnow();';
+} else {
+	$ny_js .= 'if(snowStorm) {snowStorm.stop(); }';
+}
+
+
+$ny_js .= 'nyinit();';
+echo $ny_js;
+ 
+ */
+// END NY
+
+/*
+if($user->id == 16) {
+	echo 'f14init();';
+}
+
+$('.interests').isotope({
+  itemSelector : '.interest',
+   masonry: {
+    columnWidth: 10
+  }
+});
+
+*/
+
+echo run_video_objects();
+if($new_design) {
+?>
+page.initXScroll('friends_scroll');
+
+Col2.init('profile_cols', 10, 40, 40, 816);
+cur.smartResize = function() {
+	Col2.resize();
+	<? if($interests2) {
+		
+		echo "$('.interests').isotope({
+  itemSelector : '.interest',
+   masonry: {
+    columnWidth: 10
+  }
+});";
+	}		
+	?>
+}
+<? } ?>
+showBackLink();
+if(cur.smartResize != undefined && typeof(cur.smartResize) == 'function') {
+	cur.smartResize();
+}
+
+cur.lang = extend(cur.lang || {}, {
+  publish_postponed_title: 'Подтверждение действия',
+  publish_postponed_confirm: 'Вы действительно хотите опубликовать отложенную запись прямо сейчас?',
+  publish_postponed_btn: 'Опубликовать',
+  wall_send: 'Отправить',
+  dont_attach: 'Не прикреплять'
+});
+

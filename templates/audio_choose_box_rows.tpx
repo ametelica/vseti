@@ -1,0 +1,66 @@
+<?php
+if(count($var['musiclist']) > 0) {
+foreach($var['musiclist'] as $m) {
+	$muid = $m[0] . '_' . $m[1];
+	//dmp($m);
+?>
+<div class="choose_audio_row clear_fix">
+  <div class="audio_content fl_l">
+    <div class="audio" id="audio<?=$muid?>_choose" onmouseover="addClass(this, 'over');" onmouseout="removeClass(this, 'over');">
+  <a name="<?=$muid?>_choose"></a>
+  <div class="area clear_fix" onclick="if (cur.cancelClick){ cur.cancelClick = false; return false;} playAudioNew('<?=$muid?>_choose')">
+    <table cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+        <td>
+          <div class="play_btn_wrap"><div class="play_new" id="play<?=$muid?>_choose"></div></div>
+          <input type="hidden" id="audio_info<?=$muid?>_choose" value="<?= $m[2] ?>,<?= $m[3] ?>" />
+          
+        </td>
+        <td class="info">
+          <div class="title_wrap fl_l" onmouseover="setTitle(this)"><b onclick="event.cancelBubble = true;"><a href="/search?section=audio&c[q]=<?=urlencode($m[5])?>&c[performer]=1" onclick="return cur.chooseAudioPerformerSearch('<?=$m[5]?>')"><?=$m[5]?></a></b> &ndash; <span class="title" id="title<?=$muid?>_choose"><?=$m[6]?></span><span class="user" onclick="event.cancelBubble = true;"></span></div>
+          <div class="actions" onclick="event.cancelBubble = true;">
+            
+          </div>
+          <div class="duration fl_r" onmousedown="if (window.audioPlayer) audioPlayer.switchTimeFormat('<?=$muid?>_choose', event);" onclick="cancelEvent(event)"><?=$m[4]?></div>
+        </td>
+      </tr>
+    </table>
+    <div id="player<?=$muid?>_choose" class="player" ondragstart="return false;" onselectstart="return false;" onclick="event.cancelBubble = true;">
+      <table cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tbody><tr>
+          <td style="width: 100%;">
+            <div id="audio_pr<?=$muid?>_choose" class="audio_pr" onmouseover="addClass(this, 'over'); if (cur.hideTipTO) clearTimeout(cur.hideTipTO);" onmouseout="removeClass(this, 'over'); cur.hideTipTO = setTimeout(hide.pbind('audio_tip_wrap'), 100);" onmousedown="addClass(this, 'down'); audioPlayer.prClick(event);" onmouseup="removeClass(this, 'down')">
+              <div id="audio_white_line<?=$muid?>_choose" class="audio_white_line" onmousedown="audioPlayer.prClick(event);"></div>
+              <div id="audio_back_line<?=$muid?>_choose" class="audio_back_line" onmousedown="audioPlayer.prClick(event);"><!--  --></div>
+              <div id="audio_load_line<?=$muid?>_choose" class="audio_load_line" onmousedown="audioPlayer.prClick(event);"><!--  --></div>
+              <div id="audio_pr_line<?=$muid?>_choose" class="audio_progress_line" onmousedown="audioPlayer.prClick(event);">
+                <div id="audio_pr_slider<?=$muid?>_choose" class="audio_slider"><!-- --></div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div id="audio_vol<?=$muid?>_choose" class="audio_vol" onmouseover="addClass(this, 'over')" onmouseout="removeClass(this, 'over'); removeClass(this, 'down')" onmousedown="addClass(this, 'down'); audioPlayer.volClick(event)" onmouseup="removeClass(this, 'down')">
+              <div id="audio_vol_white_line<?=$muid?>_choose" class="audio_vol_white_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>
+              <div id="audio_vol_back_line<?=$muid?>_choose" class="audio_load_line" onmousedown="audioPlayer.volClick(event);"><!-- --></div>
+              <div id="audio_vol_line<?=$muid?>_choose" class="audio_progress_line" onmousedown="audioPlayer.volClick(event);">
+                <div id="audio_vol_slider<?=$muid?>_choose" class="audio_slider" onmousedown="audioPlayer.volClick(event);"><!-- --></div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+  </div>
+  <div class="fl_r">
+    <a class="choose" onclick="cur.chooseMedia('audio', '<?=$muid?>', {performer: '<?=$m[5]?>', title: '<?=$m[6]?>', info: val('audio_info<?=$muid?>_choose'), duration: '<?=$m[4]?>'})">Добавить&nbsp;аудиозапись</a>
+  </div>
+</div>
+<? } 
+} else {
+	if(!empty($var['search'])) {
+		echo '<div class="choose_no_rows">По запросу <b>'.$var['search'].'</b> не найдено ни одной аудиозаписи</div>';
+	}
+}
+?>

@@ -1,0 +1,104 @@
+if (!window.checkinCache) {
+  window.checkinCache = {};
+}
+if (!window.checkinCounter) {
+  window.checkinCounter = {};
+}
+if (!window.currentPlaceTab) {
+  window.currentPlaceTab = 0;
+}
+currentPlaceId = 0;
+currentPlaceProvider = 'yandex';
+places_map_roadmap = 'Схема';
+places_map_satellite = 'Спутник';
+places_map_hybrid = 'Гибрид';
+
+function loadMoreCheckins() {
+  var
+    place_id = currentPlaceId;
+    offset = checkinCounter[place_id],
+    url = 'places.php?act=a_get_place_checkins&id='+place_id+'&offset='+offset;
+  if (isVisible('place_progress')) {
+    return false;
+  }
+  show('place_progress');
+  Ajax.Post({
+    url: url,
+    onDone: function(ajaxObj, responseText) {
+      var result = eval('('+responseText+')');
+      checkinCounter[place_id] += result.load;
+      if (checkinCounter[place_id] < result.total) {
+        show('checkins_load_more');
+      } else {
+        hide('checkins_load_more');
+      }
+      checkinCache[place_id] += result.html;
+      ge('place_recent_checkins_body').innerHTML += result.html;
+      hide('place_progress');
+    }
+  });
+  return false;
+}
+
+function placeInitMap() {
+  placeMap.addMapTypeControls();
+  placeMap.addControls({zoom: 'large', pan: false});
+  placeMap.setCenterAndZoom(placePoint, 17);
+  placeMap.removeAllMarkers();
+  placeMap.addMarkerWithData(new vsMaps.Marker(placePoint), {
+    draggable: false,
+    icon: '/images/map/pointer.png',
+    iconSize: [28, 29],
+    iconAnchor: [7, 29],
+    infoBubble: '<?=$var['address']?>'
+  });
+}
+
+function placeInitBox(provider) {
+  var box = curBox();
+
+  box.showProgress();
+  box.setControlsText('<div id="map_provider" style="margin-top: -5px"><input id="map_provider_dd" /></div>');
+  placeProviderDD = new Dropdown(ge('map_provider_dd'), [[1, 'Яндекс'], [2, 'Google']], {
+    width: 100,
+    onChange: function(value) {
+      value = intval(value);
+      switch (value) {
+        case 1:
+          currentPlaceProvider = 'yandex';
+        break;
+        case 2:
+          currentPlaceProvider = 'google';
+        break;
+      }
+      placeMap.swap('place_map_' + currentPlaceProvider, currentPlaceProvider);
+      if (!placeMap.isLoaded(currentPlaceProvider)) {
+        placeMap.load.addHandler(placeInitMap);
+      }
+    }
+  });
+  switch (currentPlaceProvider) {
+    case 'yandex':
+      placeProviderDD.val(1, true);
+    break;
+    case 'google':
+      placeProviderDD.val(2, true);
+    break;
+  }
+  placeInitMap();
+  box.hideProgress();
+}
+
+show('place_map_' + currentPlaceProvider);
+placeMap = new vsMaps.VSMap('place_map_' + currentPlaceProvider, currentPlaceProvider);
+placePoint = new vsMaps.LatLonPoint(<?=$var['lat']?>, <?=$var['lng']?>);
+if (placeMap.isLoaded(currentPlaceProvider)) {
+  placeInitBox();
+} else {
+  placeMap.load.addHandler(placeInitBox);
+}
+
+if (currentPlaceTab > 0) {
+  hide('map_provider');
+  showCheckinTab(currentPlaceTab);
+}

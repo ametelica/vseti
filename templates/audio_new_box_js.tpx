@@ -1,0 +1,125 @@
+<?php
+global $user, $setting, $uplink, $gid;
+?>
+cur.loadAudioDone = function(i, obj) {
+  setTimeout(function(){
+    var all_list = cur.audiosList['all'];
+    if (all_list && all_list.length) {
+      obj._order = all_list[0]._order - 1;
+      cur.audiosList['all'].splice(0,0,obj);
+    } else {
+      obj_order = 0;
+      cur.audiosList['all'] = [obj];
+    }
+    cur.audios[obj[1]] = obj;
+    cur.audiosIndex.add(obj);
+    removeClass(ge('audio_wrap'), 'audio_no_recs');
+    show('audio_create_album');
+    cur.ignoreEqual = 1;
+    Audio.updateList(null, cur.aSearch, true);
+  }, 0);
+  if (cur.audiosLoaded) {
+    cur.audiosLoaded++;
+  } else {
+    cur.audiosLoaded = 1;
+  }
+  if (cur.boxClose) {
+    delete(cur.boxClose);
+    var msg = (cur.audiosLoaded > 1) ? 'Все аудиозаписи успешно загружены.' : 'Аудиозапись успешно загружена.';
+    box.setOptions({title: 'Загрузка завершена', bodyStyle: 'padding: 16px 14px;'});
+    box.content(msg);
+    hide(box.progress);
+    setTimeout(function(){box.hide(200);}, 2000)
+    delete(cur.audiosLoaded);
+  }
+};
+cur.loadAudioFailed = function(i, code) {
+  hide(box.progress);
+  Upload.embed(i);
+  var err = ge('audio_new_error');
+  var msg = code.split('|');
+  code = msg[0];
+  msg = msg[1];
+  err.innerHTML = msg ? msg : 'Возникла ошибка, код ошибки: {code}'.replace('{code}', intval(code));
+  show(err);
+};
+
+Upload.init('audio_choose_upload', '<?=$uplink['link']?>', {"act":"upload_audio","aid":0,"gid":<?=$gid?>,"mid":<?=$user->id?>,"hash":"<?=$uplink['hash']?>","rhash":"<?=$uplink['rhash']?>","vs":1,"upldr":1}, {
+  file_name: 'file',
+  file_size_limit: 20971520,
+  file_types_description: 'Audio files (*.mp3)',
+  file_types: '*.mp3;*.MP3',
+  accept: 'audio/mpeg',
+
+  lang: {"button_browse":"Выбрать файл","switch_mode":"Если у Вас возникли проблемы с загрузкой файла, воспользуйтесь {link}стандартным{\/link} загрузчиком.","cannot_upload_title":"Ошибка","cannot_upload_text":"Загрузка аудиозаписей в данный момент недоступна. Попробуйте повторить операцию позже.","max_files_warning":"Вы не можете загрузить более 20 аудиозаписей за раз."},
+
+  onUploadStart: function(i, res) {
+    if (Upload.types[i] == 'form') {
+      show(box.progress);
+    }
+    if (Upload.types[i] == 'form' || Upload.types[i] == 'fileApi') geByClass1('file', ge('audio_choose_upload')).disabled = true;
+    curBox().changed = true;
+  },
+  onUploadProgress: function(i, bytesLoaded, bytesTotal) {
+    if (!ge('form'+i+'_progress')) {
+      var obj = Upload.obj[i], objHeight = getSize(obj)[1], tm = objHeight / 2 + 10;
+      var node = obj.firstChild;
+      while (node) {
+        if (node.nodeType == 1) {
+          if (node.id == 'uploader'+i && browser.msie) {
+            setStyle(node, {position: 'relative', left: '-5000px'});
+          } else {
+            setStyle(node, {visibility: 'hidden'});
+          }
+        }
+        node = node.nextSibling;
+      }
+      obj.appendChild(ce('div', {innerHTML: '<div class="audio_progress_wrap">\
+        <div id="form' + i + '_progress" class="audio_progress" style="width: 0%;"></div>\
+      </div></div>'}, {height: tm + 'px', marginTop: -tm + 'px'}));
+    }
+    var percent = intval(bytesLoaded / bytesTotal * 100);
+    setStyle(ge('form' + i + '_progress'), {width: percent + '%'});
+  },
+  onUploadComplete: function(i, res) {
+    var obj;
+    res = res.replace(/\+/g, ' ');
+    try {
+      obj = eval('(' + res + ')');
+    } catch(e) {
+      obj = q2ajx(res);
+    }
+    obj.title = decodeURIComponent(obj.title);
+    obj.artist = decodeURIComponent(obj.artist);
+    if (obj.code) {
+      cur.loadAudioFailed(i, obj.code);
+    } else {
+      ajax.post(Audio.address, extend(obj, {act: 'done_add', upldr: 1}), {
+        onDone: function(res) {
+          cur.loadAudioDone(i, res);
+        },
+        onFail: function(res) {
+          cur.loadAudioFailed(i, res);
+          return true;
+        }
+      });
+    }
+  },
+  onUploadCompleteAll: function(i, res) {
+    cur.boxClose = true;
+    show(box.progress);
+  },
+  onUploadError: cur.loadAudioFailed,
+
+  clear: 1,
+  multiple: 1,
+  force_max_files: true,
+  max_files: 20,
+  type: 'audio',
+  max_attempts: 3,
+  reverse_files: 1,
+  server: <?=$user->user_info['user_cs']?>,
+  error: 1,
+  error_hash: '258d0f03ce718e0a3be973f86b1e5602',
+  dropbox: 'choose_audio_dropbox'
+});

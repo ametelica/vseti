@@ -1,0 +1,101 @@
+<?php
+global $user;
+?>placeholderSetup(ge('pad_search'), {back: true});
+var padPlist = padAudioPlaylist(), plStr = padPlist && padPlist.searchStr || '';
+val('pad_search', plStr, true);
+setTimeout(function() {
+  ge('pad_search').focus();
+}, 0);
+toggleClass('pad_audio_reset', 'shown', plStr);
+if (plStr != Pads.audioSearchStr) {
+  delete Pads.audioSearchPreload;
+  delete Pads.audioSearchMore;
+  Pads.audioSearchStr = plStr;
+  Pads.audioSearchOffset = 0;
+}
+delete Pads.audioSearchCleared;
+Pads.showAudios();
+if (window.audioPlayer) {
+  audioPlayer.initEvents();
+  if (!audioPlayer.addHash) {
+    audioPlayer.addHash = '<?=hash_get($user->id, 12, 'adda')?>';
+  }
+  audioPlayer.registerPlayer('pd', {
+    container: ge('pd'),
+    performer: ge('pd_performer'),
+    title: ge('pd_title'),
+    titleWrap: ge('pd_name'),
+    duration: ge('pd_duration'),
+    load: ge('pd_load_line'),
+    progress: ge('pd_pr_line'),
+    progressArea: ge('pd_pr'),
+    volume: ge('pd_vol_line'),
+    volumeArea: ge('pd_vol'),
+    play: ge('pd_play'),
+    prev: ge('pd_prev'),
+    next: ge('pd_next'),
+    add: ge('pd_add'),
+    repeat: ge('pd_repeat'),
+    shuffle: ge('pd_shuffle'),
+    rec: ge('pd_rec'),
+    status: ge('pd_status'),
+    padPlaylist: 1,
+    fixed: !(browser.msie && browser.version < 8 || browser.mobile)
+  });
+  var exp = false;
+  audioPlayer.statusExport = exp && !audioPlayer.hasStatusExport() ? exp : audioPlayer.statusExport || {};
+  if (browser.mobile) {
+    hide('pd_vol');
+    setStyle('pd_duration', {margin: 0});
+  }
+  if (!audioPlayer.lastSong) {
+    var first_id, cur_aid;
+    if ((cur_aid = ls.get('audio_id')) && padPlist[cur_aid]) {
+      first_id = cur_aid;
+    } else {
+      first_id = geByClass1('audio', ge('pad_playlist')).id.substr(5).replace('_pad', '');
+    }
+    if (first_id && padPlist[first_id]) {
+      audioPlayer.lastSong = padPlist[first_id];
+    }
+  }
+  if (first_id) {
+    audioPlayer.lastSong.aid = first_id;
+  }
+  audioPlayer.setControlsTitle();
+  audioPlayer.showCurrentTrack();
+}
+
+var searchTypes = [{i: 0, l: 'по композициям'}, {i: 1, l: 'по исполнителям'}], searchBtn = geByTag1('button', ge('pad_audio_search'));
+Pads.searchTypeChanged = function(event) {
+  var i = event.target.index || 0;
+  if (!searchTypes[i] || !searchTypes[i].l) {
+    i = 0;
+  }
+  var text = searchTypes[i].l + '<span class="arrow"></span>';
+  Pads.audioSearchType.header.innerHTML = '<div>'+text+'</div>';
+  searchBtn.innerHTML = text;
+  if (Pads.audioSearchStr) {
+    delete Pads.audioSearchPreload;
+    delete Pads.audioSearchMore;
+    Pads.audioSearchOffset = 0;
+    Pads.searchAudios(Pads.audioSearchStr, 0);
+    Pads.updateHeight();
+  }
+  cancelEvent(event);
+}
+Pads.audioSearchType = new DropdownMenu(searchTypes, {
+  target: searchBtn,
+  containerClass: 'dd_menu_stype_act pad',
+  updateTarget: false,
+  offsetLeft: 0,
+  offsetTop: 0,
+  showHover: false,
+  fadeSpeed: 0,
+  onSelect: Pads.searchTypeChanged
+});
+addEvent(Pads.audioSearchType.header, 'click', cancelEvent);
+if (_pads.arrow) {
+  removeClass(_pads.arrow, 'no_data');
+}
+window.audioPadShown = true;

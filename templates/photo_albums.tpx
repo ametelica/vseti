@@ -1,0 +1,77 @@
+<?php
+global $albums_list, $photos_list, $langpack, $owner, $user, $photos_on_page, $new_design;
+
+$photos_assign = array(
+		'photos' => $photos_list['total'] > $photos_on_page ? array_slice($photos_list['data'], 0, $photos_on_page) : $photos_list['data'], 
+		'from' => 'photos' . $owner->oid,
+		'album' => 0,
+		'limit' => $photos_on_page,
+);
+
+$edit = ($user->is_me($owner) or ($owner->oid < 0 and $owner->user_rank > 0)) ? 1 : 0;
+
+$albums_assign = array(
+		'albums' => $albums_list['data'],
+		'limit' => 4,
+		'edit' => $edit,
+);
+
+if($new_design) echo tpx('header_design');
+?>
+<div id="wrap2">
+  <div id="wrap1">
+    <div id="content" class="white_page">
+			<? if($owner->oid < 0 and $owner->group_info['show_photos'] == 0) { ?>			
+			<div class="photos_no_content">Фотографии группы отключены</div>
+<? } else { ?>
+	<div class="t_bar photos_tabs clear_fix">
+  <ul class="t0"><li class="active_link">
+  <a href="/albums<?=$owner->oid?>" onclick="return checkEvent(event);" onmousedown="if ((window.PhotosAdd || nav).go(this, event) === false) (window.PhotosAdd || window.photos || window.friendsphotos).activeTab(this);">
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr>Все фотографии</nobr></b>
+  </a>
+</li><li id="photo_add_tab" class="" style="display: none;"><a>
+    <b class="tl1"><b></b></b>
+    <b class="tl2"></b>
+    <b class="tab_word"><nobr>Добавление фотографий</nobr></b>
+  </a>
+</li><? if($edit) { ?><li class="t_r" id="add_album_link"><a href="/albums<?=$owner->oid?>" onclick="return !showBox('al_photos.php', {act: 'new_album_box'<? if($owner->oid < 0){ ?>, oid: <? echo $owner->oid; } ?>});" class="fl_r summary_right">Создать альбом</a></li><? } ?></ul>
+</div><div id="photos_albums">
+  <div id="album_upload_area"><div class="album_upload_area_inner"></div></div>
+  <div id="photos_upload_area_wrap" style="position: relative; display: none;">
+  <a id="photos_upload_area" title="Вы можете перетащить файлы прямо на эту страницу." href="/album<?=$owner->oid?>_000?act=add" onclick="return photos.upload(this, event);">
+    <div class="photos_upload_area_upload">
+      <span id="photo_upload_area_label" class="photos_upload_area_img">
+        Добавить новые фотографии
+      </span>
+    </div>
+    <div class="photos_upload_area_drop">
+      Отпустите, чтобы начать загрузку.
+    </div>
+  </a>
+  <input id="photos_upload_input" class="file" type="file" size="28" onchange="Upload.onFileApiSend(cur.uplId, this.files);" multiple="true" name="photo" style="visibility: hidden; position: absolute;"/>
+</div>
+  <div class="summary_wrap" style="">
+    <div class="summary"><?
+					if($user->is_me($owner)) {
+						echo 'У Вас';
+					} elseif($owner->oid > 0) {
+						echo 'У '.$owner->user_info['user_name_gen'];
+					}
+	?> <?=$albums_list['total']?> альбом<?=$langpack->dln($albums_list['total'], 'file')?><span class="fl_r"><a href="/photos<?=$owner->oid?>" onclick="return nav.go(this, event)">Обзор фотографий</a></span><span class="divider">|</span><span><a href="/photos<?=$owner->oid?>?act=comments" onclick="return nav.go(this, event)">Комментарии к альбомам</a></span></div>
+  </div>
+  <div id="photos_albums_container" class="clear_fix"><?=tpx('photo_albums_rows', $albums_assign)?></div>
+  <a id="albums_load_more" onclick="photos.loadAlbums()" style="<? if($albums_list['total'] <= 4) {?>display:none;<? } ?>"><span>Показать все <?=$albums_list['total']?> альбом<?=$langpack->dln($albums_list['total'], 'file')?></span>
+    <div id="albums_more_progress" class="progress"></div>
+  </a>
+  <div class="summary_wrap photos_summary">
+  <div class="summary">Последние загруженные фотографии</div>
+</div>
+<div id="photos_container"><?=tpx('photo_photos_rows', $photos_assign)?></div>
+<a id="photos_load_more" onclick="photos.load()" style="<? if($photos_list['total'] <= $photos_on_page){?>display: none;<?}?>"><span>Показать больше фотографий</span>
+  <div id="photos_more_progress" class="progress"></div>
+</a>
+</div><? } ?></div>
+  </div>
+</div>

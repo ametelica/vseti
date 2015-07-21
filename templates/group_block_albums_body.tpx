@@ -1,0 +1,34 @@
+<?php
+// 4del
+global $datetime, $album;
+
+$more = '';
+$show_albums = 10;
+
+if($var['total_albums'] > 0){
+    $i = 0;
+    foreach($var['albums'] as $a) {
+        $album_id = $var['oid'].'_'.$a['album_id'];
+        $out = '<div class="fl_l clear_fix clear album_row">
+  <div class="fl_l thumb">
+    <a href="/album'.$album_id.'"><div><img src="'.$album->album_link($a,'s',1).'" /></div></a>
+  </div>
+  <div class="fl_l info">
+    <div><a href="/album'.$album_id.'">'.$a['album_title'].'</a></div>
+    <div class="updated">'.($a['album_dateupdated']>0?'Обновлён '.$datetime->sdate($a['album_dateupdated'],0):'Не обновлялся').'</div>
+  </div>
+</div>';
+        $i++;
+        if($i>$show_albums) {
+            $more .= $out;
+        } else {
+            echo $out;
+        }
+    }
+    if($more!=''){
+        echo '<a class="group_wiki_hider clear clear_fix" onclick="if (checkEvent(event)) return; toggle(this.nextSibling); hide(this); return false;" href="#" style="padding-left: 40px; position: relative; top: 10px;">Показать все альбомы</a><div class="unshown">'.$more.'</div>';
+    }
+} else {
+    echo '<!--a-->';
+}    
+?>

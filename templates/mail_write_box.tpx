@@ -1,0 +1,45 @@
+<?php
+global $m, $owner, $new_design; // сообщение, на которое отвечаем
+
+if(empty($m)) {
+	$to_text = 'Кому:';
+	$to_user = $owner;
+} else {
+	$to_text = $m['pm_out'] ? 'Кому:' : 'От кого:';
+	$to_user = $m['pm_user'];
+}
+?><div class="mail_box_content clear_fix">
+  <div class="label fl_l ta_r">
+    <?=$to_text?>
+  </div>
+  <div class="labeled fl_l">
+    <a href="<?=$to_user->lnk?>" onclick="return nav.go(this, event)" class="mem_link"><?=$to_user->title?></a>
+  </div>
+  <? if(isset($m['pm_body'])) { ?>
+	<div class="label fl_l ta_r">
+    Сообщение: 
+  </div>
+  <div class="labeled fl_l">
+    <?=nl2br($m['pm_body'])?>
+	<?=tpx('mail_media_block', array('pm' => $m))?>
+</div>
+
+  <div class="label fl_l ta_r">
+    Ответ:
+  </div>
+	 <? } else { ?>
+	<div class="label fl_l ta_r">
+    Сообщение:
+  </div>
+	<? } ?>
+  <div class="labeled fl_l">
+    <textarea onchange="curBox().changed=true;" onkeydown="if (event.ctrlKey &amp;&amp; event.keyCode == 13) cur.submitBoxMessage();" id="write_box_text" /></textarea>
+  </div>
+	<div>
+  <div id="mail_box_add_row" class="fl_l" <?=($new_design ? '' : 'style="display: none"')?>><span id="mail_box_add_link" class="link add_media_lnk">Прикрепить</span></div>
+  <div class="label fl_l"/></div>
+  <div class="labeled fl_l">
+    <div class="multi_media_preview" id="mail_box_added_row"><div class="page_pics_preview media_preview clear_fix" id="page_pics_preview2"/><div class="page_docs_preview media_preview clear_fix" id="page_docs_preview2"/><div class="page_progress_preview media_preview clear_fix" id="page_progress_preview2"/></div>
+
+  </div>
+</div>

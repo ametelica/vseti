@@ -1,0 +1,69 @@
+<?php
+global $group, $user, $is_group_private, $langpack, $new_design, $wall;
+$privacy_wall_send = ($group->group_info['show_wall'] == 1 or $group->user_rank > 0) ? 1 : 0;
+$wall_total = $group->group_info['html_wall_cnt'];
+$wall_html = $group->group_info['html_wall'];
+
+if ($group->group_info['show_wall'] > 0 and !$is_group_private) {
+?>
+<div class="wall_module <? if($new_design) echo 'wide_wall_module clear ';?>" id="group_wall">
+  <div class="module_header wall_header">
+  <a id="page_wall_header" class="header_top clear_fix">
+	<? if($new_design) { ?>
+	<!--<span id="page_wall_switch" class="right_link fl_r" onclick="if (checkEvent(event)) return true; return wall.switchWall(event);">к записям от имени сообщества</span>-->
+	<span class="right_link fl_r" id="page_wall_posts_count" onclick="if (checkEvent(event)) return true; return wall.switchWall(event);"><?=nf($wall_total)?> <?=$langpack->dln($wall_total, _e('g_rows_cnt'))?></span>
+    <?=_e('g_wall')?>
+	
+<? } else { ?>
+<span class="right_link fl_r" id="page_wall_switch" onclick="if (checkEvent(event)) return true; return wall.switchWall(event);"></span>
+    <b id="page_wall_posts_count"><?=nf($wall_total)?> <?=$langpack->dln($wall_total, _e('g_rows_cnt'))?></b>
+	<? } ?>
+  </a>
+  </div>
+<? 
+if($user->user_exists) {
+  if($privacy_wall_send) { ?>
+  <div id="submit_post_box" class="clear_fix" onclick="event.cancelBubble=true;">
+  <div class="clear_fix">
+    <textarea
+      id="post_field"
+      class="fl_l"
+      onkeyup="wall.postChanged(this.value)"
+      onkeydown="onCtrlEnter(event, wall.sendPost)"
+      onfocus="wall.showEditPost()"
+      placeholder="<?=_e('g_msg_placeholder')?>"
+    ></textarea>
+  </div>
+  <div id="post_warn"></div>
+  <div id="submit_post" onclick="event.cancelBubble=true;">
+    <div id="media_preview" class="clear_fix media_preview"></div>
+    <div class="button_green fl_l"><button id="send_post" onclick="wall.sendPost()"><?=_e('g_send')?></button></div>
+<? if($group->user_rank > 0 and $group->user_level > 1) { ?>
+    <div id="official" class="checkbox fl_l" onclick="checkbox(this);toggle('signed',isChecked(this));">
+      <div></div>
+        <?=_e('g_from_group')?>
+    </div>
+    <div id="signed" class="checkbox fl_l unshown" onclick="checkbox(this)">
+      <div></div>
+        <?=_e('g_sign')?>
+    </div>
+<? } ?>    
+    <div id="page_add_media" class="fl_r"><span class="add_media_lnk"><?=_e('g_msg_add')?></span></div>		
+    <div class="progress fl_r" id="page_post_progress"></div>
+  </div>
+</div>
+<? } 
+
+echo '<div id="wall_postponed" style="'.(($wall->postpone_cnt > 0 and $wall->can_edit) ? '' : 'display: none').'">' . tpx('wall_postpone_button') . '</div>';
+
+} else { ?>
+<div class="message">
+<?=_e('g_wall_needlogin')?>
+</div>
+<? } ?>    
+  <div class="clear_fix"><div id="page_wall_posts" class="wall_posts all"><input type="hidden" id="page_wall_count_all" value="<?=$wall_total?>" /><input type="hidden" id="page_wall_count_own" value="0" /><? if($wall_total>0) echo $wall_html; else echo '<div id="page_no_wall">'._e('g_wall_empty').'</div>';?></div>
+      <a class="more_link clear" id="wall_more_link" onclick="wall.showMore(10);"><div class="progress" id="wall_more_progress"></div><div><?=_e('g_wall_to_prev')?></div></a></div>
+</div>
+<?
+}
+?>
