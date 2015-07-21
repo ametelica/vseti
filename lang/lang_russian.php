@@ -13,7 +13,7 @@ if(!class_exists('langpack')){
 			$en = array( // 1 3 12
 				'zap' => array('ь','и','ей'),
 				'gst' => array('ь','я','ей'),
-				'com' => array('й','я','ев'), 
+				'com' => array('ый','я','ев'), 
 				'file'=> array('','а','ов'),
 				'grp' => array('е','ах','ах'),
 				'grp2'=> array('а','ы',''),
@@ -1938,6 +1938,22 @@ $lang_rel = array(
 	'books_my' => array(
 		'0' => 'user_messages',
  	),
+ 	
+ 	'rows' => 'записи',
+ 	'comment' => 'комментари',
+ 	'nocomments' => 'Нет комментариев',
+ 	
+ 	'wp_row_g' => 'Записи сообщества',
+ 	'wp_row_all' => 'Все записи',
+ 	'wp_row_w' => 'Запись на стене',
+ 	'wp_visit_p' => 'Перейти к странице',
+ 	'wp_visit_g' => 'Перейти к группе',
+ 	'wp_row_w' => 'Запись на стене',
+ 	'wp_reply_mypage' => 'Ответить на своей странице',
+ 	'wp_reply_mypage' => 'Ответить на своей странице',
+ 	'wp_fixed_on' => 'Закрепить',
+ 	'wp_fixed_off' => 'Открепить',
+ 
 );
 
 if(empty($al_page))
