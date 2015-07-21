@@ -35,14 +35,14 @@ if($new_design) echo tpx('header_design');
 						<a href="/wall<?= $oid ?>?own=1" onclick="return checkEvent(event)" onmousedown="return FullWall.go(this, event)">
 							<b class="tl1"><b></b></b>
 							<b class="tl2"></b>
-							<b class="tab_word">Записи сообщества</b>
+							<b class="tab_word"><?=_e('wp_row_g')?></b>
 						</a>
 					</li>-->
 					<li style="">
 						<a href="/wall<?= $oid ?>" onclick="return checkEvent(event)" onmousedown="return FullWall.go(this, event)">
 							<b class="tl1"><b></b></b>
 							<b class="tl2"></b>
-							<b class="tab_word">Все записи</b>
+							<b class="tab_word"><?=_e('wp_row_all')?></b>
 						</a>
 					</li>
 					<li style="display: none">
@@ -56,15 +56,15 @@ if($new_design) echo tpx('header_design');
 						<a href="/wall<?= $oid ?>_<?= $id ?>" onclick="return checkEvent(event)" onmousedown="return FullWall.go(this, event)">
 							<b class="tl1"><b></b></b>
 							<b class="tl2"></b>
-							<b class="tab_word">Запись на стене</b>
+							<b class="tab_word"><?=_e('wp_row_w')?></b>
 						</a>
 					</li>
 					<li class="t_r" id="full_wall_return">
 						<?
 						if ($oid > 0)
-							echo '<a href="/id' . $oid . '" onclick="return nav.go(this, event, {back: true})">Перейти к странице</a>';
+							echo '<a href="/id' . $oid . '" onclick="return nav.go(this, event, {back: true})"><?=_e('wp_visit_p')?></a>';
 						else
-							echo '<a href="/club' . -$oid . '" onclick="return nav.go(this, event, {back: true})">Перейти к группе</a>';
+							echo '<a href="/club' . -$oid . '" onclick="return nav.go(this, event, {back: true})"><?=_e('wp_visit_g')?></a>';
 						
 						if (!empty($comment['opt']['r'])) {
 							$r = $comment['opt']['r'];
@@ -139,7 +139,7 @@ if($new_design) echo tpx('header_design');
 										<a class="published_by" onclick="return nav.go(this, event)" href="<?= $src_author->lnk ?>"><?= $src_author->title ?></a>
 										<div class="published_by_date">
 											<a class="published_by_date" onclick="return nav.go(this, event);" href="<?= $src_link ?>"><?= $datetime->sdate($r['date']) ?></a>
-										<? if($r['type']=='wall_reply') echo 'к <a href="/wall' . $r['oid'] . '_' . $r['id'] .'"  onmouseover="wall.postTooltip(this, \'' . $r['oid'] . '_' . $r['pid'] .'\', {self: 1});" >записи</a>'; ?>	
+										<? if($r['type']=='wall_reply') echo 'к <a href="/wall' . $r['oid'] . '_' . $r['id'] .'"  onmouseover="wall.postTooltip(this, \'' . $r['oid'] . '_' . $r['pid'] .'\', {self: 1});" ><?=_e('rows')?></a>'; ?>	
 											
 										</div>
 									</td>
@@ -154,20 +154,21 @@ if($new_design) echo tpx('header_design');
 					?></div>
 										
 									<!--<div class="wall_signed"><a class="wall_signed_by" href="/id34731505">Дмитрий Перс</a></div>-->
+									<!--Nikitavoi: Что за Перс в комменте спрятался?! )))-->
 									<div class="fw_post_bottom" id="wpe_bottom<?= $post_id ?>">
-										<div class="fl_l fw_post_date"><?= $datetime->sdate($comment['date']) ?><span class="divide">|</span><!--<span class="divide">|</span><a class="reply_link" onclick="showBox('al_wall.php', {act: 'own_reply', post: '<?= $post_id ?>'}, {stat: ['ui_controls.css', 'ui_controls.js']})">Ответить на своей странице</a><span class="divide">|</span><a onclick="FullWall.markAsSpam('<?= $post_id ?>', '93e7c2adf3fad850e0')">Это спам</a><span class="divide">|</span>--></div>
+										<div class="fl_l fw_post_date"><?= $datetime->sdate($comment['date']) ?><span class="divide">|</span><!--<span class="divide">|</span><a class="reply_link" onclick="showBox('al_wall.php', {act: 'own_reply', post: '<?= $post_id ?>'}, {stat: ['ui_controls.css', 'ui_controls.js']})"><?=_e('wp_reply_mypage')?></a><span class="divide">|</span><a onclick="FullWall.markAsSpam('<?= $post_id ?>', '93e7c2adf3fad850e0')"><?=_e('g_is_spam')?></a><span class="divide">|</span>--></div>
 
 									    <? if ($show_fix_link) {
 										  if ($var['fixed_post'] == $var['id']) { ?>
-										    <a class="fl_l" href="" onclick="FullWall.fixPost(this, '<?=$post_id ?>', '<?=hash_get($var['id'].$user->id, 16, 'fix_post') ?>', 0); return false;">Открепить</a>
+										    <a class="fl_l" href="" onclick="FullWall.fixPost(this, '<?=$post_id ?>', '<?=hash_get($var['id'].$user->id, 16, 'fix_post') ?>', 0); return false;"><?=_e('wp_fixed_off')?></a>
 										  <? } else { ?>
-										    <a class="fl_l" href="" onclick="FullWall.fixPost(this, '<?=$post_id ?>', '<?=hash_get($var['id'].$user->id, 16, 'fix_post') ?>', 1); return false;">Закрепить</a>
+										    <a class="fl_l" href="" onclick="FullWall.fixPost(this, '<?=$post_id ?>', '<?=hash_get($var['id'].$user->id, 16, 'fix_post') ?>', 1); return false;"><?=_e('wp_fixed_on')?></a>
 										  <? } ?>
 										  <span class="fl_l divide">|</span>
 									    <? } ?>
 										
 										<div class="fw_like_wrap fl_l" onmouseover="wall.likeOver('<?= $post_id ?>')" onmouseout="wall.likeOut('<?= $post_id ?>')" onclick="wall.like('<?= $post_id ?>', '<?= hash_get('wall' . $post_id . $user->id, 18, 'lk') ?>')">
-							<span class="fw_like_link fl_l" id="like_link<?= $post_id ?>">Мне нравится</span>
+							<span class="fw_like_link fl_l" id="like_link<?= $post_id ?>"><?=_e('g_like')?></span>
 							<i class="fw_like_icon <?= $comment['like'] == 0 ? 'fw_no_likes' : '' ?><?= $comment['like_my'] == 1 ? 'fw_my_like' : '' ?> fl_l" id="like_icon<?= $post_id ?>"></i>
 							<span class="fw_like_count fl_l" id="like_count<?= $post_id ?>"><?= $comment['like'] == 0 ? '' : $comment['like'] ?></span>
 						</div>
@@ -179,7 +180,7 @@ if($new_design) echo tpx('header_design');
 					<div class="summary_wrap" id="fwp_summary_wrap" style="<?= $comments['total'] == 0 ? 'display: none;' : '' ?>">
 						<div class="pg_pages fl_r" id="fw_pages"><?= pg_pages('/wall' . $post_id . '?', $comments['total'], 20, $offset) ?></div>
 
-						<div class="summary" id="fw_summary"><? if ($comments['total'] > 0) echo $comments['total'] . ' комментари' . $langpack->dln($comments['total'], 'com'); else echo 'Нет комментариев'; ?></div>
+						<div class="summary" id="fw_summary"><? if ($comments['total'] > 0) echo $comments['total'] . ' <?=_e('comment')?>' . $langpack->dln($comments['total'], 'com'); else echo '<?=_e('nocomments')?>'; ?></div>
 					</div>
 					<div id="fw_replies_rows"><?
 					  $assign = array(
