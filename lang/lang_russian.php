@@ -13,7 +13,7 @@ if(!class_exists('langpack')){
 			$en = array( // 1 3 12
 				'zap' => array('ь','и','ей'),
 				'gst' => array('ь','я','ей'),
-				'com' => array('ый','я','ев'), 
+				'com' => array('й','я','ев'), 
 				'file'=> array('','а','ов'),
 				'grp' => array('е','ах','ах'),
 				'grp2'=> array('а','ы',''),
@@ -1942,6 +1942,8 @@ $lang_rel = array(
  	'rows' => 'записи',
  	'comment' => 'комментари',
  	'nocomments' => 'Нет комментариев',
+ 	'ucomment' => 'Ваш комментарий',
+ 	'cancel' => 'Отмена',
  	
  	'wp_row_g' => 'Записи сообщества',
  	'wp_row_all' => 'Все записи',
