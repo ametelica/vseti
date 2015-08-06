@@ -190,27 +190,27 @@ if($new_design) echo tpx('header_design');
 						);
 						echo tpx('wall_comment_rows', $assign);
 						?></div>
-					<a id="fwp_load_more" class="pg_more_link" onclick="Pagination.showMore()" style="<?= $comments['total'] < 20 ? 'display: none;' : '' ?>"><span>к предыдущим записям</span>
+					<a id="fwp_load_more" class="pg_more_link" onclick="Pagination.showMore()" style="<?= $comments['total'] < 20 ? 'display: none;' : '' ?>"><span><?=_e('g_wall_to_prev')?></span>
 						<div id="fw_more_progress" class="pg_more_progress progress"></div>
 					</a>
 				</div>
 				<div id="fwr_wrap" class="<?=$var['access_comm']==1?'':'unshown'?>"><div id="fwr_form">
-						<div class="fwr_header">Ваш комментарий</div>
+						<div class="fwr_header"><?=_e('ucomment')?></div>
 						<input id="fwr_to" type="hidden" />
 						<div class="fwr_text_cont">
-    						<div id="fwr_reply_smile" title="Используйте TAB, чтобы быстрее открывать смайлы" class="emoji_smile fl_l" onmouseover="if (window.Emoji) Emoji.ttOver(this);" onmouseout="if (window.Emoji) Emoji.ttOut(this);" onmousedown="return FullWall.showEmojiTT(this, event);" onclick="return cancelEvent(event);" style="right: 1px; opacity: 0.7;"><div class="emoji_smile_icon_on"></div><div class="emoji_smile_icon"></div></div>
-    						<div id="fwr_text" placeholder="Комментировать.." contenteditable="true"></div>
+    						<div id="fwr_reply_smile" title="<?=_e('g_tab_pic')?>" class="emoji_smile fl_l" onmouseover="if (window.Emoji) Emoji.ttOver(this);" onmouseout="if (window.Emoji) Emoji.ttOut(this);" onmousedown="return FullWall.showEmojiTT(this, event);" onclick="return cancelEvent(event);" style="right: 1px; opacity: 0.7;"><div class="emoji_smile_icon_on"></div><div class="emoji_smile_icon"></div></div>
+    						<div id="fwr_text" placeholder="<?=_e('g_wall_comment')?>.." contenteditable="true"></div>
   						</div>
 						<div id="fwr_reply_media_preview" class="reply_media_preview clear_fix multi_media_preview"></div>
 						<div id="fwr_warn"></div>
 						<div class="fwr_buttons">
 							<div class="button_green fl_l">
-								<button id="fwr_send" onclick="FullWall.sendReply()">Отправить</button>
+								<button id="fwr_send" onclick="FullWall.sendReply()"><?=_e('g_send')?></button>
 							</div>
 							<div id="fwr_to_title" class="fl_l"></div>
-							<div id="fwr_reply_media_lnk" class="reply_media_lnk fl_r"><span class="add_media_lnk">Прикрепить</span></div>
+							<div id="fwr_reply_media_lnk" class="reply_media_lnk fl_r"><span class="add_media_lnk"><?=_e('g_msg_add')?></span></div>
 							<div id="fwr_cancel" class="button_cancel fl_r">
-								<div class="button" onclick="FullWall.cancelAddReply(true)">Отмена</div>
+								<div class="button" onclick="FullWall.cancelAddReply(true)"><?=_e('cancel')?></div>
 							</div>
 						</div>
 					</div></div>
